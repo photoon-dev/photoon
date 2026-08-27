@@ -12,6 +12,19 @@
 #   b) troque `*.photoon.com.br` por cada host explicito (TLS-ALPN funciona
 #      direto, sem plugin) enquanto forem poucos lojistas.
 # ---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
+# TEMPORARIO: acesso por IP cru, para testar antes do DNS propagar.
+# Sem TLS (certificado nao e emitido para IP). Remova este bloco quando
+# photoon.com.br estiver resolvendo para esta VPS.
+# ---------------------------------------------------------------------------
+http://2.25.140.168 {
+	encode zstd gzip
+	reverse_proxy app:3000 {
+		header_up Host {host}
+		header_up X-Forwarded-Proto {scheme}
+	}
+}
+
 *.photoon.com.br, photoon.com.br {
 	# tls {
 	#	dns cloudflare {env.CLOUDFLARE_API_TOKEN}
