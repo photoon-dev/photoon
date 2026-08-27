@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import type { Cliente, Galeria, Projeto } from '@/lib/data';
+import { criarProjeto } from '@/app/actions';
 import { IconGaleria, IconCheck, IconSeta, IconMais } from '@/components/icons';
 
 /** Faixa de destaque do topo de "Meus projetos". */
@@ -16,7 +17,9 @@ export default function HeroProjetos({
 }) {
   const primeiroNome = (cliente.nome ?? cliente.email.split('@')[0]).split(' ')[0];
   const prontos = projetos.filter((p) => p.status === 'pronto');
-  const emAndamento = projetos.find((p) => p.status === 'em_edicao' || p.status === 'com_pendencias');
+  const emAndamento =
+    projetos.find((p) => p.status === 'em_edicao' || p.status === 'com_pendencias') ??
+    projetos.find((p) => p.status === 'nao_iniciado');
 
   // Progresso do pedido = media do progresso dos albuns.
   const progresso = projetos.length
@@ -69,14 +72,21 @@ export default function HeroProjetos({
                 className="flex h-[46px] items-center gap-[9px] whitespace-nowrap rounded-field bg-[linear-gradient(135deg,#7C5CFF,#4F46E5)] px-5 text-[14.5px] font-bold text-white shadow-[0_10px_24px_rgba(90,66,214,.42)] hover:brightness-[1.06]"
               >
                 <IconSeta size={17} />
-                Continuar editando
+                {emAndamento.status === 'nao_iniciado' ? 'Começar o álbum' : 'Continuar editando'}
               </Link>
             )}
             {podeCriarMais && (
-              <span className="flex h-[47px] items-center gap-[9px] whitespace-nowrap rounded-field border border-white/30 bg-white/[.12] px-5 text-[14.5px] font-semibold text-white/70 backdrop-blur-[16px]">
-                <IconMais size={17} />
-                {galeria!.max_albuns - projetos.length} álbum(ns) disponível(is)
-              </span>
+              <form action={criarProjeto}>
+                <input type="hidden" name="galeria_id" value={galeria!.id} />
+                <input type="hidden" name="titulo" value="Novo álbum" />
+                <button
+                  type="submit"
+                  className="flex h-[47px] items-center gap-[9px] whitespace-nowrap rounded-field border border-white/30 bg-white/[.12] px-5 text-[14.5px] font-semibold text-white backdrop-blur-[16px] hover:bg-white/20"
+                >
+                  <IconMais size={17} />
+                  Criar outro álbum
+                </button>
+              </form>
             )}
           </div>
         </div>

@@ -1,11 +1,19 @@
 import { notFound } from 'next/navigation';
 import { currentTenantSlug } from '@/lib/tenant';
 import { getLojista } from '@/lib/data';
-import HeroEntrar from '@/components/HeroEntrar';
+import MolduraLogin from '@/components/MolduraLogin';
 import FormEntrar from '@/components/FormEntrar';
+import { IconSparkle, IconFoto, IconCheck } from '@/components/icons';
 
 export const dynamic = 'force-dynamic';
 
+const DESTAQUES = [
+  { Icone: IconSparkle, texto: 'A assistência diagrama, respeita rostos e evita repetidas.' },
+  { Icone: IconFoto, texto: 'Suas fotos já liberadas — você não precisa enviar nada.' },
+  { Icone: IconCheck, texto: 'Revisão de páginas vazias e cortes antes da produção.' },
+];
+
+/** Login do cliente final — <loja>.photoon.com.br/entrar */
 export default async function EntrarPage({
   searchParams,
 }: {
@@ -20,54 +28,47 @@ export default async function EntrarPage({
   const { next } = await searchParams;
 
   return (
-    <div className="grid min-h-screen bg-page [grid-template-columns:repeat(auto-fit,minmax(420px,1fr))]">
-      <HeroEntrar lojista={lojista} />
-
-      <div className="flex min-w-0 flex-col px-11 py-10">
-        <div className="mb-auto flex items-center justify-end gap-2.5">
-          <span className="text-[13px] text-muted">Primeira vez por aqui?</span>
-          <span className="text-[13px] font-bold text-muted-2">
-            Use o link do convite que a {lojista.nome} enviou
-          </span>
-        </div>
-
-        <div className="mx-auto w-full max-w-[420px] animate-riseIn py-[34px]">
-          <h2 className="m-0 mb-2 text-[28px] font-extrabold tracking-[-.9px]">
-            Acesse seus projetos
-          </h2>
-          <p className="m-0 mb-7 text-[14.5px] text-muted">
-            Entre com o e-mail que a {lojista.nome} cadastrou para você.
+    <MolduraLogin
+      legenda={`${lojista.slug}.photoon.com.br`}
+      titulo="Acesse seus projetos"
+      subtitulo={`Entre com o e-mail que a ${lojista.nome} cadastrou para você.`}
+      formulario={
+        <FormEntrar next={next ?? '/meus-projetos'} telefoneSuporte={lojista.telefone_suporte} />
+      }
+      painel={
+        <>
+          <p className="m-0 mb-6 max-w-[420px] text-[30px] font-bold leading-[1.2] tracking-[-.7px] text-white">
+            Suas fotos já estão aqui.
+            <br />
+            Vamos montar o álbum?
           </p>
-
-          <FormEntrar
-            next={next ?? '/meus-projetos'}
-            telefoneSuporte={lojista.telefone_suporte}
-          />
-        </div>
-
-        <div className="mt-auto flex flex-wrap items-center justify-center gap-3.5">
+          <ul className="m-0 flex list-none flex-col gap-3.5 p-0">
+            {DESTAQUES.map(({ Icone, texto }) => (
+              <li key={texto} className="flex items-start gap-3">
+                <span className="flex h-8 w-8 flex-none items-center justify-center rounded-[10px] bg-white/[.16] text-white">
+                  <Icone size={16} />
+                </span>
+                <span className="pt-1.5 text-[13.5px] leading-[1.5] text-white/75">{texto}</span>
+              </li>
+            ))}
+          </ul>
+        </>
+      }
+      rodape={
+        <>
+          <span className="font-semibold text-muted">{lojista.nome}</span>
           {lojista.url_politica && (
             <>
-              <a
-                href={lojista.url_politica}
-                className="text-[12.5px] text-muted hover:text-blue"
-              >
+              <span className="h-1 w-1 rounded-full bg-[#CBD5E6]" />
+              <a href={lojista.url_politica} className="hover:text-blue">
                 Política de privacidade
               </a>
-              <span className="h-1 w-1 rounded-full bg-[#CBD5E6]" />
             </>
           )}
-          {lojista.url_contato && (
-            <>
-              <a href={lojista.url_contato} className="text-[12.5px] text-muted hover:text-blue">
-                Contato da empresa
-              </a>
-              <span className="h-1 w-1 rounded-full bg-[#CBD5E6]" />
-            </>
-          )}
-          <span className="text-[12.5px] text-muted-2">Tecnologia Photoon</span>
-        </div>
-      </div>
-    </div>
+          <span className="h-1 w-1 rounded-full bg-[#CBD5E6]" />
+          <span>Tecnologia Photoon</span>
+        </>
+      }
+    />
   );
 }

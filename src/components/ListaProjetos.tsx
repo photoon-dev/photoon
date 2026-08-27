@@ -20,9 +20,12 @@ const ORDENACOES: Record<Ordem, { rotulo: string; cmp: (a: Projeto, b: Projeto) 
 export default function ListaProjetos({
   projetos,
   totalFotosGaleria,
+  capas = [],
 }: {
   projetos: Projeto[];
   totalFotosGaleria: number;
+  /** URLs de fotos da galeria, usadas como capa provisória dos álbuns. */
+  capas?: string[];
 }) {
   const [busca, setBusca] = useState('');
   const [filtro, setFiltro] = useState<StatusProjeto | null>(null);
@@ -147,6 +150,7 @@ export default function ListaProjetos({
               projeto={p}
               totalFotosGaleria={totalFotosGaleria}
               indice={i}
+              capaAlternativa={capas[i % Math.max(capas.length, 1)]}
             />
           ))}
         </div>

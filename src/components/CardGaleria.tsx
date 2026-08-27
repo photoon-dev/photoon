@@ -1,14 +1,5 @@
-import type { Galeria } from '@/lib/data';
+import type { Foto, Galeria } from '@/lib/data';
 import { IconGaleria, IconRelogio } from '@/components/icons';
-
-const AMOSTRAS = [
-  'linear-gradient(140deg,#7C3AED,#2563EB)',
-  'linear-gradient(140deg,#2563EB,#06B6D4)',
-  'linear-gradient(140deg,#0EA5E9,#22D3EE)',
-  'linear-gradient(140deg,#6366F1,#8B5CF6)',
-  'linear-gradient(140deg,#0891B2,#0EA5E9)',
-  'linear-gradient(140deg,#8B5CF6,#EC4899)',
-];
 
 function haQuanto(iso: string): string {
   const dias = Math.floor((Date.now() - new Date(iso).getTime()) / 86_400_000);
@@ -20,9 +11,12 @@ function haQuanto(iso: string): string {
 export function CardGaleria({
   galeria,
   fotosSelecionadas,
+  amostras = [],
 }: {
   galeria: Galeria;
   fotosSelecionadas: number;
+  /** Primeiras fotos da galeria, para a tira de miniaturas. */
+  amostras?: Foto[];
 }) {
   return (
     <div className="flex flex-col rounded-control border border-line bg-surface px-6 py-[22px]">
@@ -49,11 +43,20 @@ export function CardGaleria({
         ))}
       </div>
 
-      <div className="mb-4 grid grid-cols-6 gap-[5px]">
-        {AMOSTRAS.map((g) => (
-          <span key={g} className="aspect-square rounded-[7px]" style={{ background: g }} />
-        ))}
-      </div>
+      {amostras.length > 0 && (
+        <div className="mb-4 grid grid-cols-6 gap-[5px]">
+          {amostras.slice(0, 6).map((f) => (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              key={f.id}
+              src={f.url}
+              alt=""
+              loading="lazy"
+              className="aspect-square w-full rounded-[7px] object-cover"
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 }

@@ -5,11 +5,14 @@ import {
   garantirCliente,
   listarProjetos,
   getGaleria,
+  listarFotosGaleria,
   contarNaoLidas,
 } from '@/lib/data';
 import AppHeader from '@/components/AppHeader';
+import RailLateral from '@/components/RailLateral';
 import HeroProjetos from '@/components/HeroProjetos';
 import { CardGaleria, CardProximosPassos } from '@/components/CardGaleria';
+import CardAssistencia from '@/components/CardAssistencia';
 import ListaProjetos from '@/components/ListaProjetos';
 import RodapeCliente from '@/components/RodapeCliente';
 
@@ -22,7 +25,7 @@ export default async function MeusProjetosPage() {
   const lojista = await getLojista(slug);
   if (!lojista) notFound();
 
-  // Primeiro acesso neste lojista: cria o vinculo cliente <-> lojista.
+  // Primeiro acesso neste lojista: cria o vínculo cliente <-> lojista.
   const cliente = await garantirCliente(lojista.id);
   if (!cliente) notFound();
 
@@ -32,9 +35,10 @@ export default async function MeusProjetosPage() {
     contarNaoLidas(cliente.id),
   ]);
 
+  const fotos = galeria ? await listarFotosGaleria(galeria.id) : [];
   const selecionadas = projetos.reduce((t, p) => t + p.fotos_usadas, 0);
 
-  // "Proximos passos, na ordem recomendada": derivado do estado real dos albuns.
+  // "Próximos passos, na ordem recomendada": derivado do estado real dos álbuns.
   const passos: { titulo: string; sub: string }[] = [];
   const comAviso = projetos.filter((p) => p.avisos.length > 0);
   if (comAviso[0]) {
@@ -55,27 +59,48 @@ export default async function MeusProjetosPage() {
     });
   }
 
+  // Álbum sugerido para a assistência: o que tem mais quadros por preencher.
+  const paraAssistencia =
+    projetos.find((p) => p.avisos.length > 0) ??
+    projetos.find((p) => p.status !== 'finalizado') ??
+    null;
+
   return (
     <div className="flex min-h-screen flex-col bg-page">
       <AppHeader lojista={lojista} cliente={cliente} naoLidas={naoLidas} />
 
-      <main className="px-7 py-6">
-        <div className="mx-auto flex max-w-[1200px] animate-riseIn flex-col gap-[22px]">
-          <HeroProjetos
-            cliente={cliente}
-            galeria={galeria}
-            projetos={projetos}
-            nomeLojista={lojista.nome}
-          />
+      <div className="mx-auto flex w-full max-w-[1320px] flex-1 gap-5 px-5 py-6">
+        <RailLateral />
 
-          <div className="grid items-stretch gap-5 [grid-template-columns:repeat(auto-fit,minmax(280px,1fr))]">
-            {galeria && <CardGaleria galeria={galeria} fotosSelecionadas={selecionadas} />}
-            <CardProximosPassos passos={passos} />
+        <main className="min-w-0 flex-1">
+          <div className="flex animate-riseIn flex-col gap-[22px]">
+            <HeroProjetos
+              cliente={cliente}
+              galeria={galeria}
+              projetos={projetos}
+              nomeLojista={lojista.nome}
+            />
+
+            <div className="grid items-stretch gap-5 [grid-template-columns:repeat(auto-fit,minmax(280px,1fr))]">
+              {galeria && (
+                <CardGaleria
+                  galeria={galeria}
+                  fotosSelecionadas={selecionadas}
+                  amostras={fotos}
+                />
+              )}
+              <CardProximosPassos passos={passos} />
+              <CardAssistencia projetoId={paraAssistencia?.id ?? null} />
+            </div>
+
+            <ListaProjetos
+              projetos={projetos}
+              totalFotosGaleria={galeria?.total_fotos ?? 0}
+              capas={fotos.map((f) => f.url)}
+            />
           </div>
-
-          <ListaProjetos projetos={projetos} totalFotosGaleria={galeria?.total_fotos ?? 0} />
-        </div>
-      </main>
+        </main>
+      </div>
 
       <RodapeCliente lojista={lojista} />
     </div>

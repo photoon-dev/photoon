@@ -15,11 +15,15 @@ export default function CardProjeto({
   projeto,
   totalFotosGaleria,
   indice = 0,
+  capaAlternativa,
 }: {
   projeto: Projeto;
   totalFotosGaleria: number;
   indice?: number;
+  /** Foto da galeria usada enquanto o álbum não tem capa própria. */
+  capaAlternativa?: string;
 }) {
+  const capa = projeto.capa_url ?? capaAlternativa;
   const s = STATUS[projeto.status];
   const primeiroAviso = projeto.avisos[0]?.titulo;
 
@@ -27,15 +31,11 @@ export default function CardProjeto({
     <article className="flex flex-col overflow-hidden rounded-control border border-line bg-surface transition-[box-shadow,transform] duration-[180ms] hover:-translate-y-[3px] hover:shadow-[0_16px_34px_rgba(11,18,32,.1)]">
       <div
         className="relative h-[150px] overflow-hidden"
-        style={
-          projeto.capa_url
-            ? undefined
-            : { background: GRADIENTES[indice % GRADIENTES.length] }
-        }
+        style={capa ? undefined : { background: GRADIENTES[indice % GRADIENTES.length] }}
       >
-        {projeto.capa_url ? (
+        {capa ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={projeto.capa_url} alt="" className="h-full w-full object-cover" />
+          <img src={capa} alt="" loading="lazy" className="h-full w-full object-cover" />
         ) : (
           <div className="absolute inset-0 grid grid-cols-[2fr_1fr] grid-rows-2 gap-[3px] p-[3px] opacity-[.92]">
             <span className="row-span-2 rounded bg-white/[.26]" />
