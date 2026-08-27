@@ -1,0 +1,110 @@
+/* Copiado de Cliente Editor.dc.html — não reescrever, é a folha do design. */
+
+.om-editor a {
+  color: #2563eb;
+  text-decoration: none;
+}
+.om-editor a:hover {
+  color: #1d4fd7;
+}
+.om-editor input:focus,
+.om-editor textarea:focus {
+  outline: none;
+}
+.om-editor input::placeholder {
+  color: #9aa7bc;
+}
+.om-editor ::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+.om-editor ::-webkit-scrollbar-thumb {
+  background: #dce3ef;
+  border-radius: 8px;
+  border: 3px solid #f4f7fc;
+}
+
+@keyframes menuIn {
+  from {
+    transform: translateX(-8px);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+@keyframes menuInR {
+  from {
+    transform: translateX(8px);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+@keyframes flipNext {
+  0% {
+    transform: rotateY(0deg);
+  }
+  40% {
+    filter: brightness(0.96);
+  }
+  100% {
+    transform: rotateY(-180deg);
+  }
+}
+@keyframes flipPrev {
+  0% {
+    transform: rotateY(0deg);
+  }
+  40% {
+    filter: brightness(0.96);
+  }
+  100% {
+    transform: rotateY(180deg);
+  }
+}
+
+@media (max-width: 1180px) {
+  .om-legend {
+    display: none !important;
+  }
+}
+
+.om-laycar,
+.om-count {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.om-count::-webkit-scrollbar {
+  height: 0;
+  display: none;
+}
+.om-laycar::-webkit-scrollbar {
+  height: 0;
+  width: 0;
+  display: none;
+}
+
+@media (max-height: 780px) {
+  .om-pagestrip {
+    padding: 6px 18px 8px !important;
+  }
+  .om-pagethumb {
+    width: 72px !important;
+    height: 38px !important;
+  }
+  .om-paglay {
+    display: none !important;
+  }
+  .om-pagehead {
+    margin-bottom: 4px !important;
+  }
+}
+@media (max-height: 700px) {
+  .om-slidebar {
+    display: none !important;
+  }
+}
