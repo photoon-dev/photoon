@@ -1,5 +1,7 @@
 import type { Foto, Galeria } from '@/lib/data';
 import { IconGaleria, IconRelogio } from '@/components/icons';
+import ModalGaleria from '@/components/ModalGaleria';
+import ModalFinalizacao from '@/components/ModalFinalizacao';
 
 function haQuanto(iso: string): string {
   const dias = Math.floor((Date.now() - new Date(iso).getTime()) / 86_400_000);
@@ -57,6 +59,8 @@ export function CardGaleria({
           ))}
         </div>
       )}
+
+      <ModalGaleria fotos={amostras} nome={galeria.nome} />
     </div>
   );
 }
@@ -100,6 +104,8 @@ export function CardProximosPassos({ passos }: { passos: { titulo: string; sub: 
           ))}
         </div>
       )}
+
+      <ModalFinalizacao />
     </div>
   );
 }

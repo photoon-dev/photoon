@@ -4,7 +4,9 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import MarcaPhotoon from '@/components/MarcaPhotoon';
-import { IconInfo, IconSino, IconChevron, IconSair } from '@/components/icons';
+import { IconInfo, IconChevron, IconSair } from '@/components/icons';
+import PainelNotificacoes from '@/components/PainelNotificacoes';
+import type { Notificacao } from '@/lib/data';
 import type { Cliente, Lojista } from '@/lib/data';
 
 const NAV = [{ href: '/meus-projetos', rotulo: 'Meus projetos' }];
@@ -13,10 +15,12 @@ export default function AppHeader({
   lojista,
   cliente,
   naoLidas,
+  notificacoes = [],
 }: {
   lojista: Lojista;
   cliente: Cliente;
   naoLidas: number;
+  notificacoes?: Notificacao[];
 }) {
   const pathname = usePathname();
   const [menu, setMenu] = useState(false);
@@ -89,18 +93,7 @@ export default function AppHeader({
           </a>
         )}
 
-        <Link
-          href="/meus-projetos#avisos"
-          title="Notificações"
-          className="relative flex h-[42px] w-[42px] flex-none items-center justify-center rounded-control border border-line bg-surface text-ink-3 hover:bg-blue-soft hover:text-blue"
-        >
-          <IconSino size={18} />
-          {naoLidas > 0 && (
-            <span className="absolute -right-1 -top-1 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-coral px-1 text-[10px] font-bold text-white">
-              {naoLidas}
-            </span>
-          )}
-        </Link>
+        <PainelNotificacoes notificacoes={notificacoes} naoLidas={naoLidas} />
 
         <div className="relative" ref={caixa}>
           <button

@@ -164,6 +164,30 @@ export async function getGaleria(clienteId: string): Promise<Galeria | null> {
   return { ...resto, total_fotos: galeria_fotos?.[0]?.count ?? 0 };
 }
 
+export type Notificacao = {
+  id: string;
+  tag: string;
+  titulo: string;
+  corpo: string | null;
+  lida: boolean;
+  criada_em: string;
+};
+
+/** Avisos da empresa sobre os projetos deste cliente. */
+export async function listarNotificacoes(
+  clienteId: string,
+  limite = 8,
+): Promise<Notificacao[]> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from('notificacoes')
+    .select('id, tag, titulo, corpo, lida, criada_em')
+    .eq('cliente_id', clienteId)
+    .order('criada_em', { ascending: false })
+    .limit(limite);
+  return data ?? [];
+}
+
 export async function contarNaoLidas(clienteId: string): Promise<number> {
   const supabase = await createClient();
   const { count } = await supabase

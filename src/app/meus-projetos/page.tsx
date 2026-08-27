@@ -6,6 +6,7 @@ import {
   listarProjetos,
   getGaleria,
   listarFotosGaleria,
+  listarNotificacoes,
   contarNaoLidas,
 } from '@/lib/data';
 import AppHeader from '@/components/AppHeader';
@@ -14,6 +15,7 @@ import HeroProjetos from '@/components/HeroProjetos';
 import { CardGaleria, CardProximosPassos } from '@/components/CardGaleria';
 import CardAssistencia from '@/components/CardAssistencia';
 import ListaProjetos from '@/components/ListaProjetos';
+import FaixaOutroAlbum from '@/components/FaixaOutroAlbum';
 import RodapeCliente from '@/components/RodapeCliente';
 
 export const dynamic = 'force-dynamic';
@@ -29,10 +31,11 @@ export default async function MeusProjetosPage() {
   const cliente = await garantirCliente(lojista.id);
   if (!cliente) notFound();
 
-  const [projetos, galeria, naoLidas] = await Promise.all([
+  const [projetos, galeria, naoLidas, notificacoes] = await Promise.all([
     listarProjetos(cliente.id),
     getGaleria(cliente.id),
     contarNaoLidas(cliente.id),
+    listarNotificacoes(cliente.id),
   ]);
 
   const fotos = galeria ? await listarFotosGaleria(galeria.id) : [];
@@ -67,7 +70,12 @@ export default async function MeusProjetosPage() {
 
   return (
     <div className="flex min-h-screen flex-col bg-page">
-      <AppHeader lojista={lojista} cliente={cliente} naoLidas={naoLidas} />
+      <AppHeader
+        lojista={lojista}
+        cliente={cliente}
+        naoLidas={naoLidas}
+        notificacoes={notificacoes}
+      />
 
       <div className="mx-auto flex w-full max-w-[1320px] flex-1 gap-5 px-5 py-6">
         <RailLateral />
@@ -98,6 +106,14 @@ export default async function MeusProjetosPage() {
               totalFotosGaleria={galeria?.total_fotos ?? 0}
               capas={fotos.map((f) => f.url)}
             />
+
+            {galeria && (
+              <FaixaOutroAlbum
+                galeriaId={galeria.id}
+                restantes={galeria.max_albuns - projetos.length}
+                maximo={galeria.max_albuns}
+              />
+            )}
           </div>
         </main>
       </div>
