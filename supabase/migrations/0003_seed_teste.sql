@@ -1,6 +1,9 @@
 -- ===========================================================================
 -- Contas e loja de teste.
 --
+-- APLICADO em 27/08/2026 no projeto whsrcrqyoblulpqsjxmq.
+-- Mantido no repositório para recriar o ambiente do zero.
+--
 -- Rode DEPOIS de 0001_init.sql e 0002_papeis.sql.
 --
 -- ANTES DE RODAR: na seção 2, troque SENHA_DE_TESTE pela senha desejada.
