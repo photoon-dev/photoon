@@ -1,0 +1,19 @@
+/* Copiado de Cliente Meus projetos.dc.html — folha do design. */
+
+  .om-cliente, body { margin: 0; padding: 0; background: #F4F7FC; }
+  * { box-sizing: border-box; }
+  a { color: #2563EB; text-decoration: none; }
+  a:hover { color: #1D4FD7; }
+  input:focus, textarea:focus { outline: none; }
+  input::placeholder, textarea::placeholder { color: #9AA7BC; }
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-thumb { background: #DCE3EF; border-radius: 8px; border: 3px solid #F4F7FC; }
+  @keyframes riseIn { from { transform: translateY(12px); opacity: 0 } to { transform: none; opacity: 1 } }
+  @keyframes menuIn { from { transform: translateY(-6px); opacity: 0 } to { transform: none; opacity: 1 } }
+  @media (max-width: 1080px) { .om-rail { left: 10px !important; padding: 9px 7px !important; border-radius: 22px !important; } .om-rail a { width: 100% !important; height: 44px !important; border-radius: 14px !important; } }
+  @media (max-width: 720px) { .om-rail { display: none !important; } .om-main { padding-left: 20px !important; } }
+  @keyframes shimmer { 0% { background-position: -420px 0 } 100% { background-position: 420px 0 } }
+  @keyframes markSpin { from { transform: rotate(0deg) } to { transform: rotate(360deg) } }
+  @keyframes gridDrift { from { transform: translate3d(0,0,0) } to { transform: translate3d(-40px,-40px,0) } }
+  @keyframes blobFloat { 0% { transform: translate3d(0,0,0) scale(1) } 50% { transform: translate3d(18px,-14px,0) scale(1.06) } 100% { transform: translate3d(0,0,0) scale(1) } }
+

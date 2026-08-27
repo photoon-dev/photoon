@@ -1,0 +1,15 @@
+/* Copiado de Dashboard.dc.html — folha do design. */
+
+  .om-app, body { margin: 0; padding: 0; background: #F4F7FC; }
+  * { box-sizing: border-box; }
+  a { color: #2563EB; text-decoration: none; }
+  a:hover { color: #1D4FD7; }
+  input:focus { outline: none; }
+  input::placeholder { color: #9AA7BC; }
+  ::-webkit-scrollbar { width: 10px; }
+  ::-webkit-scrollbar-thumb { background: #DCE3EF; border-radius: 8px; border: 3px solid #F4F7FC; }
+  @keyframes menuIn { from { transform: translateY(-6px); opacity: 0 } to { transform: none; opacity: 1 } }
+  @keyframes riseIn { from { transform: translateY(12px); opacity: 0 } to { transform: none; opacity: 1 } }
+  @keyframes drawLine { from { stroke-dashoffset: 1600 } to { stroke-dashoffset: 0 } }
+  @keyframes pulseDot { 0%,100% { transform: scale(1); opacity: 1 } 50% { transform: scale(1.35); opacity: .55 } }
+

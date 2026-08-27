@@ -19,6 +19,7 @@ O que é traduzido:
 Uso: python3 tools/dc2tsx.py <arquivo.dc.html> <Componente> > saida.tsx
 """
 import html
+import json
 import re
 import sys
 from html.parser import HTMLParser
@@ -150,6 +151,15 @@ class Conversor(HTMLParser):
             self.pilha.append(('sc-for', item))
             return
 
+        if tag == 'sc-if':
+            m = BIND.match(d.get('value', ''))
+            cond = expr(m.group(1)) if m else 'false'
+            self.emitir(f'{{Boolean({cond}) && (')
+            self.emitir('  <>')
+            self.nivel += 2
+            self.pilha.append(('sc-if', None))
+            return
+
         if tag in ('helmet', 'x-dc'):
             self.pilha.append((tag, None))
             return
@@ -224,6 +234,12 @@ class Conversor(HTMLParser):
         if topo in ('helmet', 'x-dc') and tag == topo:
             self.pilha.pop()
             return
+        if tag == 'sc-if' and topo == 'sc-if':
+            self.pilha.pop()
+            self.nivel -= 2
+            self.emitir('  </>')
+            self.emitir(')}')
+            return
         if tag == 'sc-for' and topo == 'sc-for':
             self.pilha.pop()
             expr.locais.discard(item)
@@ -255,14 +271,54 @@ class Conversor(HTMLParser):
         self.emitir(html.unescape(f'&#{nome};'))
 
 
+def aplicar_slots(saida, slots):
+    """
+    Troca o conteúdo de um container por um binding.
+
+    O design traz os cards com conteúdo fixo (três álbuns escritos à mão).
+    O slot localiza o container pela própria linha de abertura e substitui
+    todos os filhos por `{v.<binding>}`; o hook renderiza os cards reais com
+    o mesmo markup, extraído para um componente próprio.
+
+    Config por slot:
+      container  trecho que identifica a linha de abertura do container
+      ocorrencia qual ocorrência usar (0 = primeira)
+      binding    nome do valor em `v`
+    """
+    for slot in slots:
+        achados = [i for i, l in enumerate(saida) if slot['container'] in l]
+        idx = slot.get('ocorrencia', 0)
+        if len(achados) <= idx:
+            print(f"// container nao encontrado: {slot['container']!r} "
+                  f"(achados={len(achados)})", file=sys.stderr)
+            continue
+
+        abre = achados[idx]
+        indent = len(saida[abre]) - len(saida[abre].lstrip())
+        fecha = next(
+            (j for j in range(abre + 1, len(saida))
+             if len(saida[j]) - len(saida[j].lstrip()) == indent
+             and saida[j].strip().startswith('</')),
+            None,
+        )
+        if fecha is None:
+            print(f"// fechamento nao encontrado para {slot['container']!r}", file=sys.stderr)
+            continue
+
+        saida[abre + 1:fecha] = [' ' * (indent + 2) + '{v.' + slot['binding'] + '}']
+    return saida
+
+
 def main():
     caminho, componente = sys.argv[1], sys.argv[2]
+    slots = json.loads(sys.argv[3]) if len(sys.argv) > 3 else []
     bruto = open(caminho, encoding='utf-8').read()
     corpo = bruto.split('<x-dc>')[1].split('</x-dc>')[0]
     corpo = re.sub(r'<helmet>[\s\S]*?</helmet>', '', corpo)
 
     c = Conversor()
     c.feed(corpo)
+    c.saida = aplicar_slots(c.saida, slots)
 
     print(f"// Gerado por tools/dc2tsx.py a partir de {caminho.split('/')[-1]}")
     print('// Transliteração fiel do design: não editar à mão, editar o .dc.html.')
