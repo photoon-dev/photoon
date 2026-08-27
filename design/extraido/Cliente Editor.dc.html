@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin=""/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+  html, body { margin: 0; padding: 0; background: #EEF3F9; }
+  * { box-sizing: border-box; }
+  a { color: #2563EB; text-decoration: none; }
+  a:hover { color: #1D4FD7; }
+  input:focus, textarea:focus { outline: none; }
+  input::placeholder { color: #9AA7BC; }
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-thumb { background: #DCE3EF; border-radius: 8px; border: 3px solid #F4F7FC; }
+  @keyframes menuIn { from { transform: translateX(-8px); opacity: 0 } to { transform: none; opacity: 1 } }
+  @keyframes menuInR { from { transform: translateX(8px); opacity: 0 } to { transform: none; opacity: 1 } }
+  @keyframes flipNext { 0% { transform: rotateY(0deg) } 40% { filter: brightness(.96) } 100% { transform: rotateY(-180deg) } }
+  @keyframes flipPrev { 0% { transform: rotateY(0deg) } 40% { filter: brightness(.96) } 100% { transform: rotateY(180deg) } }
+  @media (max-width: 1180px) { .om-legend { display: none !important; } }
+  .om-laycar, .om-count { scrollbar-width: none; -ms-overflow-style: none; }
+  .om-count::-webkit-scrollbar { height: 0; display: none; }
+  .om-laycar::-webkit-scrollbar { height: 0; width: 0; display: none; }
+  @media (max-height: 780px) {
+    .om-pagestrip { padding: 6px 18px 8px !important; }
+    .om-pagethumb { width: 72px !important; height: 38px !important; }
+    .om-paglay { display: none !important; }
+    .om-pagehead { margin-bottom: 4px !important; }
+  }
+  @media (max-height: 700px) { .om-slidebar { display: none !important; } }
+</style>
+</helmet>
+<div style="height: 100vh; display: flex; flex-direction: column; overflow: hidden; background: #EEF3F9; font-family: 'Plus Jakarta Sans', sans-serif; color: #0B1220;">
+
+  <header style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap; min-height: 62px; padding: 10px 16px; background: #FFFFFF; border-bottom: 1px solid #E6EAF2; flex: 0 0 auto;">
+    <a href="./Cliente Meus projetos.dc.html" style="display: flex; align-items: center; gap: 8px; height: 40px; padding: 0 14px; border-radius: 11px; border: 1px solid #E6EAF2; color: #46536A; font-size: 13px; font-weight: 600; flex: 0 0 auto;" style-hover="background: #F1F5FD; color: #2563EB;"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M14 6l-6 6 6 6"/></svg>Álbuns</a>
+    <span style="width: 1px; height: 28px; background: #E6EAF2; flex: 0 0 auto;"></span>
+    <svg viewBox="0 0 124 72" width="34" height="20" style="flex: 0 0 auto;"><defs><linearGradient id="lgEd" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2563EB"/><stop offset="1" stop-color="#06B6D4"/></linearGradient></defs><circle cx="34" cy="36" r="26" fill="none" stroke="#0B1220" stroke-width="7"/><circle cx="34" cy="36" r="11" fill="#0B1220"/><circle cx="90" cy="36" r="26" fill="none" stroke="#0B1220" stroke-width="7"/><circle cx="90" cy="36" r="11" fill="url(#lgEd)"/><circle cx="98" cy="19" r="5.5" fill="#06B6D4"/></svg>
+    <div style="display: flex; align-items: center; gap: 9px; min-width: 0; flex: 1 1 180px;">
+      <input value="Fotolivro da formatura" style="width: 100%; max-width: 220px; min-width: 90px; height: 38px; padding: 0 12px; border: 1px solid transparent; border-radius: 10px; background: transparent; font-family: inherit; font-size: 14.5px; font-weight: 700; color: #0B1220;" style-hover="border-color: #E6EAF2; background: #F8FAFE;" style-focus="border-color: #2563EB; background: #FFFFFF;"/>
+      <span style="display: flex; align-items: center; gap: 7px; padding: 5px 11px; border-radius: 999px; background: #E6F8F1; color: #059669; font-size: 11.5px; font-weight: 700; flex: 0 0 auto; white-space: nowrap;"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5 10 17.5 19 7"/></svg>Salvo agora</span>
+    </div>
+    <div style="flex: 1;"></div>
+    <div style="display: flex; align-items: center; gap: 4px; padding: 4px; border-radius: 12px; background: #F4F7FC; border: 1px solid #E6EAF2; flex: 0 0 auto;">
+      <span title="Desfazer" style="width: 34px; height: 34px; border-radius: 9px; display: flex; align-items: center; justify-content: center; color: #46536A; cursor: pointer;" style-hover="background: #FFFFFF; color: #2563EB;"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11a8 8 0 1 1 2.3 5.7"/><path d="M4 5v6h6"/></svg></span>
+      <span title="Refazer" style="width: 34px; height: 34px; border-radius: 9px; display: flex; align-items: center; justify-content: center; color: #9AA7BC; cursor: pointer;" style-hover="background: #FFFFFF; color: #2563EB;"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 5v6h-6"/></svg></span>
+      <span style="width: 1px; height: 20px; background: #E6EAF2; margin: 0 3px;"></span>
+      <span title="Reduzir zoom" onClick="{{ zoomOut }}" style="width: 34px; height: 34px; border-radius: 9px; display: flex; align-items: center; justify-content: center; color: #46536A; cursor: pointer;" style-hover="background: #FFFFFF; color: #2563EB;"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5M8.5 11h5"/></svg></span>
+      <span style="min-width: 46px; text-align: center; font-size: 12.5px; font-weight: 700; color: #46536A;">{{ zoomLabel }}</span>
+      <span title="Aumentar zoom" onClick="{{ zoomIn }}" style="width: 34px; height: 34px; border-radius: 9px; display: flex; align-items: center; justify-content: center; color: #46536A; cursor: pointer;" style-hover="background: #FFFFFF; color: #2563EB;"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5M11 8.5v5M8.5 11h5"/></svg></span>
+    </div>
+    <div style="display: flex; align-items: center; gap: 8px; flex: 0 0 auto;">
+      <a href="./Cliente Preview.dc.html" style="display: flex; align-items: center; gap: 8px; height: 40px; padding: 0 14px; border-radius: 11px; border: 1px solid #E6EAF2; color: #46536A; font-size: 13px; font-weight: 600;" style-hover="background: #F1F5FD; color: #2563EB;"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 12S6 6.5 12 6.5 21.5 12 21.5 12 18 17.5 12 17.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="2.8"/></svg>Prévia</a>
+      <span onClick="{{ openModal }}" title="Assistência" style="width: 40px; height: 40px; border-radius: 11px; border: 1px solid #E6EAF2; display: flex; align-items: center; justify-content: center; color: #46536A; cursor: pointer;" style-hover="background: #F1F5FD; color: #2563EB;"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M5 19 19 5M15 5h4v4"/><path d="M7 4v4M5 6h4M17 15v4M15 17h4"/></svg></span>
+      <a href="./Cliente Revisao.dc.html" style="display: flex; align-items: center; gap: 9px; height: 40px; padding: 0 17px; border-radius: 11px; background: linear-gradient(135deg,#2563EB,#06B6D4); color: #FFFFFF; font-size: 13.5px; font-weight: 700; box-shadow: 0 8px 18px rgba(37,99,235,.24);" style-hover="filter: brightness(1.06); color: #FFFFFF;"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5 10 17.5 19 7"/></svg>Revisar e finalizar</a>
+    </div>
+  </header>
+
+  <div style="flex: 1; display: flex; min-height: 0;">
+
+    <div style="width: 76px; flex: 0 0 auto; display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 12px 0; background: #FFFFFF; border-right: 1px solid #E6EAF2; z-index: 2;">
+      <div onClick="{{ setTool0 }}" style="{{ tool0 }}" title="Fotos">
+        <svg viewBox="0 0 24 24" width="23" height="23" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="4"/><path d="m3.5 16 4.6-4.2 4 3.4 3.4-3 5 4.4"/><circle cx="8.6" cy="8.8" r="1.5"/></svg>
+        <span style="font-size: 10px; font-weight: 700;">Fotos</span>
+      </div>
+      <div onClick="{{ setTool1 }}" style="{{ tool1 }}" title="Texto">
+        <svg viewBox="0 0 24 24" width="23" height="23" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M5 6h14M12 6v13M8.5 19h7"/></svg>
+        <span style="font-size: 10px; font-weight: 700;">Texto</span>
+      </div>
+      <div onClick="{{ setTool2 }}" style="{{ tool2 }}" title="Fundos">
+        <svg viewBox="0 0 24 24" width="23" height="23" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="M3 15l5-4.5 4 3.5 3-2.5 6 5"/></svg>
+        <span style="font-size: 10px; font-weight: 700;">Fundos</span>
+      </div>
+      <div onClick="{{ setTool3 }}" style="{{ tool3 }}" title="Elementos">
+        <svg viewBox="0 0 24 24" width="23" height="23" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4.5 13.9 9l4.6.4-3.5 3 1.1 4.5L12 14.5l-4.1 2.4L9 12.4l-3.5-3L10.1 9z"/></svg>
+        <span style="font-size: 10px; font-weight: 700;">Elementos</span>
+      </div>
+      <div onClick="{{ setTool4 }}" style="{{ tool4 }}" title="Assistência">
+        <svg viewBox="0 0 24 24" width="23" height="23" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3v6M6 15v6M12 3v3M12 12v9M18 3v9M18 18v3"/><circle cx="6" cy="12" r="2.2"/><circle cx="12" cy="9" r="2.2"/><circle cx="18" cy="15" r="2.2"/></svg>
+        <span style="font-size: 10px; font-weight: 700;">Assistência</span>
+      </div>
+      <div style="flex: 1;"></div>
+      <div onClick="{{ togglePanel }}" style="{{ railToggle }}" title="Mostrar ou recolher o painel">
+        <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="{{ railArrow }}"/></svg>
+      </div>
+    </div>
+
+    <div style="{{ panelStyle }}">
+      <div style="{{ p0 }}">
+        <div style="padding: 16px 18px 12px; border-bottom: 1px solid #F0F3F9;">
+          <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px;">
+            <h2 style="margin: 0; font-size: 16px; font-weight: 800; letter-spacing: -.3px;">Fotos</h2>
+            <span style="padding: 4px 9px; border-radius: 999px; background: #F1F5FD; color: #46536A; font-size: 11px; font-weight: 700; white-space: nowrap;">38 de 120</span>
+          </div>
+          <p style="margin: 4px 0 12px; font-size: 12px; color: #9AA7BC;">Arraste para um quadro da lâmina</p>
+          <div style="display: flex; align-items: center; gap: 9px; height: 40px; padding: 0 12px; border: 1px solid #E6EAF2; border-radius: 11px; background: #F8FAFE;">
+            <span style="color: #9AA7BC; flex: 0 0 auto;"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg></span>
+            <input placeholder="Buscar foto" style="flex: 1; min-width: 0; border: 0; background: transparent; font-family: inherit; font-size: 13px; color: #0B1220;"/>
+          </div>
+        </div>
+        <div style="padding: 12px 18px; border-bottom: 1px solid #F0F3F9; display: flex; gap: 6px; flex-wrap: wrap;">
+          <sc-for list="{{ photoTabs }}" as="t" hint-placeholder-count="4">
+            <span onClick="{{ t.pick }}" style="{{ t.style }}">{{ t.label }}</span>
+          </sc-for>
+        </div>
+        <div style="flex: 1 1 auto; min-height: 120px; overflow-x: hidden; overflow-y: auto; padding: 14px 18px;">
+          <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px;">
+            <sc-for list="{{ photos }}" as="p" hint-placeholder-count="12">
+              <div onMouseEnter="{{ p.enter }}" onMouseLeave="{{ p.leave }}" style="{{ p.style }}" title="Arraste para a lâmina"></div>
+            </sc-for>
+          </div>
+        </div>
+        <div style="padding: 12px 18px; border-top: 1px solid #F0F3F9; display: flex; gap: 8px;">
+          <span onClick="{{ openModal }}" style="flex: 1; height: 40px; display: flex; align-items: center; justify-content: center; gap: 8px; border-radius: 11px; background: #0B1220; color: #FFFFFF; font-size: 12.5px; font-weight: 700; cursor: pointer;" style-hover="background: #2563EB;"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M5 19 19 5M15 5h4v4"/><path d="M7 4v4M5 6h4M17 15v4M15 17h4"/></svg>Preencher com a assistência</span>
+        </div>
+      </div>
+
+      <div style="{{ p1 }}">
+        <div style="padding: 16px 18px 12px; border-bottom: 1px solid #F0F3F9;">
+          <h2 style="margin: 0; font-size: 16px; font-weight: 800; letter-spacing: -.3px;">Texto</h2>
+          <p style="margin: 4px 0 0; font-size: 12px; color: #9AA7BC;">Clique para inserir na lâmina</p>
+        </div>
+        <div style="flex: 1 1 auto; min-height: 0; overflow-y: auto; padding: 14px 18px; display: flex; flex-direction: column; gap: 10px;">
+          <div onClick="{{ selectText }}" style="padding: 16px; border-radius: 12px; border: 1px solid #E6EAF2; background: #FFFFFF; cursor: pointer;" style-hover="border-color: #2563EB; background: #F8FAFE;">
+            <p style="margin: 0; font-size: 22px; font-weight: 800; letter-spacing: -.8px; line-height: 1.1;">Título</p>
+            <p style="margin: 6px 0 0; font-size: 11.5px; color: #9AA7BC;">48 pt, peso forte</p>
+          </div>
+          <div onClick="{{ selectText }}" style="padding: 16px; border-radius: 12px; border: 1px solid #E6EAF2; background: #FFFFFF; cursor: pointer;" style-hover="border-color: #2563EB; background: #F8FAFE;">
+            <p style="margin: 0; font-size: 16px; font-weight: 500; color: #46536A;">Subtítulo</p>
+            <p style="margin: 6px 0 0; font-size: 11.5px; color: #9AA7BC;">Médio, discreto</p>
+          </div>
+          <div onClick="{{ selectText }}" style="padding: 16px; border-radius: 12px; border: 1px solid #E6EAF2; background: #FFFFFF; cursor: pointer;" style-hover="border-color: #2563EB; background: #F8FAFE;">
+            <p style="margin: 0; font-size: 12px; font-weight: 700; letter-spacing: 1.6px; text-transform: uppercase; color: #46536A;">Legenda</p>
+            <p style="margin: 6px 0 0; font-size: 11.5px; color: #9AA7BC;">Pequena, em caixa alta</p>
+          </div>
+          <div onClick="{{ selectText }}" style="padding: 16px; border-radius: 12px; border: 1px solid #E6EAF2; background: #FFFFFF; cursor: pointer;" style-hover="border-color: #2563EB; background: #F8FAFE;">
+            <p style="margin: 0; font-size: 14px; font-weight: 600; color: #46536A;">12 · dezembro · 2026</p>
+            <p style="margin: 6px 0 0; font-size: 11.5px; color: #9AA7BC;">Data — para marcar o momento</p>
+          </div>
+          <p style="margin: 6px 0 0; font-size: 11.5px; line-height: 1.55; color: #9AA7BC;">Depois de inserir, dê um duplo clique no texto na lâmina para editar o conteúdo. As demais opções ficam no inspetor, à direita.</p>
+        </div>
+      </div>
+
+      <div style="{{ p2 }}">
+        <div style="padding: 16px 18px 14px; border-bottom: 1px solid #F0F3F9;">
+          <h2 style="margin: 0; font-size: 16px; font-weight: 800; letter-spacing: -.3px;">Fundos</h2>
+          <p style="margin: 4px 0 12px; font-size: 12px; color: #9AA7BC;">Aplique na lâmina atual ou no álbum inteiro</p>
+          <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+            <sc-for list="{{ bgTabs }}" as="t" hint-placeholder-count="3">
+              <span onClick="{{ t.pick }}" style="{{ t.style }}">{{ t.label }}</span>
+            </sc-for>
+          </div>
+        </div>
+        <div style="flex: 1 1 auto; min-height: 0; overflow-y: auto; padding: 14px 18px;">
+          <div style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px;">
+            <sc-for list="{{ bgCats }}" as="c" hint-placeholder-count="5">
+              <span onClick="{{ c.pick }}" style="{{ c.style }}">{{ c.label }}</span>
+            </sc-for>
+          </div>
+          <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-bottom: 16px;">
+            <sc-for list="{{ bgSwatches }}" as="s" hint-placeholder-count="9">
+              <span onClick="{{ s.pick }}" style="{{ s.style }}"></span>
+            </sc-for>
+          </div>
+          <div style="padding: 14px; border-radius: 12px; background: #F8FAFE; border: 1px solid #EEF1F7; margin-bottom: 12px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 10px;">
+              <span style="font-size: 12.5px; font-weight: 700; color: #46536A;">Cor do fundo</span>
+              <span style="width: 22px; height: 22px; border-radius: 999px; background: #EAF0FF; border: 1px solid #D6E2FC; flex: 0 0 auto;"></span>
+            </div>
+            <div style="position: relative; height: 96px; border-radius: 10px; background: linear-gradient(to top, #000000, transparent), linear-gradient(to right, #FFFFFF, #2563EB); margin-bottom: 8px; cursor: crosshair;">
+              <span style="position: absolute; top: 16%; left: 12%; width: 14px; height: 14px; border-radius: 999px; border: 2px solid #FFFFFF; box-shadow: 0 1px 4px rgba(11,18,32,.4);"></span>
+            </div>
+            <div style="position: relative; height: 10px; border-radius: 999px; background: linear-gradient(90deg,#EF4444,#F59E0B,#10B981,#06B6D4,#2563EB,#8B5CF6,#EC4899,#EF4444); margin-bottom: 10px; cursor: pointer;">
+              <span style="position: absolute; top: 50%; left: 62%; transform: translate(-50%,-50%); width: 14px; height: 14px; border-radius: 999px; background: #2563EB; border: 2px solid #FFFFFF; box-shadow: 0 1px 4px rgba(11,18,32,.4);"></span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 10px;">
+              <div style="flex: 1; min-width: 0; display: flex; align-items: center; gap: 6px; height: 38px; padding: 0 12px; border: 1px solid #E6EAF2; border-radius: 10px; background: #FFFFFF;">
+                <span style="font-size: 12px; color: #9AA7BC;">#</span>
+                <input value="EAF0FF" style="flex: 1; min-width: 0; border: 0; background: transparent; font-family: inherit; font-size: 13px; font-weight: 600; letter-spacing: .5px; color: #0B1220;"/>
+              </div>
+              <span style="width: 38px; height: 38px; border-radius: 10px; background: #EAF0FF; border: 1px solid #E6EAF2; flex: 0 0 auto;"></span>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 6px;">
+              <sc-for list="{{ colorChips }}" as="c" hint-placeholder-count="16">
+                <span style="{{ c.style }}"></span>
+              </sc-for>
+            </div>
+          </div>
+          <div style="display: flex; gap: 8px;">
+            <span style="flex: 1; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 11px; border: 1px solid #E6EAF2; font-size: 12.5px; font-weight: 600; color: #46536A; cursor: pointer;" style-hover="border-color: #2563EB; color: #2563EB;">Só nesta lâmina</span>
+            <span style="flex: 1; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 11px; background: #0B1220; color: #FFFFFF; font-size: 12.5px; font-weight: 700; cursor: pointer;" style-hover="background: #2563EB;">Todo o álbum</span>
+          </div>
+        </div>
+      </div>
+
+      <div style="{{ p3 }}">
+        <div style="padding: 16px 18px 14px; border-bottom: 1px solid #F0F3F9;">
+          <h2 style="margin: 0; font-size: 16px; font-weight: 800; letter-spacing: -.3px;">Elementos</h2>
+          <p style="margin: 4px 0 12px; font-size: 12px; color: #9AA7BC;">Clique para inserir na lâmina</p>
+          <div style="display: flex; align-items: center; gap: 11px; padding: 10px 12px; border-radius: 11px; background: #F8FAFE; border: 1px solid #EEF1F7; margin-bottom: 10px; cursor: pointer;">
+            <span style="width: 26px; height: 26px; border-radius: 8px; background: #2563EB; flex: 0 0 auto;"></span>
+            <div style="flex: 1; min-width: 0;">
+              <p style="margin: 0; font-size: 12.5px; font-weight: 700;">Cor do elemento</p>
+              <p style="margin: 1px 0 0; font-size: 11px; color: #9AA7BC; letter-spacing: .4px;">#2563EB</p>
+            </div>
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#6B7A90" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex: 0 0 auto;"><path d="m6 9 6 6 6-6"/></svg>
+          </div>
+          <div style="display: flex; align-items: center; gap: 9px; height: 40px; padding: 0 12px; border: 1px solid #E6EAF2; border-radius: 11px; background: #F8FAFE;">
+            <span style="color: #9AA7BC; flex: 0 0 auto;"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg></span>
+            <input placeholder="Buscar elemento" style="flex: 1; min-width: 0; border: 0; background: transparent; font-family: inherit; font-size: 13px; color: #0B1220;"/>
+          </div>
+        </div>
+        <div style="flex: 1 1 auto; min-height: 0; overflow-y: auto; padding: 14px 18px;">
+          <div style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px;">
+            <sc-for list="{{ elCats }}" as="c" hint-placeholder-count="6">
+              <span onClick="{{ c.pick }}" style="{{ c.style }}">{{ c.label }}</span>
+            </sc-for>
+          </div>
+          <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px;">
+            <sc-for list="{{ elements }}" as="e" hint-placeholder-count="12">
+              <div style="aspect-ratio: 1 / 1; border-radius: 12px; border: 1px solid #E6EAF2; background: #FFFFFF; display: flex; align-items: center; justify-content: center; color: #2563EB; cursor: pointer;" style-hover="border-color: #2563EB; background: #F8FAFE;">
+                <svg viewBox="0 0 48 48" width="30" height="30" fill="none" stroke="currentColor" stroke-width="{{ e.sw }}" stroke-linecap="round" stroke-linejoin="round"><path d="{{ e.d }}"/></svg>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+
+      <div style="{{ p4 }}">
+        <div style="padding: 16px 18px 14px; border-bottom: 1px solid #F0F3F9;">
+          <h2 style="margin: 0; font-size: 16px; font-weight: 800; letter-spacing: -.3px;">Assistência</h2>
+          <p style="margin: 4px 0 0; font-size: 12px; color: #9AA7BC;">Ações automáticas para esta lâmina</p>
+        </div>
+        <div style="flex: 1 1 auto; min-height: 0; overflow-y: auto; padding: 14px 18px; display: flex; flex-direction: column; gap: 10px;">
+          <div style="padding: 14px 15px; border-radius: 12px; border: 1px solid #F0F3F9; background: #FBFCFE; opacity: .6;">
+            <p style="margin: 0; font-size: 13.5px; font-weight: 700; color: #9AA7BC;">Preencher quadros vazios</p>
+            <p style="margin: 3px 0 0; font-size: 11.5px; color: #B5C0D0;">Nenhum quadro vazio nesta lâmina</p>
+          </div>
+          <div onClick="{{ openModal }}" style="padding: 14px 15px; border-radius: 12px; border: 1px solid #E6EAF2; background: #FFFFFF; cursor: pointer;" style-hover="border-color: #2563EB; background: #F8FAFE;">
+            <p style="margin: 0; font-size: 13.5px; font-weight: 700;">Escolher o melhor layout</p>
+            <p style="margin: 3px 0 0; font-size: 11.5px; color: #6B7A90;">Reorganiza os quadros pela quantidade de fotos</p>
+          </div>
+          <div onClick="{{ openModal }}" style="padding: 14px 15px; border-radius: 12px; border: 1px solid #E6EAF2; background: #FFFFFF; cursor: pointer;" style-hover="border-color: #2563EB; background: #F8FAFE;">
+            <p style="margin: 0; font-size: 13.5px; font-weight: 700;">Equilibrar espaçamento</p>
+            <p style="margin: 3px 0 0; font-size: 11.5px; color: #6B7A90;">Volta ao respiro recomendado de 4 mm</p>
+          </div>
+          <div onClick="{{ openModal }}" style="padding: 14px 15px; border-radius: 12px; border: 1px solid #E6EAF2; background: #FFFFFF; cursor: pointer;" style-hover="border-color: #2563EB; background: #F8FAFE;">
+            <p style="margin: 0; font-size: 13.5px; font-weight: 700;">Harmonizar o fundo</p>
+            <p style="margin: 3px 0 0; font-size: 11.5px; color: #6B7A90;">Aplica um tom claro que não briga com as fotos</p>
+          </div>
+          <div onClick="{{ openModal }}" style="padding: 14px 15px; border-radius: 12px; border: 1px solid #E6EAF2; background: #FFFFFF; cursor: pointer;" style-hover="border-color: #2563EB; background: #F8FAFE;">
+            <p style="margin: 0; font-size: 13.5px; font-weight: 700;">Deixar em preto e branco</p>
+            <p style="margin: 3px 0 0; font-size: 11.5px; color: #6B7A90;">Aplica a todas as fotos da lâmina</p>
+          </div>
+          <p style="margin: 4px 0 0; padding: 13px 14px; border-radius: 12px; background: #F1F5FD; font-size: 11.5px; line-height: 1.55; color: #46536A;">Estas ações seguem regras fixas de diagramação — orientação das fotos, quadros livres e espaçamento.</p>
+        </div>
+      </div>
+    </div>
+
+    <div style="{{ previewStyle }}">
+      <div style="{{ previewImg }}"></div>
+      <div style="flex: 0 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 11px 14px;">
+        <div style="min-width: 0;">
+          <p style="margin: 0; font-size: 12.5px; font-weight: 700;">{{ previewName }}</p>
+          <p style="margin: 2px 0 0; font-size: 11px; color: #9AA7BC;">4032 × 3024 · 3,8 MB</p>
+        </div>
+        <span style="padding: 4px 9px; border-radius: 999px; background: #E6F8F1; color: #059669; font-size: 10.5px; font-weight: 700; flex: 0 0 auto; white-space: nowrap;">boa qualidade</span>
+      </div>
+    </div>
+
+    <div onClick="{{ togglePanel }}" style="{{ panelHandle }}" title="Expandir painel">
+      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m10 6 6 6-6 6"/></svg>
+    </div>
+
+    <div style="flex: 1 1 auto; display: flex; flex-direction: column; min-width: 0; min-height: 0;">
+
+      <div style="flex: 0 0 auto; display: flex; align-items: center; gap: 12px; flex-wrap: nowrap; padding: 9px 18px; background: #FFFFFF; border-bottom: 1px solid #E6EAF2; overflow: hidden;">
+        <span style="font-size: 10.5px; font-weight: 800; letter-spacing: 1.6px; text-transform: uppercase; color: #9AA7BC; flex: 0 0 auto;">Layouts</span>
+        <div class="om-count" style="display: flex; align-items: center; gap: 3px; flex-wrap: wrap; padding: 3px; border-radius: 14px; background: #F4F7FC; border: 1px solid #EEF1F7; flex: 0 1 auto; min-width: 0;">
+          <sc-for list="{{ counts }}" as="c" hint-placeholder-count="10">
+            <span onClick="{{ c.pick }}" style="{{ c.style }}">{{ c.label }}</span>
+          </sc-for>
+        </div>
+        <span style="width: 1px; height: 30px; background: #E6EAF2; flex: 0 0 auto;"></span>
+        <div style="display: flex; align-items: center; gap: 7px; flex-wrap: nowrap; flex: 1 0 240px; min-width: 240px;">
+        <span onClick="{{ layPrev }}" title="Anterior" style="width: 28px; height: 28px; border-radius: 9px; border: 1px solid #E6EAF2; background: #FFFFFF; display: flex; align-items: center; justify-content: center; color: #46536A; cursor: pointer; flex: 0 0 auto;" style-hover="border-color: #2563EB; color: #2563EB;"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 6l-6 6 6 6"/></svg></span>
+        <div class="om-laycar" style="display: flex; align-items: center; gap: 7px; flex-wrap: nowrap; flex: 1 1 auto; min-width: 0; overflow-x: auto; scroll-behavior: smooth; padding-bottom: 2px;">
+          <sc-for list="{{ layouts }}" as="l" hint-placeholder-count="8">
+            <div onClick="{{ l.pick }}" title="{{ l.title }}" style="{{ l.style }}">
+              <div style="{{ l.grid }}">
+                <sc-for list="{{ l.cells }}" as="cell" hint-placeholder-count="3">
+                  <span style="{{ cell.style }}"></span>
+                </sc-for>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+        <span onClick="{{ layNext }}" title="Próximo" style="width: 28px; height: 28px; border-radius: 9px; border: 1px solid #E6EAF2; background: #FFFFFF; display: flex; align-items: center; justify-content: center; color: #46536A; cursor: pointer; flex: 0 0 auto;" style-hover="border-color: #2563EB; color: #2563EB;"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 6l6 6-6 6"/></svg></span>
+        </div>
+      </div>
+
+      <div style="position: relative; flex: 1; display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 12px 26px 48px; min-height: 0; overflow: hidden; background: linear-gradient(180deg,#F7F9FC,#E8EEF6);">
+        <div class="om-slidebar" style="width: 100%; max-width: 940px; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex: 0 0 auto;">
+          <span style="padding: 6px 12px; border-radius: 999px; background: #FFFFFF; border: 1px solid #E6EAF2; font-size: 12px; font-weight: 700; color: #46536A; white-space: nowrap;">{{ spreadTitle }}</span>
+          <div class="om-legend" style="display: flex; align-items: center; gap: 14px;">
+            <span style="display: flex; align-items: center; gap: 7px; font-size: 11.5px; color: #6B7A90; white-space: nowrap;"><span style="width: 14px; height: 3px; border-radius: 2px; background: #F59E0B;"></span>margem de corte</span>
+            <span style="display: flex; align-items: center; gap: 7px; font-size: 11.5px; color: #6B7A90; white-space: nowrap;"><span style="width: 14px; height: 3px; border-radius: 2px; background: #93C5FD;"></span>área segura</span>
+          </div>
+        </div>
+
+        <div style="{{ stageStyle }}">
+          <div style="{{ bookStyle }}">
+            <span style="position: absolute; top: 3.5%; left: -1.4%; right: -1.4%; bottom: -3.8%; border-radius: 10px 10px 16px 16px; background: linear-gradient(180deg,#28497F 0%,#1B3565 42%,#0E2249 100%); box-shadow: inset 0 0 0 1px rgba(255,255,255,.16), inset 0 2px 0 rgba(255,255,255,.2), 0 7px 0 #0B1D43, 0 16px 32px rgba(16,31,64,.26);"></span>
+            <span style="position: absolute; top: 3.5%; bottom: -3.8%; left: 50%; width: 26px; transform: translateX(-50%); background: linear-gradient(90deg, rgba(0,0,0,.34), rgba(255,255,255,.1) 45%, rgba(255,255,255,.14) 55%, rgba(0,0,0,.34)); border-radius: 2px;"></span>
+            <span style="position: absolute; top: 2.6%; bottom: -2.4%; left: .1%; right: .1%; border-radius: 8px; background: linear-gradient(180deg,#FFFDF7,#E8E3D6); box-shadow: 0 1px 0 #FFFFFF, 0 3px 0 #EFEADD, 0 5px 0 #E4DED0, 0 7px 0 #D9D2C2, 0 9px 12px rgba(70,60,45,.18);"></span>
+
+            <span style="position: absolute; top: 1.6%; bottom: 1.6%; left: .5%; width: 49.6%; border-radius: 13px 2px 8px 12px; border: 1px solid #ECE9E1; transform: skewY(-.25deg); background: linear-gradient(180deg,rgba(255,255,255,.88),rgba(255,252,246,.16) 18%,rgba(220,214,203,.1) 76%,rgba(172,163,149,.18)), repeating-linear-gradient(to bottom,#FFFFFF 0 2px,#E9E7DF 2px 3px); box-shadow: 0 1px 0 rgba(255,255,255,.98), 0 2px 0 #E9E6DE, 0 4px 0 #F4F2ED, 0 6px 0 #E6E3DA, 0 8px 10px rgba(83,72,58,.08);"></span>
+            <span style="position: absolute; top: 1.6%; bottom: 1.6%; right: .5%; width: 49.6%; border-radius: 2px 13px 12px 8px; border: 1px solid #ECE9E1; transform: skewY(.25deg); background: linear-gradient(180deg,rgba(255,255,255,.88),rgba(255,252,246,.16) 18%,rgba(220,214,203,.1) 76%,rgba(172,163,149,.18)), repeating-linear-gradient(to bottom,#FFFFFF 0 2px,#E9E7DF 2px 3px); box-shadow: 0 1px 0 rgba(255,255,255,.98), 0 2px 0 #E9E6DE, 0 4px 0 #F4F2ED, 0 6px 0 #E6E3DA, 0 8px 10px rgba(83,72,58,.08);"></span>
+
+            <div style="position: absolute; inset: 0; display: grid; grid-template-columns: 1fr 1fr; z-index: 3;">
+              <section style="position: relative; overflow: hidden; border-radius: 14px 2px 5px 10px; background: radial-gradient(circle at 50% 45%, rgba(0,0,0,.018), transparent 50%), linear-gradient(90deg,#FFFFFF,#FFFEFB); box-shadow: inset -18px 0 26px -26px rgba(0,0,0,.9), inset 0 1px 0 rgba(255,255,255,.8);">
+                <span style="position: absolute; inset: 4%; border: 1px dashed rgba(245,158,11,.55); border-radius: 3px; pointer-events: none; z-index: 4;"></span>
+                <div style="{{ pageGrid }}">
+                  <div onClick="{{ selectFrame }}" style="{{ frameA }}">
+                    <span style="{{ faceBox }}"></span>
+                    <span style="{{ faceTag }}">rosto detectado</span>
+                    <span style="{{ h1 }}"></span><span style="{{ h2 }}"></span><span style="{{ h3 }}"></span><span style="{{ h4 }}"></span>
+                  </div>
+                  <sc-for list="{{ pageFrames }}" as="f" hint-placeholder-count="2">
+                    <div style="{{ f.style }}" style-hover="box-shadow: 0 0 0 2px rgba(37,99,235,.45);"></div>
+                  </sc-for>
+                </div>
+                <p style="position: absolute; left: 8%; right: 8%; bottom: 9px; margin: 0; min-height: 16px; text-align: center; font-family: Georgia, serif; font-size: 12.5px; color: #7D6F63;">Um dia para lembrar</p>
+              </section>
+
+              <section style="position: relative; overflow: hidden; border-radius: 2px 14px 10px 5px; background: radial-gradient(circle at 50% 45%, rgba(0,0,0,.018), transparent 50%), linear-gradient(270deg,#FFFFFF,#FFFEFB); box-shadow: inset 18px 0 26px -26px rgba(0,0,0,.9), inset 0 1px 0 rgba(255,255,255,.8);">
+                <span style="position: absolute; inset: 4%; border: 1px dashed rgba(245,158,11,.55); border-radius: 3px; pointer-events: none; z-index: 4;"></span>
+                <div style="{{ rightGrid }}">
+                  <sc-for list="{{ rightFrames }}" as="f" hint-placeholder-count="2">
+                    <div style="{{ f.style }}" style-hover="box-shadow: 0 0 0 2px rgba(37,99,235,.45);">
+                      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="{{ f.iconStyle }}"><rect x="3" y="4" width="18" height="16" rx="4"/><path d="m3.5 16 4.6-4.2 4 3.4 3.4-3 5 4.4"/><circle cx="8.6" cy="8.8" r="1.5"/></svg>
+                    </div>
+                  </sc-for>
+                </div>
+                <p style="position: absolute; left: 8%; right: 8%; bottom: 9px; margin: 0; min-height: 16px; text-align: center; font-family: Georgia, serif; font-size: 12.5px; color: #7D6F63;">Formatura 2026</p>
+              </section>
+            </div>
+
+            <div style="{{ turnSheet }}">
+              <div style="{{ turnFront }}">
+                <span style="position: absolute; inset: 8% 10% 14%; border-radius: 2px; background: linear-gradient(140deg,#7C3AED,#2563EB); opacity: .92;"></span>
+                <span style="position: absolute; left: 10%; right: 10%; bottom: 6%; height: 8px; border-radius: 2px; background: #EEEAE0;"></span>
+              </div>
+              <div style="{{ turnBack }}">
+                <span style="position: absolute; inset: 8% 10% 14%; border-radius: 2px; background: linear-gradient(140deg,#0EA5E9,#22D3EE); opacity: .9;"></span>
+                <span style="position: absolute; left: 10%; right: 10%; bottom: 6%; height: 8px; border-radius: 2px; background: #EEEAE0;"></span>
+              </div>
+              <span style="position: absolute; inset: 0; pointer-events: none; mix-blend-mode: multiply; opacity: .45; background: linear-gradient(90deg, rgba(0,0,0,.1), transparent 12%, transparent 78%, rgba(255,255,255,.55));"></span>
+            </div>
+
+            <span onClick="{{ goPrev }}" title="Página anterior" style="position: absolute; z-index: 12; top: 0; bottom: 0; left: 0; width: 9%; cursor: pointer; border-radius: 14px 0 0 12px;" style-hover="background: linear-gradient(90deg, rgba(11,18,32,.08), transparent);"></span>
+            <span onClick="{{ goNext }}" title="Próxima página" style="position: absolute; z-index: 12; top: 0; bottom: 0; right: 0; width: 9%; cursor: pointer; border-radius: 0 14px 12px 0;" style-hover="background: linear-gradient(270deg, rgba(11,18,32,.08), transparent);"></span>
+
+            <span style="position: absolute; z-index: 8; left: 50%; top: 1%; bottom: 1.5%; width: 34px; transform: translateX(-50%); pointer-events: none; opacity: .28; mix-blend-mode: multiply; background: radial-gradient(ellipse at center, rgba(0,0,0,.22), rgba(0,0,0,.08) 28%, transparent 70%);"></span>
+          </div>
+        </div>
+
+        <div style="{{ floatBar }}">
+          <span title="Trocar foto" style="width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #46536A; cursor: pointer;" style-hover="background: #F1F5FD; color: #2563EB;"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M7 8h13l-3-3M17 16H4l3 3"/></svg></span>
+          <span title="Recortar" style="width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #46536A; cursor: pointer;" style-hover="background: #F1F5FD; color: #2563EB;"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3v13a2 2 0 0 0 2 2h13"/><path d="M3 6h13a2 2 0 0 1 2 2v13"/></svg></span>
+          <span title="Girar" style="width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #46536A; cursor: pointer;" style-hover="background: #F1F5FD; color: #2563EB;"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 5v6h-6"/></svg></span>
+          <span style="width: 1px; height: 20px; background: #E6EAF2; margin: 0 2px;"></span>
+          <span title="Remover" style="width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #E11D48; cursor: pointer;" style-hover="background: #FFF1F3;"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9 7V5h6v2M6 7l1 13h10l1-13"/></svg></span>
+                            </div>
+
+        <div style="position: absolute; left: 50%; bottom: 6px; transform: translateX(-50%); z-index: 25; display: flex; align-items: center; gap: 12px;">
+          <span onClick="{{ goPrev }}" style="width: 34px; height: 34px; border-radius: 11px; background: #FFFFFF; border: 1px solid #E6EAF2; display: flex; align-items: center; justify-content: center; color: #46536A; cursor: pointer;" style-hover="border-color: #2563EB; color: #2563EB;"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M14 6l-6 6 6 6"/></svg></span>
+          <span style="font-size: 12.5px; font-weight: 600; color: #46536A; white-space: nowrap;">{{ spreadNav }}</span>
+          <span onClick="{{ goNext }}" style="width: 34px; height: 34px; border-radius: 11px; background: #FFFFFF; border: 1px solid #E6EAF2; display: flex; align-items: center; justify-content: center; color: #46536A; cursor: pointer;" style-hover="border-color: #2563EB; color: #2563EB;"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M10 6l6 6-6 6"/></svg></span>
+        </div>
+      </div>
+
+      <div class="om-pagestrip" style="flex: 0 0 auto; padding: 10px 18px 12px; background: #FFFFFF; border-top: 1px solid #E6EAF2;">
+        <div class="om-pagehead" style="display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 8px;">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <span style="font-size: 12.5px; font-weight: 700;">Páginas</span>
+            <span style="padding: 3px 9px; border-radius: 999px; background: #FEF3E2; color: #B45309; font-size: 11px; font-weight: 700; white-space: nowrap;">4 lâminas sem foto</span>
+          </div>
+          <a href="./Cliente Revisao.dc.html" style="font-size: 12px; font-weight: 700;">Ver todas</a>
+        </div>
+        <div style="display: flex; align-items: flex-start; gap: 10px; overflow-x: auto; padding-bottom: 4px;">
+          <sc-for list="{{ spreads }}" as="s" hint-placeholder-count="8">
+            <div onClick="{{ s.pick }}" style="display: flex; flex-direction: column; gap: 5px; flex: 0 0 auto; cursor: pointer;">
+              <div class="{{ s.cls }}" style="{{ s.style }}">
+                <div style="{{ s.grid }}">
+                  <sc-for list="{{ s.cells }}" as="cell" hint-placeholder-count="3">
+                    <span style="{{ cell.style }}"></span>
+                  </sc-for>
+                </div>
+                <span style="width: 1px; background: #E6EAF2;"></span>
+                <span style="flex: 1; background: linear-gradient(140deg,#EAF0FF,#E4F8FC);"></span>
+                <span style="{{ s.badge }}"></span>
+              </div>
+              <span style="{{ s.labelStyle }}">{{ s.label }}</span>
+              <span class="om-paglay" style="{{ s.layLabel }}">{{ s.layText }}</span>
+            </div>
+          </sc-for>
+          <div style="display: flex; flex-direction: column; gap: 5px; flex: 0 0 auto;">
+            <span style="width: 96px; height: 52px; border-radius: 8px; border: 1px dashed #CBD5E6; display: flex; align-items: center; justify-content: center; color: #9AA7BC; cursor: pointer;" style-hover="border-color: #2563EB; color: #2563EB; background: #F8FAFE;"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg></span>
+            <span style="font-size: 10.5px; color: #9AA7BC; text-align: center;">Adicionar</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div onClick="{{ toggleInsp }}" style="{{ inspHandle }}" title="Abrir inspetor">
+      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 6l-6 6 6 6"/></svg>
+    </div>
+
+    <div style="{{ inspectorStyle }}">
+      <div style="padding: 15px 18px 13px; border-bottom: 1px solid #F0F3F9; display: flex; align-items: center; justify-content: space-between; gap: 10px;">
+        <h2 style="margin: 0; font-size: 15.5px; font-weight: 800; letter-spacing: -.3px;">{{ inspTitle }}</h2>
+        <div style="display: flex; align-items: center; gap: 8px; flex: 0 0 auto;">
+          <span style="padding: 4px 9px; border-radius: 999px; background: #EAF0FF; color: #2563EB; font-size: 11px; font-weight: 700;">{{ inspTag }}</span>
+          <span onClick="{{ toggleInsp }}" title="Recolher" style="width: 30px; height: 30px; border-radius: 10px; border: 1px solid #E6EAF2; display: flex; align-items: center; justify-content: center; color: #6B7A90; cursor: pointer;" style-hover="background: #F1F5FD; color: #2563EB;"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m10 6 6 6-6 6"/></svg></span>
+        </div>
+      </div>
+
+      <div style="flex: 1 1 auto; min-height: 0; overflow-y: auto;">
+        <div style="{{ inspEmpty }}">
+          <span style="width: 44px; height: 44px; border-radius: 14px; background: #F1F5FD; color: #2563EB; display: flex; align-items: center; justify-content: center;"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="m4 4 6 16 2.5-6.5L19 11z"/></svg></span>
+          <p style="margin: 0; font-size: 13px; font-weight: 700; text-align: center;">Nada selecionado</p>
+          <p style="margin: 0; font-size: 12px; line-height: 1.55; color: #9AA7BC; text-align: center;">Clique em uma foto ou texto da lâmina para editar aqui.</p>
+        </div>
+
+        <div style="{{ inspBody }}">
+          <div style="padding: 16px 18px; border-bottom: 1px solid #F0F3F9;">
+            <div style="display: flex; align-items: flex-start; gap: 11px; padding: 13px 14px; border-radius: 12px; background: #FEF3E2; border: 1px solid #FCE9CE; margin-bottom: 12px;">
+              <span style="color: #B45309; flex: 0 0 auto; margin-top: 1px;"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 8v5M12 16.5h.01"/></svg></span>
+              <div style="flex: 1; min-width: 0;">
+                <p style="margin: 0; font-size: 12.5px; font-weight: 700; color: #7A5410;">Rosto perto do corte</p>
+                <p style="margin: 3px 0 0; font-size: 11.5px; line-height: 1.5; color: #8A6520;">O rosto está a 4 mm da margem. Podemos reenquadrar mantendo o rosto inteiro.</p>
+              </div>
+            </div>
+            <div style="display: flex; gap: 8px;">
+              <span style="flex: 1; height: 38px; display: flex; align-items: center; justify-content: center; gap: 7px; border-radius: 10px; background: linear-gradient(135deg,#2563EB,#06B6D4); color: #FFFFFF; font-size: 12.5px; font-weight: 700; cursor: pointer;" style-hover="filter: brightness(1.06);">Corrigir</span>
+              <span style="flex: 1; height: 38px; display: flex; align-items: center; justify-content: center; border-radius: 10px; border: 1px solid #E6EAF2; font-size: 12.5px; font-weight: 600; color: #46536A; cursor: pointer;" style-hover="border-color: #2563EB; color: #2563EB;">Manter</span>
+            </div>
+          </div>
+
+          <div style="padding: 16px 18px; border-bottom: 1px solid #F0F3F9;">
+            <p style="margin: 0 0 12px; font-size: 11px; letter-spacing: 1.2px; text-transform: uppercase; color: #9AA7BC; font-weight: 700;">Enquadramento</p>
+            <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-bottom: 12px;">
+              <span style="height: 38px; display: flex; align-items: center; justify-content: center; gap: 7px; border: 1px solid #E6EAF2; border-radius: 10px; background: #FFFFFF; color: #46536A; font-size: 12px; font-weight: 600; cursor: pointer;" style-hover="border-color: #2563EB; color: #2563EB; background: #F8FAFE;">Preencher</span>
+              <span style="height: 38px; display: flex; align-items: center; justify-content: center; gap: 7px; border: 1px solid #E6EAF2; border-radius: 10px; background: #FFFFFF; color: #46536A; font-size: 12px; font-weight: 600; cursor: pointer;" style-hover="border-color: #2563EB; color: #2563EB; background: #F8FAFE;">Encaixar</span>
+              <span style="height: 38px; display: flex; align-items: center; justify-content: center; gap: 7px; border: 1px solid #E6EAF2; border-radius: 10px; background: #FFFFFF; color: #46536A; font-size: 12px; font-weight: 600; cursor: pointer;" style-hover="border-color: #2563EB; color: #2563EB; background: #F8FAFE;">Girar</span>
+              <span style="height: 38px; display: flex; align-items: center; justify-content: center; gap: 7px; border: 1px solid #E6EAF2; border-radius: 10px; background: #FFFFFF; color: #46536A; font-size: 12px; font-weight: 600; cursor: pointer;" style-hover="border-color: #2563EB; color: #2563EB; background: #F8FAFE;">Espelhar</span>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px;">
+              <div style="display: flex; flex-direction: column; gap: 6px; min-width: 0;">
+                <label style="font-size: 11px; font-weight: 700; color: #9AA7BC;">Zoom</label>
+                <div style="display: flex; align-items: center; gap: 6px; min-width: 0; height: 38px; padding: 0 11px; border: 1px solid #E6EAF2; border-radius: 10px; background: #FFFFFF;">
+                  <input value="118" style="flex: 1; width: 100%; min-width: 0; border: 0; background: transparent; font-family: inherit; font-size: 13px; font-weight: 600; color: #0B1220;"/>
+                  <span style="font-size: 11px; color: #9AA7BC; flex: 0 0 auto;">%</span>
+                </div>
+              </div>
+              <div style="display: flex; flex-direction: column; gap: 6px; min-width: 0;">
+                <label style="font-size: 11px; font-weight: 700; color: #9AA7BC;">Rotação</label>
+                <div style="display: flex; align-items: center; gap: 6px; min-width: 0; height: 38px; padding: 0 11px; border: 1px solid #E6EAF2; border-radius: 10px; background: #FFFFFF;">
+                  <input value="0" style="flex: 1; width: 100%; min-width: 0; border: 0; background: transparent; font-family: inherit; font-size: 13px; font-weight: 600; color: #0B1220;"/>
+                  <span style="font-size: 11px; color: #9AA7BC; flex: 0 0 auto;">°</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div style="padding: 16px 18px; border-bottom: 1px solid #F0F3F9;">
+            <p style="margin: 0 0 12px; font-size: 11px; letter-spacing: 1.2px; text-transform: uppercase; color: #9AA7BC; font-weight: 700;">Ajustes</p>
+            <div style="display: flex; flex-direction: column; gap: 13px;">
+              <sc-for list="{{ sliders }}" as="s" hint-placeholder-count="3">
+                <div>
+                  <div style="display: flex; justify-content: space-between; margin-bottom: 6px;"><span style="font-size: 12px; color: #46536A;">{{ s.label }}</span><span style="font-size: 12px; font-weight: 700;">{{ s.value }}</span></div>
+                  <div style="height: 6px; border-radius: 999px; background: #EEF1F7; position: relative;"><div style="{{ s.fill }}"></div><span style="{{ s.knob }}"></span></div>
+                </div>
+              </sc-for>
+              <div style="display: flex; align-items: center; gap: 10px; padding: 11px 13px; border-radius: 11px; background: #F8FAFE; border: 1px solid #EEF1F7;">
+                <span style="flex: 1; min-width: 0; font-size: 12.5px; font-weight: 600; color: #46536A;">Preto e branco</span>
+                <span onClick="{{ toggleBw }}" style="{{ bwTrack }}"><span style="width: 18px; height: 18px; border-radius: 999px; background: #FFFFFF; box-shadow: 0 2px 4px rgba(11,18,32,.16);"></span></span>
+              </div>
+            </div>
+          </div>
+
+          <div style="padding: 16px 18px;">
+            <div style="padding: 15px; border-radius: 12px; background: linear-gradient(150deg,#0B1220,#1E3A5F); color: #FFFFFF;">
+              <span style="display: inline-flex; align-items: center; gap: 7px; padding: 5px 10px; border-radius: 999px; background: rgba(255,255,255,.14); font-size: 10.5px; font-weight: 700; margin-bottom: 10px;"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M5 19 19 5M15 5h4v4"/><path d="M7 4v4M5 6h4M17 15v4M15 17h4"/></svg>Assistência</span>
+              <p style="margin: 0 0 12px; font-size: 13px; line-height: 1.5; color: rgba(255,255,255,.78);">Quer melhorar esta lâmina sem mexer no resto do álbum?</p>
+              <span onClick="{{ openModal }}" style="display: flex; align-items: center; justify-content: center; gap: 8px; height: 38px; border-radius: 10px; background: #FFFFFF; color: #0B1220; font-size: 12.5px; font-weight: 700; cursor: pointer;" style-hover="background: #E4F8FC;">Melhorar esta lâmina</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div style="{{ ov }}" onClick="{{ closeModal }}"></div>
+<div style="{{ sh }}">
+  <div style="width: min(600px, 100%); max-height: 86vh; overflow-y: auto; background: #FFFFFF; border-radius: 14px; box-shadow: 0 30px 70px rgba(11,18,32,.3); pointer-events: auto; font-family: 'Plus Jakarta Sans', sans-serif; color: #0B1220;">
+    <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; padding: 22px 26px 16px; border-bottom: 1px solid #F0F3F9;">
+      <div style="min-width: 0;">
+        <h2 style="margin: 0; font-size: 20px; font-weight: 800; letter-spacing: -.5px;">Melhorar esta lâmina</h2>
+        <p style="margin: 6px 0 0; font-size: 13.5px; color: #6B7A90;">A mudança vale apenas para a lâmina 5.</p>
+      </div>
+      <span onClick="{{ closeModal }}" style="width: 34px; height: 34px; border-radius: 12px; border: 1px solid #E6EAF2; display: flex; align-items: center; justify-content: center; color: #6B7A90; cursor: pointer; flex: 0 0 auto;" style-hover="background: #F1F5FD; color: #2563EB;"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg></span>
+    </div>
+    <div style="padding: 20px 26px; display: flex; flex-direction: column; gap: 16px;">
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px;">
+        <span style="padding: 13px 14px; border-radius: 12px; border: 1.5px solid #2563EB; background: #F1F5FD; font-size: 13px; font-weight: 700; color: #2563EB; cursor: pointer;">Corrigir cortes de rosto</span>
+        <span style="padding: 13px 14px; border-radius: 12px; border: 1.5px solid #E6EAF2; background: #FFFFFF; font-size: 13px; font-weight: 600; color: #46536A; cursor: pointer;" style-hover="border-color: #2563EB;">Equilibrar espaços</span>
+        <span style="padding: 13px 14px; border-radius: 12px; border: 1.5px solid #E6EAF2; background: #FFFFFF; font-size: 13px; font-weight: 600; color: #46536A; cursor: pointer;" style-hover="border-color: #2563EB;">Trocar o layout</span>
+        <span style="padding: 13px 14px; border-radius: 12px; border: 1.5px solid #E6EAF2; background: #FFFFFF; font-size: 13px; font-weight: 600; color: #46536A; cursor: pointer;" style-hover="border-color: #2563EB;">Harmonizar o fundo</span>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px;">
+        <div>
+          <p style="margin: 0 0 8px; font-size: 11.5px; font-weight: 700; color: #9AA7BC; letter-spacing: .8px; text-transform: uppercase;">Agora</p>
+          <div style="aspect-ratio: 2 / 1; border-radius: 8px; border: 1px solid #E6EAF2; background: #FFFFFF; display: flex; gap: 6px; padding: 8px;">
+            <span style="flex: 1.5; border-radius: 3px; background: linear-gradient(140deg,#7C3AED,#2563EB);"></span>
+            <span style="flex: 1; display: flex; flex-direction: column; gap: 6px;"><span style="flex: 1; border-radius: 3px; background: linear-gradient(140deg,#0EA5E9,#22D3EE);"></span><span style="flex: 1; border-radius: 3px; background: #F1F5FD; border: 1px dashed #CBD5E6;"></span></span>
+          </div>
+        </div>
+        <div>
+          <p style="margin: 0 0 8px; font-size: 11.5px; font-weight: 700; color: #2563EB; letter-spacing: .8px; text-transform: uppercase;">Sugestão</p>
+          <div style="aspect-ratio: 2 / 1; border-radius: 8px; border: 1.5px solid #2563EB; background: #FFFFFF; display: flex; gap: 6px; padding: 8px; box-shadow: 0 8px 18px rgba(37,99,235,.16);">
+            <span style="flex: 1; border-radius: 3px; background: linear-gradient(140deg,#7C3AED,#2563EB);"></span>
+            <span style="flex: 1; border-radius: 3px; background: linear-gradient(140deg,#0EA5E9,#22D3EE);"></span>
+            <span style="flex: 1; border-radius: 3px; background: linear-gradient(140deg,#6366F1,#8B5CF6);"></span>
+          </div>
+        </div>
+      </div>
+      <p style="margin: 0; padding: 13px 15px; border-radius: 12px; background: #F8FAFE; border: 1px solid #EEF1F7; font-size: 12.5px; line-height: 1.55; color: #46536A;">Fotos favoritas e lâminas bloqueadas não são substituídas. Você pode desfazer depois de aplicar.</p>
+    </div>
+    <div style="display: flex; align-items: center; justify-content: flex-end; gap: 10px; padding: 16px 26px; border-top: 1px solid #F0F3F9; background: #F8FAFE;">
+      <button onClick="{{ closeModal }}" style="height: 44px; padding: 0 18px; border: 1px solid #E6EAF2; border-radius: 12px; background: #FFFFFF; color: #46536A; font-family: inherit; font-size: 14px; font-weight: 600; cursor: pointer;" style-hover="background: #F1F5FD; color: #2563EB;">Descartar</button>
+      <button onClick="{{ closeModal }}" style="height: 44px; padding: 0 20px; border: 0; border-radius: 12px; background: linear-gradient(135deg,#2563EB,#06B6D4); color: #FFFFFF; font-family: inherit; font-size: 14px; font-weight: 700; cursor: pointer; box-shadow: 0 8px 18px rgba(37,99,235,.24);" style-hover="filter: brightness(1.06);">Aplicar na lâmina</button>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{}">
+class Component extends DCLogic {
+  playPaper() {
+    try {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return;
+      this._ac = this._ac || new AC();
+      const ac = this._ac;
+      if (ac.state === 'suspended') ac.resume();
+      const dur = 0.55, sr = ac.sampleRate, len = Math.floor(sr * dur);
+      const buf = ac.createBuffer(1, len, sr), d = buf.getChannelData(0);
+      for (let i = 0; i < len; i++) {
+        const t = i / len;
+        const burst = Math.exp(-Math.pow((t - 0.12) / 0.14, 2)) + 0.7 * Math.exp(-Math.pow((t - 0.55) / 0.2, 2));
+        d[i] = (Math.random() * 2 - 1) * burst * 0.5;
+      }
+      const src = ac.createBufferSource(); src.buffer = buf;
+      const hp = ac.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 1400;
+      const bp = ac.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = 3600; bp.Q.value = 0.6;
+      const g = ac.createGain(); g.gain.value = 0.18;
+      src.connect(hp); hp.connect(bp); bp.connect(g); g.connect(ac.destination);
+      src.start();
+    } catch (e) {}
+  }
+
+  turn(dir) {
+    const st = this.state;
+    if (st.turning) return;
+    const next = dir === 'next' ? st.spread + 1 : st.spread - 1;
+    if (next < 0 || next > 9) return;
+    this.playPaper();
+    this.setState({ turning: dir, sel: null });
+    clearTimeout(this._tt);
+    this._tt = setTimeout(() => this.setState({ turning: null, spread: next }), 880);
+  }
+
+  componentWillUnmount() { clearTimeout(this._tt); }
+
+  state = { hover: null, spread: 5, spreadLay: [0, 3, 5, 1, 6, 3, 2, 5, 4, 7], turning: null, tool: 0, panel: true, insp: false, modal: null, zoom: 64, sel: null, count: 0, lay: 2, photoTab: 1, bgTab: 0, bgCat: 0, elCat: 0, bw: false };
+
+  chip(on, extra) {
+    return `white-space:nowrap;padding:7px 12px;border-radius:999px;border:1px solid ${on ? '#0B1220' : '#E6EAF2'};background:${on ? '#0B1220' : '#FFFFFF'};color:${on ? '#FFFFFF' : '#46536A'};font-size:12px;font-weight:${on ? 700 : 500};cursor:pointer;${extra || ''}`;
+  }
+
+  list(labels, key, state) {
+    return labels.map((label, i) => ({
+      label,
+      style: this.chip(state === i),
+      pick: () => this.setState({ [key]: i })
+    }));
+  }
+
+  renderVals() {
+    const s = this.state;
+    const LAYOUTS = [
+      { n: 1, grid: '1fr', rows: '1fr', cells: 1 },
+      { n: 2, grid: '1fr 1fr', rows: '1fr', cells: 2 },
+      { n: 2, grid: '1fr', rows: '1fr 1fr', cells: 2 },
+      { n: 3, grid: '1.2fr 1fr', rows: '1fr 1fr', cells: 3, span: true },
+      { n: 3, grid: '1fr 1fr 1fr', rows: '1fr', cells: 3 },
+      { n: 4, grid: '1fr 1fr', rows: '1fr 1fr', cells: 4 },
+      { n: 5, grid: '1fr 1fr 1fr', rows: '1fr 1fr', cells: 5 },
+      { n: 6, grid: '1fr 1fr 1fr', rows: '1fr 1fr', cells: 6 },
+      { n: 7, grid: '1fr 1fr 1fr 1fr', rows: '1fr 1fr', cells: 7 },
+      { n: 8, grid: '1fr 1fr 1fr 1fr', rows: '1fr 1fr', cells: 8 },
+      { n: 9, grid: '1fr 1fr 1fr', rows: '1fr 1fr 1fr', cells: 9 }
+    ];
+    const curLay = s.spreadLay[s.spread] ?? s.lay;
+    const GRADS = ['#7C3AED,#2563EB', '#0EA5E9,#22D3EE', '#6366F1,#8B5CF6', '#2563EB,#06B6D4', '#0891B2,#0EA5E9', '#7C3AED,#A78BFA', '#3B82F6,#60A5FA', '#0E7490,#22D3EE', '#8B5CF6,#EC4899'];
+    const totalCells = (LAYOUTS[curLay] || LAYOUTS[0]).cells;
+    const split = { left: Math.ceil(totalCells / 2), right: Math.max(1, Math.floor(totalCells / 2)) };
+    const gridFor = (k) => {
+      const cols = k <= 1 ? 1 : k === 2 ? 1 : k <= 4 ? 2 : k <= 6 ? 2 : 3;
+      const rows = Math.ceil(k / cols);
+      return { cols, rows };
+    };
+    const pageGridStyle = (k) => {
+      const g = gridFor(k);
+      return `position:absolute;top:7%;left:8%;right:8%;bottom:34px;display:grid;grid-template-columns:repeat(${g.cols}, minmax(0, 1fr));grid-template-rows:repeat(${g.rows}, minmax(0, 1fr));gap:${k > 4 ? 7 : 11}px`;
+    };
+    const miniCells = (i, on) => {
+      const n = (LAYOUTS[i] || LAYOUTS[0]).cells;
+      const half = Math.ceil(n / 2);
+      const cols = half <= 1 ? 1 : half === 2 ? 1 : half <= 4 ? 2 : 3;
+      const rows = Math.ceil(half / cols);
+      return {
+        grid: `flex:1;display:grid;grid-template-columns:repeat(${cols}, minmax(0, 1fr));grid-template-rows:repeat(${rows}, minmax(0, 1fr));gap:1.5px;padding:4px;background:linear-gradient(140deg,#DCE6FA,#EAF0FF)`,
+        cells: Array.from({ length: half }, () => ({
+          style: `border-radius:1.5px;background:${on ? '#5C8FF6' : '#AFC6F7'}`
+        }))
+      };
+    };
+
+    const layouts = LAYOUTS.map((l, i) => ({ l, i }))
+      .filter(({ l }) => s.count === 0 || l.n === s.count)
+      .map(({ l, i }) => {
+        const on = curLay === i;
+        return {
+          title: l.n + (l.n === 1 ? ' foto na lâmina' : ' fotos na lâmina — divididas entre as duas páginas'),
+          style: `flex:0 0 auto;width:54px;height:30px;padding:3px;border-radius:9px;border:${on ? '2px solid #2563EB' : '1px solid #E6EAF2'};background:#FFFFFF;cursor:pointer;${on ? 'box-shadow:0 4px 12px rgba(37,99,235,.2);' : ''}`,
+          grid: `display:grid;grid-template-columns:${l.grid};grid-template-rows:${l.rows};gap:2px;width:100%;height:100%`,
+          cells: Array.from({ length: l.cells }, (_, k) => ({
+            style: `border-radius:2px;background:${on ? '#93B4FB' : '#DCE6FA'};${l.span && k === 0 ? 'grid-row:1 / 3;' : ''}`
+          })),
+          pick: () => this.setState(st => { const a = st.spreadLay.slice(); a[st.spread] = i; return { spreadLay: a, lay: i }; })
+        };
+      });
+
+    const counts = ['Todos', '1', '2', '3', '4', '5', '6', '7', '8', '9'].map((label, i) => {
+      const on = s.count === i;
+      return {
+        label,
+        style: `min-width:${i === 0 ? '52px' : '28px'};height:28px;padding:0 ${i === 0 ? 12 : 8}px;display:flex;align-items:center;justify-content:center;border-radius:999px;font-size:12px;font-weight:${on ? 700 : 600};cursor:pointer;background:${on ? '#0B1220' : 'transparent'};color:${on ? '#FFFFFF' : '#6B7A90'}`,
+        pick: () => this.setState({ count: i })
+      };
+    });
+
+    const grads = ['#7C3AED,#2563EB', '#2563EB,#06B6D4', '#0EA5E9,#22D3EE', '#6366F1,#8B5CF6', '#0891B2,#0EA5E9', '#3B82F6,#60A5FA', '#8B5CF6,#EC4899', '#06B6D4,#67E8F9', '#1D4ED8,#3B82F6', '#7C3AED,#A78BFA', '#0E7490,#22D3EE', '#2563EB,#93C5FD'];
+    const photos = grads.map((g, i) => ({
+      style: `position:relative;aspect-ratio:3 / 4;border-radius:10px;background:linear-gradient(140deg,${g});cursor:grab;transition:box-shadow .15s, transform .15s;${s.hover === i ? 'box-shadow:0 0 0 2px #2563EB;transform:scale(1.04);' : ''}`,
+      enter: () => this.setState({ hover: i }),
+      leave: () => this.setState(st => (st.hover === i ? { hover: null } : null))
+    }));
+
+    const bgSw = ['#EAF0FF', '#E4F8FC', '#F1F5FD', '#E6F8F1', '#FEF3E2', '#F8FAFE', '#DCE6FA', '#EEF1F7', '#F4F7FC'];
+    const chips = ['#FFFFFF', '#F4F7FC', '#9AA7BC', '#46536A', '#0B1220', '#2563EB', '#06B6D4', '#7C3AED', '#E11D48', '#F59E0B', '#059669', '#EC4899', '#93C5FD', '#A5B4FC', '#67E8F9', '#FDE68A'];
+
+    const EL = [
+      { d: 'M24 40C24 40 8 30 8 20a8 8 0 0 1 16-4 8 8 0 0 1 16 4c0 10-16 20-16 20z', sw: 2.4 },
+      { d: 'M10 10h28v28H10z', sw: 2 },
+      { d: 'M24 8 40 24 24 40 8 24z', sw: 2 },
+      { d: 'M8 24h32M24 8v32', sw: 2 },
+      { d: 'M8 30c6-14 12-14 16 0s10 14 16 0', sw: 2 },
+      { d: 'M12 12h24v24H12zM12 20h24M20 12v24', sw: 2 },
+      { d: 'M24 6l5 12 13 1-10 8 3 13-11-7-11 7 3-13-10-8 13-1z', sw: 2 },
+      { d: 'M10 34c8 0 8-20 14-20s6 20 14 20', sw: 2 },
+      { d: 'M14 12h20v24a4 4 0 0 1-4 4H18a4 4 0 0 1-4-4z', sw: 2 },
+      { d: 'M24 10a14 14 0 1 0 .01 0M18 24h12', sw: 2 },
+      { d: 'M8 18h32v12H8zM8 24h32', sw: 2 },
+      { d: 'M12 36V16l12-6 12 6v20', sw: 2 }
+    ];
+
+    const sliders = [
+      { label: 'Brilho', value: '+4', pct: 56, active: true },
+      { label: 'Contraste', value: '0', pct: 50, active: false },
+      { label: 'Saturação', value: '-6', pct: 44, active: false }
+    ].map(x => ({
+      label: x.label, value: x.value,
+      fill: `width:${x.pct}%;height:100%;border-radius:999px;background:${x.active ? 'linear-gradient(90deg,#2563EB,#06B6D4)' : '#CBD5E6'}`,
+      knob: `position:absolute;left:${x.pct}%;top:50%;transform:translate(-50%,-50%);width:15px;height:15px;border-radius:999px;background:#FFFFFF;border:2px solid #2563EB;box-shadow:0 2px 5px rgba(11,18,32,.18)`
+    }));
+
+    const spreads = ['Capa', '1–2', '3–4', '5–6', '7–8', '9–10', '11–12', '13–14', '15–16', '17–18'].map((label, i) => {
+      const on = i === s.spread;
+      const warn = i === 2 || i === 4 || i === 7 || i === 9;
+      const li = s.spreadLay[i] ?? 0;
+      const mini = miniCells(li, on);
+      return {
+        label,
+        grid: mini.grid,
+        cells: mini.cells,
+        layText: (LAYOUTS[li] || LAYOUTS[0]).n + (( LAYOUTS[li] || LAYOUTS[0]).n === 1 ? ' foto' : ' fotos'),
+        layLabel: `font-size:9.5px;font-weight:600;color:${on ? '#2563EB' : '#B5C0D0'};text-align:center`,
+        cls: 'om-pagethumb',
+        style: `position:relative;width:96px;height:52px;border-radius:8px;background:#FFFFFF;border:${on ? '2px solid #2563EB' : '1px solid #E6EAF2'};display:flex;overflow:hidden;${on ? 'box-shadow:0 6px 14px rgba(37,99,235,.2);' : ''}`,
+        labelStyle: `font-size:10.5px;font-weight:${on ? 700 : 500};color:${on ? '#2563EB' : '#9AA7BC'};text-align:center`,
+        badge: on ? 'display:none' : `position:absolute;top:4px;right:4px;width:9px;height:9px;border-radius:999px;background:${warn ? '#F59E0B' : '#10B981'}`,
+        pick: () => { if (i !== s.spread) { this.playPaper(); this.setState({ turning: i > s.spread ? 'next' : 'prev', sel: null }); clearTimeout(this._tt); this._tt = setTimeout(() => this.setState({ turning: null, spread: i }), 880); } }
+      };
+    });
+
+    const panelW = 'clamp(240px, 24vw, 316px)';
+    const v = {
+      zoomLabel: s.zoom + '%',
+      counts, layouts, photos, sliders, spreads,
+      photoTabs: this.list(['Todas', 'Não usadas', 'Favoritas', 'Verticais', 'Horizontais'], 'photoTab', s.photoTab),
+      bgTabs: this.list(['Texturas', 'Cores', 'Gradientes'], 'bgTab', s.bgTab),
+      bgCats: this.list(['Suaves', 'Matelassê', 'Arabescos', 'Geométricos', 'Delicados'], 'bgCat', s.bgCat),
+      elCats: this.list(['Todos', 'Molduras', 'Florais', 'Fitas', 'Selos', 'Formas', 'Linhas'], 'elCat', s.elCat),
+      bgSwatches: bgSw.map((c, i) => ({
+        style: `aspect-ratio:1 / 1;border-radius:10px;background:${c};border:${i === 0 ? '2px solid #2563EB' : '1px solid #E6EAF2'};cursor:pointer`,
+        pick: () => {}
+      })),
+      colorChips: chips.map(c => ({ style: `aspect-ratio:1 / 1;border-radius:7px;background:${c};border:1px solid rgba(11,18,32,.1);cursor:pointer` })),
+      elements: EL,
+
+      previewStyle: (s.panel && s.tool === 0 && s.hover !== null)
+        ? 'position:fixed;top:78px;left:calc(76px + clamp(240px, 24vw, 316px) + 14px);width:min(280px, 26vw);max-height:calc(100vh - 100px);display:flex;flex-direction:column;z-index:40;background:#FFFFFF;border:1px solid #E6EAF2;border-radius:14px;overflow:hidden;box-shadow:0 24px 50px rgba(11,18,32,.24);pointer-events:none;animation:menuIn .14s ease both'
+        : 'display:none',
+      previewImg: `width:100%;flex:1 1 auto;min-height:0;aspect-ratio:3 / 4;background:linear-gradient(140deg,${grads[s.hover === null ? 0 : s.hover % grads.length]})`,
+      previewName: 'IMG_' + (400 + (s.hover === null ? 0 : s.hover) * 7),
+      panelStyle: s.panel
+        ? `width:${panelW};flex:0 0 auto;min-width:0;display:flex;flex-direction:column;min-height:0;background:#FFFFFF;border-right:1px solid #E6EAF2;animation:menuIn .18s ease both`
+        : 'display:none',
+      panelHandle: s.panel
+        ? 'display:none'
+        : 'width:20px;flex:0 0 auto;align-self:center;height:78px;margin-left:-1px;display:flex;align-items:center;justify-content:center;border-radius:0 12px 12px 0;background:#FFFFFF;border:1px solid #E6EAF2;border-left:0;color:#6B7A90;cursor:pointer;box-shadow:4px 0 12px rgba(11,18,32,.06);z-index:3',
+      togglePanel: () => this.setState({ panel: !s.panel }),
+      railToggle: `width:56px;height:44px;display:flex;align-items:center;justify-content:center;border-radius:13px;background:#F4F7FC;border:1px solid #E6EAF2;color:#46536A;cursor:pointer`,
+      railArrow: s.panel ? 'M14 6l-6 6 6 6' : 'M10 6l6 6-6 6',
+
+      inspectorStyle: s.insp
+        ? 'width:clamp(238px, 23vw, 306px);flex:0 0 auto;min-width:0;display:flex;flex-direction:column;min-height:0;background:#FFFFFF;border-left:1px solid #E6EAF2;animation:menuInR .18s ease both'
+        : 'display:none',
+      inspHandle: s.insp
+        ? 'display:none'
+        : 'width:20px;flex:0 0 auto;align-self:center;height:78px;margin-right:-1px;display:flex;align-items:center;justify-content:center;border-radius:12px 0 0 12px;background:#FFFFFF;border:1px solid #E6EAF2;border-right:0;color:#6B7A90;cursor:pointer;box-shadow:-4px 0 12px rgba(11,18,32,.06);z-index:3',
+      toggleInsp: () => this.setState({ insp: !s.insp }),
+      inspTitle: s.sel === 'texto' ? 'Texto selecionado' : s.sel ? 'Foto selecionada' : 'Inspetor',
+      inspTag: s.sel === 'texto' ? 'Título' : s.sel ? 'IMG_0412' : 'lâmina ' + (s.spread + 1),
+      spreadTitle: s.spread === 0 ? 'Capa · frente e verso' : 'Lâmina ' + (s.spread + 1) + ' · páginas ' + (s.spread * 2 - 1) + ' e ' + (s.spread * 2),
+      spreadNav: 'Lâmina ' + (s.spread + 1) + ' de 10',
+      inspEmpty: s.sel ? 'display:none' : 'display:flex;flex-direction:column;align-items:center;gap:10px;padding:34px 22px',
+      inspBody: s.sel ? 'display:block' : 'display:none',
+
+      pageGrid: pageGridStyle(split.left),
+      pageFrames: Array.from({ length: Math.max(0, split.left - 1) }, (_, k) => ({
+        style: `border-radius:2px;background:linear-gradient(140deg,${GRADS[k % GRADS.length]});cursor:pointer`
+      })),
+      rightGrid: pageGridStyle(split.right),
+      rightFrames: Array.from({ length: split.right }, (_, k) => {
+        const empty = k === split.right - 1 && split.right > 1;
+        return {
+          style: empty
+            ? 'border-radius:2px;border:1.5px dashed #CBD5E6;background:#F8FAFE;display:flex;align-items:center;justify-content:center;color:#9AA7BC;overflow:hidden;cursor:pointer'
+            : `border-radius:2px;background:linear-gradient(140deg,${GRADS[(k + split.left) % GRADS.length]});cursor:pointer`,
+          iconStyle: empty ? 'flex:0 0 auto' : 'display:none'
+        };
+      }),
+      selectFrame: () => this.setState({ sel: 'foto', insp: true }),
+      selectText: () => this.setState({ sel: 'texto', insp: true }),
+      frameA: `position:relative;border-radius:2px;background:linear-gradient(140deg,#7C3AED,#2563EB);cursor:pointer;${s.sel === 'foto' ? 'box-shadow:0 0 0 2px #2563EB;' : ''}`,
+      faceBox: `display:${s.sel === 'foto' ? 'block' : 'none'};position:absolute;top:16%;left:20%;width:36%;height:40%;border:1.5px solid rgba(255,255,255,.9);border-radius:5px`,
+      faceTag: `display:${s.sel === 'foto' ? 'block' : 'none'};position:absolute;top:6px;left:6px;max-width:calc(100% - 12px);overflow:hidden;text-overflow:ellipsis;padding:3px 7px;border-radius:6px;background:rgba(11,18,32,.68);color:#FFFFFF;font-size:10px;font-weight:700;white-space:nowrap`,
+      floatBar: `display:${s.sel ? 'flex' : 'none'};position:absolute;left:50%;bottom:50px;transform:translateX(-50%);z-index:30;align-items:center;gap:3px;padding:5px;border-radius:12px;background:#FFFFFF;border:1px solid #E6EAF2;box-shadow:0 10px 24px rgba(11,18,32,.14);white-space:nowrap`,
+      bwTrack: `width:40px;height:24px;border-radius:999px;background:${s.bw ? '#2563EB' : '#E6EAF2'};padding:3px;display:flex;justify-content:${s.bw ? 'flex-end' : 'flex-start'};cursor:pointer;flex:0 0 auto`,
+      toggleBw: () => this.setState({ bw: !s.bw }),
+
+      goNext: () => this.turn('next'),
+      goPrev: () => this.turn('prev'),
+      turnSheet: s.turning
+        ? `position:absolute;top:0;bottom:0;${s.turning === 'next' ? 'left:50%;transform-origin:left center;' : 'left:0;transform-origin:right center;'}width:50%;z-index:20;transform-style:preserve-3d;pointer-events:none;animation:${s.turning === 'next' ? 'flipNext' : 'flipPrev'} 880ms cubic-bezier(.56,.08,.18,.96) both`
+        : 'display:none',
+      turnFront: 'position:absolute;inset:0;backface-visibility:hidden;overflow:hidden;background:linear-gradient(90deg,#FFFFFF,#FFFEFB);box-shadow:-10px 0 25px rgba(0,0,0,.12)',
+      turnBack: `position:absolute;inset:0;backface-visibility:hidden;overflow:hidden;background:linear-gradient(270deg,#FFFFFF,#FFFEFB);box-shadow:10px 0 25px rgba(0,0,0,.12);transform:rotateY(${s.turning === 'prev' ? '-180deg' : '180deg'})`,
+      stageStyle: 'flex:1 1 auto;min-height:150px;width:100%;display:flex;align-items:center;justify-content:center;perspective:2200px',
+      bookStyle: `position:relative;height:100%;max-height:min(100%, ${Math.round(440 * s.zoom / 64)}px);aspect-ratio:2.04 / 1;max-width:min(100%, ${Math.round(900 * s.zoom / 64)}px);filter:drop-shadow(0 24px 34px rgba(30,45,75,.18));transition:max-height .2s ease`,
+
+      layPrev: () => { const el = document.querySelector('.om-laycar'); if (el) el.scrollBy({ left: -190, behavior: 'smooth' }); },
+      layNext: () => { const el = document.querySelector('.om-laycar'); if (el) el.scrollBy({ left: 190, behavior: 'smooth' }); },
+      zoomIn: () => this.setState({ zoom: Math.min(160, s.zoom + 12) }),
+      zoomOut: () => this.setState({ zoom: Math.max(28, s.zoom - 12) }),
+      openModal: () => this.setState({ modal: 1 }),
+      closeModal: () => this.setState({ modal: null }),
+      ov: `position:fixed;inset:0;background:rgba(11,18,32,.5);z-index:60;${s.modal ? '' : 'display:none'}`,
+      sh: `position:fixed;inset:0;z-index:61;display:flex;align-items:center;justify-content:center;padding:24px;pointer-events:none;${s.modal ? '' : 'display:none'}`
+    };
+    for (let i = 0; i < 5; i++) {
+      const on = s.tool === i;
+      v['tool' + i] = `width:60px;height:58px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;border-radius:14px;cursor:pointer;transition:all .15s;`
+        + (on ? 'background:linear-gradient(135deg,#2563EB,#06B6D4);color:#FFFFFF;box-shadow:0 8px 16px rgba(37,99,235,.24);' : 'background:transparent;color:#46536A;');
+      v['setTool' + i] = () => this.setState({ tool: i, panel: true });
+      v['p' + i] = s.tool === i ? 'flex:1 1 auto;min-height:0;display:flex;flex-direction:column' : 'display:none';
+    }
+    for (let i = 1; i <= 4; i++) {
+      const pos = ['top:-6px;left:-6px', 'top:-6px;right:-6px', 'bottom:-6px;left:-6px', 'bottom:-6px;right:-6px'][i - 1];
+      v['h' + i] = `${s.sel === 'foto' ? '' : 'display:none;'}position:absolute;width:11px;height:11px;border-radius:3px;background:#FFFFFF;border:1.5px solid #2563EB;${pos};z-index:9`;
+    }
+    return v;
+  }
+}
+</script>
+</body>
+</html>

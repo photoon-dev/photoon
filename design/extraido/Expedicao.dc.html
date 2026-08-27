@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin=""/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+  html, body { margin: 0; padding: 0; background: #F4F7FC; }
+  * { box-sizing: border-box; }
+  a { color: #2563EB; text-decoration: none; }
+  a:hover { color: #1D4FD7; }
+  input:focus { outline: none; }
+  input::placeholder { color: #9AA7BC; }
+  ::-webkit-scrollbar { width: 10px; }
+  ::-webkit-scrollbar-thumb { background: #DCE3EF; border-radius: 8px; border: 3px solid #F4F7FC; }
+  @keyframes menuIn { from { transform: translateY(-6px); opacity: 0 } to { transform: none; opacity: 1 } }
+  @keyframes riseIn { from { transform: translateY(12px); opacity: 0 } to { transform: none; opacity: 1 } }
+  @keyframes drawLine { from { stroke-dashoffset: 1600 } to { stroke-dashoffset: 0 } }
+  @keyframes pulseDot { 0%,100% { transform: scale(1); opacity: 1 } 50% { transform: scale(1.35); opacity: .55 } }
+</style>
+</helmet>
+<div style="min-height: 100vh; display: flex; background: #F4F7FC; font-family: 'Plus Jakarta Sans', sans-serif; color: #0B1220;">
+
+  <aside style="{{ sideStyle }}">
+    <div style="display: flex; align-items: center; gap: 11px; height: 78px; padding: 0 22px; overflow: hidden; white-space: nowrap; flex: 0 0 auto;">
+      <svg viewBox="0 0 124 72" width="40" height="24" style="flex: 0 0 auto;">
+        <defs><linearGradient id="lensA" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2563EB"/><stop offset="1" stop-color="#06B6D4"/></linearGradient></defs>
+        <circle cx="34" cy="36" r="26" fill="none" stroke="#0B1220" stroke-width="7"/>
+        <circle cx="34" cy="36" r="11" fill="#0B1220"/>
+        <circle cx="90" cy="36" r="26" fill="none" stroke="#0B1220" stroke-width="7"/>
+        <circle cx="90" cy="36" r="11" fill="url(#lensA)"/>
+        <circle cx="98" cy="19" r="5.5" fill="#06B6D4"/>
+      </svg>
+      <span style="{{ brandStyle }}">PHOTOON</span>
+    </div>
+
+    <div style="{{ tenantStyle }}">
+      <div style="width: 34px; height: 34px; border-radius: 11px; background: linear-gradient(135deg,#2563EB,#06B6D4); color: #FFF; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; flex: 0 0 auto;">LC</div>
+      <div style="display: flex; flex-direction: column; line-height: 1.25; min-width: 0;">
+        <span style="font-size: 13.5px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Lab Cores</span>
+        <span style="font-size: 11.5px; color: #6B7A90;">Filial Centro · Plano Pro</span>
+      </div>
+      <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#9AA7BC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left: auto; flex: 0 0 auto;"><path d="m8 9 4-4 4 4M8 15l4 4 4-4"/></svg>
+    </div>
+
+    <nav style="display: flex; flex-direction: column; gap: 3px; padding: 8px 14px 6px; flex: 1; overflow-x: hidden; overflow-y: auto;">
+      <p style="{{ groupStyle }}">Operação</p>
+      <div onClick="{{ pick0 }}" style="{{ nav0 }}">
+        <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="flex:0 0 auto"><rect x="3" y="3" width="7.5" height="7.5" rx="2.4"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="2.4"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="2.4"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="2.4"/></svg>
+        <span style="{{ labelStyle }}">Dashboard</span>
+      </div>
+      <div onClick="{{ pick1 }}" style="{{ nav1 }}">
+        <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="flex:0 0 auto"><path d="M4 8h16l-1.2 11.2a2 2 0 0 1-2 1.8H7.2a2 2 0 0 1-2-1.8z"/><path d="M9 8V6.5a3 3 0 0 1 6 0V8"/></svg>
+        <span style="{{ labelStyle }}">Pedidos</span>
+        <span style="{{ badgeStyle }}">14</span>
+      </div>
+      <div onClick="{{ pick2 }}" style="{{ nav2 }}">
+        <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="flex:0 0 auto"><path d="M7 9V4h10v5"/><rect x="4" y="9" width="16" height="7" rx="2.5"/><path d="M7 14h10v6H7z"/></svg>
+        <span style="{{ labelStyle }}">Produção</span>
+      </div>
+      <div onClick="{{ pick3 }}" style="{{ nav3 }}">
+        <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="flex:0 0 auto"><path d="M4 7.5 12 3.5l8 4v9L12 20.5l-8-4z"/><path d="m4 7.5 8 4 8-4M12 11.5v9"/></svg>
+        <span style="{{ labelStyle }}">Expedição</span>
+      </div>
+      <p style="{{ groupStyle }}">Loja e catálogo</p>
+      <div onClick="{{ pick4 }}" style="{{ nav4 }}">
+        <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="flex:0 0 auto"><path d="M4 9.5 5.5 4h13L20 9.5"/><path d="M4 9.5h16V20H4z"/><path d="M9 20v-5h6v5"/></svg>
+        <span style="{{ labelStyle }}">Loja</span>
+      </div>
+      <div onClick="{{ pick5 }}" style="{{ nav5 }}">
+        <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="flex:0 0 auto"><rect x="3" y="4" width="18" height="16" rx="4"/><path d="m3.5 16 4.6-4.2 4 3.4 3.4-3 5 4.4"/><circle cx="8.6" cy="8.8" r="1.5"/></svg>
+        <span style="{{ labelStyle }}">Catálogo</span>
+      </div>
+      <div onClick="{{ pick6 }}" style="{{ nav6 }}">
+        <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="flex:0 0 auto"><path d="M4 11.5V5h6.5L20 14.5 13.5 21z"/><circle cx="8" cy="8.5" r="1.4"/></svg>
+        <span style="{{ labelStyle }}">Preços</span>
+      </div>
+      <div onClick="{{ pick7 }}" style="{{ nav7 }}">
+        <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="flex:0 0 auto"><path d="m12 3.5 8 4.2-8 4.2-8-4.2z"/><path d="m4 12.5 8 4.2 8-4.2"/></svg>
+        <span style="{{ labelStyle }}">Temas e templates</span>
+      </div>
+      <p style="{{ groupStyle }}">Comercial</p>
+      <div onClick="{{ pick8 }}" style="{{ nav8 }}">
+        <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="flex:0 0 auto"><circle cx="9" cy="8" r="3.4"/><path d="M3.5 19.5c.7-3.2 3-5 5.5-5s4.8 1.8 5.5 5M16.5 6.2a3 3 0 0 1 0 5.6M18.5 19.5c-.3-1.7-.9-3-1.8-3.9"/></svg>
+        <span style="{{ labelStyle }}">Clientes</span>
+      </div>
+      <div onClick="{{ pick9 }}" style="{{ nav9 }}">
+        <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="flex:0 0 auto"><rect x="3" y="4" width="18" height="16" rx="4"/><path d="M8 9h3.5M8 13h8M8 17h5"/></svg>
+        <span style="{{ labelStyle }}">CRM</span>
+      </div>
+      <div onClick="{{ pick10 }}" style="{{ nav10 }}">
+        <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="flex:0 0 auto"><circle cx="12" cy="8" r="3.4"/><path d="M5 20c.8-3.6 3.6-5.6 7-5.6s6.2 2 7 5.6"/></svg>
+        <span style="{{ labelStyle }}">Vendedores</span>
+      </div>
+      <div onClick="{{ pick11 }}" style="{{ nav11 }}">
+        <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="flex:0 0 auto"><path d="M4 10v4h3l7 4V6l-7 4z"/><path d="M17.5 9.5a4 4 0 0 1 0 5"/></svg>
+        <span style="{{ labelStyle }}">Marketing</span>
+      </div>
+      <p style="{{ groupStyle }}">Financeiro</p>
+      <div onClick="{{ pick12 }}" style="{{ nav12 }}">
+        <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="flex:0 0 auto"><rect x="2.5" y="5" width="19" height="14" rx="4"/><path d="M2.5 10h19"/></svg>
+        <span style="{{ labelStyle }}">Pagamentos</span>
+      </div>
+      <div onClick="{{ pick13 }}" style="{{ nav13 }}">
+        <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="flex:0 0 auto"><path d="M4 7.5A2.5 2.5 0 0 1 6.5 5H18v3"/><rect x="3" y="8" width="18" height="11" rx="3"/><circle cx="16.5" cy="13.5" r="1.3"/></svg>
+        <span style="{{ labelStyle }}">Carteira e faturas</span>
+      </div>
+      <p style="{{ groupStyle }}">Sistema</p>
+      <div onClick="{{ pick14 }}" style="{{ nav14 }}">
+        <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="flex:0 0 auto"><path d="M4 19V9M10 19V5M16 19v-6M22 19H2"/></svg>
+        <span style="{{ labelStyle }}">Relatórios</span>
+      </div>
+      <div onClick="{{ pick15 }}" style="{{ nav15 }}">
+        <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="flex:0 0 auto"><path d="M13 3 4.5 13.5H11l-1 7.5 8.5-10.5H12z"/></svg>
+        <span style="{{ labelStyle }}">Automações</span>
+      </div>
+      <div onClick="{{ pick16 }}" style="{{ nav16 }}">
+        <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="flex:0 0 auto"><path d="M9 3v6M15 3v6"/><path d="M6 9h12v3a6 6 0 0 1-12 0z"/><path d="M12 18v3"/></svg>
+        <span style="{{ labelStyle }}">Integrações</span>
+      </div>
+      <div onClick="{{ pick17 }}" style="{{ nav17 }}">
+        <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="flex:0 0 auto"><path d="M12 3.5 5 6.5v5c0 4.3 2.9 7.6 7 9 4.1-1.4 7-4.7 7-9v-5z"/><path d="m9.3 12 1.9 1.9 3.6-3.9"/></svg>
+        <span style="{{ labelStyle }}">Auditoria</span>
+      </div>
+      <div onClick="{{ pick18 }}" style="{{ nav18 }}">
+        <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="flex:0 0 auto"><circle cx="12" cy="12" r="8.5"/><path d="M9.8 9.6a2.3 2.3 0 1 1 3 2.2v1.4M12 16.6h.01"/></svg>
+        <span style="{{ labelStyle }}">Suporte</span>
+      </div>
+      <div onClick="{{ pick19 }}" style="{{ nav19 }}">
+        <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="flex:0 0 auto"><circle cx="12" cy="12" r="3.4"/><path d="M12 2.5v3M12 18.5v3M21.5 12h-3M5.5 12h-3M18.7 5.3l-2.1 2.1M7.4 16.6l-2.1 2.1M18.7 18.7l-2.1-2.1M7.4 7.4 5.3 5.3"/></svg>
+        <span style="{{ labelStyle }}">Configurações</span>
+      </div>
+    </nav>
+
+    <div style="padding: 12px 14px 16px; display: flex; flex-direction: column; gap: 10px; flex: 0 0 auto;">
+      <div style="{{ storageCard }}">
+        <div style="display: flex; align-items: center; gap: 9px; margin-bottom: 10px;">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#2563EB" stroke-width="1.9" stroke-linecap="round"><ellipse cx="12" cy="6" rx="7.5" ry="3"/><path d="M4.5 6v12c0 1.7 3.4 3 7.5 3s7.5-1.3 7.5-3V6M4.5 12c0 1.7 3.4 3 7.5 3s7.5-1.3 7.5-3"/></svg>
+          <span style="font-size: 13px; font-weight: 700;">Armazenamento</span>
+          <span style="margin-left: auto; font-size: 11.5px; color: #6B7A90;">72%</span>
+        </div>
+        <div style="height: 7px; border-radius: 999px; background: #E3E9F5; overflow: hidden;"><div style="width: 72%; height: 100%; border-radius: 999px; background: linear-gradient(90deg,#2563EB,#06B6D4);"></div></div>
+        <p style="margin: 10px 0 0; font-size: 11.5px; color: #6B7A90;">1,44 TB de 2 TB · originais e produção</p>
+      </div>
+      <div onClick="{{ toggleSide }}" style="{{ collapseBtn }}">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="{{ chevStyle }}"><path d="m14 6-6 6 6 6"/></svg>
+        <span style="{{ labelStyle }}">Recolher menu</span>
+      </div>
+    </div>
+  </aside>
+
+  <main style="flex: 1; min-width: 0; display: flex; flex-direction: column;">
+    <header style="position: sticky; top: 0; z-index: 30; display: flex; align-items: center; gap: 16px; min-height: 78px; padding: 12px 30px; flex-wrap: wrap; background: rgba(244,247,252,.88); backdrop-filter: blur(14px); border-bottom: 1px solid #E6EAF2;">
+      <div style="display: flex; align-items: center; gap: 10px; flex: 1; max-width: 460px; height: 46px; padding: 0 16px; background: #FFFFFF; border: 1px solid #E6EAF2; border-radius: 16px; box-shadow: 0 2px 8px rgba(11,18,32,.03);">
+        <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="#9AA7BC" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg>
+        <input placeholder="Buscar volume, rastreio ou pedido" style="flex: 1; border: 0; background: transparent; font-family: inherit; font-size: 14px; color: #0B1220;"/>
+        <span style="padding: 4px 9px; border-radius: 8px; background: #F1F5FD; font-size: 11px; font-weight: 600; color: #6B7A90;">⌘K</span>
+      </div>
+      <div style="flex: 1;"></div>
+      <div style="display: flex; align-items: center; gap: 9px;">
+        <button style="white-space: nowrap; height: 44px; padding: 0 18px; display: flex; align-items: center; gap: 9px; border: 0; border-radius: 14px; background: linear-gradient(135deg,#2563EB,#06B6D4); color: #FFFFFF; font-family: inherit; font-size: 14px; font-weight: 600; cursor: pointer; box-shadow: 0 8px 20px rgba(37,99,235,.28);" style-hover="filter: brightness(1.06);">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+          Novo pedido
+        </button>
+        <button style="position: relative; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; border: 1px solid #E6EAF2; border-radius: 14px; background: #FFFFFF; color: #46536A; cursor: pointer;" style-hover="background: #F1F5FD; color: #2563EB;">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8.5a6 6 0 1 0-12 0c0 6-2 7.5-2 7.5h16s-2-1.5-2-7.5M10.5 19.5a2 2 0 0 0 3 0"/></svg>
+          <span style="position: absolute; top: 10px; right: 11px; width: 8px; height: 8px; border-radius: 999px; background: #F43F5E; border: 2px solid #FFFFFF;"></span>
+        </button>
+        <div style="position: relative;">
+          <div onClick="{{ toggleMenu }}" style="{{ avatarBtn }}">
+            <div style="width: 34px; height: 34px; border-radius: 11px; background: linear-gradient(135deg,#0B1220,#2E3E5C); color: #FFF; display: flex; align-items: center; justify-content: center; font-size: 12.5px; font-weight: 700;">MR</div>
+            <div style="display: flex; flex-direction: column; line-height: 1.25; text-align: left;">
+              <span style="font-size: 13.5px; font-weight: 700;">Marta Reis</span>
+              <span style="font-size: 11.5px; color: #6B7A90;">Administradora</span>
+            </div>
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#9AA7BC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="{{ menuChev }}"><path d="m6 9 6 6 6-6"/></svg>
+          </div>
+          <div style="{{ menuStyle }}">
+            <div style="padding: 16px; background: linear-gradient(135deg,#EEF3FF,#E4F8FC);">
+              <p style="margin: 0; font-size: 14px; font-weight: 700;">Marta Reis</p>
+              <p style="margin: 3px 0 0; font-size: 12.5px; color: #6B7A90;">marta@labcores.com.br</p>
+              <span style="display: inline-block; margin-top: 10px; padding: 4px 10px; border-radius: 999px; background: #FFFFFF; font-size: 11px; font-weight: 600; color: #2563EB;">Plano Pro · 8 usuários</span>
+            </div>
+            <div style="padding: 8px;">
+              <div style="display: flex; align-items: center; gap: 11px; padding: 10px 12px; border-radius: 12px; font-size: 13.5px; color: #34405A; cursor: pointer;" style-hover="background: #F1F5FD; color: #2563EB;">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.4"/><path d="M5 20c.8-3.6 3.6-5.6 7-5.6s6.2 2 7 5.6"/></svg>
+                Meu perfil
+              </div>
+              <div style="display: flex; align-items: center; gap: 11px; padding: 10px 12px; border-radius: 12px; font-size: 13.5px; color: #34405A; cursor: pointer;" style-hover="background: #F1F5FD; color: #2563EB;">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7.5 12 3.5l8 4v9L12 20.5l-8-4z"/></svg>
+                Empresa e filiais
+              </div>
+              <div style="display: flex; align-items: center; gap: 11px; padding: 10px 12px; border-radius: 12px; font-size: 13.5px; color: #34405A; cursor: pointer;" style-hover="background: #F1F5FD; color: #2563EB;">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="4"/><path d="M3 10h18"/></svg>
+                Assinatura e faturas
+              </div>
+            </div>
+            <div style="padding: 8px; border-top: 1px solid #EEF1F7;">
+              <a href="./Login.dc.html" style="display: flex; align-items: center; gap: 11px; padding: 10px 12px; border-radius: 12px; font-size: 13.5px; color: #E11D48;" style-hover="background: #FFF1F3; color: #E11D48;">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 17v2a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v2M10 12h11M18 9l3 3-3 3"/></svg>
+                Sair da conta
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div style="padding: 26px 30px 60px; display: flex; flex-direction: column; gap: 20px; animation: riseIn .5s cubic-bezier(.2,.8,.2,1) both;">
+      <div style="display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; flex-wrap: wrap;">
+        <div>
+          <p style="margin: 0 0 8px; font-size: 12px; letter-spacing: 1.6px; text-transform: uppercase; color: #9AA7BC; font-weight: 700;">Operação · Expedição</p>
+          <h1 style="margin: 0 0 8px; font-size: 30px; font-weight: 800; letter-spacing: -1px;">Expedição e embalagem</h1>
+          <p style="margin: 0; font-size: 14.5px; color: #6B7A90;">68 volumes para despachar hoje · coleta Correios 14h e Loggi 17h · 2 ocorrências abertas</p>
+        </div>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;"><button  style="white-space: nowrap; height: 44px; padding: 0 18px; display: flex; align-items: center; gap: 9px; border: 1px solid #E6EAF2; border-radius: 14px; background: #FFFFFF; color: #0B1220; font-family: inherit; font-size: 14px; font-weight: 600; cursor: pointer;" style-hover="background: #F1F5FD; border-color: #D6E2FC; color: #2563EB;"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3v5h5"/><path d="M6 3h8l5 5v13H6z"/></svg>Romaneio do dia</button><button  style="white-space: nowrap; height: 44px; padding: 0 18px; display: flex; align-items: center; gap: 9px; border: 1px solid #E6EAF2; border-radius: 14px; background: #FFFFFF; color: #0B1220; font-family: inherit; font-size: 14px; font-weight: 600; cursor: pointer;" style-hover="background: #F1F5FD; border-color: #D6E2FC; color: #2563EB;"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v5M12 16.5h.01"/><circle cx="12" cy="12" r="8.5"/></svg>Ocorrências</button><button onClick="{{ openModal }}" style="white-space: nowrap; height: 44px; padding: 0 18px; display: flex; align-items: center; gap: 9px; border: 0; border-radius: 14px; background: linear-gradient(135deg,#2563EB,#06B6D4); color: #FFFFFF; font-family: inherit; font-size: 14px; font-weight: 700; cursor: pointer; box-shadow: 0 8px 20px rgba(37,99,235,.28);" style-hover="filter: brightness(1.06);"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M7 9V4h10v5"/><rect x="4" y="9" width="16" height="7" rx="2.5"/><path d="M7 14h10v6H7z"/></svg>Gerar etiquetas</button></div>
+      </div>
+
+      <div style="display: flex; gap: 4px; padding: 5px; background: #F4F7FC; border: 1px solid #E6EAF2; border-radius: 999px; flex-wrap: wrap; width: max-content; max-width: 100%;">
+        <span onClick="{{ setP0 }}" style="{{ per0 }}" style-hover="background: #FFFFFF; color: #2563EB;">Para embalar</span>
+        <span onClick="{{ setP1 }}" style="{{ per1 }}" style-hover="background: #FFFFFF; color: #2563EB;">Etiquetados</span>
+        <span onClick="{{ setP2 }}" style="{{ per2 }}" style-hover="background: #FFFFFF; color: #2563EB;">Coletas</span>
+        <span onClick="{{ setP3 }}" style="{{ per3 }}" style-hover="background: #FFFFFF; color: #2563EB;">Retiradas</span>
+        <span onClick="{{ setP4 }}" style="{{ per4 }}" style-hover="background: #FFFFFF; color: #2563EB;">Ocorrências</span>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; align-items: start;">
+
+        <div style="background: #FFFFFF; border: 1px solid #E6EAF2; border-radius: 24px; padding: 22px 26px; grid-column: span 2; min-width: 0;">
+          <div style="display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 18px; flex-wrap: wrap;">
+            <div>
+              <h2 style="margin: 0; font-size: 18px; font-weight: 700;">Estação de embalagem</h2>
+              <p style="margin: 5px 0 0; font-size: 13px; color: #6B7A90;">Bipe a OS para conferir os itens e imprimir a etiqueta</p>
+            </div>
+            <span style="display: flex; align-items: center; gap: 8px; padding: 8px 13px; border-radius: 999px; background: #E6F8F1; color: #059669; font-size: 12.5px; font-weight: 700;"><span style="width: 8px; height: 8px; border-radius: 999px; background: #10B981;"></span>Zebra ZT230 pronta</span>
+          </div>
+
+          <div style="display: flex; align-items: center; gap: 12px; padding: 8px 8px 8px 18px; border: 1.5px solid #2563EB; border-radius: 18px; background: #F8FAFE; margin-bottom: 20px;">
+            <span style="color: #2563EB; flex: 0 0 auto;"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6v12M8 6v12M12 6v12M16 6v12M20 6v12"/></svg></span>
+            <input value="OS-10482" style="flex: 1; min-width: 0; border: 0; background: transparent; font-family: monospace; font-size: 18px; font-weight: 700; color: #0B1220;"/>
+            <button style="white-space: nowrap; height: 42px; padding: 0 18px; border: 0; border-radius: 13px; background: #0B1220; color: #FFFFFF; font-family: inherit; font-size: 13.5px; font-weight: 700; cursor: pointer;" style-hover="background: #2563EB;">Conferir</button>
+          </div>
+
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 18px; align-items: start;">
+            <div>
+              <p style="margin: 0 0 12px; font-size: 12px; letter-spacing: 1.4px; text-transform: uppercase; color: #9AA7BC; font-weight: 700;">Conferência de itens · 3 de 3</p>
+              <div style="display: flex; flex-direction: column; gap: 10px;">
+                <div style="display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 15px; background: #F8FAFE; border: 1px solid #EEF1F7;"><span style="width: 22px; height: 22px; border-radius: 7px; background: #10B981; display: flex; align-items: center; justify-content: center; color: #FFFFFF; flex: 0 0 auto;"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span><div style="flex: 1; min-width: 0;"><p style="margin: 0; font-size: 13.5px; font-weight: 600;">Fotolivro 30×30 · capa dura</p><p style="margin: 2px 0 0; font-size: 12px; color: #6B7A90;">1 un · lote 214</p></div></div>
+                <div style="display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 15px; background: #F8FAFE; border: 1px solid #EEF1F7;"><span style="width: 22px; height: 22px; border-radius: 7px; background: #10B981; display: flex; align-items: center; justify-content: center; color: #FFFFFF; flex: 0 0 auto;"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span><div style="flex: 1; min-width: 0;"><p style="margin: 0; font-size: 13.5px; font-weight: 600;">Estojo rígido personalizado</p><p style="margin: 2px 0 0; font-size: 12px; color: #6B7A90;">1 un · linho azul</p></div></div>
+                <div style="display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 15px; background: #F8FAFE; border: 1px solid #EEF1F7;"><span style="width: 22px; height: 22px; border-radius: 7px; background: #10B981; display: flex; align-items: center; justify-content: center; color: #FFFFFF; flex: 0 0 auto;"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span><div style="flex: 1; min-width: 0;"><p style="margin: 0; font-size: 13.5px; font-weight: 600;">Revelação 15×21</p><p style="margin: 2px 0 0; font-size: 12px; color: #6B7A90;">40 un · envelope kraft</p></div></div>
+              </div>
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 12px; margin-top: 16px;">
+            <div style="display: flex; flex-direction: column; gap: 8px; min-width: 0;">
+              <label style="font-size: 12.5px; font-weight: 600; color: #6B7A90;">Peso (kg)</label>
+              <input value="1,84" style="height: 46px; padding: 0 15px; border: 1px solid #E6EAF2; border-radius: 14px; font-family: inherit; font-size: 14px; color: #0B1220; min-width: 0;" style-focus="border-color: #2563EB;"/>
+              
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 8px; min-width: 0;">
+              <label style="font-size: 12.5px; font-weight: 600; color: #6B7A90;">Caixa</label>
+              <input value="C2 · 32×32×8" style="height: 46px; padding: 0 15px; border: 1px solid #E6EAF2; border-radius: 14px; font-family: inherit; font-size: 14px; color: #0B1220; min-width: 0;" style-focus="border-color: #2563EB;"/>
+              
+            </div>
+              </div>
+            </div>
+
+            <div>
+              <p style="margin: 0 0 12px; font-size: 12px; letter-spacing: 1.4px; text-transform: uppercase; color: #9AA7BC; font-weight: 700;">Prévia da etiqueta</p>
+              <div style="border: 1px solid #E6EAF2; border-radius: 18px; padding: 18px; background: #FFFFFF; box-shadow: 0 10px 24px rgba(11,18,32,.07);">
+                <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; padding-bottom: 12px; border-bottom: 1.5px dashed #CBD5E6;">
+                  <div style="min-width: 0;"><p style="margin: 0; font-size: 15px; font-weight: 800;">PHOTOON</p><p style="margin: 3px 0 0; font-size: 11px; color: #6B7A90;">Fábrica Lapa · São Paulo, SP</p></div>
+                  <span style="padding: 4px 9px; border-radius: 7px; background: #0B1220; color: #FFFFFF; font-size: 10.5px; font-weight: 700;">PAC</span>
+                </div>
+                <div style="padding: 12px 0; border-bottom: 1.5px dashed #CBD5E6;">
+                  <p style="margin: 0; font-size: 10.5px; letter-spacing: 1px; text-transform: uppercase; color: #9AA7BC; font-weight: 700;">Destinatário</p>
+                  <p style="margin: 5px 0 0; font-size: 13.5px; font-weight: 700;">Studio Fotográfico Lume</p>
+                  <p style="margin: 3px 0 0; font-size: 12px; color: #46536A; line-height: 1.5;">Rua das Artes, 210 · sala 4<br/>São Paulo, SP · 01310-000</p>
+                </div>
+                <div style="display: flex; align-items: center; gap: 14px; padding-top: 12px;">
+                  <div style="display: flex; align-items: flex-end; gap: 2px; height: 44px; flex: 1; min-width: 0;">
+                    <span style="flex: 1; height: 100%; background: #0B1220;"></span>
+                    <span style="flex: 1; height: 60%; background: #0B1220;"></span>
+                    <span style="flex: 1; height: 90%; background: #0B1220;"></span>
+                    <span style="flex: 1; height: 45%; background: #0B1220;"></span>
+                    <span style="flex: 1; height: 100%; background: #0B1220;"></span>
+                    <span style="flex: 1; height: 70%; background: #0B1220;"></span>
+                    <span style="flex: 1; height: 55%; background: #0B1220;"></span>
+                    <span style="flex: 1; height: 95%; background: #0B1220;"></span>
+                    <span style="flex: 1; height: 100%; background: #0B1220;"></span>
+                    <span style="flex: 1; height: 60%; background: #0B1220;"></span>
+                    <span style="flex: 1; height: 90%; background: #0B1220;"></span>
+                    <span style="flex: 1; height: 45%; background: #0B1220;"></span>
+                    <span style="flex: 1; height: 100%; background: #0B1220;"></span>
+                    <span style="flex: 1; height: 70%; background: #0B1220;"></span>
+                    <span style="flex: 1; height: 55%; background: #0B1220;"></span>
+                    <span style="flex: 1; height: 95%; background: #0B1220;"></span>
+                    <span style="flex: 1; height: 100%; background: #0B1220;"></span>
+                    <span style="flex: 1; height: 60%; background: #0B1220;"></span>
+                    <span style="flex: 1; height: 90%; background: #0B1220;"></span>
+                    <span style="flex: 1; height: 45%; background: #0B1220;"></span>
+                    <span style="flex: 1; height: 100%; background: #0B1220;"></span>
+                    <span style="flex: 1; height: 70%; background: #0B1220;"></span>
+                    <span style="flex: 1; height: 55%; background: #0B1220;"></span>
+                    <span style="flex: 1; height: 95%; background: #0B1220;"></span>
+                    <span style="flex: 1; height: 100%; background: #0B1220;"></span>
+                    <span style="flex: 1; height: 60%; background: #0B1220;"></span>
+                    <span style="flex: 1; height: 90%; background: #0B1220;"></span>
+                    <span style="flex: 1; height: 45%; background: #0B1220;"></span>
+                    <span style="flex: 1; height: 100%; background: #0B1220;"></span>
+                    <span style="flex: 1; height: 70%; background: #0B1220;"></span>
+                    <span style="flex: 1; height: 55%; background: #0B1220;"></span>
+                    <span style="flex: 1; height: 95%; background: #0B1220;"></span>
+                    <span style="flex: 1; height: 100%; background: #0B1220;"></span>
+                    <span style="flex: 1; height: 60%; background: #0B1220;"></span>
+                  </div>
+                  <div style="text-align: right; flex: 0 0 auto;"><p style="margin: 0; font-size: 11px; color: #9AA7BC;">Rastreio</p><p style="margin: 2px 0 0; font-size: 12.5px; font-weight: 700; font-family: monospace;">PT884120BR</p></div>
+                </div>
+              </div>
+              <div style="display: flex; gap: 10px; margin-top: 14px;">
+                <button style="white-space: nowrap; flex: 1; height: 44px; border: 1px solid #E6EAF2; border-radius: 14px; background: #FFFFFF; color: #46536A; font-family: inherit; font-size: 13.5px; font-weight: 600; cursor: pointer;" style-hover="background: #F1F5FD; color: #2563EB;">Reimprimir</button>
+                <button style="white-space: nowrap; flex: 1; height: 44px; border: 0; border-radius: 14px; background: linear-gradient(135deg,#2563EB,#06B6D4); color: #FFFFFF; font-family: inherit; font-size: 13.5px; font-weight: 700; cursor: pointer; box-shadow: 0 8px 18px rgba(37,99,235,.26);" style-hover="filter: brightness(1.06);">Despachar volume</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 20px; min-width: 0;">
+          <div style="background: #FFFFFF; border: 1px solid #E6EAF2; border-radius: 24px; padding: 22px 24px;">
+            <h2 style="margin: 0 0 16px; font-size: 17px; font-weight: 700;">Coletas de hoje</h2>
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+              <div style="padding: 14px; border-radius: 16px; background: #F8FAFE; border: 1px solid #EEF1F7;">
+                <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 10px;"><p style="margin: 0; font-size: 13.5px; font-weight: 700;">Correios · 14h00</p><span style="white-space: nowrap; padding: 4px 9px; border-radius: 999px; background: #FEF3E2; color: #B45309; font-size: 11px; font-weight: 700;">em 2 h</span></div>
+                <div style="margin-bottom: 8px; display: flex; justify-content: space-between; font-size: 12.5px; color: #6B7A90;"><span>36 volumes etiquetados</span><span>de 42</span></div>
+                <div style="height: 7px; border-radius: 999px; background: #EEF1F7;"><div style="width: 86%; height: 100%; border-radius: 999px; background: linear-gradient(90deg,#2563EB,#06B6D4);"></div></div>
+              </div>
+              <div style="padding: 14px; border-radius: 16px; background: #F8FAFE; border: 1px solid #EEF1F7;">
+                <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 10px;"><p style="margin: 0; font-size: 13.5px; font-weight: 700;">Loggi · 17h00</p><span style="white-space: nowrap; padding: 4px 9px; border-radius: 999px; background: #F1F5FD; color: #46536A; font-size: 11px; font-weight: 700;">em 5 h</span></div>
+                <div style="margin-bottom: 8px; display: flex; justify-content: space-between; font-size: 12.5px; color: #6B7A90;"><span>4 volumes etiquetados</span><span>de 26</span></div>
+                <div style="height: 7px; border-radius: 999px; background: #EEF1F7;"><div style="width: 15%; height: 100%; border-radius: 999px; background: #6366F1;"></div></div>
+              </div>
+            </div>
+          </div>
+          <div style="background: #FFFFFF; border: 1px solid #E6EAF2; border-radius: 24px; padding: 22px 24px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 16px;">
+              <h2 style="margin: 0; font-size: 17px; font-weight: 700;">Retiradas no balcão</h2>
+              <span style="white-space: nowrap; padding: 5px 10px; border-radius: 999px; background: #FEF3E2; color: #B45309; font-size: 11.5px; font-weight: 700;">9 aguardando</span>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+              <div style="display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 15px; background: #F8FAFE; border: 1px solid #EEF1F7;"><span style="width: 32px; height: 32px; border-radius: 10px; background: #EDEBFE; color: #6366F1; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex: 0 0 auto;">MB</span><div style="flex: 1; min-width: 0;"><p style="margin: 0; font-size: 13px; font-weight: 600;">Memória Books</p><p style="margin: 2px 0 0; font-size: 12px; color: #6B7A90;">avisado hoje · Centro</p></div></div>
+              <div style="display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 15px; background: #FEF3E2; border: 1px solid #FCE9CE;"><span style="width: 32px; height: 32px; border-radius: 10px; background: #FFFFFF; color: #B45309; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex: 0 0 auto;">LV</span><div style="flex: 1; min-width: 0;"><p style="margin: 0; font-size: 13px; font-weight: 600;">Luz Viva Estúdio</p><p style="margin: 2px 0 0; font-size: 12px; color: #6B7A90;">há 6 dias · cobrar retirada</p></div></div>
+              <div style="display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 15px; background: #F8FAFE; border: 1px solid #EEF1F7;"><span style="width: 32px; height: 32px; border-radius: 10px; background: #E4F8FC; color: #0891B2; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex: 0 0 auto;">AP</span><div style="flex: 1; min-width: 0;"><p style="margin: 0; font-size: 13px; font-weight: 600;">Ana Paula Moreira</p><p style="margin: 2px 0 0; font-size: 12px; color: #6B7A90;">avisada ontem · Norte</p></div></div>
+            </div>
+          </div>
+          <div style="background: #0B1220; border-radius: 24px; padding: 22px 24px; color: #FFFFFF;">
+            <p style="margin: 0 0 8px; font-size: 12px; letter-spacing: 1.6px; text-transform: uppercase; color: rgba(255,255,255,.55); font-weight: 700;">Ocorrências</p>
+            <p style="margin: 0 0 6px; font-size: 26px; font-weight: 800; letter-spacing: -.8px;">2 abertas</p>
+            <p style="margin: 0 0 16px; font-size: 13px; color: rgba(255,255,255,.7);">1 extravio em análise nos Correios e 1 endereço insuficiente aguardando cliente.</p>
+            <button style="white-space: nowrap; height: 40px; padding: 0 16px; border: 1px solid rgba(255,255,255,.25); border-radius: 999px; background: transparent; color: #FFFFFF; font-family: inherit; font-size: 13.5px; font-weight: 600; cursor: pointer;" style-hover="background: rgba(255,255,255,.1);">Abrir ocorrências</button>
+          </div>
+        </div>
+      </div>
+
+      <div style="background: #FFFFFF; border: 1px solid #E6EAF2; border-radius: 24px; overflow: hidden;">
+        <div style="display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 18px 24px; flex-wrap: wrap;">
+          <h2 style="margin: 0; font-size: 18px; font-weight: 700;">Volumes do dia</h2>
+          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <span style="padding: 9px 14px; border-radius: 999px; background: #F1F5FD; border: 1px solid #D6E2FC; font-size: 12.5px; font-weight: 700; color: #2563EB; cursor: pointer;">3 selecionados</span>
+            <span style="padding: 9px 14px; border-radius: 999px; background: #F4F7FC; border: 1px solid #E6EAF2; font-size: 12.5px; font-weight: 600; color: #46536A; cursor: pointer;" style-hover="border-color: #2563EB; color: #2563EB;">Imprimir selecionados</span>
+          </div>
+        </div>
+        <div style="overflow-x: auto;">
+          <div style="display: grid; grid-template-columns: 26px minmax(110px,.8fr) minmax(110px,.8fr) minmax(170px,1.3fr) minmax(130px,1fr) minmax(140px,1fr) minmax(70px,.5fr) minmax(120px,.9fr); gap: 14px; padding: 10px 24px; background: #F8FAFE; border-top: 1px solid #EEF1F7; border-bottom: 1px solid #EEF1F7; font-size: 11.5px; letter-spacing: .6px; text-transform: uppercase; color: #9AA7BC; font-weight: 700;">
+            <span></span><span>Volume</span><span>Pedido</span><span>Cliente</span><span>Transportadora</span><span>Rastreio</span><span>Itens</span><span>Status</span>
+          </div>
+            <div style="display: grid; grid-template-columns: 26px minmax(110px,.8fr) minmax(110px,.8fr) minmax(170px,1.3fr) minmax(130px,1fr) minmax(140px,1fr) minmax(70px,.5fr) minmax(120px,.9fr); gap: 14px; align-items: center; padding: 14px 24px; border-bottom: 1px solid #F4F6FB; cursor: pointer;" style-hover="background: #F8FAFE;">
+              <span style="width: 18px; height: 18px; border-radius: 6px; border: 1.5px solid #2563EB; background: #2563EB; display: flex; align-items: center; justify-content: center; color: #FFFFFF;"><svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>
+              <span style="font-size: 13px; font-weight: 700; color: #46536A;">VOL-4412</span>
+              <a href="./Pedido.dc.html" style="font-size: 13px; font-weight: 600;">#PT-10479</a>
+              <span style="font-size: 13.5px; color: #34405A; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Memória Books</span>
+              <span style="font-size: 13px; color: #6B7A90;">Retirada balcão</span>
+              <span style="font-size: 12.5px; color: #9AA7BC; font-family: monospace;">—</span>
+              <span style="font-size: 13px; color: #6B7A90;">2</span>
+              <span style="white-space: nowrap; padding: 6px 11px; border-radius: 999px; background: #E6F8F1; color: #059669; font-size: 12px; font-weight: 600; width: max-content;">Pronto para coleta</span>
+            </div>
+            <div style="display: grid; grid-template-columns: 26px minmax(110px,.8fr) minmax(110px,.8fr) minmax(170px,1.3fr) minmax(130px,1fr) minmax(140px,1fr) minmax(70px,.5fr) minmax(120px,.9fr); gap: 14px; align-items: center; padding: 14px 24px; border-bottom: 1px solid #F4F6FB; cursor: pointer;" style-hover="background: #F8FAFE;">
+              <span style="width: 18px; height: 18px; border-radius: 6px; border: 1.5px solid #2563EB; background: #2563EB; display: flex; align-items: center; justify-content: center; color: #FFFFFF;"><svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>
+              <span style="font-size: 13px; font-weight: 700; color: #46536A;">VOL-4411</span>
+              <a href="./Pedido.dc.html" style="font-size: 13px; font-weight: 600;">#PT-10471</a>
+              <span style="font-size: 13.5px; color: #34405A; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Colégio Farol</span>
+              <span style="font-size: 13px; color: #6B7A90;">Correios PAC</span>
+              <span style="font-size: 12.5px; color: #9AA7BC; font-family: monospace;">PT884120BR</span>
+              <span style="font-size: 13px; color: #6B7A90;">12</span>
+              <span style="white-space: nowrap; padding: 6px 11px; border-radius: 999px; background: #E6F8F1; color: #059669; font-size: 12px; font-weight: 600; width: max-content;">Pronto para coleta</span>
+            </div>
+            <div style="display: grid; grid-template-columns: 26px minmax(110px,.8fr) minmax(110px,.8fr) minmax(170px,1.3fr) minmax(130px,1fr) minmax(140px,1fr) minmax(70px,.5fr) minmax(120px,.9fr); gap: 14px; align-items: center; padding: 14px 24px; border-bottom: 1px solid #F4F6FB; cursor: pointer;" style-hover="background: #F8FAFE;">
+              <span style="width: 18px; height: 18px; border-radius: 6px; border: 1.5px solid #2563EB; background: #2563EB; display: flex; align-items: center; justify-content: center; color: #FFFFFF;"><svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>
+              <span style="font-size: 13px; font-weight: 700; color: #46536A;">VOL-4410</span>
+              <a href="./Pedido.dc.html" style="font-size: 13px; font-weight: 600;">#PT-10468</a>
+              <span style="font-size: 13.5px; color: #34405A; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Studio Lume</span>
+              <span style="font-size: 13px; color: #6B7A90;">Correios SEDEX</span>
+              <span style="font-size: 12.5px; color: #9AA7BC; font-family: monospace;">PT884118BR</span>
+              <span style="font-size: 13px; color: #6B7A90;">3</span>
+              <span style="white-space: nowrap; padding: 6px 11px; border-radius: 999px; background: #E6F8F1; color: #059669; font-size: 12px; font-weight: 600; width: max-content;">Pronto para coleta</span>
+            </div>
+            <div style="display: grid; grid-template-columns: 26px minmax(110px,.8fr) minmax(110px,.8fr) minmax(170px,1.3fr) minmax(130px,1fr) minmax(140px,1fr) minmax(70px,.5fr) minmax(120px,.9fr); gap: 14px; align-items: center; padding: 14px 24px; border-bottom: 1px solid #F4F6FB; cursor: pointer;" style-hover="background: #F8FAFE;">
+              <span style="width: 18px; height: 18px; border-radius: 6px; border: 1.5px solid #CBD5E6; background: transparent; display: flex; align-items: center; justify-content: center; color: #FFFFFF;"></span>
+              <span style="font-size: 13px; font-weight: 700; color: #46536A;">VOL-4409</span>
+              <a href="./Pedido.dc.html" style="font-size: 13px; font-weight: 600;">#PT-10482</a>
+              <span style="font-size: 13.5px; color: #34405A; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Studio Lume</span>
+              <span style="font-size: 13px; color: #6B7A90;">Correios PAC</span>
+              <span style="font-size: 12.5px; color: #9AA7BC; font-family: monospace;">—</span>
+              <span style="font-size: 13px; color: #6B7A90;">3</span>
+              <span style="white-space: nowrap; padding: 6px 11px; border-radius: 999px; background: #EAF0FF; color: #2563EB; font-size: 12px; font-weight: 600; width: max-content;">Embalando</span>
+            </div>
+            <div style="display: grid; grid-template-columns: 26px minmax(110px,.8fr) minmax(110px,.8fr) minmax(170px,1.3fr) minmax(130px,1fr) minmax(140px,1fr) minmax(70px,.5fr) minmax(120px,.9fr); gap: 14px; align-items: center; padding: 14px 24px; border-bottom: 1px solid #F4F6FB; cursor: pointer;" style-hover="background: #F8FAFE;">
+              <span style="width: 18px; height: 18px; border-radius: 6px; border: 1.5px solid #CBD5E6; background: transparent; display: flex; align-items: center; justify-content: center; color: #FFFFFF;"></span>
+              <span style="font-size: 13px; font-weight: 700; color: #46536A;">VOL-4408</span>
+              <a href="./Pedido.dc.html" style="font-size: 13px; font-weight: 600;">#PT-10462</a>
+              <span style="font-size: 13.5px; color: #34405A; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Ana Paula Moreira</span>
+              <span style="font-size: 13px; color: #6B7A90;">Loggi</span>
+              <span style="font-size: 12.5px; color: #9AA7BC; font-family: monospace;">LG-77120</span>
+              <span style="font-size: 13px; color: #6B7A90;">1</span>
+              <span style="white-space: nowrap; padding: 6px 11px; border-radius: 999px; background: #EDEBFE; color: #6366F1; font-size: 12px; font-weight: 600; width: max-content;">Coletado</span>
+            </div>
+            <div style="display: grid; grid-template-columns: 26px minmax(110px,.8fr) minmax(110px,.8fr) minmax(170px,1.3fr) minmax(130px,1fr) minmax(140px,1fr) minmax(70px,.5fr) minmax(120px,.9fr); gap: 14px; align-items: center; padding: 14px 24px; border-bottom: 1px solid #F4F6FB; cursor: pointer;" style-hover="background: #F8FAFE;">
+              <span style="width: 18px; height: 18px; border-radius: 6px; border: 1.5px solid #CBD5E6; background: transparent; display: flex; align-items: center; justify-content: center; color: #FFFFFF;"></span>
+              <span style="font-size: 13px; font-weight: 700; color: #46536A;">VOL-4404</span>
+              <a href="./Pedido.dc.html" style="font-size: 13px; font-weight: 600;">#PT-10455</a>
+              <span style="font-size: 13.5px; color: #34405A; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Foto Trindade</span>
+              <span style="font-size: 13px; color: #6B7A90;">Correios PAC</span>
+              <span style="font-size: 12.5px; color: #9AA7BC; font-family: monospace;">PT883990BR</span>
+              <span style="font-size: 13px; color: #6B7A90;">4</span>
+              <span style="white-space: nowrap; padding: 6px 11px; border-radius: 999px; background: #FFF1F3; color: #E11D48; font-size: 12px; font-weight: 600; width: max-content;">Extravio</span>
+            </div>
+            <div style="display: grid; grid-template-columns: 26px minmax(110px,.8fr) minmax(110px,.8fr) minmax(170px,1.3fr) minmax(130px,1fr) minmax(140px,1fr) minmax(70px,.5fr) minmax(120px,.9fr); gap: 14px; align-items: center; padding: 14px 24px; border-bottom: 1px solid #F4F6FB; cursor: pointer;" style-hover="background: #F8FAFE;">
+              <span style="width: 18px; height: 18px; border-radius: 6px; border: 1.5px solid #CBD5E6; background: transparent; display: flex; align-items: center; justify-content: center; color: #FFFFFF;"></span>
+              <span style="font-size: 13px; font-weight: 700; color: #46536A;">VOL-4401</span>
+              <a href="./Pedido.dc.html" style="font-size: 13px; font-weight: 600;">#PT-10448</a>
+              <span style="font-size: 13.5px; color: #34405A; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Luz Viva Estúdio</span>
+              <span style="font-size: 13px; color: #6B7A90;">Retirada balcão</span>
+              <span style="font-size: 12.5px; color: #9AA7BC; font-family: monospace;">—</span>
+              <span style="font-size: 13px; color: #6B7A90;">6</span>
+              <span style="white-space: nowrap; padding: 6px 11px; border-radius: 999px; background: #FEF3E2; color: #B45309; font-size: 12px; font-weight: 600; width: max-content;">Aguardando cliente</span>
+            </div>
+        </div>
+      </div>
+    </div>
+    <div style="{{ ov }}" onClick="{{ closeModal }}"></div>
+    <div style="{{ sh }}">
+      <div style="width: min(620px, 100%); max-height: 86vh; overflow-y: auto; background: #FFFFFF; border-radius: 24px; box-shadow: 0 30px 70px rgba(11,18,32,.3); pointer-events: auto;">
+        <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; padding: 24px 26px 18px; border-bottom: 1px solid #F0F3F9;">
+          <div style="min-width: 0;"><h2 style="margin: 0; font-size: 20px; font-weight: 800; letter-spacing: -.5px;">Gerar etiquetas</h2><p style="margin: 6px 0 0; font-size: 13.5px; color: #6B7A90;">3 volumes selecionados · Correios PAC e SEDEX</p></div>
+          <span onClick="{{ closeModal }}" style="width: 36px; height: 36px; border-radius: 12px; border: 1px solid #E6EAF2; display: flex; align-items: center; justify-content: center; color: #6B7A90; cursor: pointer; flex: 0 0 auto;" style-hover="background: #F1F5FD; color: #2563EB;"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg></span>
+        </div>
+        <div style="padding: 22px 26px; display: flex; flex-direction: column; gap: 18px;">
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
+            <div style="display: flex; flex-direction: column; gap: 8px; min-width: 0;">
+              <label style="font-size: 12.5px; font-weight: 600; color: #6B7A90;">Impressora</label>
+              <input value="Zebra ZT230 · Fábrica Lapa" style="height: 46px; padding: 0 15px; border: 1px solid #E6EAF2; border-radius: 14px; font-family: inherit; font-size: 14px; color: #0B1220; min-width: 0;" style-focus="border-color: #2563EB;"/>
+              
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 8px; min-width: 0;">
+              <label style="font-size: 12.5px; font-weight: 600; color: #6B7A90;">Formato</label>
+              <input value="100 × 150 mm" style="height: 46px; padding: 0 15px; border: 1px solid #E6EAF2; border-radius: 14px; font-family: inherit; font-size: 14px; color: #0B1220; min-width: 0;" style-focus="border-color: #2563EB;"/>
+              <span style="font-size: 11.5px; color: #9AA7BC;">padrão Correios</span>
+            </div>
+          </div>
+          <div style="border: 1px solid #E6EAF2; border-radius: 18px; overflow: hidden;">
+            <div style="display: grid; grid-template-columns: 1.1fr 1.6fr 1fr; gap: 12px; padding: 10px 16px; background: #F8FAFE; font-size: 11.5px; letter-spacing: .6px; text-transform: uppercase; color: #9AA7BC; font-weight: 700;"><span>Volume</span><span>Cliente</span><span>Serviço</span></div>
+            <div style="display: grid; grid-template-columns: 1.1fr 1.6fr 1fr; gap: 12px; padding: 12px 16px; border-top: 1px solid #F4F6FB; font-size: 13px;"><span style="font-weight: 700;">VOL-4412</span><span>Memória Books</span><span style="color: #6B7A90;">Retirada</span></div>
+            <div style="display: grid; grid-template-columns: 1.1fr 1.6fr 1fr; gap: 12px; padding: 12px 16px; border-top: 1px solid #F4F6FB; font-size: 13px;"><span style="font-weight: 700;">VOL-4411</span><span>Colégio Farol</span><span style="color: #6B7A90;">PAC</span></div>
+            <div style="display: grid; grid-template-columns: 1.1fr 1.6fr 1fr; gap: 12px; padding: 12px 16px; border-top: 1px solid #F4F6FB; font-size: 13px;"><span style="font-weight: 700;">VOL-4410</span><span>Studio Lume</span><span style="color: #6B7A90;">SEDEX</span></div>
+          </div>
+          <div style="display: flex; align-items: center; gap: 14px; padding: 14px 16px; border: 1px solid #E6EAF2; border-radius: 16px; background: #F8FAFE;">
+            <div style="flex: 1; min-width: 0;"><p style="margin: 0; font-size: 13.5px; font-weight: 600;">Avisar clientes com o código de rastreio</p><p style="margin: 3px 0 0; font-size: 12.5px; color: #6B7A90;">WhatsApp e e-mail ao confirmar o despacho</p></div>
+            <span style="width: 44px; height: 26px; border-radius: 999px; background: linear-gradient(135deg,#2563EB,#06B6D4); padding: 3px; display: flex; justify-content: flex-end; cursor: pointer; flex: 0 0 auto;"><span style="width: 20px; height: 20px; border-radius: 999px; background: #FFFFFF; box-shadow: 0 2px 5px rgba(11,18,32,.18);"></span></span>
+          </div>
+        </div>
+        <div style="display: flex; align-items: center; justify-content: flex-end; gap: 10px; padding: 18px 26px; border-top: 1px solid #F0F3F9; background: #F8FAFE;">
+          <button onClick="{{ closeModal }}" style="white-space: nowrap; height: 42px; padding: 0 18px; border: 1px solid #E6EAF2; border-radius: 13px; background: #FFFFFF; color: #46536A; font-family: inherit; font-size: 13.5px; font-weight: 600; cursor: pointer;" style-hover="background: #F1F5FD; color: #2563EB;">Cancelar</button>
+          <button onClick="{{ closeModal }}" style="white-space: nowrap; height: 42px; padding: 0 20px; border: 0; border-radius: 13px; background: linear-gradient(135deg,#2563EB,#06B6D4); color: #FFFFFF; font-family: inherit; font-size: 13.5px; font-weight: 700; cursor: pointer; box-shadow: 0 8px 18px rgba(37,99,235,.26);" style-hover="filter: brightness(1.06);">Imprimir 3 etiquetas</button>
+        </div>
+      </div>
+    </div>
+    </main>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{}">
+class Component extends DCLogic {
+  state = { collapsed: false, menu: false, active: 3, period: 0, modal: null };
+
+  navStyle(i) {
+    const on = this.state.active === i;
+    return `display:flex;align-items:center;gap:13px;height:44px;min-height:44px;flex:0 0 auto;padding:0 14px;border-radius:14px;font-size:14px;font-weight:${on ? 600 : 500};cursor:pointer;white-space:nowrap;overflow:hidden;transition:background .16s,color .16s;`
+      + (on ? "background:linear-gradient(135deg,#2563EB,#06B6D4);color:#FFFFFF;box-shadow:0 8px 18px rgba(37,99,235,.26);" : "background:transparent;color:#46536A;");
+  }
+
+  perStyle(i) {
+    const on = this.state.period === i;
+    return `padding:8px 16px;border-radius:999px;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;transition:all .16s;`
+      + (on ? "background:linear-gradient(135deg,#2563EB,#06B6D4);color:#FFFFFF;box-shadow:0 6px 14px rgba(37,99,235,.24);" : "background:transparent;color:#6B7A90;");
+  }
+
+  renderVals() {
+    const c = this.state.collapsed;
+    const routes = { 0: 'Dashboard', 1: 'Pedidos', 2: 'Producao', 3: 'Expedicao', 4: 'Loja', 5: 'Catalogo', 6: 'Precos', 7: 'Temas', 8: 'Clientes', 9: 'CRM', 10: 'Vendedores', 11: 'Marketing', 12: 'Financeiro', 13: 'Carteira', 14: 'Relatorios', 15: 'Automacoes', 16: 'Integracoes', 17: 'Auditoria', 18: 'Suporte', 19: 'Configuracoes' };
+    const pick = (i) => () => { if (routes[i]) { window.location.href = './' + routes[i] + '.dc.html'; } else { this.setState({ active: i }); } };
+    const v = {
+      sideStyle: `width:${c ? 86 : 262}px;flex:0 0 auto;display:flex;flex-direction:column;background:#FFFFFF;border-right:1px solid #E6EAF2;position:sticky;top:0;height:100vh;transition:width .24s cubic-bezier(.2,.8,.2,1)`,
+      brandStyle: `font-size:17px;font-weight:800;letter-spacing:.6px;transition:opacity .18s;${c ? "opacity:0" : "opacity:1"}`,
+      labelStyle: `font-size:14px;transition:opacity .18s;${c ? "opacity:0;width:0;overflow:hidden" : "opacity:1"}`,
+      badgeStyle: `margin-left:auto;padding:2px 8px;border-radius:999px;background:rgba(255,255,255,.22);font-size:11px;font-weight:700;${c ? "display:none" : ""}`,
+      groupStyle: `flex:0 0 auto;margin:14px 0 6px 14px;font-size:10.5px;letter-spacing:1.4px;text-transform:uppercase;color:#9AA7BC;font-weight:700;${c ? "opacity:0" : ""}`,
+      tenantStyle: `display:flex;align-items:center;gap:11px;margin:0 14px;padding:10px;border-radius:16px;background:#F8FAFE;border:1px solid #EEF1F7;cursor:pointer;overflow:hidden;${c ? "display:none" : ""}`,
+      storageCard: `padding:16px;border-radius:18px;background:linear-gradient(160deg,#F1F5FD,#E4F8FC);border:1px solid #E6EAF2;${c ? "display:none" : ""}`,
+      collapseBtn: `display:flex;align-items:center;gap:13px;height:44px;min-height:44px;flex:0 0 auto;padding:0 14px;border-radius:14px;color:#6B7A90;font-size:13.5px;font-weight:500;cursor:pointer;white-space:nowrap;overflow:hidden`,
+      chevStyle: `flex:0 0 auto;transition:transform .24s;${c ? "transform:rotate(180deg)" : ""}`,
+      toggleSide: () => this.setState(s => ({ collapsed: !s.collapsed })),
+      toggleMenu: () => this.setState(s => ({ menu: !s.menu })),
+      avatarBtn: `display:flex;align-items:center;gap:11px;padding:5px 12px 5px 5px;border:1px solid ${this.state.menu ? "#D6E2FC" : "#E6EAF2"};border-radius:14px;background:#FFFFFF;cursor:pointer;transition:border-color .15s`,
+      menuChev: `transition:transform .2s;${this.state.menu ? "transform:rotate(180deg)" : ""}`,
+      menuStyle: `position:absolute;top:58px;right:0;width:266px;background:#FFFFFF;border:1px solid #E6EAF2;border-radius:20px;box-shadow:0 24px 50px rgba(11,18,32,.16);overflow:hidden;z-index:40;animation:menuIn .16s ease both;${this.state.menu ? "" : "display:none"}`,
+      openModal: () => this.setState({ modal: 1 }),
+      closeModal: () => this.setState({ modal: null }),
+      ov: `position:fixed;inset:0;background:rgba(11,18,32,.5);backdrop-filter:blur(3px);z-index:60;${this.state.modal ? '' : 'display:none'}`,
+      sh: `position:fixed;inset:0;z-index:61;display:flex;align-items:center;justify-content:center;padding:24px;pointer-events:none;${this.state.modal ? '' : 'display:none'}`,
+      _tabs: 0
+    };
+    for (let i = 0; i < 20; i++) { v["nav" + i] = this.navStyle(i); v["pick" + i] = pick(i); }
+    for (let i = 0; i < 6; i++) { v['per' + i] = this.perStyle(i); v['setP' + i] = ((n) => () => this.setState({ period: n }))(i); }
+    return v;
+  }
+}
+
+</script>
+</body>
+</html>

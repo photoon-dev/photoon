@@ -5,36 +5,83 @@ import { revalidatePath } from 'next/cache';
 import { createClient } from '@/lib/supabase/server';
 import { currentTenantSlug } from '@/lib/tenant';
 import { getLojista, garantirCliente } from '@/lib/data';
+import { novaLamina, laminasSemFoto, calcularProgresso, type Lamina } from '@/lib/album';
 
-/** Cria um projeto vazio e leva direto para o editor. */
-export async function criarProjeto() {
+/** Cria um album vazio na galeria liberada e abre o editor. */
+export async function criarProjeto(formData: FormData) {
   const slug = await currentTenantSlug();
   if (!slug) throw new Error('Lojista não identificado.');
 
   const lojista = await getLojista(slug);
   if (!lojista) throw new Error('Lojista não encontrado.');
 
-  const clienteId = await garantirCliente(lojista.id);
-  if (!clienteId) redirect('/entrar');
+  const cliente = await garantirCliente(lojista.id);
+  if (!cliente) redirect('/entrar');
+
+  const galeriaId = formData.get('galeria_id');
+  const titulo = (formData.get('titulo') as string) || 'Novo álbum';
 
   const supabase = await createClient();
   const { data, error } = await supabase
     .from('projetos')
-    .insert({ lojista_id: lojista.id, cliente_id: clienteId, titulo: 'Novo projeto' })
+    .insert({
+      lojista_id: lojista.id,
+      cliente_id: cliente.id,
+      galeria_id: typeof galeriaId === 'string' && galeriaId ? galeriaId : null,
+      titulo,
+      paginas: [novaLamina(2), novaLamina(2)],
+    })
     .select('id')
     .single();
 
   if (error || !data) throw new Error(error?.message ?? 'Não foi possível criar o projeto.');
 
   revalidatePath('/meus-projetos');
-  redirect(`/projetos/${data.id}/editor`);
+  redirect(`/editor/${data.id}`);
 }
 
-/** Renomeia um projeto (RLS garante que e do proprio cliente). */
 export async function renomearProjeto(id: string, titulo: string) {
   const supabase = await createClient();
-  const { error } = await supabase.from('projetos').update({ titulo }).eq('id', id);
+  const { error } = await supabase
+    .from('projetos')
+    .update({ titulo: titulo.trim() || 'Novo álbum' })
+    .eq('id', id);
   if (error) throw new Error(error.message);
   revalidatePath(`/projetos/${id}`);
   revalidatePath('/meus-projetos');
+}
+
+/**
+ * Autosave do editor. Recalcula progresso, avisos e status a partir das
+ * laminas, para que "Meus projetos" e o detalhe reflitam o estado real.
+ */
+export async function salvarLaminas(id: string, laminas: Lamina[]) {
+  const supabase = await createClient();
+
+  const vazias = laminasSemFoto(laminas);
+  const progresso = calcularProgresso(laminas);
+
+  const avisos = vazias.length
+    ? [
+        {
+          titulo: `${vazias.length} lâmina${vazias.length === 1 ? '' : 's'} sem foto`,
+          descricao: `${vazias.length === 1 ? 'A lâmina' : 'As lâminas'} ${vazias.join(', ')} ${
+            vazias.length === 1 ? 'tem quadro vazio' : 'têm quadros vazios'
+          }.`,
+          nivel: 'obrigatoria' as const,
+          acao: 'Corrigir',
+        },
+      ]
+    : [];
+
+  const status =
+    progresso === 0 ? 'nao_iniciado' : vazias.length ? 'com_pendencias' : progresso === 100 ? 'pronto' : 'em_edicao';
+
+  const { error } = await supabase
+    .from('projetos')
+    .update({ paginas: laminas, progresso, avisos, status })
+    .eq('id', id);
+
+  if (error) throw new Error(error.message);
+  return { progresso, avisos: avisos.length, status };
 }

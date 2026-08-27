@@ -1,0 +1,696 @@
+PHOTOON
+Plano completo de produto, arquitetura, telas e ordem de execucao
+Objetivo Criar uma plataforma SaaS Web To Print para laboratorios, encadernadoras,
+empresas de formatura e lojas de fotografia, com paridade funcional com a
+Auryn, experiencia visual superior e diferenciais graduais.
+Versao 1.0 | 24 de agosto de 2026
+Decisao executiva
+A Photoon deve nascer como uma alternativa cloud-first, multiempresa e white label. A primeira versao precisa
+substituir o fluxo comercial e operacional essencial da Auryn. Reconhecimento facial, CRM e migracao assistida
+entram cedo porque geram diferenciacao clara sem exigir a complexidade do motor de diagramacao por IA.
+Recomendacao tecnica
+Usar Supabase para Postgres, autenticacao, RLS, Realtime e dados estruturados. Usar object storage S3
+compativel para originais e arquivos de producao. No MVP, o proprio Supabase Storage pode atender. A
+camada de midia deve ser isolada por uma interface de storage para permitir migracao futura para Cloudflare
+R2, AWS S3 ou Backblaze B2 sem alterar o restante do produto.
+PHOTOON | Plano de produto e execucao 1 / 19
+
+-- 1 of 19 --
+
+1. Acesso publico a documentacao da Auryn
+A central de ajuda pode ser consultada publicamente em
+https://aurynwebtoprint.freshdesk.com/support/solutions. Ela exibe categorias, manuais, imagens de telas e
+fluxos. Nao e necessario login para a maior parte dos artigos. O painel administrativo real, dados de clientes,
+configuracoes privadas e ambientes de demonstracao podem exigir uma conta autorizada.
+Limite correto de uso
+● Pode usar documentacao publica para entender problemas, fluxos e requisitos do mercado.
+● Pode criar uma implementacao independente com arquitetura, codigo e identidade proprios.
+● Nao copiar codigo, imagens, textos, templates, banco de dados ou interface proprietaria.
+● Nao tentar obter credenciais de terceiros ou contornar areas restritas.
+● Para telas internas, solicitar ao cliente capturas da propria conta, com dados pessoais ocultos e autorizacao
+da empresa titular.
+Constatacao sobre instalacao
+A loja, o editor e o Manager da Auryn sao acessados pelo navegador. Entretanto, a operacao de laboratorio
+pode utilizar um Sincronizador instalado no computador para baixar automaticamente arquivos renderizados.
+A Photoon pode eliminar essa obrigatoriedade com entrega cloud, S3, FTP, SFTP e APIs, mantendo um conector
+local opcional para hot folders e equipamentos legados.
+2. Marca e posicionamento
+Nome recomendado: Photoon. Leitura natural: foto on, fotografia online e operacao sempre ligada. Usar
+photoon.com como dominio principal e redirecionar photoon.com.br para ele, ou inverter se o foco inicial for
+exclusivamente brasileiro.
+Elemento Direcao
+Assinatura Photoon, sua operacao fotografica sempre online.
+Simbolo Dois O formam uma lente dupla, rosto ou visor de camera. O segundo O recebe um pequeno ponto
+de brilho ou obturador.
+Paleta Azul profundo #0B1220, azul eletrico #2563EB, ciano #06B6D4, branco e cinzas frios.
+Personalidade Tecnologica, confiavel, rapida, visual e humana. Evitar aparencia de sistema antigo ou ERP pesado.
+Validacao Antes de investir em identidade, realizar busca de marca no INPI e verificar conflitos foneticos com
+Photon e nomes proximos.
+PHOTOON | Plano de produto e execucao 2 / 19
+
+-- 2 of 19 --
+
+3. Perfis, empresas e permissoes
+Perfil Escopo
+Superadmin Photoon Planos, tenants, cobranca, suporte, consumo, auditoria e configuracoes globais.
+Proprietario Acesso total a empresa, filiais, dominio, pagamentos, produtos e equipe.
+Administrador Acesso configuravel a todos os modulos da empresa.
+Designer Temas, templates, editor, projetos e provas.
+Producao OS, filas, downloads, conferencias, lotes e status.
+Financeiro Pagamentos, estornos, carteira, creditos, faturas e relatorios.
+Atendimento Clientes, pedidos, conversas, tickets e recuperacao.
+Vendedor Carteira de clientes, propostas, pedidos e comissoes.
+Balconista Pedido assistido, retirada, cadastro rapido e recebimento presencial.
+Fotografo profissional Tabela B2B, projetos, pedidos, creditos, clientes finais e aprovacoes.
+Consumidor final Compra, edicao, pagamento, acompanhamento e suporte.
+Convidado Visualizacao e aprovacao por link com escopo e validade definidos.
+Modelo de autorizacao
+RBAC por empresa e filial, com permissoes granulares por recurso e acao: visualizar, criar, editar, excluir,
+aprovar, exportar, confirmar pagamento, alterar preco e administrar usuarios. Toda tabela de negocio deve
+conter tenant_id. Filiais usam branch_id. A autorizacao nao pode depender de dados editaveis pelo usuario.
+4. Fase 1, paridade comercial e operacional
+Objetivo: permitir que um laboratorio migre e opere sem perder as funcoes essenciais. Esta fase deve ser
+vendavel antes dos diferenciais complexos.
+Plataforma multiempresa
+● Cadastro e onboarding da empresa
+● dominio e subdominio
+● marca branca
+● filiais
+● usuarios e permissoes
+● planos e limites
+● auditoria
+PHOTOON | Plano de produto e execucao 3 / 19
+
+-- 3 of 19 --
+
+Loja
+● home configuravel
+● cabecalho e rodape
+● banners
+● categorias
+● busca
+● produto
+● carrinho
+● checkout
+● conta do cliente
+● politicas e SEO
+Catalogo
+● revelacao
+● fotoprodutos
+● fotolivros
+● albuns
+● capas
+● estojos
+● acessorios
+● variantes
+● materiais
+● acabamentos
+● opcionais
+● SKU
+● estoque
+Precificacao
+● preco base
+● formulas
+● preco por pagina
+● tamanho
+● papel
+● acabamento
+● quantidade
+● grupo
+● cliente
+● filial
+● canal
+● tabelas B2B e B2C
+PHOTOON | Plano de produto e execucao 4 / 19
+
+-- 4 of 19 --
+
+Editor
+● upload
+● paginas
+● capas
+● arrastar e soltar
+● texto
+● fundos
+● enfeites
+● corte
+● zoom
+● guias
+● sangria
+● qualidade
+● salvamento automatico
+● preview
+Pedidos
+● carrinho
+● pagamentos
+● status
+● OS
+● codigo de barras
+● notas
+● anexos
+● reimpressao
+● cancelamento
+● estorno
+● historico
+Producao
+● renderizacao cloud
+● preflight
+● filas
+● lotes
+● kanban
+● SLA
+● controle de qualidade
+● embalagem
+● expedicao
+● arquivos prontos
+PHOTOON | Plano de produto e execucao 5 / 19
+
+-- 5 of 19 --
+
+Clientes
+● cadastro
+● enderecos
+● documentos
+● grupos
+● tabelas
+● creditos
+● historico
+● vendedor responsavel
+● importacao em massa
+Financeiro
+● PIX
+● cartao
+● boleto
+● deposito
+● retirada
+● carteira
+● creditos
+● links de pagamento
+● conciliacao
+● estorno
+Entrega
+● retirada
+● Correios
+● Frenet ou Melhor Envio
+● faixas de CEP
+● frete por produto
+● rastreamento
+● etiquetas
+● destinatario alternativo
+Comunicacao
+● e-mails transacionais
+● templates
+● carrinho abandonado
+● pedido abandonado
+● status
+● cupons
+● notificacoes internas
+PHOTOON | Plano de produto e execucao 6 / 19
+
+-- 6 of 19 --
+
+Relatorios
+● vendas
+● pedidos
+● clientes
+● cupons
+● creditos
+● produtos
+● producao
+● prazos
+● margem
+● exportacao CSV, XLSX e JSON
+Integracoes
+● webhooks
+● API
+● ERP
+● CRM
+● pixels
+● analytics
+● storage externo
+● FTP e SFTP
+● gateway
+● frete
+PHOTOON | Plano de produto e execucao 7 / 19
+
+-- 7 of 19 --
+
+5. Inventario completo de telas
+Cada tela abaixo deve ter desktop e mobile, carregamento, vazio, erro, sem permissao, sucesso e dados reais
+de demonstracao. Listagens precisam de busca, filtros, ordenacao, paginacao, selecao em massa e exportacao
+quando aplicavel.
+Tela Rota Conteudo obrigatorio
+Autenticacao /login, /cadastro, /recuperar,
+/mfa
+Login, convite, recuperacao, MFA, troca de empresa e aceite de
+termos.
+Onboarding /onboarding/* Dados da empresa, segmento, marca, dominio, catalogo inicial,
+pagamentos, entrega, equipe e publicacao.
+Dashboard /app GMV, pedidos, ticket, conversao, atrasos, storage, alertas,
+atividades e atalhos.
+Empresas /admin/tenants Superadmin gerencia tenants, planos, status, consumo, suporte
+e impersonacao auditada.
+Empresa /config/empresa Razao social, CNPJ, contatos, timezone, moeda, impostos e
+preferências.
+Filiais /config/filiais Cadastro, endereco, estoque, producao, retirada, equipe e
+regras por filial.
+Equipe /config/equipe Usuarios, convites, funcoes, permissoes, MFA, sessoes e
+bloqueio.
+Dominios /config/dominios Subdominio, dominio customizado, DNS, SSL, status e
+redirecionamento.
+Identidade /loja/identidade Logo, favicon, cores, fontes, componentes, CSS seguro e
+preview.
+Paginas da loja /loja/paginas Home, institucionais, politicas, SEO, blocos e publicacao.
+Banners /loja/banners Desktop, mobile, periodo, destino, prioridade e metricas.
+Menus /loja/menus Cabecalho, rodape, hierarquia, links e visibilidade.
+Categorias /catalogo/categorias Arvore de categorias, ordem, SEO, imagem e canais.
+Produtos /catalogo/produtos Lista, criacao em massa, duplicacao, status, canal, estoque e
+publicacao.
+Produto /catalogo/produtos/:id Dados, midia, variantes, componentes, regras, editor, preco,
+frete e producao.
+Revelacao /catalogo/revelacao Tamanhos, papel, borda, corte, quantidade, originais e precos.
+Fotolivros /catalogo/fotolivros Modelos, tamanhos, paginas, laminas, capa, estojo, materiais e
+temas.
+Fotoprodutos /catalogo/fotoprodutos Canecas, quadros, calendarios e produtos com areas editaveis.
+Opcionais /catalogo/opcionais Acervo reutilizavel, dependencias, estoque, imagem, preco e
+regras.
+Temas /design/temas Biblioteca, categorias, fundos, enfeites, fontes, clone e preview.
+Construtor de template /design/templates/:id Areas editaveis, mascaras, bleed, safe zone, variaveis e
+validacao.
+Tabelas de preco /precos/tabelas B2B, B2C, revenda, filial, prioridade, vigencia e clonagem.
+Editor de precos /precos/tabelas/:id Matriz, reajuste percentual, arredondamento, importacao e
+simulacao.
+Promocoes /marketing/promocoes Cupons, desconto por volume, frete gratis, kits, regras e limites.
+Clientes /clientes Segmentos, grupos, status, LTV, vendedor, saldo, pedidos e
+importacao.
+Cliente /clientes/:id Perfil 360, enderecos, documentos, precos especiais,
+pagamentos, projetos e timeline.
+Grupos /clientes/grupos Acesso exclusivo a produtos, tabela, desconto, vendedor e
+importacao.
+PHOTOON | Plano de produto e execucao 8 / 19
+
+-- 8 of 19 --
+
+Tela Rota Conteudo obrigatorio
+Vendedores /vendas/vendedores Carteira, metas, comissao, pedidos, clientes e desempenho.
+CRM pipeline /crm/pipeline Leads e oportunidades em kanban, atividades, valor, etapa e
+responsavel.
+CRM contatos /crm/contatos Empresa, pessoa, origem, tags, consentimento, conversas e
+historico.
+CRM tarefas /crm/tarefas Ligacoes, mensagens, propostas, lembretes, agenda e atraso.
+Pedidos /pedidos Filtros por status, modulo, periodo, filial, pagamento, produto e
+lote.
+Pedido /pedidos/:id Resumo, cliente, itens, configuracoes, arquivos, pagamento,
+entrega, timeline e acoes.
+Ordem de servico /pedidos/:id/os Versao imprimivel, miniaturas, codigos, instrucoes, valores
+opcionais e QR.
+Pagamentos /financeiro/pagamentos Transacoes, gateway, status, conciliacao, comprovante, estorno
+e falhas.
+Carteira /financeiro/carteiras Saldo, credito temporario, recarga, validade, extrato e ajuste
+auditado.
+Faturas SaaS /config/assinatura Plano, consumo, cobranca, notas, limites, upgrade e
+cancelamento.
+Producao kanban /producao Etapas configuraveis, cards, SLA, prioridade, lote, equipamento
+e responsavel.
+Fila de render /producao/renderizacao Jobs, progresso, tentativas, erro, logs, arquivo e
+reprocessamento.
+Lotes /producao/lotes Agrupamento por produto, tamanho, papel, filial, data e
+equipamento.
+Controle de qualidade /producao/qualidade Checklist, aprovacao, defeito, reimpressao, evidencia e custo.
+Expedicao /expedicao Separacao, embalagem, etiqueta, rastreio, retirada, despacho e
+comprovante.
+Integracoes /config/integracoes Cards por servico, credenciais seguras, status, teste, logs e
+desconexao.
+Webhooks /config/webhooks Evento, URL, segredo, tentativas, replay, logs e assinatura.
+API /config/api Chaves por escopo, expiracao, IP, uso, rotacao e documentacao.
+Automacoes /automacoes Gatilho, condicao, acao, atraso, canal, teste e historico.
+Templates de mensagem /comunicacao/templates E-mail e WhatsApp, variaveis, preview, idioma e teste.
+Relatorios /relatorios Vendas, produtos, clientes, producao, margem, cupons, storage
+e exportacao.
+Auditoria /config/auditoria Usuario, acao, recurso, antes, depois, IP, data e exportacao.
+Central de suporte /suporte Tickets, chat, artigos, anexos, prioridade, SLA e contexto da
+conta.
+Storefront /s/:slug Home, categoria, produto, personalizacao, carrinho, checkout e
+conta.
+Meus projetos /conta/projetos Rascunhos, duplicacao, recuperacao, compartilhamento, status
+e armazenamento.
+Editor do cliente /editor/:project Midia, paginas, canvas, propriedades, temas, preview, qualidade
+e finalizar.
+Aprovacao /aprovar/:token Preview 2D e 3D, comentarios, marcacoes, versoes, aprovar e
+solicitar ajuste.
+Busca facial /evento/:slug Selfie, consentimento, resultados, favoritos, carrinho e compra.
+Acompanhamento /conta/pedidos/:id Pagamento, producao, entrega, rastreio, arquivos e suporte.
+PHOTOON | Plano de produto e execucao 9 / 19
+
+-- 9 of 19 --
+
+6. Editor visual, especificacao funcional
+O editor e o nucleo de risco do produto. O projeto deve ser salvo como JSON de cena, nunca apenas como
+imagem final. Cada objeto armazena posicao, tamanho, rotacao, escala, crop, z-index, estilo e referencia ao
+asset original.
+Area Requisitos
+Topo Nome do projeto, status salvo, desfazer, refazer, zoom, preview, compartilhar e finalizar.
+Esquerda Fotos, layouts, temas, fundos, textos, enfeites, QR, uploads e busca.
+Centro Canvas com spread, pagina, sangria, margem segura, guias, snap, zoom e navegacao.
+Direita Propriedades do objeto, posicao, tamanho, rotacao, crop, borda, sombra, opacidade e alinhamento.
+Rodape Miniaturas, ordenacao, adicionar, duplicar, excluir, bloquear e custo de paginas extras.
+Upload TUS resumivel, progresso, pausa, retomada, deduplicacao, EXIF, hash, miniatura e erro por arquivo.
+Qualidade DPI efetivo, resolucao, corte de rosto, area vazia, fonte ausente, sangria e bloqueio configuravel.
+Persistencia Autosave por mudanca, snapshots, versoes nomeadas, recuperacao e conflito de edicao.
+Render Preview leve no navegador. Arquivo final gerado por worker isolado, com perfil de cor e dimensoes
+exatas.
+7. Fase 2, diferenciais por ordem de
+simplicidade
+Ordem Diferencial Complexidade Entrega
+1 CRM basico Baixa Leads, pipeline, tarefas, historico, vendedor, tags e origem.
+2 WhatsApp transacional Baixa Status, carrinho, pagamento, aprovacao e rastreio via provedor
+oficial.
+3 Migracao assistida Baixa Importadores CSV e assistente para produtos, clientes, precos e
+pedidos.
+4 Aprovacao colaborativa Baixa media Comentarios por pagina, marcacoes, versoes e aceite digital.
+5 Automacoes no-code Media Gatilhos e acoes para vendas, producao, CRM e comunicacao.
+6 Reconhecimento facial Media Indexacao, busca por selfie, consentimento, confianca e
+exclusao.
+7 Portal de eventos Media Eventos publicos ou privados, equipes, numeros, favoritos e
+venda.
+8 Preflight inteligente Media DPI, bleed, fontes, corte, cor, dimensoes e alertas acionaveis.
+9 IA de qualidade Media Tremidas, duplicadas, olhos fechados, baixa luz e ranking.
+10 IA de layout Alta Agrupamento semantico, narrativa, selecao e composicao
+automatica.
+11 Preview 3D realista Alta Materiais, capa, lombada, pagina, iluminacao e mobile.
+12 Integracao industrial Alta Hot folders, RIP, maquinas, imposicao, perfis ICC e telemetria.
+Recomendacao de primeira venda
+Lancar com CRM basico, WhatsApp, migracao assistida, aprovacao colaborativa e reconhecimento facial como
+pacote de diferenciacao. Nao esperar IA de diagramacao ou preview 3D para vender.
+PHOTOON | Plano de produto e execucao 10 / 19
+
+-- 10 of 19 --
+
+8. Arquitetura recomendada
+Camada Tecnologia Responsabilidade
+Frontend React, TypeScript, Vite ou Next,
+Tailwind, shadcn
+Painel, loja, editor e PWA.
+Dados Supabase Postgres Tenancy, catalogo, pedidos, CRM, permissoes e auditoria.
+Auth Supabase Auth Login, convites, MFA, sessoes e recuperacao.
+Storage MVP Supabase Storage privado Originais, previews, templates e entregaveis.
+Storage escala R2 ou S3 via adapter Grandes volumes, lifecycle, replicacao e custo de egress.
+Upload TUS resumivel com Uppy Arquivos grandes, pausa, retomada e progresso.
+Fila pgmq inicialmente, depois Redis ou
+fila gerenciada
+Render, IA, e-mail, webhooks e exportacoes.
+Workers Containers Node e Python Render pesado, imagem, PDF, reconhecimento e preflight.
+Edge Functions Supabase Edge Functions Webhooks curtos, tokens, integracoes e orquestracao leve.
+Observabilidade Sentry, logs estruturados e metricas Erros, tracing, alertas e auditoria tecnica.
+CDN Smart CDN ou CDN do storage Previews e assets derivados, nunca originais publicos.
+Supabase e adequado?
+Sim para o MVP e para uma operacao relevante, desde que as fotos nao sejam armazenadas dentro do
+Postgres e o processamento pesado nao seja executado em Edge Functions. O Supabase Storage oferece S3,
+TUS, URLs assinadas, CDN e controle por RLS. Para arquivos acima de 6 MB, uploads resumiveis sao
+recomendados. Transformacoes nativas possuem limites de origem e nao substituem workers de alta
+resolucao.
+O que nao colocar no Supabase Edge
+● Renderizacao final de albuns em alta resolucao.
+● Reconhecimento facial em lotes extensos.
+● Conversao pesada de TIFF, RAW, PDF e perfis ICC.
+● Geracao de milhares de miniaturas em uma unica requisicao.
+● Processos que exigem mais memoria, CPU ou duracao do que os limites serverless.
+Regra de portabilidade
+Criar MediaStorageService com operacoes createUpload, completeUpload, signRead, delete, copy, lifecycle e
+usage. Nenhuma tela deve depender diretamente de caminhos fixos do Supabase. Essa decisao permite trocar
+o storage sem reescrever o produto.
+9. Modelo de dados inicial
+Dominio Tabelas
+Tenancy tenants, branches, memberships, roles, permissions, role_permissions, invitations
+Loja storefronts, domains, pages, navigation, banners, themes, seo_settings
+Catalogo categories, products, variants, option_groups, options, materials, finishes, product_rules
+Preco price_lists, price_list_items, quantity_tiers, customer_prices, promotions, coupons
+Midia assets, asset_versions, upload_sessions, derivatives, face_embeddings, asset_quality
+Projetos projects, project_pages, project_scenes, project_versions, approvals, comments
+Comercio carts, cart_items, orders, order_items, payments, refunds, wallets, wallet_entries
+Producao production_jobs, job_steps, render_jobs, batches, quality_checks, reprints
+PHOTOON | Plano de produto e execucao 11 / 19
+
+-- 11 of 19 --
+
+Dominio Tabelas
+Entrega addresses, shipping_methods, shipments, tracking_events, pickup_points
+CRM contacts, companies, leads, opportunities, pipeline_stages, activities, tasks, notes
+Integracoes integrations, secrets_refs, webhooks, webhook_deliveries, api_keys
+Operacao notifications, message_templates, automations, automation_runs, audit_logs, usage_events
+PHOTOON | Plano de produto e execucao 12 / 19
+
+-- 12 of 19 --
+
+10. Pipeline de fotografia e producao
+Etapa Nome Funcionamento
+1 Reserva Backend cria upload_session e caminhos privados com tenant e projeto.
+2 Upload Browser envia direto ao storage por TUS. API nao recebe os bytes.
+3 Validacao Worker confere MIME real, hash, malware, dimensoes, EXIF e limites.
+4 Derivados Gera thumbnail, preview protegido e proxy de edicao.
+5 Indexacao Extrai metadados, qualidade e faces conforme consentimento.
+6 Edicao Editor trabalha com proxies, preservando o original imutavel.
+7 Finalizacao Cena e assets sao congelados em uma versao de producao.
+8 Preflight Verifica resolucao, sangria, corte, fontes, paginas e configuracoes.
+9 Render Worker gera PDF, JPG ou TIFF final e checksums.
+10 Entrega Disponibiliza por link assinado, SFTP, bucket do cliente ou conector opcional.
+11 Retencao Aplica politica por plano, pedido e obrigacao legal. Cliente recebe avisos.
+11. Seguranca obrigatoria
+● RLS em todas as tabelas expostas, sempre combinando tenant_id e membership ativa.
+● Buckets privados. Originais nunca usam URL publica permanente.
+● Chave service role apenas no servidor e em workers privados.
+● MFA obrigatorio para proprietario, financeiro e superadmin.
+● Segredos de gateways fora do banco publico, com rotacao e trilha de auditoria.
+● Links assinados curtos e escopo por arquivo. Para revogacao imediata, usar proxy autorizado.
+● Rate limiting para login, upload, busca facial, checkout e webhooks.
+● Idempotencia em pagamentos, webhooks, render e alteracoes de status.
+● Antivirus e validacao por conteudo, nao confiar apenas em extensao ou MIME enviado.
+● Logs de alteracoes financeiras, precos, permissoes, downloads e visualizacao de imagens sensiveis.
+● Backups, restauracao testada e politica de disaster recovery.
+● LGPD: consentimento, finalidade, minimizacao, retencao, exportacao, exclusao e encarregado.
+● Reconhecimento facial deve ser opcional, com consentimento explicito e prazo de exclusao.
+12. Ordem de execucao acelerada
+Fase Prazo Entrega Saida
+0 2 a 3 dias Validacao Entrevistar 10 a 15 empresas, registrar preco atual, dores, volume, migracao
+e obter 5 cartas de intencao.
+1 2 dias Fundacao Branding minimo, repositorio, ambientes, design tokens, arquitetura, tenancy
+e convencoes.
+2 4 a 6 dias Claude Design Gerar todas as telas, responsivos, componentes, estados e prototipo
+navegavel.
+3 5 a 8 dias Lovable shell Layout, rotas, autenticacao, navegacao, componentes, mocks tipados e
+responsividade.
+4 5 a 8 dias Supabase core Schema, migrations, RLS, auth, storage privado, seeds, auditoria e testes.
+5 7 a 12 dias Comercio Catalogo, preco, cliente, carrinho, checkout, pedido, pagamento e entrega.
+6 10 a 15 dias Editor MVP Upload, canvas, paginas, templates, qualidade, autosave, preview e projeto
+JSON.
+PHOTOON | Plano de produto e execucao 13 / 19
+
+-- 13 of 19 --
+
+Fase Prazo Entrega Saida
+7 7 a 12 dias Producao Filas, workers, render, preflight, OS, kanban, lote, download e expedicao.
+8 5 a 8 dias Diferenciais CRM, WhatsApp, migracao, aprovacao e reconhecimento facial inicial.
+9 5 a 8 dias Hardening Seguranca, carga, pentest, observabilidade, backup, LGPD, billing e suporte.
+10 2 semanas Piloto Duas a cinco empresas, operacao paralela, correcao, medicao e onboarding.
+Prazo realista
+Com IA e equipe muito focada, o front navegavel pode aparecer em duas semanas. Um MVP comercial restrito
+pode ser testado em 6 a 8 semanas. Uma operacao confiavel com editor, render, pagamentos, seguranca e
+producao exige normalmente 12 a 16 semanas. Criar telas rapido nao elimina o tempo de testes de arquivos,
+impressao e isolamento de tenants.
+PHOTOON | Plano de produto e execucao 14 / 19
+
+-- 14 of 19 --
+
+13. Prompt mestre para Claude Design
+Crie o design completo de uma plataforma SaaS chamada PHOTOON. Ela e uma plataforma Web To Print multiempresa e white
+label para laboratorios fotograficos, encadernadoras, empresas de formatura, fabricas de fotoprodutos, lojas de revelacao e
+fotografos profissionais. O produto cobre a jornada da loja ate o arquivo pronto para producao. Nao copie a interface da Auryn
+ou de qualquer concorrente. Crie uma experiencia original, moderna e mais simples.
+OBJETIVO VISUAL
+Use linguagem visual premium, tecnologica e fotografica. Fundo geral #F6F8FC, superficies brancas, sidebar azul profundo
+#0B1220, acao primaria #2563EB, acento #06B6D4, sucesso #16A34A, alerta #D97706 e erro #DC2626. Tipografia Inter ou
+equivalente. Bordas de 10 a 14 px, sombras suaves, icones lineares, fotos grandes apenas quando agregarem contexto.
+Densidade de dados profissional, sem parecer ERP antigo.
+RESPONSIVIDADE
+Crie desktop 1440 px, tablet 1024 px e mobile 390 px. No mobile, sidebar vira drawer, tabelas viram cards ou rolagem
+controlada, filtros abrem em bottom sheet e acoes principais ficam acessiveis com uma mao. O editor precisa ter modo mobile
+proprio, nao apenas reduzir a tela desktop.
+SISTEMA DE DESIGN
+Crie tokens de cor, tipografia, espacamento, raio, sombra, grid e estados. Crie componentes reutilizaveis: app shell, sidebar,
+topbar, command palette, breadcrumb, tabs, cards KPI, tabela, filtros, empty state, skeleton, toast, modal, drawer, stepper,
+timeline, kanban, uploader, status badge, permission guard, chart, editor toolbar e file card.
+ESTADOS
+Para toda tela inclua loading, vazio, erro, sucesso, sem permissao, offline quando aplicavel e exemplo preenchido. Formularios
+precisam de validacao inline, ajuda contextual, confirmacao para acoes sensiveis e salvamento automatico quando aplicavel.
+NAVEGACAO PRINCIPAL
+Menu: Visao Geral. Loja. Catalogo. Design. Precos. Clientes. CRM. Vendas. Pedidos. Producao. Expedicao. Marketing.
+Automacoes. Relatorios. Integracoes. Configuracoes. Suporte. O menu muda conforme permissao.
+TELAS A PRODUZIR
+Autenticacao | /login, /cadastro, /recuperar, /mfa | Login, convite, recuperacao, MFA, troca de empresa e aceite de termos.
+Onboarding | /onboarding/* | Dados da empresa, segmento, marca, dominio, catalogo inicial, pagamentos, entrega, equipe e
+publicacao.
+Dashboard | /app | GMV, pedidos, ticket, conversao, atrasos, storage, alertas, atividades e atalhos.
+Empresas | /admin/tenants | Superadmin gerencia tenants, planos, status, consumo, suporte e impersonacao auditada.
+Empresa | /config/empresa | Razao social, CNPJ, contatos, timezone, moeda, impostos e preferências.
+Filiais | /config/filiais | Cadastro, endereco, estoque, producao, retirada, equipe e regras por filial.
+Equipe | /config/equipe | Usuarios, convites, funcoes, permissoes, MFA, sessoes e bloqueio.
+Dominios | /config/dominios | Subdominio, dominio customizado, DNS, SSL, status e redirecionamento.
+Identidade | /loja/identidade | Logo, favicon, cores, fontes, componentes, CSS seguro e preview.
+Paginas da loja | /loja/paginas | Home, institucionais, politicas, SEO, blocos e publicacao.
+Banners | /loja/banners | Desktop, mobile, periodo, destino, prioridade e metricas.
+Menus | /loja/menus | Cabecalho, rodape, hierarquia, links e visibilidade.
+Categorias | /catalogo/categorias | Arvore de categorias, ordem, SEO, imagem e canais.
+Produtos | /catalogo/produtos | Lista, criacao em massa, duplicacao, status, canal, estoque e publicacao.
+Produto | /catalogo/produtos/:id | Dados, midia, variantes, componentes, regras, editor, preco, frete e producao.
+Revelacao | /catalogo/revelacao | Tamanhos, papel, borda, corte, quantidade, originais e precos.
+Fotolivros | /catalogo/fotolivros | Modelos, tamanhos, paginas, laminas, capa, estojo, materiais e temas.
+Fotoprodutos | /catalogo/fotoprodutos | Canecas, quadros, calendarios e produtos com areas editaveis.
+Opcionais | /catalogo/opcionais | Acervo reutilizavel, dependencias, estoque, imagem, preco e regras.
+Temas | /design/temas | Biblioteca, categorias, fundos, enfeites, fontes, clone e preview.
+Construtor de template | /design/templates/:id | Areas editaveis, mascaras, bleed, safe zone, variaveis e validacao.
+Tabelas de preco | /precos/tabelas | B2B, B2C, revenda, filial, prioridade, vigencia e clonagem.
+PHOTOON | Plano de produto e execucao 15 / 19
+
+-- 15 of 19 --
+
+Editor de precos | /precos/tabelas/:id | Matriz, reajuste percentual, arredondamento, importacao e simulacao.
+Promocoes | /marketing/promocoes | Cupons, desconto por volume, frete gratis, kits, regras e limites.
+Clientes | /clientes | Segmentos, grupos, status, LTV, vendedor, saldo, pedidos e importacao.
+Cliente | /clientes/:id | Perfil 360, enderecos, documentos, precos especiais, pagamentos, projetos e timeline.
+Grupos | /clientes/grupos | Acesso exclusivo a produtos, tabela, desconto, vendedor e importacao.
+Vendedores | /vendas/vendedores | Carteira, metas, comissao, pedidos, clientes e desempenho.
+CRM pipeline | /crm/pipeline | Leads e oportunidades em kanban, atividades, valor, etapa e responsavel.
+CRM contatos | /crm/contatos | Empresa, pessoa, origem, tags, consentimento, conversas e historico.
+CRM tarefas | /crm/tarefas | Ligacoes, mensagens, propostas, lembretes, agenda e atraso.
+Pedidos | /pedidos | Filtros por status, modulo, periodo, filial, pagamento, produto e lote.
+Pedido | /pedidos/:id | Resumo, cliente, itens, configuracoes, arquivos, pagamento, entrega, timeline e acoes.
+Ordem de servico | /pedidos/:id/os | Versao imprimivel, miniaturas, codigos, instrucoes, valores opcionais e QR.
+Pagamentos | /financeiro/pagamentos | Transacoes, gateway, status, conciliacao, comprovante, estorno e falhas.
+Carteira | /financeiro/carteiras | Saldo, credito temporario, recarga, validade, extrato e ajuste auditado.
+Faturas SaaS | /config/assinatura | Plano, consumo, cobranca, notas, limites, upgrade e cancelamento.
+Producao kanban | /producao | Etapas configuraveis, cards, SLA, prioridade, lote, equipamento e responsavel.
+Fila de render | /producao/renderizacao | Jobs, progresso, tentativas, erro, logs, arquivo e reprocessamento.
+Lotes | /producao/lotes | Agrupamento por produto, tamanho, papel, filial, data e equipamento.
+Controle de qualidade | /producao/qualidade | Checklist, aprovacao, defeito, reimpressao, evidencia e custo.
+Expedicao | /expedicao | Separacao, embalagem, etiqueta, rastreio, retirada, despacho e comprovante.
+Integracoes | /config/integracoes | Cards por servico, credenciais seguras, status, teste, logs e desconexao.
+Webhooks | /config/webhooks | Evento, URL, segredo, tentativas, replay, logs e assinatura.
+API | /config/api | Chaves por escopo, expiracao, IP, uso, rotacao e documentacao.
+Automacoes | /automacoes | Gatilho, condicao, acao, atraso, canal, teste e historico.
+Templates de mensagem | /comunicacao/templates | E-mail e WhatsApp, variaveis, preview, idioma e teste.
+Relatorios | /relatorios | Vendas, produtos, clientes, producao, margem, cupons, storage e exportacao.
+Auditoria | /config/auditoria | Usuario, acao, recurso, antes, depois, IP, data e exportacao.
+Central de suporte | /suporte | Tickets, chat, artigos, anexos, prioridade, SLA e contexto da conta.
+Storefront | /s/:slug | Home, categoria, produto, personalizacao, carrinho, checkout e conta.
+Meus projetos | /conta/projetos | Rascunhos, duplicacao, recuperacao, compartilhamento, status e armazenamento.
+Editor do cliente | /editor/:project | Midia, paginas, canvas, propriedades, temas, preview, qualidade e finalizar.
+Aprovacao | /aprovar/:token | Preview 2D e 3D, comentarios, marcacoes, versoes, aprovar e solicitar ajuste.
+Busca facial | /evento/:slug | Selfie, consentimento, resultados, favoritos, carrinho e compra.
+Acompanhamento | /conta/pedidos/:id | Pagamento, producao, entrega, rastreio, arquivos e suporte.
+DETALHAMENTO DO DASHBOARD
+Crie dashboard com seletor de empresa e filial, periodo, GMV, pedidos, ticket medio, conversao, pagamentos pendentes,
+pedidos atrasados, jobs de render, uso de storage, funil, vendas por modulo, status de producao, top produtos, alertas e
+atividades. Cada card abre seu relatorio. Inclua personalizacao de widgets.
+DETALHAMENTO DO PRODUTO
+A tela de produto usa cabecalho com status e acoes, depois tabs: Geral, Midia, Variantes, Editor, Opcionais, Precos, Estoque,
+Frete, Producao, SEO e Canais. Permita duplicar, testar na loja, publicar, arquivar e criar em massa. Mostre dependencias entre
+tamanho, papel, capa, estojo e paginas.
+DETALHAMENTO DO CRM
+Crie pipeline kanban configuravel com valor, responsavel, temperatura, proxima tarefa, origem e tags. Ao abrir um card, use
+drawer com perfil, historico, pedidos, projetos, mensagens, arquivos, notas, atividades e acoes. Inclua agenda, tarefas
+atrasadas, relatorio de conversao e automacoes.
+PHOTOON | Plano de produto e execucao 16 / 19
+
+-- 16 of 19 --
+
+DETALHAMENTO DA PRODUCAO
+Crie kanban de producao configuravel. Cards exibem numero, cliente, produto, prazo, prioridade, filial, equipamento, qualidade
+e bloqueios. Tenha visao em lista, kanban e calendario. Inclua fila de render com progresso, tentativas, logs, reprocessar e
+arquivo. Inclua lotes, OS, controle de qualidade, reimpressao e expedicao.
+DETALHAMENTO DO EDITOR
+Editor em tela cheia. Topo com projeto, autosave, undo, redo, zoom, preview, compartilhar e finalizar. Esquerda com Fotos,
+Layouts, Temas, Fundos, Texto e Elementos. Centro com canvas, paginas, sangria, safe zone, guias e snap. Direita com
+propriedades. Rodape com miniaturas de paginas. Upload com progresso, pausa e retomada. Alertas visuais de DPI, corte de
+rosto, imagem ausente e area fora da sangria. Crie modos Amador, Profissional e Mobile.
+DETALHAMENTO DA LOJA
+Crie storefront white label com home, categorias, busca, pagina de produto, configurador, editor, carrinho, checkout, login,
+conta, projetos, pedidos e rastreio. A pagina de produto deve explicar materiais e prazos, mostrar preco dinamico, preview,
+avaliacoes e produtos relacionados. Checkout curto com identificacao, entrega, pagamento e revisao.
+PROTOTIPO
+Conecte todas as telas em um prototipo navegavel. Use dados realistas em portugues do Brasil. Nao use lorem ipsum. Crie uma
+empresa demo chamada Lumina Albuns, clientes, produtos, pedidos e jobs. Entregue inventario de componentes, mapa de
+navegacao, lista de telas, estados, desktop, mobile e especificacao para desenvolvimento React e Tailwind.
+PHOTOON | Plano de produto e execucao 17 / 19
+
+-- 17 of 19 --
+
+14. Ordem de trabalho no Lovable
+● Importar o design e criar primeiro design tokens, componentes e AppShell.
+● Criar todas as rotas com mocks tipados e navegacao funcional.
+● Implementar autenticacao, tenancy e troca de empresa antes dos modulos.
+● Conectar Supabase por dominio funcional, nunca ligar todas as telas ao mesmo tempo.
+● Substituir mocks por repositories e services, mantendo componentes visuais sem chamadas diretas
+dispersas.
+● Criar feature flags para CRM, facial, IA, 3D e integracoes.
+● Manter migrations, types gerados e seed demo versionados no Git.
+15. Ordem de verificacao no Claude Code
+Area Verificacao
+Arquitetura Rotas, boundaries, services, filas, workers, storage adapter e dependencia circular.
+Banco Constraints, indices, FKs, tenancy, migrations, queries lentas e dados de teste.
+RLS Teste cruzado entre tenants, filiais, papeis, convidados e superadmin.
+Storage Buckets privados, path validation, upload, upsert, signed URLs, lifecycle e exclusao.
+Auth MFA, sessoes, convites, reset, bloqueio, impersonacao e revogacao.
+Pagamentos Idempotencia, assinatura de webhook, valor no servidor, estorno e conciliacao.
+Arquivos MIME real, malware, zip bomb, tamanho, resolucao, hash e EXIF sensivel.
+Editor Autosave, conflito, recuperacao, versao, precisao, DPI, bleed e render equivalente.
+Performance Upload simultaneo, 10 mil fotos, tabelas grandes, cache, egress e filas.
+Observabilidade Sentry, correlation id, logs sem PII, metricas, alertas e runbooks.
+LGPD Consentimento facial, retencao, exclusao, exportacao, auditoria e termos.
+Release Testes unitarios, integracao, E2E, carga, restore, rollback e piloto.
+16. Criterios para aprovar o MVP
+● Uma nova empresa conclui onboarding e publica sua loja sem ajuda tecnica.
+● Um cliente cria um projeto com 200 fotos, fecha pedido e paga por PIX.
+● O laboratorio recebe OS e arquivo final correto sem instalar sincronizador.
+● Dois tenants nao acessam dados ou arquivos um do outro em nenhum teste.
+● Falha de render pode ser reprocessada sem duplicar pedido ou cobranca.
+● Produto, tabela de preco, opcional e frete podem ser alterados sem suporte da Photoon.
+● CRM registra origem, oportunidade, atividade e conversao em pedido.
+● Busca facial retorna resultados somente no evento autorizado e permite exclusao.
+● Todas as telas criticas funcionam no celular.
+● Backup e restauracao sao testados antes do primeiro cliente pagante.
+17. Validacao comercial antes do codigo
+pesado
+Entrevistar 15 clientes da Auryn ou PP1. Perguntar valor de implantacao, mensalidade, cobrancas extras,
+quantidade de pedidos, fotos por mes, tempo de configuracao, problemas de suporte, dependencia do
+PHOTOON | Plano de produto e execucao 18 / 19
+
+-- 18 of 19 --
+
+sincronizador, integracoes, contrato, dados exportaveis e motivo real para trocar. Apresentar prototipo e pedir
+compromisso.
+Sinal Criterio
+Verde 5 cartas de intencao ou reservas pagas, pelo menos 2 com volume real para piloto.
+Amarelo Interesse alto, mas sem compromisso. Reduzir escopo e validar preco antes do editor avancado.
+Vermelho Dores apenas visuais, pouca disposicao para migrar ou ticket esperado muito baixo.
+18. Fontes consultadas
+● Auryn: https://www.auryn.com.br/
+● Central publica Auryn: https://aurynwebtoprint.freshdesk.com/support/solutions
+● Auryn sem instalacao do SaaS:
+https://aurynwebtoprint.freshdesk.com/support/solutions/articles/44002440629
+● Sincronizador Auryn: https://aurynwebtoprint.freshdesk.com/support/solutions/articles/44001982219
+● Permissoes Auryn: https://aurynwebtoprint.freshdesk.com/support/solutions/articles/44001820423
+● PP1 Fotos: https://pp1.com.br/fotos.php
+● PP1 backend: https://www.pp1.com.br/back-end.php
+● Smart Album PP1: https://www.smartalbum.com.br/
+● Supabase Storage: https://supabase.com/docs/guides/storage
+● Supabase uploads resumiveis: https://supabase.com/docs/guides/storage/uploads/resumable-uploads
+● Supabase S3: https://supabase.com/docs/guides/storage/s3/compatibility
+● Supabase Edge limits: https://supabase.com/docs/guides/functions/limits
+Observacao final
+Este documento e um plano de produto e execucao baseado em documentacao publica. As imagens internas
+da conta do cliente devem ser usadas apenas como referencia de requisitos, com dados pessoais ocultos. O
+desenho final da Photoon deve ser original e validado com usuarios reais.
+PHOTOON | Plano de produto e execucao 19 / 19
+
+-- 19 of 19 --
+

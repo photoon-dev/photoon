@@ -3,7 +3,7 @@ import { updateSession } from '@/lib/supabase/middleware';
 import { slugFromHost, TENANT_HEADER } from '@/lib/tenant';
 
 /** Rotas que exigem um cliente final autenticado. */
-const PROTECTED = ['/meus-projetos', '/projetos'];
+const PROTECTED = ['/meus-projetos', '/projetos', '/editor'];
 /** Rotas publicas dentro do subdominio do lojista. */
 const PUBLIC_TENANT = ['/entrar', '/auth'];
 
