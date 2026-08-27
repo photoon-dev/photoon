@@ -1,39 +1,40 @@
 {
 	email fabio.digital@icloud.com
+
+	# O Caddy só emite certificado para um host depois que o app confirmar
+	# que existe lojista com aquele slug. Ver src/app/api/tls-check/route.ts.
+	on_demand_tls {
+		ask http://app:3000/api/tls-check
+	}
+}
+
+(proxy) {
+	encode zstd gzip
+	reverse_proxy app:3000 {
+		header_up Host {host}
+		header_up X-Forwarded-Proto {scheme}
+	}
 }
 
 # ---------------------------------------------------------------------------
-# Wildcard: qualquer <lojista>.photoon.com.br cai no mesmo app.
-# O middleware do Next resolve o tenant pelo header Host.
-#
-# Certificado wildcard exige DNS-01. Ou:
-#   a) use a imagem caddy com o plugin do seu provedor de DNS e descomente o
-#      bloco tls abaixo; ou
-#   b) troque `*.photoon.com.br` por cada host explicito (TLS-ALPN funciona
-#      direto, sem plugin) enquanto forem poucos lojistas.
-# ---------------------------------------------------------------------------
-# ---------------------------------------------------------------------------
-# TEMPORARIO: acesso por IP cru, para testar antes do DNS propagar.
-# Sem TLS (certificado nao e emitido para IP). Remova este bloco quando
-# photoon.com.br estiver resolvendo para esta VPS.
+# TEMPORARIO: acesso por IP cru, sem TLS (certificado não é emitido para IP).
+# Remover quando o teste terminar.
 # ---------------------------------------------------------------------------
 http://2.25.140.168 {
-	encode zstd gzip
-	reverse_proxy app:3000 {
-		header_up Host {host}
-		header_up X-Forwarded-Proto {scheme}
-	}
+	import proxy
 }
 
-*.photoon.com.br, photoon.com.br {
-	# tls {
-	#	dns cloudflare {env.CLOUDFLARE_API_TOKEN}
-	# }
+# Domínio raiz e www: certificado emitido no arranque.
+photoon.com.br, www.photoon.com.br {
+	import proxy
+}
 
-	encode zstd gzip
-
-	reverse_proxy app:3000 {
-		header_up Host {host}
-		header_up X-Forwarded-Proto {scheme}
+# Qualquer <lojista>.photoon.com.br: certificado emitido na primeira visita,
+# desde que o lojista exista. Um lojista novo passa a funcionar sozinho,
+# sem editar este arquivo nem reiniciar o Caddy.
+https:// {
+	tls {
+		on_demand
 	}
+	import proxy
 }
