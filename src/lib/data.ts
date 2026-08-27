@@ -224,3 +224,38 @@ export async function listarFotosGaleria(galeriaId: string): Promise<Foto[]> {
 
   return data.map((f) => ({ ...f, url: porCaminho.get(f.storage_path) ?? '' }));
 }
+
+export type LojaAdministrada = {
+  lojista_id: string;
+  slug: string;
+  nome: string;
+  papel: 'admin' | 'operador';
+};
+
+/** Lojas que o usuário logado administra (painel em app.photoon.com.br). */
+export async function minhasLojas(): Promise<LojaAdministrada[]> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from('lojista_membros')
+    .select('lojista_id, papel, lojistas(slug, nome)');
+
+  return ((data ?? []) as unknown as {
+    lojista_id: string;
+    papel: 'admin' | 'operador';
+    lojistas: { slug: string; nome: string } | null;
+  }[])
+    .filter((m) => m.lojistas)
+    .map((m) => ({
+      lojista_id: m.lojista_id,
+      papel: m.papel,
+      slug: m.lojistas!.slug,
+      nome: m.lojistas!.nome,
+    }));
+}
+
+/** O usuário logado é super admin da plataforma? */
+export async function souSuperAdmin(): Promise<boolean> {
+  const supabase = await createClient();
+  const { data } = await supabase.from('super_admins').select('user_id').limit(1);
+  return (data?.length ?? 0) > 0;
+}

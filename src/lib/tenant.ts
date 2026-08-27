@@ -30,6 +30,34 @@ export function slugFromHost(host: string | null | undefined): string | null {
   return slug;
 }
 
+/**
+ * Que tipo de host e este?
+ *
+ *   joao.photoon.com.br  -> { tipo: 'loja', slug: 'joao' }   area do cliente final
+ *   app.photoon.com.br   -> { tipo: 'app' }                  painel do lojista
+ *   admin.photoon.com.br -> { tipo: 'admin' }                painel do super admin
+ *   photoon.com.br       -> { tipo: 'raiz' }                 nao serve painel nenhum
+ *
+ * `app` e `admin` estao em RESERVED, entao nenhum lojista consegue registrar
+ * esses slugs e roubar o painel.
+ */
+export type TipoHost =
+  | { tipo: 'loja'; slug: string }
+  | { tipo: 'app' }
+  | { tipo: 'admin' }
+  | { tipo: 'raiz' };
+
+export function classificarHost(host: string | null | undefined): TipoHost {
+  const hostname = (host ?? '').split(':')[0].toLowerCase();
+  const root = ROOT_DOMAIN.split(':')[0].toLowerCase();
+
+  if (hostname === `app.${root}`) return { tipo: 'app' };
+  if (hostname === `admin.${root}`) return { tipo: 'admin' };
+
+  const slug = slugFromHost(host);
+  return slug ? { tipo: 'loja', slug } : { tipo: 'raiz' };
+}
+
 /** Slug do tenant da requisicao atual (server components / route handlers). */
 export async function currentTenantSlug(): Promise<string | null> {
   const h = await headers();

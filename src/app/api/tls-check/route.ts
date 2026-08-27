@@ -16,8 +16,11 @@ export async function GET(request: NextRequest) {
 
   const host = dominio.toLowerCase();
 
-  // O domínio raiz e o www são nossos.
-  if (host === ROOT_DOMAIN || host === `www.${ROOT_DOMAIN}`) {
+  // Hosts da própria plataforma: domínio raiz, www, painel do lojista (app)
+  // e painel do super admin (admin). Nenhum deles pode ser slug de lojista --
+  // estão na lista de reservados de slugFromHost.
+  const NOSSOS = [ROOT_DOMAIN, `www.${ROOT_DOMAIN}`, `app.${ROOT_DOMAIN}`, `admin.${ROOT_DOMAIN}`];
+  if (NOSSOS.includes(host)) {
     return new NextResponse('ok', { status: 200 });
   }
 
