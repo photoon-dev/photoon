@@ -1,0 +1,26 @@
+{
+	email fabio.digital@icloud.com
+}
+
+# ---------------------------------------------------------------------------
+# Wildcard: qualquer <lojista>.photoon.com.br cai no mesmo app.
+# O middleware do Next resolve o tenant pelo header Host.
+#
+# Certificado wildcard exige DNS-01. Ou:
+#   a) use a imagem caddy com o plugin do seu provedor de DNS e descomente o
+#      bloco tls abaixo; ou
+#   b) troque `*.photoon.com.br` por cada host explicito (TLS-ALPN funciona
+#      direto, sem plugin) enquanto forem poucos lojistas.
+# ---------------------------------------------------------------------------
+*.photoon.com.br, photoon.com.br {
+	# tls {
+	#	dns cloudflare {env.CLOUDFLARE_API_TOKEN}
+	# }
+
+	encode zstd gzip
+
+	reverse_proxy app:3000 {
+		header_up Host {host}
+		header_up X-Forwarded-Proto {scheme}
+	}
+}

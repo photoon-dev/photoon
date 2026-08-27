@@ -1,0 +1,32 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Tokens provisorios - trocar pelos valores de Design System.dc.html */
+:root {
+  --ph-bg: 250 250 250;
+  --ph-surface: 255 255 255;
+  --ph-border: 229 229 229;
+  --ph-fg: 23 23 23;
+  --ph-muted: 115 115 115;
+  --ph-brand: 17 17 17;
+  --ph-brand-fg: 255 255 255;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --ph-bg: 12 12 12;
+    --ph-surface: 24 24 24;
+    --ph-border: 42 42 42;
+    --ph-fg: 245 245 245;
+    --ph-muted: 160 160 160;
+    --ph-brand: 245 245 245;
+    --ph-brand-fg: 17 17 17;
+  }
+}
+
+body {
+  background: rgb(var(--ph-bg));
+  color: rgb(var(--ph-fg));
+  -webkit-font-smoothing: antialiased;
+}
