@@ -7,6 +7,33 @@ const PROTECTED = ['/meus-projetos', '/projetos', '/editor'];
 /** Rotas publicas dentro do subdominio do lojista. */
 const PUBLIC_TENANT = ['/entrar', '/auth'];
 
+/**
+ * Monta uma URL de redirecionamento preservando o subdominio do lojista.
+ *
+ * `request.nextUrl` normaliza o host e devolveria photoon.com.br, o que jogaria
+ * o cliente de joao.photoon.com.br para fora da loja dele. Atras do Caddy o
+ * protocolo tambem precisa vir do X-Forwarded-Proto, senao o redirect vira http.
+ */
+function urlDaLoja(request: NextRequest, pathname: string, search = ''): URL {
+  const url = request.nextUrl.clone();
+  url.pathname = pathname;
+  url.search = search;
+
+  const host = request.headers.get('x-forwarded-host') ?? request.headers.get('host');
+  if (host) {
+    // Atribuir `url.host` mantém a porta anterior quando o valor novo não tem
+    // uma, e a porta interna (3000) vazaria no Location atrás do Caddy.
+    const [hostname, porta] = host.split(':');
+    url.hostname = hostname;
+    url.port = porta ?? '';
+  }
+
+  const proto = request.headers.get('x-forwarded-proto');
+  if (proto) url.protocol = `${proto.split(',')[0].trim()}:`;
+
+  return url;
+}
+
 export async function middleware(request: NextRequest) {
   const { pathname, search } = request.nextUrl;
   const host = request.headers.get('host');
@@ -15,7 +42,7 @@ export async function middleware(request: NextRequest) {
   // --- Dominio raiz (photoon.com.br): nao serve as telas do cliente final ---
   if (!slug) {
     if (PROTECTED.some((p) => pathname.startsWith(p)) || pathname.startsWith('/entrar')) {
-      return NextResponse.redirect(new URL('/', request.url));
+      return NextResponse.redirect(urlDaLoja(request, '/'));
     }
     return NextResponse.next();
   }
@@ -31,29 +58,22 @@ export async function middleware(request: NextRequest) {
   const isPublic = PUBLIC_TENANT.some((p) => pathname === p || pathname.startsWith(p + '/'));
 
   if (isProtected && !user) {
-    const login = request.nextUrl.clone();
-    login.pathname = '/entrar';
     // preserva o destino para voltar depois do login
-    login.search = `?next=${encodeURIComponent(pathname + search)}`;
+    const login = urlDaLoja(request, '/entrar', `?next=${encodeURIComponent(pathname + search)}`);
     const redirect = NextResponse.redirect(login);
     response.cookies.getAll().forEach((c) => redirect.cookies.set(c));
     return redirect;
   }
 
   if (isPublic && user && pathname === '/entrar') {
-    const home = request.nextUrl.clone();
-    home.pathname = '/meus-projetos';
-    home.search = '';
-    const redirect = NextResponse.redirect(home);
+    const redirect = NextResponse.redirect(urlDaLoja(request, '/meus-projetos'));
     response.cookies.getAll().forEach((c) => redirect.cookies.set(c));
     return redirect;
   }
 
   // "/" no subdominio do lojista leva o cliente final para o login
   if (pathname === '/') {
-    const target = request.nextUrl.clone();
-    target.pathname = user ? '/meus-projetos' : '/entrar';
-    const redirect = NextResponse.redirect(target);
+    const redirect = NextResponse.redirect(urlDaLoja(request, user ? '/meus-projetos' : '/entrar'));
     response.cookies.getAll().forEach((c) => redirect.cookies.set(c));
     return redirect;
   }
