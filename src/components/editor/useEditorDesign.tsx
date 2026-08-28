@@ -500,13 +500,100 @@ export function useEditorDesign({
       window.addEventListener('pointercancel', soltar);
     };
 
+    /* ---------------------------------------------------------------------
+     * Gesto sobre quadro LIVRE (elemento e texto).
+     *
+     * `arrastar` acima mexe no ENQUADRAMENTO — quanto a foto desliza dentro de
+     * um quadro cujo lugar quem manda é o layout. Elemento e texto não têm
+     * layout: eles têm um retângulo próprio, e mover significa mudar `ret`.
+     * Por isso o gesto antigo simplesmente não começava para eles (`qSel` é
+     * nulo), e nada arrastava, escalava ou girava.
+     * ------------------------------------------------------------------- */
+    const arrastarLivre = (
+      e: React.PointerEvent<HTMLElement>,
+      modo: 'mover' | 'escalar' | 'girar',
+    ) => {
+      const q = qualquerSel;
+      if (!q || q.tipo === 'foto') return;
+      e.preventDefault();
+      const alvo = e.currentTarget;
+      // A página é a referência: `ret` está em % dela.
+      const pagina = alvo.closest('section') as HTMLElement | null;
+      const rp = pagina?.getBoundingClientRect();
+      if (!rp || !rp.width || !rp.height) return;
+
+      const ini = {
+        x: e.clientX,
+        y: e.clientY,
+        ret: { ...q.ret },
+        rot: q.tipo === 'elemento' ? q.rot : 0,
+        // Centro do quadro em pixels, para o giro.
+        cx: rp.left + ((q.ret.x + q.ret.w / 2) / 100) * rp.width,
+        cy: rp.top + ((q.ret.y + q.ret.h / 2) / 100) * rp.height,
+      };
+
+      const id = e.pointerId;
+      try { alvo.setPointerCapture(id); } catch { /* ponteiro já solto */ }
+
+      let ativo = false;
+      const mover = (ev: PointerEvent) => {
+        if (ev.pointerId !== id) return;
+        if (!ativo) {
+          if (Math.hypot(ev.clientX - ini.x, ev.clientY - ini.y) < 3) return;
+          ativo = true;
+          doc.iniciarGesto();
+        }
+        const dx = ((ev.clientX - ini.x) / rp.width) * 100;
+        const dy = ((ev.clientY - ini.y) / rp.height) * 100;
+
+        if (modo === 'mover') {
+          // Deixa sair um pouco da página: elemento na borda é decisão de
+          // design, não erro. Sair de vez, não — some e o cliente não acha.
+          doc.mudarRet({
+            x: Math.min(100 - ini.ret.w / 2, Math.max(-ini.ret.w / 2, ini.ret.x + dx)),
+            y: Math.min(100 - ini.ret.h / 2, Math.max(-ini.ret.h / 2, ini.ret.y + dy)),
+          });
+        } else if (modo === 'escalar') {
+          // Mantém a proporção e o canto oposto parado, que é o que se espera
+          // ao puxar um canto.
+          const fator = Math.max(0.15, 1 + (dx + dy) / Math.max(ini.ret.w, ini.ret.h) / 2);
+          const w = Math.min(200, Math.max(2, ini.ret.w * fator));
+          const h = Math.min(200, Math.max(2, ini.ret.h * fator));
+          doc.mudarRet({ w, h });
+        } else {
+          const a0 = Math.atan2(ini.y - ini.cy, ini.x - ini.cx);
+          const a1 = Math.atan2(ev.clientY - ini.cy, ev.clientX - ini.cx);
+          let g = ini.rot + ((a1 - a0) * 180) / Math.PI;
+          // Shift trava de 15 em 15: alinhar no olho nunca sai reto.
+          if (ev.shiftKey) g = Math.round(g / 15) * 15;
+          doc.mudarElemento({ rot: Math.round(g) });
+        }
+      };
+      const soltar = (ev: PointerEvent) => {
+        if (ev.pointerId !== id) return;
+        if (ativo) doc.fimGesto();
+        try { alvo.releasePointerCapture(id); } catch { /* já liberado */ }
+        window.removeEventListener('pointermove', mover);
+        window.removeEventListener('pointerup', soltar);
+        window.removeEventListener('pointercancel', soltar);
+      };
+      window.addEventListener('pointermove', mover);
+      window.addEventListener('pointerup', soltar);
+      window.addEventListener('pointercancel', soltar);
+    };
+
     type PDown = React.PointerEvent<HTMLElement>;
-    const selMoverDown = (e: PDown) => arrastar(e, (ini, x, y) => moverEnq(ini, x, y));
+    /** Encaminha para o gesto certo conforme o que está selecionado. */
+    const livre = () => !!qualquerSel && qualquerSel.tipo !== 'foto';
+    const selMoverDown = (e: PDown) =>
+      livre() ? arrastarLivre(e, 'mover') : arrastar(e, (ini, x, y) => moverEnq(ini, x, y));
     // Os cantos AMPLIAM (é o que todo editor faz num canto); girar é o botão
     // redondo. Antes os cantos giravam e o botão de girar ficava recortado pelo
     // `overflow:hidden` da página — ou seja, nada escalava no palco.
-    const selEscalarDown = (e: PDown) => arrastar(e, (ini, x, y) => escalarEnq(ini, x, y));
-    const selGirarDown = (e: PDown) => arrastar(e, (ini, x, y, ev) => girarEnq(ini, x, y, ev.shiftKey));
+    const selEscalarDown = (e: PDown) =>
+      livre() ? arrastarLivre(e, 'escalar') : arrastar(e, (ini, x, y) => escalarEnq(ini, x, y));
+    const selGirarDown = (e: PDown) =>
+      livre() ? arrastarLivre(e, 'girar') : arrastar(e, (ini, x, y, ev) => girarEnq(ini, x, y, ev.shiftKey));
 
     /* ------------------------------- rostos ------------------------------- */
 

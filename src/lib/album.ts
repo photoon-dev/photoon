@@ -194,7 +194,9 @@ const zPagina = z.object({
 
 export const zLamina = z.object({
   id: z.string().min(1),
-  fundo: z.string().regex(/^#[0-9A-Fa-f]{3,8}$/),
+  // Cor pura (`#RRGGBB`) ou padrão (`id|papel|traco`). O formato antigo
+  // continua válido: documento já gravado não pode virar inválido.
+  fundo: z.string().regex(/^(#[0-9A-Fa-f]{3,8}|[a-z-]+\|#[0-9A-Fa-f]{3,8}\|#[0-9A-Fa-f]{3,8})$/),
   espacoMm: z.number().min(0).max(50).optional(),
   esquerda: zPagina,
   direita: zPagina,
@@ -425,7 +427,7 @@ export function migrarLamina(bruto: unknown): Lamina {
     const meio = Math.ceil(l.quadros.length / 2);
     return {
       id: str(l.id, uid()),
-      fundo: /^#[0-9A-Fa-f]{3,8}$/.test(String(l.fundo)) ? String(l.fundo) : '#FFFFFF',
+      fundo: /^(#[0-9A-Fa-f]{3,8}|[a-z-]+\|#[0-9A-Fa-f]{3,8}\|#[0-9A-Fa-f]{3,8})$/.test(String(l.fundo)) ? String(l.fundo) : '#FFFFFF',
       esquerda: migrarPagina(null, l.quadros.slice(0, meio).map(migrarQuadro).filter(Boolean) as Quadro[]),
       direita: migrarPagina(null, l.quadros.slice(meio).map(migrarQuadro).filter(Boolean) as Quadro[]),
       reserva: [],
@@ -434,7 +436,7 @@ export function migrarLamina(bruto: unknown): Lamina {
 
   return {
     id: str(l.id, uid()),
-    fundo: /^#[0-9A-Fa-f]{3,8}$/.test(String(l.fundo)) ? String(l.fundo) : '#FFFFFF',
+    fundo: /^(#[0-9A-Fa-f]{3,8}|[a-z-]+\|#[0-9A-Fa-f]{3,8}\|#[0-9A-Fa-f]{3,8})$/.test(String(l.fundo)) ? String(l.fundo) : '#FFFFFF',
     espacoMm:
       typeof l.espacoMm === 'number' && Number.isFinite(l.espacoMm)
         ? Math.min(50, Math.max(0, l.espacoMm))
