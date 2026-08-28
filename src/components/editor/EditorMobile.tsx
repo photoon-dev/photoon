@@ -60,17 +60,23 @@ export default function EditorMobile({ v, projetoId }: { v: any; projetoId: stri
   const bloqueado = Number(v.bloqueadores ?? 0) > 0;
 
   /** Uma página do livro, com os quadros do layout atual. */
-  const pagina = (grid: string, quadros: { style: string; iconStyle?: string }[], primeiro = false) => (
+  const pagina = (
+    grid: string,
+    quadros: { style: string; src?: string; imgStyle?: string; iconStyle?: string }[],
+    primeiro = false,
+  ) => (
     <div style={{ position: 'relative', flex: 1, background: '#FFFFFF', overflow: 'hidden' }}>
       <div style={css(grid)}>
         {primeiro && (
-          <div style={css(v.frameA)} onClick={v.selectFrame}>
+          <div style={css(v.frameA.style)} onClick={v.frameA.onClick ?? v.selectFrame}>
+            <img src={v.frameA.src} style={css(v.frameA.imgStyle)} alt="" />
             <span style={css(v.faceBox)} />
             <span style={css(v.faceTag)}>rosto detectado</span>
           </div>
         )}
         {quadros.map((q, i) => (
           <div key={i} style={css(q.style)} onClick={v.selectFrame}>
+            <img src={q.src} style={css(q.imgStyle)} alt="" />
             {q.iconStyle && (
               <span style={css(q.iconStyle)}>
                 <IconGaleria size={20} />

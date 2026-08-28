@@ -575,6 +575,7 @@ export default function EditorDesign({ v }: { v: any }) {
                       </span>
                       <div style={css(v.pageGrid)}>
                         <div onClick={v.frameA.onClick} style={css(v.frameA.style)}>
+                          <img src={v.frameA.src} style={css(v.frameA.imgStyle)} alt="" />
                           <span style={css(v.faceBox)}>
                           </span>
                           <span style={css(v.faceTag)}>
@@ -591,6 +592,7 @@ export default function EditorDesign({ v }: { v: any }) {
                         </div>
                         {v.pageFrames.map((f: any, i10: number) => (
                           <div key={i10} onClick={f.onClick} style={css(f.style)} className="dc24">
+                            <img src={f.src} style={css(f.imgStyle)} alt="" />
                           </div>
                         ))}
                       </div>
@@ -606,6 +608,7 @@ export default function EditorDesign({ v }: { v: any }) {
                       <div style={css(v.rightGrid)}>
                         {v.rightFrames.map((f: any, i10: number) => (
                           <div key={i10} onClick={f.onClick} style={css(f.style)} className="dc25">
+                            <img src={f.src} style={css(f.imgStyle)} alt="" />
                             <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" style={css(f.iconStyle)}>
                               <rect x="3" y="4" width="18" height="16" rx="4" />
                               <path d="m3.5 16 4.6-4.2 4 3.4 3.4-3 5 4.4" />
@@ -625,6 +628,7 @@ export default function EditorDesign({ v }: { v: any }) {
                     <div style={css(v.turnFront)}>
                       {v.turnFrontFrames.map((q: any, i9: number) => (
                         <div key={i9} style={css(q.style)}>
+                          <img src={q.src} style={css(q.imgStyle)} alt="" />
                         </div>
                       ))}
                       <span style={{ position: 'absolute', left: '10%', right: '10%', bottom: '6%', height: '8px', borderRadius: '2px', background: '#EEEAE0' }}>
@@ -633,6 +637,7 @@ export default function EditorDesign({ v }: { v: any }) {
                     <div style={css(v.turnBack)}>
                       {v.turnBackFrames.map((q: any, i9: number) => (
                         <div key={i9} style={css(q.style)}>
+                          <img src={q.src} style={css(q.imgStyle)} alt="" />
                         </div>
                       ))}
                       <span style={{ position: 'absolute', left: '10%', right: '10%', bottom: '6%', height: '8px', borderRadius: '2px', background: '#EEEAE0' }}>

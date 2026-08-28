@@ -64,6 +64,13 @@ Projetos de teste do usuário `usuario@photoon.com.br` na loja `demo`:
 - `d3a58dd0-2cc7-41c8-99b9-770a47f23729` — "Revista da turma", 2 lâminas
 - `52dc9ded-9aff-49f6-a1a0-36c73c717a8c` — "Álbum dos pais", 1 lâmina
 
+**Conferir o editor SEM a senha de teste:** `npm run dev` e abrir
+`http://localhost:3000/dev-preview/editor` — monta o `<EditorCliente>` com fotos
+de mentira (SVG assimétrico) e um documento v2 com quadros girados/espelhados.
+A página vive em `src/app/dev-preview/editor/` e devolve 404 em build de
+produção. Fotografar com Puppeteer (`/usr/bin/chromium-browser` +
+`puppeteer-core`, ambos já instalados), sem `isMobile`, viewport 1440.
+
 ---
 
 ## 3. Armadilhas (leia antes de codar)
@@ -178,7 +185,7 @@ cliente não pode virar tela branca por um campo faltando.
 
 ---
 
-## 6. Inspetor — CONCLUÍDO em parte
+## 6. Inspetor — CONCLUÍDO
 
 O estado meio-quebrado descrito antes foi resolvido: o `.dc.html` e o hook estão
 em sincronia, `./tools/gerar.sh editor` roda limpo e a compilação passa.
@@ -189,42 +196,50 @@ em sincronia, `./tools/gerar.sh editor` roda limpo e a compilação passa.
 - Preencher / Encaixar / Girar / Espelhar;
 - os campos numéricos de Zoom e Rotação;
 - o botão Preto e branco (antes animava sem que `s.bw` fosse lido por ninguém);
-- `src/lib/imagem.ts` novo: `filtroCss()` e `enquadramentoCss()`, as fórmulas
-  isoladas para valerem igual na impressão.
+- `src/lib/imagem.ts`: `filtroCss()` e `imagemCss()`, as fórmulas isoladas para
+  valerem igual na impressão.
 
 **O aviso "Rosto perto do corte" está ESCONDIDO de propósito** (`blocoRosto:
 'display:none'`). Era um retângulo fixo em 16%/20%/36%/40% que mentia em toda
 foto. Volta a aparecer quando a Fase 5 (rostos) existir — os bindings
 `textoRosto`, `corrigirRosto` e `manterRosto` já estão no lugar, vazios.
 
-**O que falta neste bloco:**
-1. **Girar não aparece no render.** `background-image` não gira. Precisa trocar
-   o quadro por `<img>` dentro de `overflow:hidden` — isso também é o que faz a
-   conta bater com o `sharp` na impressão. Espelhar já funciona
-   (`transform:scaleX(-1)`).
-2. O painel abre ao selecionar, mas um teste automatizado não achou o texto
-   "Enquadramento" — conferir se `insp: true` realmente expande o painel ou se
-   há um segundo estado controlando a largura.
+**Resolvido nesta passagem** (verificado no navegador via `/dev-preview/editor`:
+rot 90° deita a foto, rot 180° vira de cabeça para baixo, `espelho` inverte o
+texto; painel do inspetor abre com 306px e mostra "Enquadramento"):
+1. **Girar aparece no render.** O quadro deixou de ser `background-image` num
+   `<div>`: agora é uma caixa com `overflow:hidden` e um `<img>` dentro
+   (`imagemCss()`). `rot` entra como `transform:rotate()`, `espelho` como
+   `scaleX(-1)`, o modo como `object-fit`, `dx/dy` como `object-position` e
+   `escala` como `transform:scale()`. É a mesma modelagem que o `sharp` vai usar
+   na impressão. Vale para os quadros da página, o primeiro quadro (com a
+   marcação de rosto) e as duas faces da virada.
+   *Ressalva:* com `rot` em 90°/270° e quadro não quadrado, `object-fit:cover`
+   encaixa antes de girar e sobra faixa. O recobrimento exato depende das
+   dimensões da foto e entra com `caixaFonte()` na Fase 4.
+2. **`insp: true` expande o painel sozinho** — não há segundo estado de largura.
+   `inspectorStyle` é o único controle: `s.insp` → `width:clamp(238px,23vw,306px)`,
+   senão `display:none`. O corpo (com "Enquadramento") depende ainda de haver
+   seleção viva (`selTipo`), que é o que um teste precisa disparar clicando num
+   quadro da lâmina antes de procurar o texto.
 
 ## 7. O QUE FALTA — lista do usuário, em ordem de prioridade
 
 Ele listou isto em 28/08. Os dois primeiros itens já foram corrigidos e estão
 na seção 5.
 
-### 7.1. Inspetor funcional (Fase 3) — EM ANDAMENTO
-Hoje o painel direito é pintura. "Preencher/Encaixar/Girar/Espelhar", os
-campos de Zoom e Rotação, os três sliders e o P&B não têm nenhum manipulador.
-Ver seção 6 para o estado exato.
+### 7.1. Inspetor funcional (Fase 3) — CONCLUÍDO (ver seção 6)
+Todos os controles do painel direito têm manipulador: Preencher / Encaixar /
+Girar / Espelhar, os campos de Zoom e Rotação, os três sliders e o P&B. O
+quadro virou `<img>` dentro de `overflow:hidden` (`imagemCss()`), então Girar e
+Espelhar aparecem no render.
 
-Depende de duas funções puras a escrever:
+Ainda falta para a **impressão** (Fase 4, ver 7.11), não para o editor:
 - `src/lib/enquadramento.ts` — `caixaFonte(foto, quadro, enq)` devolve o
-  retângulo em pixels da foto original. Compartilhada com a impressão.
-- `src/lib/imagem.ts` — `filtroCss(ajustes)` e `aplicarSharp(img, ajustes)`
-  a partir da **mesma** fórmula.
-
-Trocar `background-image` por `<img>` dentro de `overflow:hidden`: com
-`background-size/position` não há como girar nem espelhar sem gambiarra, e a
-conta deixa de bater com o `sharp` na impressão.
+  retângulo em pixels da foto original. Compartilhada com a impressão; é o que
+  resolve o recobrimento exato ao girar 90°/270°.
+- `src/lib/imagem.ts` — `aplicarSharp(img, ajustes)` a partir da **mesma**
+  fórmula de `filtroCss()`.
 
 ### 7.2. Arrastar para mover e redimensionar
 Não funciona para foto nem para texto. Precisa de manipulador de ponteiro nos
@@ -336,8 +351,8 @@ Solução: um `CabecalhoApp` único alimentado por props, reusando
 
 ## 8. Ordem sugerida
 
-1. **Terminar a seção 6** (inspetor) — está pela metade e bloqueia o resto.
-2. 7.2 e 7.3 (arrastar, roda do mouse) — mesma área do código.
+1. ~~Terminar a seção 6 (inspetor)~~ — FEITO. Próximo passo real é o de baixo.
+2. **7.2 e 7.3** (arrastar, roda do mouse) — mesma área do código.
 3. 7.4 e 7.5 (filtros, layouts das duas páginas, espaçamento).
 4. **7.7 (rostos)** — o usuário chama de urgente e é o diferencial dele.
    Destrava 7.8 automaticamente.

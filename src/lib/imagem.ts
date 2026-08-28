@@ -27,24 +27,38 @@ export function filtroCss(a: Ajustes | undefined): string {
 }
 
 /**
- * Como a foto se acomoda no quadro.
+ * Estilo do `<img>` dentro do quadro (que tem `overflow:hidden`).
+ *
+ * A foto é um elemento de verdade, não um `background-image`: só assim `rot` e
+ * `espelho` aparecem no render — `background` não gira — e só assim a conta
+ * bate com o recorte do `sharp` na impressão, onde a foto também é girada antes
+ * de ser encaixada.
  *
  * `escala` 1 = o mínimo que satisfaz o modo (cobrir ou caber). `dx`/`dy` vão de
- * −1 a 1 e deslocam dentro da sobra, então o enquadramento não depende do
- * tamanho em pixels do quadro na tela — o que faz a conta valer igual na
- * impressão.
+ * −1 a 1 e deslocam dentro da sobra via `object-position`, então o
+ * enquadramento não depende do tamanho em pixels do quadro na tela.
+ *
+ * Ressalva: com `rot` em 90°/270° e quadro não quadrado, `object-fit:cover`
+ * encaixa antes de girar e sobra faixa. O recobrimento exato depende das
+ * dimensões da foto — entra com `caixaFonte()` na Fase 4 (impressão).
  */
-export function enquadramentoCss(e: Enq | undefined): string {
-  if (!e) return 'background-size:cover;background-position:center;';
-  const base = e.modo === 'encaixar' ? 'contain' : 'cover';
-  const tamanho =
-    e.escala === 1 ? base : `${(e.escala * 100).toFixed(1)}% auto`;
+export function imagemCss(e: Enq | undefined, a?: Ajustes): string {
+  const modo = e?.modo === 'encaixar' ? 'contain' : 'cover';
   // −1..1 → 0..100% da sobra
-  const px = (((e.dx + 1) / 2) * 100).toFixed(1);
-  const py = (((e.dy + 1) / 2) * 100).toFixed(1);
+  const px = ((((e?.dx ?? 0) + 1) / 2) * 100).toFixed(1);
+  const py = ((((e?.dy ?? 0) + 1) / 2) * 100).toFixed(1);
+  const escala = e?.escala ?? 1;
+  const rot = e?.rot ?? 0;
+
+  const transform = ['translate(-50%,-50%)'];
+  if (escala !== 1) transform.push(`scale(${escala.toFixed(3)})`);
+  if (rot) transform.push(`rotate(${rot}deg)`);
+  if (e?.espelho) transform.push('scaleX(-1)');
+
   return (
-    `background-size:${tamanho};background-position:${px}% ${py}%;` +
-    'background-repeat:no-repeat;' +
-    (e.espelho ? 'transform:scaleX(-1);' : '')
+    'position:absolute;left:50%;top:50%;width:100%;height:100%;' +
+    `object-fit:${modo};object-position:${px}% ${py}%;` +
+    `transform:${transform.join(' ')};` +
+    filtroCss(a)
   );
 }

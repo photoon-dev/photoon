@@ -94,7 +94,7 @@ import { LAYOUTS as CATALOGO, contagens, layout as layoutPorId } from '@/lib/lay
 import { curvaturaPagina, luzPagina, estiloPalco, estiloLivro, limitarZoom, ZOOM_PASSO, ZOOM_PADRAO } from '@/lib/livro';
 import type { Documento, Lado } from '@/components/editor/useDocumento';
 import type { Pagina, QuadroFoto } from '@/lib/album';
-import { enquadramentoCss, filtroCss } from '@/lib/imagem';
+import { imagemCss } from '@/lib/imagem';
 
 /** Serializa um objeto de estilo para a string que o markup do design espera. */
 function estilo(o: React.CSSProperties): string {
@@ -229,14 +229,17 @@ export function useEditorDesign({
       `position:absolute;left:${(r.x * escalaX + deslocaX).toFixed(3)}%;top:${r.y}%;` +
       `width:${(r.w * escalaX).toFixed(3)}%;height:${r.h}%`;
 
-    /** Estilo de um quadro de foto na página renderizada. */
+    /**
+     * Caixa do quadro de foto: recorta (`overflow:hidden`) o `<img>` que mora
+     * dentro. O quadro vazio ganha o tracejado; a foto entra pelo `<img>`.
+     */
     const quadroEstilo = (q: QuadroFoto, r: { x: number; y: number; w: number; h: number }, sel: boolean) => {
-      const f = q.fotoId ? porId.get(q.fotoId) : undefined;
+      const cheio = q.fotoId && porId.has(q.fotoId);
       return (
         ret(r) +
         `;border-radius:2px;overflow:hidden;cursor:pointer;` +
-        (f
-          ? `background-image:url('${f.url}');` + enquadramentoCss(q.enq) + filtroCss(q.ajustes)
+        (cheio
+          ? ''
           : // Quadro vazio agora é vazio de verdade. Antes, `fotos[n % fotos.length]`
             // preenchia tudo com fotos que não estavam no documento.
             `background:#F8FAFE;border:1.5px dashed #CBD5E6;display:flex;align-items:center;` +
@@ -245,14 +248,27 @@ export function useEditorDesign({
       );
     };
 
+    /** `<img>` do quadro: fonte e estilo (enquadramento + ajustes de cor). */
+    const quadroImg = (q: QuadroFoto): { src: string | undefined; imgStyle: string } => {
+      const f = q.fotoId ? porId.get(q.fotoId) : undefined;
+      return f
+        ? { src: f.url, imgStyle: imagemCss(q.enq, q.ajustes) }
+        : { src: undefined, imgStyle: 'display:none' };
+    };
+
+    const SEM_IMG = { src: undefined as string | undefined, imgStyle: 'display:none' };
+
     /** Quadros de uma página, prontos para o markup. */
     const framesDe = (pagina: Pagina, lado: Lado) =>
       doc.quadrosDe(pagina).map(({ q, ret: r }) => {
         const sel = doc.selecao?.quadro === q.id;
+        const img = q.tipo === 'foto' ? quadroImg(q) : SEM_IMG;
         return {
           id: q.id,
           vazio: q.tipo === 'foto' && !q.fotoId,
           style: q.tipo === 'foto' && r ? quadroEstilo(q, r, sel) : 'display:none',
+          src: img.src,
+          imgStyle: img.imgStyle,
           iconStyle: q.tipo === 'foto' && !q.fotoId ? 'opacity:.6' : 'display:none',
           onClick: () => doc.setSelecao({ lamina: doc.atual, lado, quadro: q.id }),
         };
@@ -581,7 +597,7 @@ export function useEditorDesign({
       // conseguir editar a foto escolhida.
       selectFrame: framesEsq[0]?.onClick ?? (() => {}),
       selectText: () => {},
-      frameA: framesEsq[0] ?? { style: 'display:none', onClick: () => {} },
+      frameA: framesEsq[0] ?? { style: 'display:none', onClick: () => {}, src: undefined, imgStyle: 'display:none' },
       // A marcação de rosto só aparece quando houver análise de verdade
       // (Fase 5). Um retângulo fixo em 16%/20% mentia sobre a foto.
       faceBox: 'display:none',
@@ -610,17 +626,27 @@ export function useEditorDesign({
       // Quadros das duas faces: a página que sai e a que entra.
       turnFrontFrames: (() => {
         const alvo = s.turning === 'next' ? lamina.direita : lamina.esquerda;
-        return doc.quadrosDe(alvo).map(({ q, ret: r }) => ({
-          style: q.tipo === 'foto' && r ? quadroEstilo(q, r, false) : 'display:none',
-        }));
+        return doc.quadrosDe(alvo).map(({ q, ret: r }) => {
+          const img = q.tipo === 'foto' ? quadroImg(q) : SEM_IMG;
+          return {
+            style: q.tipo === 'foto' && r ? quadroEstilo(q, r, false) : 'display:none',
+            src: img.src,
+            imgStyle: img.imgStyle,
+          };
+        });
       })(),
       turnBackFrames: (() => {
         const destino = s.turning === 'next' ? doc.laminas[laminaAtual + 1] : doc.laminas[laminaAtual - 1];
         const alvo = s.turning === 'next' ? destino?.esquerda : destino?.direita;
         if (!alvo) return [];
-        return doc.quadrosDe(alvo).map(({ q, ret: r }) => ({
-          style: q.tipo === 'foto' && r ? quadroEstilo(q, r, false) : 'display:none',
-        }));
+        return doc.quadrosDe(alvo).map(({ q, ret: r }) => {
+          const img = q.tipo === 'foto' ? quadroImg(q) : SEM_IMG;
+          return {
+            style: q.tipo === 'foto' && r ? quadroEstilo(q, r, false) : 'display:none',
+            src: img.src,
+            imgStyle: img.imgStyle,
+          };
+        });
       })(),
       turnFrontFoto: (() => {
         const alvo = s.turning === 'next' ? lamina.direita : lamina.esquerda;
