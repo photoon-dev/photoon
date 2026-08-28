@@ -1,7 +1,9 @@
 'use client';
 
 import type { LojaResumo, NumerosDaPlataforma } from '@/lib/lojista';
-import { criarLoja, alternarLoja } from '@/app/admin/actions';
+import Link from 'next/link';
+import type { Plano } from '@/lib/lojista';
+import { criarLoja, alternarLoja, definirPlanoDaLoja } from '@/app/admin/actions';
 
 const CARD = 'rounded-[18px] border border-line bg-surface';
 const CAMPO =
@@ -19,11 +21,13 @@ export default function PainelSuperAdmin({
   numeros,
   dominio,
   email,
+  planos,
 }: {
   lojas: LojaResumo[];
   numeros: NumerosDaPlataforma;
   dominio: string;
   email: string;
+  planos: Plano[];
 }) {
   const kpis = [
     { rotulo: 'Lojas', valor: numeros.lojas },
@@ -44,6 +48,18 @@ export default function PainelSuperAdmin({
             <span className="block text-[11.5px] text-muted-2">super admin</span>
           </span>
         </span>
+
+        <nav className="ml-3 flex gap-1">
+          <span className="rounded-full bg-blue-soft px-4 py-2 text-sm font-bold text-blue">
+            Lojas
+          </span>
+          <Link
+            href="/planos"
+            className="rounded-full px-4 py-2 text-sm font-medium text-ink-3 hover:bg-page hover:text-blue"
+          >
+            Planos
+          </Link>
+        </nav>
 
         <div className="flex-1" />
 
@@ -152,6 +168,23 @@ export default function PainelSuperAdmin({
                 >
                   {l.ativo ? 'Ativa' : 'Desativada'}
                 </span>
+
+                <form action={definirPlanoDaLoja} className="flex-none">
+                  <input type="hidden" name="lojista_id" value={l.id} />
+                  <select
+                    name="plano_id"
+                    defaultValue={l.plano_id ?? ''}
+                    onChange={(e) => e.currentTarget.form?.requestSubmit()}
+                    className="h-9 rounded-[12px] border border-line bg-surface px-2.5 text-[12.5px] font-semibold text-ink-3"
+                  >
+                    <option value="">sem plano</option>
+                    {planos.map((p) => (
+                      <option key={p.id} value={p.id}>
+                        {p.nome}
+                      </option>
+                    ))}
+                  </select>
+                </form>
 
                 <form action={alternarLoja}>
                   <input type="hidden" name="lojista_id" value={l.id} />

@@ -53,3 +53,67 @@ export async function alternarLoja(fd: FormData) {
   if (error) throw new Error(error.message);
   revalidatePath('/');
 }
+
+// ---------------------------------------------------------------------------
+// Planos
+// ---------------------------------------------------------------------------
+
+const numero = (fd: FormData, campo: string) => {
+  const v = texto(fd, campo);
+  return v ? Number(v.replace(',', '.')) : 0;
+};
+
+const inteiroOuNulo = (fd: FormData, campo: string) => {
+  const v = texto(fd, campo);
+  return v ? Number(v) : null;
+};
+
+export async function salvarPlano(fd: FormData) {
+  await exigirSuperAdmin();
+
+  const campos = {
+    nome: texto(fd, 'nome'),
+    descricao: texto(fd, 'descricao') || null,
+    valor_mensal: numero(fd, 'valor_mensal'),
+    valor_por_projeto: numero(fd, 'valor_por_projeto'),
+    valor_por_lamina: numero(fd, 'valor_por_lamina'),
+    limite_projetos: inteiroOuNulo(fd, 'limite_projetos'),
+    limite_clientes: inteiroOuNulo(fd, 'limite_clientes'),
+    limite_armazenamento_gb: inteiroOuNulo(fd, 'limite_armazenamento_gb'),
+    ativo: fd.get('ativo') !== null,
+  };
+
+  if (!campos.nome) throw new Error('O plano precisa de um nome.');
+
+  const id = texto(fd, 'plano_id');
+  const supabase = await createClient();
+  const { error } = id
+    ? await supabase.from('planos').update(campos).eq('id', id)
+    : await supabase.from('planos').insert(campos);
+
+  if (error) throw new Error(error.message);
+  revalidatePath('/planos');
+}
+
+export async function excluirPlano(fd: FormData) {
+  await exigirSuperAdmin();
+  const supabase = await createClient();
+  const { error } = await supabase.from('planos').delete().eq('id', texto(fd, 'plano_id'));
+  if (error) throw new Error(error.message);
+  revalidatePath('/planos');
+}
+
+/** Coloca uma loja num plano. */
+export async function definirPlanoDaLoja(fd: FormData) {
+  await exigirSuperAdmin();
+  const planoId = texto(fd, 'plano_id');
+
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from('lojistas')
+    .update({ plano_id: planoId || null, plano_desde: planoId ? new Date().toISOString() : null })
+    .eq('id', texto(fd, 'lojista_id'));
+
+  if (error) throw new Error(error.message);
+  revalidatePath('/');
+}

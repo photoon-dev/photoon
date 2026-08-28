@@ -129,6 +129,7 @@ export type LojaResumo = {
   ativo: boolean;
   criado_em: string;
   logo_url: string | null;
+  plano_id: string | null;
   clientes: { count: number }[];
   projetos: { count: number }[];
   lojista_membros: { count: number }[];
@@ -144,7 +145,7 @@ export async function listarTodasAsLojas(): Promise<LojaResumo[]> {
   const { data } = await supabase
     .from('lojistas')
     .select(
-      'id, slug, nome, ativo, criado_em, logo_url, ' +
+      'id, slug, nome, ativo, criado_em, logo_url, plano_id, ' +
         'clientes(count), projetos(count), lojista_membros(count)',
     )
     .order('criado_em', { ascending: false });
@@ -172,4 +173,47 @@ export async function numerosDaPlataforma(): Promise<NumerosDaPlataforma> {
     conta('galeria_fotos'),
   ]);
   return { lojas, clientes, projetos, fotos };
+}
+
+export type Plano = {
+  id: string;
+  nome: string;
+  descricao: string | null;
+  valor_mensal: number;
+  valor_por_projeto: number;
+  valor_por_lamina: number;
+  limite_projetos: number | null;
+  limite_clientes: number | null;
+  limite_armazenamento_gb: number | null;
+  ativo: boolean;
+  ordem: number;
+};
+
+export async function listarPlanos(): Promise<Plano[]> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from('planos')
+    .select(
+      'id, nome, descricao, valor_mensal, valor_por_projeto, valor_por_lamina, ' +
+        'limite_projetos, limite_clientes, limite_armazenamento_gb, ativo, ordem',
+    )
+    .order('ordem');
+  return (data ?? []) as unknown as Plano[];
+}
+
+/** Consumo da loja na competência atual, para mostrar o quanto já foi usado. */
+export async function usoAtual(lojistaId: string): Promise<{ projetos: number; laminas: number }> {
+  const supabase = await createClient();
+  const inicioDoMes = new Date();
+  inicioDoMes.setUTCDate(1);
+  const competencia = inicioDoMes.toISOString().slice(0, 10);
+
+  const { data } = await supabase
+    .from('uso_lojista')
+    .select('projetos, laminas')
+    .eq('lojista_id', lojistaId)
+    .eq('competencia', competencia)
+    .maybeSingle();
+
+  return (data as { projetos: number; laminas: number } | null) ?? { projetos: 0, laminas: 0 };
 }
