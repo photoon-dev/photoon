@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import type { Foto } from '@/lib/data';
+import type { Foto, PessoaDaGaleria, RostoDaFoto } from '@/lib/data';
 import { calcularPreco, reais, type PrecoModelo } from '@/lib/preco';
 
 /**
@@ -38,6 +38,10 @@ export type EstadoEditor = {
   bgHue: number;
   /** Cor com que os elementos novos nascem. */
   elCor: string;
+  /** Quadros em que o cliente escolheu "Manter" apesar do aviso de rosto. */
+  rostoIgnorado: string[];
+  /** Pessoa selecionada na aba Pessoas; filtra a galeria. */
+  pessoaAtiva: string | null;
 };
 
 // O catálogo de layouts virou `src/lib/layouts.ts`, compartilhado com a página
@@ -101,6 +105,7 @@ import {
   type GestoInicio,
 } from '@/lib/manipulacao';
 import { CATEGORIAS, elemento as formaPorId, porCategoria } from '@/lib/elementos';
+import { corrigirEnq, diagnosticar, envolver, rostoNoQuadro } from '@/lib/rostos';
 import { contrasteSobre, hexParaHsv, hsvParaHex, normalizarHex } from '@/lib/cor';
 
 /** Serializa um objeto de estilo para a string que o markup do design espera. */
@@ -119,6 +124,8 @@ export type Rotas = {
 
 export function useEditorDesign({
   fotos,
+  rostos,
+  pessoas,
   titulo,
   rotas,
   doc,
@@ -129,6 +136,9 @@ export function useEditorDesign({
   onTitulo,
 }: {
   fotos: Foto[];
+  /** Rostos detectados no envio (Fase 5); vazio em galeria antiga. */
+  rostos: RostoDaFoto[];
+  pessoas: PessoaDaGaleria[];
   titulo: string;
   rotas: Rotas;
   /** O documento do álbum. Sem ele o editor não tem onde escrever. */
@@ -146,7 +156,7 @@ export function useEditorDesign({
     hover: null, turning: null,
     tool: 0, panel: true, insp: false, modal: null, zoom: ZOOM_PADRAO,
     count: 0, lay: 2, photoTab: 0, bgTab: 0, bgCat: 0, elCat: 0, bw: false,
-    bgHue: 220, elCor: '#2563EB',
+    bgHue: 220, elCor: '#2563EB', rostoIgnorado: [], pessoaAtiva: null,
   });
 
   const ac = useRef<AudioContext | null>(null);
@@ -259,6 +269,14 @@ export function useEditorDesign({
 
     const lamina = doc.lamina;
     const porId = new Map(fotos.map((f) => [f.id, f]));
+
+    /**
+     * URL dentro de `url('…')`.
+     *
+     * Uma aspa simples na URL fecha a string antes da hora e o navegador
+     * descarta a declaração inteira EM SILÊNCIO — a foto some e nada avisa.
+     */
+    const urlCss = (u: string) => `url('${u.replace(/['\\]/g, '\\$&')}')`;
 
     // O que está selecionado, segundo o documento — não segundo um segundo
     // estado paralelo que ninguém mantinha em dia.
@@ -447,6 +465,48 @@ export function useEditorDesign({
     const selEscalarDown = (e: PDown) => arrastar(e, (ini, x, y) => escalarEnq(ini, x, y));
     const selGirarDown = (e: PDown) => arrastar(e, (ini, x, y, ev) => girarEnq(ini, x, y, ev.shiftKey));
 
+    /* ------------------------------- rostos ------------------------------- */
+
+    const rostosPorFoto = new Map<string, RostoDaFoto[]>();
+    for (const r of rostos) {
+      const lista = rostosPorFoto.get(r.fotoId);
+      if (lista) lista.push(r);
+      else rostosPorFoto.set(r.fotoId, [r]);
+    }
+
+    /** Proporção da caixa do quadro selecionado, na página. */
+    const arCaixaSel = retSel && retSel.h ? (retSel.w / retSel.h) * PAGINA_AR : null;
+    const arFotoSel =
+      fotoSel?.largura && fotoSel?.altura ? fotoSel.largura / fotoSel.altura : null;
+
+    const rostosDoSel = qSel?.fotoId ? rostosPorFoto.get(qSel.fotoId) ?? [] : [];
+
+    /**
+     * Onde cada rosto caiu DENTRO do quadro, com o enquadramento atual.
+     *
+     * Só existe quando se sabe a proporção da foto e da caixa. Sem isso não há
+     * como localizar o rosto, e o bloco continua escondido — que é a regra: não
+     * mostrar o que não se sabe.
+     */
+    const rostosNoQuadro =
+      qSel && arFotoSel && arCaixaSel
+        ? rostosDoSel.map((r) => ({
+            id: r.id,
+            caixa: r.caixa,
+            noQuadro: rostoNoQuadro(r.caixa, qSel.enq, arFotoSel, arCaixaSel),
+          }))
+        : [];
+
+    const envolvido = envolver(rostosNoQuadro.map((r) => r.noQuadro));
+    const diag = envolvido ? diagnosticar(envolvido) : null;
+    const ignorado = qSel ? s.rostoIgnorado.includes(qSel.id) : false;
+    const avisarRosto = !!diag && diag.perto && !ignorado;
+
+    const correcao =
+      avisarRosto && qSel && arFotoSel && arCaixaSel
+        ? corrigirEnq(rostosNoQuadro.map((r) => r.caixa), qSel.enq, arFotoSel, arCaixaSel)
+        : null;
+
     /* ------------------------- seletor de cor do fundo -------------------- */
 
     /** A cor da lâmina atual — o documento é a fonte, não um estado paralelo. */
@@ -508,6 +568,23 @@ export function useEditorDesign({
       const on = selTipo === 'foto' && doc.selecao?.lado === lado && retSel;
       return {
         box: on ? ret(retSel) + ';z-index:9;pointer-events:none' : 'display:none',
+        // Contorno de cada rosto, no lugar em que ele realmente está. Verde
+        // quando dentro da área segura, âmbar quando toca a margem de corte.
+        rostos: on
+          ? rostosNoQuadro.map((r) => {
+              const d = diagnosticar(r.noQuadro);
+              const cor = d.perto ? '#F59E0B' : '#10B981';
+              return {
+                style:
+                  `position:absolute;left:${(r.noQuadro.x * 100).toFixed(2)}%;` +
+                  `top:${(r.noQuadro.y * 100).toFixed(2)}%;` +
+                  `width:${(r.noQuadro.w * 100).toFixed(2)}%;` +
+                  `height:${(r.noQuadro.h * 100).toFixed(2)}%;` +
+                  `border:1.5px solid ${cor};border-radius:6px;pointer-events:none;` +
+                  `box-shadow:0 0 0 1px rgba(255,255,255,.55);z-index:8`,
+              };
+            })
+          : [],
         // Superfície de mover: cobre o quadro, só quando selecionado.
         // `touch-action:none` impede o navegador de assumir o gesto como
         // rolagem no toque — sem isso, arrastar a foto num tablet rola a página.
@@ -573,12 +650,21 @@ export function useEditorDesign({
       { rotulo: 'Horizontais', testa: (f) => !!f.largura && !!f.altura && f.largura > f.altura },
     ];
     const filtroAtivo = FILTROS[s.photoTab] ?? FILTROS[0];
-    const fotosVisiveis = fotos.filter(filtroAtivo.testa);
+
+    // Aba Pessoas: quando há alguém escolhido, a galeria mostra só as fotos em
+    // que essa pessoa aparece. É o filtro "Uma pessoa" que a spec já previa.
+    const fotosDaPessoa = s.pessoaAtiva
+      ? new Set(rostos.filter((r) => r.pessoaId === s.pessoaAtiva).map((r) => r.fotoId))
+      : null;
+
+    const fotosVisiveis = fotos.filter(
+      (f) => filtroAtivo.testa(f) && (!fotosDaPessoa || fotosDaPessoa.has(f.id)),
+    );
 
     // O painel do design tinha 12 gradientes; aqui são as fotos reais da galeria.
     const photos = fotosVisiveis.map((f, i) => ({
       style: `position:relative;aspect-ratio:3 / 4;border-radius:10px;` +
-        `background-image:url('${f.url}');background-size:cover;background-position:center;` +
+        `background-image:${urlCss(f.url)};background-size:cover;background-position:center;` +
         `cursor:grab;transition:box-shadow .15s, transform .15s;` +
         (s.hover === i ? 'box-shadow:0 0 0 2px #2563EB;transform:scale(1.04);' : '') +
         (doc.usadas.has(f.id) ? 'outline:3px solid #10B981;outline-offset:-3px;' : ''),
@@ -646,6 +732,53 @@ export function useEditorDesign({
       // Quantas fotos o filtro deixou passar — o design trazia "38 de 120"
       // escrito à mão.
       photoConta: `${fotosVisiveis.length} de ${fotos.length}`,
+
+      /* ----------------------------- pessoas ----------------------------- */
+
+      // Bolinhas estilo Google Fotos. Cada uma recorta o rosto de capa da
+      // própria foto, com `background-size/position` — não precisa de miniatura
+      // gerada no servidor.
+      pessoasTitulo: pessoas.length
+        ? s.pessoaAtiva
+          ? 'Mostrando só as fotos desta pessoa'
+          : 'Pessoas nesta galeria'
+        : '',
+      pessoasBloco: pessoas.length ? 'padding:10px 18px 12px;border-bottom:1px solid #F0F3F9' : 'display:none',
+      pessoas: pessoas.map((p) => {
+        const capa =
+          rostos.find((r) => r.id === p.rostoCapaId) ??
+          rostos.find((r) => r.pessoaId === p.id);
+        const foto = capa ? fotos.find((f) => f.id === capa.fotoId) : undefined;
+        const n = rostos.filter((r) => r.pessoaId === p.id).length;
+        const on = s.pessoaAtiva === p.id;
+
+        // Recorte do rosto: amplia a foto pelo inverso do tamanho da caixa e
+        // desloca para o rosto ficar no meio do círculo.
+        const c = capa?.caixa;
+        const zoom = c
+          ? `background-size:${(100 / Math.max(c.w, 0.02)).toFixed(1)}% ${(100 / Math.max(c.h, 0.02)).toFixed(1)}%;` +
+            `background-position:${((c.x / Math.max(1 - c.w, 0.001)) * 100).toFixed(1)}% ` +
+            `${((c.y / Math.max(1 - c.h, 0.001)) * 100).toFixed(1)}%;`
+          : 'background-size:cover;background-position:center;';
+
+        return {
+          nome: p.nome || 'Sem nome',
+          conta: `${n} foto${n === 1 ? '' : 's'}`,
+          style:
+            // `display:block` é obrigatório: o markup usa <span>, que é inline,
+            // e largura/altura de elemento inline são simplesmente ignoradas.
+            `display:block;width:46px;height:46px;border-radius:999px;flex:0 0 auto;cursor:pointer;` +
+            (foto ? `background-image:${urlCss(foto.url)};${zoom}` : 'background:#EEF1F7;') +
+            (on
+              ? 'box-shadow:0 0 0 2px #2563EB, 0 0 0 4px #FFFFFF;'
+              : 'box-shadow:0 0 0 1px #E6EAF2;'),
+          rotulo: `display:block;max-width:52px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;` +
+            `text-align:center;font-size:10.5px;margin-top:4px;font-weight:${on ? 700 : 500};` +
+            `color:${on ? '#2563EB' : '#6B7A90'}`,
+          // Clicar de novo na mesma pessoa desfaz o filtro.
+          pick: () => set({ pessoaAtiva: on ? null : p.id, hover: null }),
+        };
+      }),
       photoVazio:
         fotosVisiveis.length === 0
           ? 'padding:22px 4px;text-align:center;font-size:12px;color:#9AA7BC'
@@ -762,13 +895,34 @@ export function useEditorDesign({
 
       /* ------------------------ inspetor: enquadramento ------------------ */
 
-      // O aviso de rosto era um retângulo fixo em 16%/20%/36%/40%: mentia em
-      // toda foto. Sem análise de rosto (Fase 5) o bloco fica ESCONDIDO, que é
-      // melhor que informar o que não se sabe.
-      blocoRosto: 'display:none',
-      textoRosto: '',
-      corrigirRosto: () => {},
-      manterRosto: () => {},
+      // O aviso era um retângulo fixo em 16%/20%/36%/40%, que mentia em toda
+      // foto. Agora sai da análise real: `rostoNoQuadro` refaz exatamente a
+      // conta do `imagemCss`, então o aviso e o desenho concordam sempre.
+      blocoRosto: avisarRosto ? 'padding:16px 18px 0' : 'display:none',
+      tituloRosto: diag?.cortado ? 'Rosto cortado' : 'Rosto perto do corte',
+      // Sem correção possível o botão some. Oferecer "Corrigir" e não corrigir
+      // nada é pior do que não oferecer.
+      botaoCorrigir: correcao
+        ? 'flex:1;height:38px;display:flex;align-items:center;justify-content:center;gap:7px;' +
+          'border-radius:10px;background:linear-gradient(135deg,#2563EB,#06B6D4);color:#FFFFFF;' +
+          'font-size:12.5px;font-weight:700;cursor:pointer'
+        : 'display:none',
+      textoRosto: (() => {
+        if (!diag) return '';
+        const n = rostosNoQuadro.length;
+        const quem = n === 1 ? 'Um rosto' : `${n} rostos`;
+        return diag.cortado
+          ? `${quem} ${n === 1 ? 'está' : 'estão'} saindo do quadro. Na impressão, essa parte é perdida.`
+          : `${quem} ${n === 1 ? 'está' : 'estão'} muito perto da margem de corte.`;
+      })(),
+      // Determinístico: desloca o mínimo necessário e, só se não bastar, reduz
+      // a ampliação. Não é IA e não inventa enquadramento.
+      corrigirRosto: () => {
+        if (correcao) doc.mudarEnq(correcao);
+      },
+      manterRosto: () => {
+        if (qSel) set({ rostoIgnorado: [...s.rostoIgnorado, qSel.id] });
+      },
 
       enqPreencher: {
         style: botaoEnq(qSel?.enq.modo === 'preencher'),
@@ -926,7 +1080,7 @@ export function useEditorDesign({
             'pointer-events:none;animation:menuIn .14s ease both'
           : 'display:none',
       previewImg: fotoHover
-        ? `width:100%;flex:1 1 auto;min-height:0;aspect-ratio:3 / 4;background-image:url('${fotoHover.url}');background-size:cover;background-position:center`
+        ? `width:100%;flex:1 1 auto;min-height:0;aspect-ratio:3 / 4;background-image:${urlCss(fotoHover.url)};background-size:cover;background-position:center`
         : 'display:none',
       previewName: fotoHover
         ? (fotoHover.storage_path.split('/').pop() ?? 'foto')
@@ -1165,7 +1319,7 @@ export function useEditorDesign({
     // depende de `doc` —, e bastava alguém estabilizar qualquer um dos dois
     // para o editor inteiro congelar: alça no quadro errado, inspetor com a
     // foto anterior, arrasto partindo de um enquadramento velho.
-  }, [s, fotos, titulo, rotas, modelo, laminas, fotosUsadas, bloqueadores, onTitulo, set, irPara, doc]);
+  }, [s, fotos, rostos, pessoas, titulo, rotas, modelo, laminas, fotosUsadas, bloqueadores, onTitulo, set, irPara, doc]);
 
   return v;
 }

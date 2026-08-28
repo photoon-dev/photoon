@@ -17,17 +17,23 @@
 
 import { notFound } from 'next/navigation';
 import EditorCliente from '@/components/editor/EditorCliente';
-import type { Foto } from '@/lib/data';
+import type { Foto, PessoaDaGaleria, RostoDaFoto } from '@/lib/data';
 
 /** Foto de mentira: assimétrica de propósito, para girar/espelhar saltar aos olhos. */
 function fotoSvg(bg: string, glyph: string): string {
+  // Aspas DUPLAS nos atributos de propósito: `encodeURIComponent` escapa `"`
+  // como %22, mas deixa `'` intacta — e uma aspa simples dentro do data: URI
+  // fecharia o `url('…')` do CSS antes da hora, derrubando a declaração
+  // inteira sem erro nenhum.
   const svg =
-    `<svg xmlns='http://www.w3.org/2000/svg' width='800' height='600'>` +
-    `<rect width='800' height='600' fill='${bg}'/>` +
-    `<path d='M0 0 H240 L0 150 Z' fill='rgba(255,255,255,.9)'/>` +
-    `<text x='400' y='80' font-family='sans-serif' font-size='64' font-weight='bold' fill='#fff' text-anchor='middle'>&#9650; TOPO</text>` +
-    `<text x='40' y='560' font-family='sans-serif' font-size='52' fill='#fff'>&#9664; ESQ</text>` +
-    `<text x='400' y='390' font-family='sans-serif' font-size='260' font-weight='bold' fill='rgba(255,255,255,.85)' text-anchor='middle'>${glyph}</text>` +
+    `<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600">` +
+    `<rect width="800" height="600" fill="${bg}"/>` +
+    `<path d="M0 0 H240 L0 150 Z" fill="rgba(255,255,255,.9)"/>` +
+    `<text x="400" y="80" font-family="sans-serif" font-size="64" font-weight="bold" fill="#fff" text-anchor="middle">&#9650; TOPO</text>` +
+    `<text x="40" y="560" font-family="sans-serif" font-size="52" fill="#fff">&#9664; ESQ</text>` +
+    `<text x="400" y="390" font-family="sans-serif" font-size="260" font-weight="bold" fill="rgba(255,255,255,.85)" text-anchor="middle">${glyph}</text>` +
+    // circulo claro onde o "rosto" esta, para conferir o contorno a olho
+    `<circle cx="120" cy="120" r="70" fill="rgba(255,255,255,.35)" stroke="#fff" stroke-width="4"/>` +
     `</svg>`;
   return `data:image/svg+xml,${encodeURIComponent(svg)}`;
 }
@@ -92,6 +98,23 @@ const PAGINAS = [
   },
 ];
 
+/**
+ * Rostos de mentira, coerentes com o círculo desenhado no SVG (centro 120,120
+ * raio 70 numa foto 800×600 → caixa 0.0625, 0.0833, 0.175, 0.2333). Fica no
+ * canto de propósito, para o aviso "rosto perto do corte" ter o que avisar.
+ */
+const ROSTOS: RostoDaFoto[] = [
+  { id: 'r1', fotoId: 'f1', caixa: { x: 0.0625, y: 0.0833, w: 0.175, h: 0.2333 }, pessoaId: 'p1', conf: 0.99 },
+  { id: 'r2', fotoId: 'f2', caixa: { x: 0.0625, y: 0.0833, w: 0.175, h: 0.2333 }, pessoaId: 'p1', conf: 0.97 },
+  { id: 'r3', fotoId: 'f3', caixa: { x: 0.40, y: 0.40, w: 0.20, h: 0.26 }, pessoaId: 'p2', conf: 0.95 },
+];
+
+const PESSOAS: PessoaDaGaleria[] = [
+  { id: 'p1', nome: 'Marta', rostoCapaId: 'r1' },
+  // Sem nome de propósito: é assim que a pessoa nasce antes de o lojista nomeá-la.
+  { id: 'p2', nome: null, rostoCapaId: 'r3' },
+];
+
 export default function DevEditorPreview() {
   if (process.env.NODE_ENV === 'production') notFound();
   return (
@@ -100,6 +123,8 @@ export default function DevEditorPreview() {
         projetoId="dev-preview"
         titulo="Prévia do editor (mock)"
         fotos={FOTOS}
+        rostos={ROSTOS}
+        pessoas={PESSOAS}
         modelo={null}
         paginas={PAGINAS}
       />

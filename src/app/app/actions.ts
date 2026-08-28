@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache';
 import { createClient } from '@/lib/supabase/server';
 import { lojaAtual } from '@/lib/lojista';
 import { novaLamina } from '@/lib/album';
+import { agrupar } from '@/lib/rostos';
 
 /**
  * Ações do painel do lojista.
@@ -109,13 +110,29 @@ export async function criarGaleria(fd: FormData) {
   revalidatePath('/clientes');
 }
 
+/** Rosto detectado no navegador, pronto para gravar. */
+export type RostoEnviado = {
+  caixa: { x: number; y: number; w: number; h: number };
+  vetor: number[];
+  conf: number;
+};
+
 /**
  * Registra no banco as fotos que o navegador acabou de enviar ao Storage.
  * O upload em si acontece no cliente, com a sessão do lojista.
+ *
+ * `rostos` vem da análise feita no próprio navegador (`src/lib/faceapi.ts`).
+ * É opcional: se a análise falhar ou estiver desligada, a foto entra na galeria
+ * como sempre entrou.
  */
 export async function registrarFotos(
   galeriaId: string,
-  arquivos: { storage_path: string; largura?: number; altura?: number }[],
+  arquivos: {
+    storage_path: string;
+    largura?: number | null;
+    altura?: number | null;
+    rostos?: RostoEnviado[];
+  }[],
 ) {
   await exigirLoja();
   if (arquivos.length === 0) return;
@@ -128,16 +145,46 @@ export async function registrarFotos(
     .eq('galeria_id', galeriaId);
 
   const base = count ?? 0;
-  const { error } = await supabase.from('galeria_fotos').insert(
-    arquivos.map((a, i) => ({
-      galeria_id: galeriaId,
-      storage_path: a.storage_path,
-      largura: a.largura ?? null,
-      altura: a.altura ?? null,
-      ordem: base + i,
-    })),
-  );
+  // `select()` devolve os ids na MESMA ordem do insert, que é o que liga cada
+  // foto aos rostos que vieram com ela.
+  const { data: inseridas, error } = await supabase
+    .from('galeria_fotos')
+    .insert(
+      arquivos.map((a, i) => ({
+        galeria_id: galeriaId,
+        storage_path: a.storage_path,
+        largura: a.largura ?? null,
+        altura: a.altura ?? null,
+        ordem: base + i,
+      })),
+    )
+    .select('id, storage_path');
   if (error) throw new Error(error.message);
+
+  // ------------------------------------------------------------------------
+  // Rostos. Falha aqui não derruba o envio: a galeria vale mais que a análise.
+  // ------------------------------------------------------------------------
+  try {
+    const porCaminho = new Map((inseridas ?? []).map((f) => [f.storage_path, f.id]));
+    const linhas = arquivos.flatMap((a) => {
+      const fotoId = porCaminho.get(a.storage_path);
+      if (!fotoId || !a.rostos?.length) return [];
+      return a.rostos
+        .filter((r) => Array.isArray(r.vetor) && r.vetor.length === 128)
+        .map((r) => ({
+          galeria_foto_id: fotoId,
+          caixa: r.caixa,
+          vetor: r.vetor,
+          conf: r.conf,
+        }));
+    });
+    if (linhas.length) {
+      await supabase.from('rostos').insert(linhas);
+      await reagruparPessoas(galeriaId);
+    }
+  } catch {
+    // sem rostos desta vez; o lojista pode reprocessar pela tela de Pessoas
+  }
 
   const { data: g } = await supabase
     .from('galerias')
@@ -155,6 +202,99 @@ export async function registrarFotos(
     });
   }
 
+  revalidatePath('/clientes');
+}
+
+/**
+ * Reagrupa os rostos da galeria em pessoas.
+ *
+ * DBSCAN sobre os descritores de 128 dimensões — matemática pura, sem IA e sem
+ * chamada externa; alguns milissegundos para uma galeria típica. Roda sempre
+ * sobre a galeria INTEIRA porque um envio novo pode unir dois grupos que antes
+ * pareciam pessoas diferentes.
+ *
+ * Os nomes que o lojista já deu são preservados: cada grupo herda o nome da
+ * pessoa que mais aparecia nele.
+ */
+export async function reagruparPessoas(galeriaId: string) {
+  await exigirLoja();
+  const supabase = await createClient();
+
+  const { data: fotos } = await supabase
+    .from('galeria_fotos')
+    .select('id')
+    .eq('galeria_id', galeriaId);
+  const ids = (fotos ?? []).map((f) => f.id);
+  if (ids.length === 0) return;
+
+  const { data: rostos } = await supabase
+    .from('rostos')
+    .select('id, galeria_foto_id, vetor, pessoa_id')
+    .in('galeria_foto_id', ids);
+
+  const lista = (rostos ?? []).filter(
+    (r): r is typeof r & { vetor: number[] } =>
+      Array.isArray(r.vetor) && r.vetor.length === 128,
+  );
+  if (lista.length === 0) return;
+
+  const grupos = agrupar(lista.map((r) => r.vetor));
+  const total = Math.max(0, ...grupos) + 1;
+
+  // Nome herdado: para cada grupo, a pessoa antiga mais frequente nele.
+  const { data: antigas } = await supabase
+    .from('pessoas')
+    .select('id, nome')
+    .eq('galeria_id', galeriaId);
+  const nomePorId = new Map((antigas ?? []).map((p) => [p.id, p.nome]));
+
+  const novos: string[] = [];
+  for (let g = 0; g < total; g++) {
+    const membros = lista.filter((_, i) => grupos[i] === g);
+    const contagem = new Map<string, number>();
+    for (const m of membros) {
+      if (m.pessoa_id) contagem.set(m.pessoa_id, (contagem.get(m.pessoa_id) ?? 0) + 1);
+    }
+    const maisComum = [...contagem.entries()].sort((a, b) => b[1] - a[1])[0]?.[0];
+    const nome = maisComum ? nomePorId.get(maisComum) ?? null : null;
+
+    const { data: nova } = await supabase
+      .from('pessoas')
+      .insert({ galeria_id: galeriaId, nome, rosto_capa_id: membros[0]?.id ?? null })
+      .select('id')
+      .single();
+    if (nova) novos.push(nova.id);
+  }
+
+  // Aponta cada rosto para o grupo novo; ruído (−1) fica sem pessoa.
+  await Promise.all(
+    lista.map((r, i) => {
+      const g = grupos[i];
+      return supabase
+        .from('rostos')
+        .update({ pessoa_id: g >= 0 ? novos[g] ?? null : null })
+        .eq('id', r.id);
+    }),
+  );
+
+  // As pessoas antigas ficaram sem rosto; some com elas para a aba não encher
+  // de bolinhas vazias a cada reagrupamento.
+  const idsAntigos = (antigas ?? []).map((p) => p.id);
+  if (idsAntigos.length) {
+    await supabase.from('pessoas').delete().in('id', idsAntigos);
+  }
+}
+
+/** Renomeia uma pessoa — é o que transforma a bolinha em alguém. */
+export async function renomearPessoa(pessoaId: string, nome: string) {
+  await exigirLoja();
+  const supabase = await createClient();
+  const limpo = nome.trim().slice(0, 80);
+  const { error } = await supabase
+    .from('pessoas')
+    .update({ nome: limpo || null })
+    .eq('id', pessoaId);
+  if (error) throw new Error(error.message);
   revalidatePath('/clientes');
 }
 

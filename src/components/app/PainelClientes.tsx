@@ -7,9 +7,13 @@ import {
   cadastrarCliente,
   criarGaleria,
   criarProjetoParaCliente,
+  reagruparPessoas,
   registrarFotos,
   removerCliente,
+  renomearPessoa,
+  type RostoEnviado,
 } from '@/app/app/actions';
+import { analisarFoto, medirFoto } from '@/lib/faceapi';
 
 const CARD = 'rounded-[18px] border border-line bg-surface';
 const BOTAO_PRIMARIO =
@@ -51,6 +55,13 @@ export default function PainelClientes({
   const [erro, setErro] = useState<string | null>(null);
   const [enviando, setEnviando] = useState<string | null>(null);
   const [progresso, setProgresso] = useState({ feitas: 0, total: 0 });
+  const [rostosVistos, setRostosVistos] = useState(0);
+  /**
+   * Análise de rosto ligada por padrão. O lojista pode desligar num envio
+   * enorme ou numa máquina fraca — os ~7 MB de modelo e o processamento por
+   * foto são dele, não da VPS.
+   */
+  const [analisar, setAnalisar] = useState(true);
 
   const linkDaLoja = `https://${slugLoja}.${dominio}/entrar`;
 
@@ -63,11 +74,18 @@ export default function PainelClientes({
     setErro(null);
     setEnviando(galeriaId);
     setProgresso({ feitas: 0, total: arquivos.length });
+    setRostosVistos(0);
 
     const supabase = createClient();
-    const registrados: { storage_path: string; largura?: number; altura?: number }[] = [];
+    const registrados: {
+      storage_path: string;
+      largura?: number | null;
+      altura?: number | null;
+      rostos?: RostoEnviado[];
+    }[] = [];
 
     try {
+      let achados = 0;
       for (let i = 0; i < arquivos.length; i++) {
         const arq = arquivos[i];
         const nome = `${Date.now()}-${i}-${arq.name.replace(/[^\w.\-]/g, '_')}`;
@@ -79,7 +97,19 @@ export default function PainelClientes({
 
         if (error) throw new Error(`${arq.name}: ${error.message}`);
 
-        registrados.push({ storage_path: caminho });
+        // Detecção de rosto no navegador, com o original que já está na
+        // memória. Nunca lança: sem análise a foto entra na galeria assim
+        // mesmo. As dimensões saem daqui também — antes não eram gravadas, e
+        // sem elas o filtro Verticais/Horizontais do editor não tinha o que
+        // comparar.
+        const { largura, altura, rostos } = analisar
+          ? await analisarFoto(arq)
+          : { ...(await medirFoto(arq)), rostos: [] };
+
+        achados += rostos.length;
+        setRostosVistos(achados);
+
+        registrados.push({ storage_path: caminho, largura, altura, rostos });
         setProgresso({ feitas: i + 1, total: arquivos.length });
       }
 
@@ -288,6 +318,70 @@ export default function PainelClientes({
                                 }
                               />
                             </label>
+
+                            {enviando === g.id && analisar && (
+                              <p className="m-0 mt-2 text-[11.5px] text-muted-2">
+                                Procurando rostos no seu navegador ·{' '}
+                                {rostosVistos} encontrado{rostosVistos === 1 ? '' : 's'}
+                              </p>
+                            )}
+
+                            <label className="mt-2 flex cursor-pointer items-center gap-2 text-[11.5px] text-muted">
+                              <input
+                                type="checkbox"
+                                checked={analisar}
+                                disabled={enviando !== null}
+                                onChange={(e) => setAnalisar(e.target.checked)}
+                                className="h-3.5 w-3.5 accent-[#2563EB]"
+                              />
+                              Identificar pessoas nas fotos
+                            </label>
+
+                            {/* Pessoas reconhecidas. Nomear é o que transforma
+                                a bolinha do editor em alguém — e o nome
+                                sobrevive aos reagrupamentos seguintes. */}
+                            {g.pessoas?.length > 0 && (
+                              <div className="mt-3 border-t border-line-2 pt-3">
+                                <p className="m-0 mb-2 text-[11.5px] font-semibold text-muted-2">
+                                  {g.pessoas.length} pessoa{g.pessoas.length === 1 ? '' : 's'} reconhecida
+                                  {g.pessoas.length === 1 ? '' : 's'}
+                                </p>
+                                <div className="flex flex-col gap-1.5">
+                                  {g.pessoas.map((pe) => (
+                                    <form
+                                      key={pe.id}
+                                      action={async (fd: FormData) => {
+                                        await renomearPessoa(pe.id, String(fd.get('nome') ?? ''));
+                                      }}
+                                      className="flex items-center gap-2"
+                                    >
+                                      <input
+                                        name="nome"
+                                        defaultValue={pe.nome ?? ''}
+                                        placeholder="Quem é?"
+                                        className="h-8 min-w-0 flex-1 rounded-[10px] border border-line bg-surface px-2.5 text-[12.5px] outline-none focus:border-blue"
+                                      />
+                                      <span className="flex-none text-[11px] text-muted-2">
+                                        {pe.rostos?.[0]?.count ?? 0} foto
+                                        {(pe.rostos?.[0]?.count ?? 0) === 1 ? '' : 's'}
+                                      </span>
+                                      <button
+                                        type="submit"
+                                        className="h-8 flex-none rounded-[10px] border border-line px-2.5 text-[12px] font-semibold text-ink-3 hover:bg-blue-soft hover:text-blue"
+                                      >
+                                        Salvar
+                                      </button>
+                                    </form>
+                                  ))}
+                                </div>
+                                <button
+                                  onClick={() => reagruparPessoas(g.id).then(() => location.reload())}
+                                  className="mt-2 text-[11.5px] font-semibold text-blue hover:underline"
+                                >
+                                  Reagrupar rostos
+                                </button>
+                              </div>
+                            )}
                           </div>
 
                           <div>

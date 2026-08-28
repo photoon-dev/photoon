@@ -66,6 +66,22 @@ export type Foto = {
   url: string;
 };
 
+/** Rosto detectado numa foto, sem o descritor biométrico. */
+export type RostoDaFoto = {
+  id: string;
+  fotoId: string;
+  /** Caixa 0–1 sobre a foto original. */
+  caixa: { x: number; y: number; w: number; h: number };
+  pessoaId: string | null;
+  conf: number;
+};
+
+export type PessoaDaGaleria = {
+  id: string;
+  nome: string | null;
+  rostoCapaId: string | null;
+};
+
 const CAMPOS_PROJETO =
   'id, titulo, status, produto_nome, produto_tamanho, preco_estimado, progresso, avisos, ' +
   'capa_url, total_paginas, atualizado_em, galeria_id, template_id, paginas, projeto_fotos(count)';
@@ -276,6 +292,54 @@ export async function listarFotosGaleria(galeriaId: string): Promise<Foto[]> {
   const porCaminho = new Map((assinadas ?? []).map((a) => [a.path, a.signedUrl]));
 
   return data.map((f) => ({ ...f, url: porCaminho.get(f.storage_path) ?? '' }));
+}
+
+/**
+ * Rostos das fotos da galeria, para o editor.
+ *
+ * Vem SEM o vetor de 128 dimensões: o editor só precisa da caixa e de quem é a
+ * pessoa. O descritor é dado biométrico e não tem por que trafegar até o
+ * navegador do cliente final — quem o usa é o agrupamento, no servidor.
+ */
+export async function listarRostosGaleria(galeriaId: string): Promise<RostoDaFoto[]> {
+  const supabase = await createClient();
+
+  const { data: fotos } = await supabase
+    .from('galeria_fotos')
+    .select('id')
+    .eq('galeria_id', galeriaId);
+  const ids = (fotos ?? []).map((f) => f.id);
+  if (ids.length === 0) return [];
+
+  const { data } = await supabase
+    .from('rostos')
+    .select('id, galeria_foto_id, caixa, pessoa_id, conf')
+    .in('galeria_foto_id', ids);
+
+  return (data ?? []).map((r) => ({
+    id: r.id,
+    fotoId: r.galeria_foto_id,
+    caixa: r.caixa as { x: number; y: number; w: number; h: number },
+    pessoaId: r.pessoa_id,
+    conf: r.conf ?? 0,
+  }));
+}
+
+/** Pessoas da galeria, com quantas fotos cada uma aparece. */
+export async function listarPessoasGaleria(galeriaId: string): Promise<PessoaDaGaleria[]> {
+  const supabase = await createClient();
+
+  const { data } = await supabase
+    .from('pessoas')
+    .select('id, nome, rosto_capa_id')
+    .eq('galeria_id', galeriaId)
+    .order('criado_em');
+
+  return (data ?? []).map((p) => ({
+    id: p.id,
+    nome: p.nome,
+    rostoCapaId: p.rosto_capa_id,
+  }));
 }
 
 export type LojaAdministrada = {

@@ -105,6 +105,17 @@
             <input placeholder="Buscar foto" style="flex: 1; min-width: 0; border: 0; background: transparent; font-family: inherit; font-size: 13px; color: #0B1220;"/>
           </div>
         </div>
+        <div style="{{ pessoasBloco }}">
+          <p style="margin: 0 0 8px; font-size: 11px; letter-spacing: .6px; text-transform: uppercase; color: #9AA7BC; font-weight: 700;">{{ pessoasTitulo }}</p>
+          <div style="display: flex; gap: 10px; overflow-x: auto; padding-bottom: 2px;">
+            <sc-for list="{{ pessoas }}" as="pe" hint-placeholder-count="4">
+              <div onClick="{{ pe.pick }}" title="{{ pe.conta }}" style="flex: 0 0 auto; cursor: pointer;">
+                <span style="{{ pe.style }}"></span>
+                <span style="{{ pe.rotulo }}">{{ pe.nome }}</span>
+              </div>
+            </sc-for>
+          </div>
+        </div>
         <div style="padding: 12px 18px; border-bottom: 1px solid #F0F3F9; display: flex; gap: 6px; flex-wrap: wrap;">
           <sc-for list="{{ photoTabs }}" as="t" hint-placeholder-count="4">
             <span onClick="{{ t.pick }}" style="{{ t.style }}">{{ t.label }}</span>
@@ -360,6 +371,9 @@
                   </sc-for>
                   <div style="{{ selEsq.box }}" data-om-selbox="esquerda">
                     <div style="{{ selEsq.mover }}" onpointerdown="{{ selMoverDown }}" title="Arraste para reposicionar"></div>
+                    <sc-for list="{{ selEsq.rostos }}" as="rr" hint-placeholder-count="1">
+                      <span style="{{ rr.style }}"></span>
+                    </sc-for>
                     <span style="{{ selEsq.girar }}" onpointerdown="{{ selGirarDown }}" title="Arraste para girar (Shift trava de 15 em 15)"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 5v6h-6"/></svg></span>
                     <span style="{{ selEsq.cantoNO }}" onpointerdown="{{ selEscalarDown }}" title="Arraste para ampliar"></span>
                     <span style="{{ selEsq.cantoNE }}" onpointerdown="{{ selEscalarDown }}" title="Arraste para ampliar"></span>
@@ -392,6 +406,9 @@
                   </sc-for>
                   <div style="{{ selDir.box }}" data-om-selbox="direita">
                     <div style="{{ selDir.mover }}" onpointerdown="{{ selMoverDown }}" title="Arraste para reposicionar"></div>
+                    <sc-for list="{{ selDir.rostos }}" as="rr" hint-placeholder-count="1">
+                      <span style="{{ rr.style }}"></span>
+                    </sc-for>
                     <span style="{{ selDir.girar }}" onpointerdown="{{ selGirarDown }}" title="Arraste para girar (Shift trava de 15 em 15)"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 5v6h-6"/></svg></span>
                     <span style="{{ selDir.cantoNO }}" onpointerdown="{{ selEscalarDown }}" title="Arraste para ampliar"></span>
                     <span style="{{ selDir.cantoNE }}" onpointerdown="{{ selEscalarDown }}" title="Arraste para ampliar"></span>
@@ -498,12 +515,12 @@
             <div style="display: flex; align-items: flex-start; gap: 11px; padding: 13px 14px; border-radius: 12px; background: #FEF3E2; border: 1px solid #FCE9CE; margin-bottom: 12px;">
               <span style="color: #B45309; flex: 0 0 auto; margin-top: 1px;"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 8v5M12 16.5h.01"/></svg></span>
               <div style="flex: 1; min-width: 0;">
-                <p style="margin: 0; font-size: 12.5px; font-weight: 700; color: #7A5410;">Rosto perto do corte</p>
+                <p style="margin: 0; font-size: 12.5px; font-weight: 700; color: #7A5410;">{{ tituloRosto }}</p>
                 <p style="margin: 3px 0 0; font-size: 11.5px; line-height: 1.5; color: #8A6520;">{{ textoRosto }}</p>
               </div>
             </div>
             <div style="display: flex; gap: 8px;">
-              <span style="flex: 1; height: 38px; display: flex; align-items: center; justify-content: center; gap: 7px; border-radius: 10px; background: linear-gradient(135deg,#2563EB,#06B6D4); color: #FFFFFF; font-size: 12.5px; font-weight: 700; cursor: pointer;" style-hover="filter: brightness(1.06);" onClick="{{ corrigirRosto }}">Corrigir</span>
+              <span style="{{ botaoCorrigir }}" style-hover="filter: brightness(1.06);" onClick="{{ corrigirRosto }}">Corrigir</span>
               <span style="flex: 1; height: 38px; display: flex; align-items: center; justify-content: center; border-radius: 10px; border: 1px solid #E6EAF2; font-size: 12.5px; font-weight: 600; color: #46536A; cursor: pointer;" style-hover="border-color: #2563EB; color: #2563EB;" onClick="{{ manterRosto }}">Manter</span>
             </div>
           </div>

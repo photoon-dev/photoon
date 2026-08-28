@@ -36,6 +36,8 @@ export type ClienteDaLoja = {
     fotos_max: number | null;
     permite_paginas_extras: boolean;
     galeria_fotos: { count: number }[];
+    /** Pessoas reconhecidas nas fotos (Fase 5), com quantos rostos cada uma. */
+    pessoas: { id: string; nome: string | null; rostos: { count: number }[] }[];
   }[];
   projetos: { id: string; titulo: string; status: string; progresso: number; galeria_id: string | null }[];
 };
@@ -82,7 +84,7 @@ export async function listarClientesDaLoja(
     .select(
       'id, nome, email, telefone, user_id, convidado_em, primeiro_acesso_em, ' +
         'galerias(id, nome, templates_permitidos, paginas_min, paginas_max, fotos_max, ' +
-        'permite_paginas_extras, galeria_fotos(count)), ' +
+        'permite_paginas_extras, galeria_fotos(count), pessoas(id, nome, rostos(count))), ' +
         'projetos(id, titulo, status, progresso, galeria_id)',
       { count: 'exact' },
     )

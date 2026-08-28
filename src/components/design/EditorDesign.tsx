@@ -225,6 +225,22 @@ export default function EditorDesign({ v }: { v: any }) {
                   <input placeholder="Buscar foto" style={{ flex: '1', minWidth: '0', border: '0', background: 'transparent', fontFamily: 'inherit', fontSize: '13px', color: '#0B1220' }} />
                 </div>
               </div>
+              <div style={css(v.pessoasBloco)}>
+                <p style={{ margin: '0 0 8px', fontSize: '11px', letterSpacing: '.6px', textTransform: 'uppercase', color: '#9AA7BC', fontWeight: '700' }}>
+                  {v.pessoasTitulo}
+                </p>
+                <div style={{ display: 'flex', gap: '10px', overflowX: 'auto', paddingBottom: '2px' }}>
+                  {v.pessoas.map((pe: any, i7: number) => (
+                    <div key={i7} onClick={pe.pick} title={pe.conta} style={{ flex: '0 0 auto', cursor: 'pointer' }}>
+                      <span style={css(pe.style)}>
+                      </span>
+                      <span style={css(pe.rotulo)}>
+                        {pe.nome}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
               <div style={{ padding: '12px 18px', borderBottom: '1px solid #F0F3F9', display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
                 {v.photoTabs.map((t: any, i6: number) => (
                   <span key={i6} onClick={t.pick} style={css(t.style)}>
@@ -617,6 +633,10 @@ export default function EditorDesign({ v }: { v: any }) {
                         <div style={css(v.selEsq.box)} data-om-selbox="esquerda">
                           <div style={css(v.selEsq.mover)} onPointerDown={v.selMoverDown} title="Arraste para reposicionar">
                           </div>
+                          {v.selEsq.rostos.map((rr: any, i11: number) => (
+                            <span key={i11} style={css(rr.style)}>
+                            </span>
+                          ))}
                           <span style={css(v.selEsq.girar)} onPointerDown={v.selGirarDown} title="Arraste para girar (Shift trava de 15 em 15)">
                             <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                               <path d="M20 11a8 8 0 1 0-2.3 5.7" />
@@ -667,6 +687,10 @@ export default function EditorDesign({ v }: { v: any }) {
                         <div style={css(v.selDir.box)} data-om-selbox="direita">
                           <div style={css(v.selDir.mover)} onPointerDown={v.selMoverDown} title="Arraste para reposicionar">
                           </div>
+                          {v.selDir.rostos.map((rr: any, i11: number) => (
+                            <span key={i11} style={css(rr.style)}>
+                            </span>
+                          ))}
                           <span style={css(v.selDir.girar)} onPointerDown={v.selGirarDown} title="Arraste para girar (Shift trava de 15 em 15)">
                             <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                               <path d="M20 11a8 8 0 1 0-2.3 5.7" />
@@ -858,7 +882,7 @@ export default function EditorDesign({ v }: { v: any }) {
                     </span>
                     <div style={{ flex: '1', minWidth: '0' }}>
                       <p style={{ margin: '0', fontSize: '12.5px', fontWeight: '700', color: '#7A5410' }}>
-                        Rosto perto do corte
+                        {v.tituloRosto}
                       </p>
                       <p style={{ margin: '3px 0 0', fontSize: '11.5px', lineHeight: '1.5', color: '#8A6520' }}>
                         {v.textoRosto}
@@ -866,7 +890,7 @@ export default function EditorDesign({ v }: { v: any }) {
                     </div>
                   </div>
                   <div style={{ display: 'flex', gap: '8px' }}>
-                    <span style={{ flex: '1', height: '38px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '7px', borderRadius: '10px', background: 'linear-gradient(135deg,#2563EB,#06B6D4)', color: '#FFFFFF', fontSize: '12.5px', fontWeight: '700', cursor: 'pointer' }} onClick={v.corrigirRosto} className="dc34">
+                    <span style={css(v.botaoCorrigir)} onClick={v.corrigirRosto} className="dc34">
                       Corrigir
                     </span>
                     <span style={{ flex: '1', height: '38px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '10px', border: '1px solid #E6EAF2', fontSize: '12.5px', fontWeight: '600', color: '#46536A', cursor: 'pointer' }} onClick={v.manterRosto} className="dc35">

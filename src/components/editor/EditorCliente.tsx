@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import type { Foto } from '@/lib/data';
+import type { Foto, PessoaDaGaleria, RostoDaFoto } from '@/lib/data';
 import type { PrecoModelo } from '@/lib/preco';
 import { useDocumento } from '@/components/editor/useDocumento';
 import EditorDesign, { CSS_PSEUDO } from '@/components/design/EditorDesign';
@@ -17,12 +17,17 @@ export default function EditorCliente({
   projetoId,
   titulo: tituloInicial,
   fotos,
+  rostos,
+  pessoas,
   modelo,
   paginas,
 }: {
   projetoId: string;
   titulo: string;
   fotos: Foto[];
+  /** Rostos detectados no envio (Fase 5). Vazio quando a galeria é antiga. */
+  rostos?: RostoDaFoto[];
+  pessoas?: PessoaDaGaleria[];
   modelo: PrecoModelo | null;
   paginas: unknown;
 }) {
@@ -34,6 +39,8 @@ export default function EditorCliente({
 
   const v = useEditorDesign({
     fotos,
+    rostos: rostos ?? [],
+    pessoas: pessoas ?? [],
     titulo,
     doc,
     bloqueadores: doc.bloqueadores,
