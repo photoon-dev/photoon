@@ -4,7 +4,7 @@ import {
   getLojista,
   garantirCliente,
   listarProjetos,
-  getGaleria,
+  listarGalerias,
   listarFotosGaleria,
   listarNotificacoes,
 } from '@/lib/data';
@@ -24,19 +24,24 @@ export default async function MeusProjetosPage() {
   const cliente = await garantirCliente(lojista.id);
   if (!cliente) notFound();
 
-  const [projetos, galeria, notificacoes] = await Promise.all([
+  const [projetos, galerias, notificacoes] = await Promise.all([
     listarProjetos(cliente.id),
-    getGaleria(cliente.id),
+    listarGalerias(cliente.id),
     listarNotificacoes(cliente.id),
   ]);
 
-  const fotos = galeria ? await listarFotosGaleria(galeria.id) : [];
+  // Uma galeria por evento. A tela destaca o evento mais recente, e as capas
+  // dos álbuns podem vir de qualquer um deles.
+  const fotosPorEvento = await Promise.all(galerias.map((g) => listarFotosGaleria(g.id)));
+  const fotos = fotosPorEvento.flat();
+  const totalFotos = galerias.reduce((t, g) => t + g.total_fotos, 0);
 
   return (
     <MeusProjetosCliente
       projetos={projetos}
       notificacoes={notificacoes}
-      totalFotos={galeria?.total_fotos ?? 0}
+      totalFotos={totalFotos}
+      eventos={galerias.length}
       capas={fotos.map((f) => f.url)}
     />
   );

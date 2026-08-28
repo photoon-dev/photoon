@@ -10,13 +10,16 @@ export default function MeusProjetosCliente({
   notificacoes,
   totalFotos,
   capas,
+  eventos,
 }: {
   projetos: Projeto[];
   notificacoes: Notificacao[];
   totalFotos: number;
   capas: string[];
+  /** Quantas galerias (eventos) a loja liberou para este cliente. */
+  eventos: number;
 }) {
-  const v = useMeusProjetosDesign({ projetos, notificacoes, totalFotos, capas });
+  const v = useMeusProjetosDesign({ projetos, notificacoes, totalFotos, capas, eventos });
 
   return (
     <div className="om-cliente">

@@ -33,11 +33,19 @@ export default function PainelClientes({
   templates,
   slugLoja,
   dominio,
+  total,
+  pagina,
+  porPagina,
+  busca,
 }: {
   clientes: ClienteDaLoja[];
   templates: Template[];
   slugLoja: string;
   dominio: string;
+  total: number;
+  pagina: number;
+  porPagina: number;
+  busca: string;
 }) {
   const [aberto, setAberto] = useState<string | null>(null);
   const [erro, setErro] = useState<string | null>(null);
@@ -95,8 +103,8 @@ export default function PainelClientes({
             Clientes da loja
           </h1>
           <p className="m-0 mt-1.5 text-[13.5px] text-muted">
-            {clientes.length} cadastrado{clientes.length === 1 ? '' : 's'} ·{' '}
-            {clientes.filter((c) => c.user_id).length} já acessaram
+            {total.toLocaleString('pt-BR')} cadastrado{total === 1 ? '' : 's'}
+            {total > porPagina && ` · mostrando ${clientes.length}`}
           </p>
         </div>
 
@@ -148,19 +156,44 @@ export default function PainelClientes({
         </div>
       </form>
 
+      {/* ---------------- busca ---------------- */}
+      <form method="get" className={`${CARD} flex flex-wrap items-center gap-3 px-5 py-4`}>
+        <input
+          name="q"
+          defaultValue={busca}
+          placeholder="Buscar por nome ou e-mail"
+          className={`${CAMPO} min-w-[240px] max-w-[420px] flex-1`}
+        />
+        <button type="submit" className={BOTAO}>
+          Buscar
+        </button>
+        {busca && (
+          <a href="/clientes" className="text-[12.5px] font-semibold text-muted hover:text-blue">
+            Limpar
+          </a>
+        )}
+      </form>
+
       {/* ---------------- lista ---------------- */}
       {clientes.length === 0 ? (
         <div className={`${CARD} px-6 py-14 text-center`}>
-          <p className="m-0 text-[15px] font-bold">Nenhum cliente ainda</p>
+          <p className="m-0 text-[15px] font-bold">
+            {busca ? 'Nenhum cliente encontrado' : 'Nenhum cliente ainda'}
+          </p>
           <p className="m-0 mt-1.5 text-[13.5px] text-muted">
-            Cadastre o primeiro acima e envie o link da loja para ele.
+            {busca
+              ? `Nada corresponde a "${busca}".`
+              : 'Cadastre o primeiro acima e envie o link da loja para ele.'}
           </p>
         </div>
       ) : (
         <div className="flex flex-col gap-4">
           {clientes.map((c) => {
-            const galeria = c.galerias?.[0];
-            const totalFotos = galeria?.galeria_fotos?.[0]?.count ?? 0;
+            const galerias = c.galerias ?? [];
+            const totalFotos = galerias.reduce(
+              (t, g) => t + (g.galeria_fotos?.[0]?.count ?? 0),
+              0,
+            );
             const expandido = aberto === c.id;
 
             return (
@@ -186,7 +219,12 @@ export default function PainelClientes({
                   </span>
 
                   <div className="text-right">
-                    <p className="m-0 text-[12.5px] text-muted-2">Fotos liberadas</p>
+                    <p className="m-0 text-[12.5px] text-muted-2">Eventos</p>
+                    <p className="m-0 text-[15px] font-extrabold">{galerias.length}</p>
+                  </div>
+
+                  <div className="text-right">
+                    <p className="m-0 text-[12.5px] text-muted-2">Fotos</p>
                     <p className="m-0 text-[15px] font-extrabold">{totalFotos}</p>
                   </div>
 
@@ -204,107 +242,117 @@ export default function PainelClientes({
                 </div>
 
                 {expandido && (
-                  <div className="grid gap-6 border-t border-line-2 px-6 py-5 lg:grid-cols-2">
-                    {/* ---- galeria ---- */}
-                    <div>
-                      <p className="m-0 mb-3 text-[13.5px] font-bold">Galeria de fotos</p>
+                  <div className="flex flex-col gap-5 border-t border-line-2 px-6 py-5">
+                    {/* ---- um bloco por evento ---- */}
+                    {galerias.map((g) => {
+                      const fotos = g.galeria_fotos?.[0]?.count ?? 0;
+                      const albuns = (c.projetos ?? []).filter((p) => p.galeria_id === g.id);
 
-                      {galeria ? (
-                        <>
-                          <p className="m-0 mb-3 text-[12.5px] text-muted">
-                            {galeria.nome} · {totalFotos} foto{totalFotos === 1 ? '' : 's'}
-                          </p>
-                          <label className={`${BOTAO} cursor-pointer`}>
-                            {enviando === galeria.id
-                              ? `Enviando ${progresso.feitas}/${progresso.total}…`
-                              : 'Enviar fotos'}
-                            <input
-                              type="file"
-                              accept="image/*"
-                              multiple
-                              className="hidden"
-                              disabled={enviando !== null}
-                              onChange={(e) =>
-                                e.target.files?.length && enviarFotos(galeria.id, e.target.files)
-                              }
-                            />
-                          </label>
-                        </>
-                      ) : (
-                        <form action={criarGaleria} className="flex flex-col gap-2.5">
-                          <input type="hidden" name="cliente_id" value={c.id} />
-                          <input
-                            name="nome"
-                            required
-                            placeholder="Nome da sessão. Ex: Casamento Ana e João"
-                            className={CAMPO}
-                          />
-                          <label className="flex items-center gap-2.5">
-                            <span className={ROTULO}>Máximo de álbuns</span>
-                            <input
-                              name="max_albuns"
-                              type="number"
-                              min={1}
-                              max={20}
-                              defaultValue={4}
-                              className={`${CAMPO} w-24`}
-                            />
-                          </label>
-                          <button type="submit" className={BOTAO_PRIMARIO}>
-                            Criar galeria
-                          </button>
-                        </form>
-                      )}
-                    </div>
+                      return (
+                        <div
+                          key={g.id}
+                          className="grid gap-5 rounded-[14px] border border-[#EEF1F7] bg-surface-2 p-4 lg:grid-cols-2"
+                        >
+                          <div>
+                            <p className="m-0 text-[13.5px] font-bold">{g.nome}</p>
+                            <p className="m-0 mt-0.5 text-[12.5px] text-muted">
+                              {fotos} foto{fotos === 1 ? '' : 's'} · {albuns.length} álbum
+                              {albuns.length === 1 ? '' : 'ns'}
+                            </p>
+                            <label className={`${BOTAO} mt-3 cursor-pointer`}>
+                              {enviando === g.id
+                                ? `Enviando ${progresso.feitas}/${progresso.total}…`
+                                : 'Enviar fotos deste evento'}
+                              <input
+                                type="file"
+                                accept="image/*"
+                                multiple
+                                className="hidden"
+                                disabled={enviando !== null}
+                                onChange={(e) =>
+                                  e.target.files?.length && enviarFotos(g.id, e.target.files)
+                                }
+                              />
+                            </label>
+                          </div>
 
-                    {/* ---- álbuns ---- */}
-                    <div>
-                      <p className="m-0 mb-3 text-[13.5px] font-bold">Álbuns</p>
+                          <div>
+                            {albuns.length > 0 && (
+                              <ul className="m-0 mb-3 flex list-none flex-col gap-2 p-0">
+                                {albuns.map((p) => (
+                                  <li
+                                    key={p.id}
+                                    className="flex items-center justify-between gap-3 rounded-[12px] border border-line bg-surface px-3 py-2"
+                                  >
+                                    <span className="min-w-0 truncate text-[13px] font-semibold">
+                                      {p.titulo}
+                                    </span>
+                                    <span className="flex-none text-[12px] text-muted">
+                                      {STATUS_ROTULO[p.status] ?? p.status} · {p.progresso}%
+                                    </span>
+                                  </li>
+                                ))}
+                              </ul>
+                            )}
 
-                      {(c.projetos ?? []).length > 0 && (
-                        <ul className="m-0 mb-3 flex list-none flex-col gap-2 p-0">
-                          {c.projetos.map((p) => (
-                            <li
-                              key={p.id}
-                              className="flex items-center justify-between gap-3 rounded-[12px] border border-[#EEF1F7] bg-surface-2 px-3 py-2"
-                            >
-                              <span className="min-w-0 truncate text-[13px] font-semibold">
-                                {p.titulo}
-                              </span>
-                              <span className="flex-none text-[12px] text-muted">
-                                {STATUS_ROTULO[p.status] ?? p.status} · {p.progresso}%
-                              </span>
-                            </li>
-                          ))}
-                        </ul>
-                      )}
+                            <form action={criarProjetoParaCliente} className="flex flex-col gap-2.5">
+                              <input type="hidden" name="cliente_id" value={c.id} />
+                              <input type="hidden" name="galeria_id" value={g.id} />
+                              <select name="template_id" required className={CAMPO}>
+                                <option value="">Escolha o modelo…</option>
+                                {templates
+                                  .filter((t) => t.publicado)
+                                  .map((t) => (
+                                    <option key={t.id} value={t.id}>
+                                      {t.nome} — {t.largura_mm / 10}×{t.altura_mm / 10} cm
+                                      {t.lojista_id ? '' : ' (padrão)'}
+                                    </option>
+                                  ))}
+                              </select>
+                              <input
+                                name="titulo"
+                                placeholder="Nome do álbum (opcional)"
+                                className={CAMPO}
+                              />
+                              <button type="submit" className={BOTAO_PRIMARIO}>
+                                Criar álbum neste evento
+                              </button>
+                            </form>
+                          </div>
+                        </div>
+                      );
+                    })}
 
-                      {galeria ? (
-                        <form action={criarProjetoParaCliente} className="flex flex-col gap-2.5">
-                          <input type="hidden" name="cliente_id" value={c.id} />
-                          <input type="hidden" name="galeria_id" value={galeria.id} />
-                          <select name="template_id" required className={CAMPO}>
-                            <option value="">Escolha o modelo…</option>
-                            {templates
-                              .filter((t) => t.publicado)
-                              .map((t) => (
-                                <option key={t.id} value={t.id}>
-                                  {t.nome} — {t.largura_mm / 10}×{t.altura_mm / 10} cm
-                                  {t.lojista_id ? '' : ' (padrão)'}
-                                </option>
-                              ))}
-                          </select>
-                          <input name="titulo" placeholder="Nome do álbum (opcional)" className={CAMPO} />
-                          <button type="submit" className={BOTAO_PRIMARIO}>
-                            Criar álbum para o cliente
-                          </button>
-                        </form>
-                      ) : (
-                        <p className="m-0 text-[12.5px] text-muted">
-                          Crie a galeria primeiro: o álbum puxa as fotos dela.
-                        </p>
-                      )}
-                    </div>
+                    {/* ---- novo evento ---- */}
+                    <form
+                      action={criarGaleria}
+                      className="flex flex-wrap items-end gap-3 rounded-[14px] border border-dashed border-line p-4"
+                    >
+                      <input type="hidden" name="cliente_id" value={c.id} />
+                      <label className="flex min-w-[240px] flex-1 flex-col gap-1.5">
+                        <span className={ROTULO}>Novo evento</span>
+                        <input
+                          name="nome"
+                          required
+                          placeholder="Ex: Casamento Ana e João"
+                          className={CAMPO}
+                        />
+                      </label>
+                      <label className="flex flex-col gap-1.5">
+                        <span className={ROTULO}>Máx. álbuns</span>
+                        <input
+                          name="max_albuns"
+                          type="number"
+                          min={1}
+                          max={20}
+                          defaultValue={4}
+                          className={`${CAMPO} w-28`}
+                        />
+                      </label>
+                      <button type="submit" className={BOTAO_PRIMARIO}>
+                        Criar evento
+                      </button>
+                    </form>
 
                     <div className="lg:col-span-2">
                       <form action={removerCliente}>
@@ -322,6 +370,30 @@ export default function PainelClientes({
               </div>
             );
           })}
+
+          {total > porPagina && (
+            <div className="flex items-center justify-between gap-4 px-1 py-2">
+              <a
+                href={`/clientes?q=${encodeURIComponent(busca)}&p=${pagina - 1}`}
+                aria-disabled={pagina === 0}
+                className={`${BOTAO} ${pagina === 0 ? 'pointer-events-none opacity-40' : ''}`}
+              >
+                Anteriores
+              </a>
+              <span className="text-[12.5px] text-muted">
+                Página {pagina + 1} de {Math.ceil(total / porPagina)}
+              </span>
+              <a
+                href={`/clientes?q=${encodeURIComponent(busca)}&p=${pagina + 1}`}
+                aria-disabled={(pagina + 1) * porPagina >= total}
+                className={`${BOTAO} ${
+                  (pagina + 1) * porPagina >= total ? 'pointer-events-none opacity-40' : ''
+                }`}
+              >
+                Próximos
+              </a>
+            </div>
+          )}
         </div>
       )}
     </>

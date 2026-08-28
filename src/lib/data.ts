@@ -172,22 +172,24 @@ export async function getProjeto(id: string): Promise<Projeto | null> {
   return data ? normalizaProjeto(data as unknown as LinhaProjeto) : null;
 }
 
-/** Galeria liberada pelo lojista para este cliente (a mais recente). */
-export async function getGaleria(clienteId: string): Promise<Galeria | null> {
+/**
+ * Galerias liberadas para este cliente, da mais recente para a mais antiga.
+ *
+ * Uma galeria por evento: o mesmo cliente pode ter o casamento e o batizado
+ * na mesma loja, cada um com suas fotos. Cada álbum aponta para a galeria do
+ * seu evento, então as fotos de um evento nunca aparecem no álbum do outro.
+ */
+export async function listarGalerias(clienteId: string): Promise<Galeria[]> {
   const supabase = await createClient();
   const { data } = await supabase
     .from('galerias')
     .select('id, nome, max_albuns, atualizada_em, galeria_fotos(count)')
     .eq('cliente_id', clienteId)
-    .order('atualizada_em', { ascending: false })
-    .limit(1)
-    .maybeSingle();
+    .order('atualizada_em', { ascending: false });
 
-  if (!data) return null;
-  const { galeria_fotos, ...resto } = data as typeof data & {
-    galeria_fotos: { count: number }[] | null;
-  };
-  return { ...resto, total_fotos: galeria_fotos?.[0]?.count ?? 0 };
+  return ((data ?? []) as unknown as (Galeria & { galeria_fotos: { count: number }[] | null })[]).map(
+    ({ galeria_fotos, ...g }) => ({ ...g, total_fotos: galeria_fotos?.[0]?.count ?? 0 }),
+  );
 }
 
 export type Notificacao = {

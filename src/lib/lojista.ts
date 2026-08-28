@@ -26,9 +26,12 @@ export type ClienteDaLoja = {
   user_id: string | null;
   convidado_em: string | null;
   primeiro_acesso_em: string | null;
+  /** Uma galeria por evento: casamento, batizado, formatura… */
   galerias: { id: string; nome: string; galeria_fotos: { count: number }[] }[];
-  projetos: { id: string; titulo: string; status: string; progresso: number }[];
+  projetos: { id: string; titulo: string; status: string; progresso: number; galeria_id: string | null }[];
 };
+
+export const CLIENTES_POR_PAGINA = 25;
 
 const CAMPOS_TEMPLATE =
   'id, lojista_id, nome, produto, categoria, largura_mm, altura_mm, paginas_min, ' +
@@ -53,20 +56,40 @@ export async function getTemplate(id: string): Promise<Template | null> {
   return (data as unknown as Template) ?? null;
 }
 
-/** Clientes finais da loja, com galeria e álbuns, para a tela de gestão. */
-export async function listarClientesDaLoja(lojistaId: string): Promise<ClienteDaLoja[]> {
+/**
+ * Clientes finais da loja, paginados.
+ *
+ * Uma loja pode ter centenas de milhares de clientes, então a listagem nunca
+ * é completa: vem por página e com busca por nome ou e-mail.
+ */
+export async function listarClientesDaLoja(
+  lojistaId: string,
+  { busca = '', pagina = 0 }: { busca?: string; pagina?: number } = {},
+): Promise<{ clientes: ClienteDaLoja[]; total: number }> {
   const supabase = await createClient();
-  const { data } = await supabase
+
+  let q = supabase
     .from('clientes')
     .select(
       'id, nome, email, telefone, user_id, convidado_em, primeiro_acesso_em, ' +
         'galerias(id, nome, galeria_fotos(count)), ' +
-        'projetos(id, titulo, status, progresso)',
+        'projetos(id, titulo, status, progresso, galeria_id)',
+      { count: 'exact' },
     )
-    .eq('lojista_id', lojistaId)
-    .order('convidado_em', { ascending: false });
+    .eq('lojista_id', lojistaId);
 
-  return (data ?? []) as unknown as ClienteDaLoja[];
+  const termo = busca.trim();
+  if (termo) {
+    const escapado = termo.replace(/[%,()]/g, '');
+    q = q.or(`nome.ilike.%${escapado}%,email.ilike.%${escapado}%`);
+  }
+
+  const de = pagina * CLIENTES_POR_PAGINA;
+  const { data, count } = await q
+    .order('convidado_em', { ascending: false })
+    .range(de, de + CLIENTES_POR_PAGINA - 1);
+
+  return { clientes: (data ?? []) as unknown as ClienteDaLoja[], total: count ?? 0 };
 }
 
 /** A loja que o usuário logado administra (a primeira, se houver várias). */

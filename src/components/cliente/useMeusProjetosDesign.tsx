@@ -44,11 +44,13 @@ export function useMeusProjetosDesign({
   notificacoes,
   totalFotos,
   capas,
+  eventos = 1,
 }: {
   projetos: Projeto[];
   notificacoes: Notificacao[];
   totalFotos: number;
   capas: string[];
+  eventos?: number;
 }) {
   const [menu, setMenu] = useState(false);
   const [rail, setRail] = useState(false);
@@ -200,5 +202,5 @@ export function useMeusProjetosDesign({
         );
       }),
     };
-  }, [notificacoes, read, sel, notif, filters, menu, rail, projetos, totalFotos, capas, escolher]);
+  }, [notificacoes, read, sel, notif, filters, menu, rail, projetos, totalFotos, capas, eventos, escolher]);
 }
