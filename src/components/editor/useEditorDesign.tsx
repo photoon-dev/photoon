@@ -18,6 +18,8 @@ export type EstadoEditor = {
   paginarAberto: boolean;
   arrastandoLamina: number | null;
   arrastandoQuadro: boolean;
+  /** Posição do menu de contexto, em pixels de tela. */
+  menu: { x: number; y: number } | null;
   escopoPaginar: 'vazias' | 'recomecar';
   escopoEspaco: 'album' | 'lamina';
   turning: 'next' | 'prev' | null;
@@ -111,7 +113,7 @@ const opcaoPaginar = (on: boolean) =>
   `border:1px solid ${on ? '#2563EB' : '#E6EAF2'};background:${on ? '#F1F5FD' : '#FFFFFF'}`;
 import { curvaturaPagina, estiloPagina, luzPagina, estiloPalco, estiloLivro, limitarZoom, PAGINA_AR, ZOOM_PASSO, ZOOM_PADRAO } from '@/lib/livro';
 import type { Documento, Lado } from '@/components/editor/useDocumento';
-import { EFEITOS, PRESETS_TEXTO } from '@/lib/album';
+import { EFEITOS, FONTES, tipografia } from '@/lib/album';
 import type { Enq, Pagina, Quadro, QuadroFoto, QuadroTexto } from '@/lib/album';
 import { bordaCss, filtroDoEfeito, imagemCss } from '@/lib/imagem';
 import {
@@ -178,7 +180,7 @@ export function useEditorDesign({
   onTitulo?: (t: string) => void;
 }) {
   const [s, setS] = useState<EstadoEditor>({
-    hover: null, turning: null, espacoAberto: false, escopoEspaco: 'album', paginarAberto: false, escopoPaginar: 'vazias', arrastandoLamina: null, arrastandoQuadro: false,
+    hover: null, turning: null, espacoAberto: false, escopoEspaco: 'album', paginarAberto: false, escopoPaginar: 'vazias', arrastandoLamina: null, arrastandoQuadro: false, menu: null,
     tool: 0, panel: true, insp: false, modal: null, zoom: ZOOM_PADRAO,
     count: 0, lay: 2, photoTab: 0, bgTab: 0, bgCat: 0, elCat: 0, bw: false,
     bgHue: 220, elCor: '#2563EB', rostoIgnorado: [], pessoaAtiva: null,
@@ -331,6 +333,14 @@ export function useEditorDesign({
     const qualquerSel = doc.quadroSel;
     const selTipo: 'foto' | 'texto' | 'elemento' | null = qualquerSel?.tipo ?? null;
     const fotoSel = qSel?.fotoId ? porId.get(qSel.fotoId) : undefined;
+    const textoSel = qualquerSel?.tipo === 'texto' ? qualquerSel : null;
+
+    /** Chip ligado/desligado do painel de texto. */
+    const chipTexto = (on: boolean) =>
+      `height:34px;display:flex;align-items:center;justify-content:center;cursor:pointer;` +
+      `border-radius:9px;font-size:11.5px;font-weight:${on ? 700 : 500};` +
+      `border:1px solid ${on ? '#2563EB' : '#E6EAF2'};` +
+      `background:${on ? '#F1F5FD' : '#FFFFFF'};color:${on ? '#2563EB' : '#46536A'}`;
 
     /**
      * Retângulo do layout, como string de estilo absoluto.
@@ -394,6 +404,11 @@ export function useEditorDesign({
           imgStyle: img.imgStyle,
           iconStyle: q.tipo === 'foto' && !q.fotoId ? 'opacity:.6' : 'display:none',
           onClick: () => doc.setSelecao({ lamina: doc.atual, lado, quadro: q.id }),
+          menu: (e: React.MouseEvent) => {
+            e.preventDefault();
+            doc.setSelecao({ lamina: doc.atual, lado, quadro: q.id });
+            set({ menu: { x: e.clientX, y: e.clientY } });
+          },
         };
       });
 
@@ -466,7 +481,7 @@ export function useEditorDesign({
         .filter((q): q is QuadroTexto => q.tipo === 'texto')
         .map((q) => {
           const sel = doc.selecao?.quadro === q.id;
-          const pr = PRESETS_TEXTO[q.preset];
+          const tp = tipografia(q);
           return {
             id: q.id,
             texto: q.texto,
@@ -474,8 +489,10 @@ export function useEditorDesign({
               ret(q.ret) +
               `;z-index:7;cursor:move;display:flex;align-items:center;justify-content:center;` +
               `text-align:center;padding:2px;color:${q.cor};white-space:pre-wrap;overflow:hidden;` +
-              `font-size:${pr.tamanhoCqw}cqw;font-weight:${pr.peso};` +
-              `letter-spacing:${pr.espacamento};text-transform:${pr.caixa};` +
+              `font-size:${tp.tamanho}cqw;font-weight:${tp.peso};` +
+              `letter-spacing:${tp.espacamento};text-transform:${tp.caixa};` +
+              `font-family:${tp.familia};text-align:${tp.alinhamento};` +
+              (tp.italico ? 'font-style:italic;' : '') +
               (sel ? 'outline:1px solid #2563EB;outline-offset:2px;' : ''),
             pick: () => doc.setSelecao({ lamina: doc.atual, lado, quadro: q.id }),
             down: (e: React.PointerEvent<HTMLElement>) => {
@@ -608,6 +625,7 @@ export function useEditorDesign({
         y: e.clientY,
         ret: { ...q.ret },
         rot: q.tipo === 'elemento' ? q.rot : 0,
+        tamanho: q.tipo === 'texto' ? tipografia(q).tamanho : 0,
         // Centro do quadro em pixels, para o giro.
         cx: rp.left + ((q.ret.x + q.ret.w / 2) / 100) * rp.width,
         cy: rp.top + ((q.ret.y + q.ret.h / 2) / 100) * rp.height,
@@ -671,6 +689,11 @@ export function useEditorDesign({
           const w = Math.min(200, Math.max(2, ini.ret.w * fator));
           const h = Math.min(200, Math.max(2, ini.ret.h * fator));
           doc.mudarRet({ w, h });
+          // Num texto, esticar a caixa sem crescer a letra só cria espaço
+          // vazio — o que se espera ao puxar o canto é a palavra aumentar.
+          if (q.tipo === 'texto') {
+            doc.mudarTexto({ tamanho: Math.min(40, Math.max(0.5, ini.tamanho * fator)) });
+          }
         } else {
           const a0 = Math.atan2(ini.y - ini.cy, ini.x - ini.cx);
           const a1 = Math.atan2(ev.clientY - ini.cy, ev.clientX - ini.cx);
@@ -795,6 +818,17 @@ export function useEditorDesign({
     /** A cor da lâmina atual — o documento é a fonte, não um estado paralelo. */
     const fundoAtual = lamina.fundo || '#FFFFFF';
     const fundoLido = interpretarFundo(fundoAtual);
+
+    const fundoFotoCss = (pagina: Pagina) => {
+      const ff = pagina.fundoFoto;
+      const f = ff ? porId.get(ff.fotoId) : undefined;
+      if (!ff || !f) return 'display:none';
+      return (
+        `position:absolute;inset:0;z-index:1;pointer-events:none;` +
+        `background-image:url('${f.url}');background-size:cover;background-position:center;` +
+        `opacity:${ff.opacidade}`
+      );
+    };
     const hsvFundo = hexParaHsv(fundoAtual);
 
     /**
@@ -868,6 +902,13 @@ export function useEditorDesign({
         // `touch-action:none` impede o navegador de assumir o gesto como
         // rolagem no toque — sem isso, arrastar a foto num tablet rola a página.
         mover: 'position:absolute;inset:0;pointer-events:auto;cursor:move;touch-action:none',
+        // O botão direito precisa chegar aqui também: com o quadro
+        // selecionado, esta superfície fica por cima da foto e engolia o
+        // clique, abrindo o menu do navegador em vez do nosso.
+        menu: (e: React.MouseEvent) => {
+          e.preventDefault();
+          set({ menu: { x: e.clientX, y: e.clientY } });
+        },
         cantoNO: alcaCanto('top:3px;left:3px', 'nwse-resize'),
         cantoNE: alcaCanto('top:3px;right:3px', 'nesw-resize'),
         cantoSO: alcaCanto('bottom:3px;left:3px', 'nesw-resize'),
@@ -1578,6 +1619,75 @@ export function useEditorDesign({
       redoStyle: `width:34px;height:34px;border-radius:9px;display:flex;align-items:center;` +
         `justify-content:center;color:${doc.podeRefazer ? '#46536A' : '#C4CDDB'};` +
         `cursor:${doc.podeRefazer ? 'pointer' : 'default'}`,
+      /* --------------------------- editor de texto -----------------------
+       * O inspetor mostrava sempre os controles de FOTO. Com um texto
+       * selecionado o cliente via enquadramento e saturação, que não se
+       * aplicam, e não tinha onde mudar o que importa: a palavra, a fonte, o
+       * tamanho, o peso e a cor.
+       *
+       * O conteúdo fica aqui e não só no duplo clique: `contentEditable`
+       * depende do foco e falha em toque, e trocar uma palavra não pode
+       * depender de acertar o duplo clique numa letra de 8px.
+       * ------------------------------------------------------------------ */
+      inspTexto: selTipo === 'texto' ? 'display:block' : 'display:none',
+      txConteudo: textoSel?.texto ?? '',
+      setTxConteudo: (e: React.ChangeEvent<HTMLTextAreaElement>) =>
+        doc.mudarTexto({ texto: e.target.value.slice(0, 2000) }),
+
+      txFontes: FONTES.map((f) => {
+        const on = (textoSel?.fonte ?? 'sistema') === f.id;
+        return {
+          rotulo: f.rotulo,
+          style:
+            `height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;` +
+            `border-radius:9px;font-size:12.5px;font-family:${f.css};` +
+            `border:1px solid ${on ? '#2563EB' : '#E6EAF2'};` +
+            `background:${on ? '#F1F5FD' : '#FFFFFF'};color:${on ? '#2563EB' : '#46536A'}`,
+          pick: () => doc.mudarTexto({ fonte: f.id }),
+        };
+      }),
+
+      txTamanho: +(textoSel ? tipografia(textoSel).tamanho : 4).toFixed(1),
+      setTxTamanho: (e: React.ChangeEvent<HTMLInputElement>) => {
+        const n = Number(e.target.value);
+        if (Number.isFinite(n)) doc.mudarTexto({ tamanho: Math.min(40, Math.max(0.5, n)) });
+      },
+      txPeso: textoSel ? tipografia(textoSel).peso : 400,
+      setTxPeso: (e: React.ChangeEvent<HTMLInputElement>) => {
+        const n = Number(e.target.value);
+        if (Number.isFinite(n)) doc.mudarTexto({ peso: Math.min(900, Math.max(100, Math.round(n / 100) * 100)) });
+      },
+
+      txAlinhas: ([
+        ['left', 'Esquerda'],
+        ['center', 'Centro'],
+        ['right', 'Direita'],
+      ] as const).map(([id, rotulo]) => {
+        const on = (textoSel?.alinhamento ?? 'center') === id;
+        return {
+          rotulo,
+          style:
+            `height:34px;display:flex;align-items:center;justify-content:center;cursor:pointer;` +
+            `border-radius:9px;font-size:11.5px;font-weight:${on ? 700 : 500};` +
+            `border:1px solid ${on ? '#2563EB' : '#E6EAF2'};` +
+            `background:${on ? '#F1F5FD' : '#FFFFFF'};color:${on ? '#2563EB' : '#46536A'}`,
+          pick: () => doc.mudarTexto({ alinhamento: id }),
+        };
+      }),
+
+      txCaixaStyle: chipTexto(textoSel?.preset === 'legenda'),
+      txToggleCaixa: () =>
+        doc.mudarTexto({ preset: textoSel?.preset === 'legenda' ? 'subtitulo' : 'legenda' }),
+      txItalicoStyle: chipTexto(!!textoSel?.italico),
+      txToggleItalico: () => doc.mudarTexto({ italico: !textoSel?.italico }),
+
+      txCores: CHIPS.map((c) => ({
+        style:
+          `aspect-ratio:1 / 1;border-radius:7px;background:${c};cursor:pointer;` +
+          `border:${textoSel?.cor.toUpperCase() === c.toUpperCase() ? '2px solid #2563EB' : '1px solid rgba(11,18,32,.12)'}`,
+        pick: () => doc.mudarTexto({ cor: c }),
+      })),
+
       inspEmpty: selTipo ? 'display:none' : 'display:flex;flex-direction:column;align-items:center;gap:10px;padding:34px 22px',
       inspBody: selTipo ? 'display:block' : 'display:none',
 
@@ -1594,7 +1704,62 @@ export function useEditorDesign({
 
       // O fundo da lâmina era gravado e NUNCA desenhado: o cliente escolhia uma
       // cor e a página continuava branca. Fica sob os quadros, sobre o papel.
+      /* ------------------------- menu de contexto ------------------------
+       * Botão direito sobre a foto. As ações que só fazem sentido com foto só
+       * aparecem quando há foto: menu cheio de item desabilitado é pior que
+       * menu curto.
+       * ------------------------------------------------------------------ */
+      ovMenu: s.menu ? 'position:fixed;inset:0;z-index:70' : 'display:none',
+      menuCtx: s.menu
+        ? `position:fixed;left:${s.menu.x}px;top:${s.menu.y}px;z-index:71;min-width:214px;` +
+          'padding:6px;background:#FFFFFF;border:1px solid #E6EAF2;border-radius:12px;' +
+          'box-shadow:0 18px 40px rgba(11,18,32,.22);display:flex;flex-direction:column'
+        : 'display:none',
+      fecharMenu: (e?: React.MouseEvent) => {
+        e?.preventDefault();
+        set({ menu: null });
+      },
+      itensMenu: (() => {
+        const q = qSel;
+        const comFoto = !!q?.fotoId;
+        const lado = doc.selecao?.lado ?? 'esquerda';
+        const it = (rotulo: string, acao: () => void, perigo = false) => ({
+          rotulo,
+          style:
+            'padding:9px 11px;border-radius:8px;font-size:13px;cursor:pointer;white-space:nowrap;' +
+            `color:${perigo ? '#E11D48' : '#46536A'}`,
+          acao: () => {
+            acao();
+            set({ menu: null });
+          },
+        });
+        const lista: { rotulo: string; style: string; acao: () => void }[] = [];
+        if (comFoto) {
+          lista.push(it('Definir como fundo da página', () => doc.definirComoFundo()));
+          lista.push(it('Aplicar esta borda a todas', () => doc.aplicarBordaATodas()));
+          lista.push(
+            q?.borda
+              ? it('Remover borda', () => doc.mudarBorda(null))
+              : it('Adicionar borda', () => doc.mudarBorda({ px: 6, cor: '#FFFFFF' })),
+          );
+        }
+        if (lamina[lado].fundoFoto)
+          lista.push(it('Tirar o fundo da página', () => doc.removerFundoFoto()));
+        if (comFoto) lista.push(it('Excluir a foto do quadro', () => doc.limparQuadro(), true));
+        return lista;
+      })(),
+
       pageFundo: `position:absolute;inset:0;z-index:0;` + estiloFundo(fundoAtual),
+
+      /**
+       * Foto usada como fundo da página.
+       *
+       * Camada própria, entre o padrão e os quadros: a foto que virou fundo
+       * continua aparecendo no quadro por cima. A opacidade existe para o fundo
+       * não competir com as fotos da frente — cheio, ele engole a página.
+       */
+      pageFundoFoto: fundoFotoCss(lamina.esquerda),
+      rightFundoFoto: fundoFotoCss(lamina.direita),
       rightFundo: `position:absolute;inset:0;background:${fundoAtual};z-index:0`,
 
       pageTextos: textosDe(lamina.esquerda, 'esquerda'),

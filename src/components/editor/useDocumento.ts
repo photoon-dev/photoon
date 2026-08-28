@@ -336,6 +336,7 @@ export function useDocumento({
     [selecaoAtiva, mudarLivre],
   );
 
+
   /** Insere um texto na página do lado selecionado (ou na esquerda). */
   const adicionarTexto = useCallback(
     (preset: PresetTexto = 'titulo') => {
@@ -535,6 +536,61 @@ export function useDocumento({
   const quadroSelecionado = quadroSel?.tipo === 'foto' ? quadroSel : null;
   const elementoSel = quadroSel?.tipo === 'elemento' ? quadroSel : null;
 
+  /** Aplica a borda do quadro selecionado a TODAS as fotos do álbum. */
+  const aplicarBordaATodas = useCallback(() => {
+    const q = quadroSel;
+    if (!q || q.tipo !== 'foto') return;
+    const b = q.borda;
+    aplicar((ls) =>
+      ls.map((l) => {
+        const nos = (p: Pagina): Pagina => ({
+          ...p,
+          quadros: p.quadros.map((x) =>
+            x.tipo === 'foto' ? { ...x, ...(b ? { borda: { ...b } } : { borda: undefined }) } : x,
+          ),
+        });
+        return { ...l, esquerda: nos(l.esquerda), direita: nos(l.direita) };
+      }),
+    );
+  }, [quadroSel, aplicar]);
+
+  /** Muda a borda do quadro selecionado. `null` remove. */
+  const mudarBorda = useCallback(
+    (b: { px: number; cor: string } | null) => {
+      if (!selecaoAtiva) return;
+      mudarQuadro(selecaoAtiva, () => ({ borda: b ?? undefined }));
+    },
+    [selecaoAtiva, mudarQuadro],
+  );
+
+  /**
+   * Usa a foto do quadro como fundo da página inteira.
+   *
+   * O quadro NÃO some: a foto continua por cima, como o Fábio pediu. São
+   * camadas distintas — o fundo é da página, o quadro é do layout.
+   */
+  const definirComoFundo = useCallback(
+    (opacidade = 0.35) => {
+      const q = quadroSel;
+      if (!q || q.tipo !== 'foto' || !q.fotoId || !selecaoAtiva) return;
+      const lado = selecaoAtiva.lado;
+      mudarLamina(atual, (l) => ({
+        ...l,
+        [lado]: { ...l[lado], fundoFoto: { fotoId: q.fotoId!, opacidade } },
+      }));
+    },
+    [quadroSel, selecaoAtiva, atual, mudarLamina],
+  );
+
+  const removerFundoFoto = useCallback(
+    (lado?: Lado) => {
+      const l = lado ?? selecao?.lado ?? 'esquerda';
+      mudarLamina(atual, (lam) => ({ ...lam, [l]: { ...lam[l], fundoFoto: undefined } }));
+    },
+    [selecao, atual, mudarLamina],
+  );
+
+
   const usadas = useMemo(() => fotosDoAlbum(laminas), [laminas]);
   const progresso = useMemo(() => calcularProgresso(laminas), [laminas]);
   const bloqueadores = useMemo(() => laminasSemFoto(laminas).length, [laminas]);
@@ -575,6 +631,10 @@ export function useDocumento({
     mudarAjustes,
     mudarRet,
     mudarElemento,
+    aplicarBordaATodas,
+    mudarBorda,
+    definirComoFundo,
+    removerFundoFoto,
     adicionarTexto,
     mudarTexto,
     adicionarElemento,

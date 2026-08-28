@@ -706,6 +706,8 @@ export default function EditorDesign({ v }: { v: any }) {
                     <section style={css(v.pageSkew)}>
                       <span style={css(v.pageFundo)}>
                       </span>
+                      <span style={css(v.pageFundoFoto)}>
+                      </span>
                       <span style={css(v.areaCorte)}>
                       </span>
                       {v.guias.map((g: any, i9: number) => (
@@ -727,7 +729,7 @@ export default function EditorDesign({ v }: { v: any }) {
                         </div>
                       ))}
                       <div style={css(v.pageGrid)}>
-                        <div onClick={v.frameA.onClick} style={css(v.frameA.style)}>
+                        <div onClick={v.frameA.onClick} onContextMenu={v.frameA.menu} style={css(v.frameA.style)}>
                           <img src={v.frameA.src} style={css(v.frameA.imgStyle)} alt="" />
                           <span style={css(v.faceBox)}>
                           </span>
@@ -744,12 +746,12 @@ export default function EditorDesign({ v }: { v: any }) {
                           </span>
                         </div>
                         {v.pageFrames.map((f: any, i10: number) => (
-                          <div key={i10} onClick={f.onClick} style={css(f.style)} className="dc29">
+                          <div key={i10} onClick={f.onClick} onContextMenu={f.menu} style={css(f.style)} className="dc29">
                             <img src={f.src} style={css(f.imgStyle)} alt="" />
                           </div>
                         ))}
                         <div style={css(v.selEsq.box)} data-om-selbox="esquerda">
-                          <div style={css(v.selEsq.mover)} onPointerDown={v.selMoverDown} title="Arraste para reposicionar">
+                          <div style={css(v.selEsq.mover)} onPointerDown={v.selMoverDown} onContextMenu={v.selEsq.menu} title="Arraste para reposicionar">
                           </div>
                           {v.selEsq.rostos.map((rr: any, i11: number) => (
                             <span key={i11} style={css(rr.style)}>
@@ -780,6 +782,8 @@ export default function EditorDesign({ v }: { v: any }) {
                     <section style={css(v.rightSkew)}>
                       <span style={css(v.rightFundo)}>
                       </span>
+                      <span style={css(v.rightFundoFoto)}>
+                      </span>
                       <span style={css(v.areaCorte)}>
                       </span>
                       {v.guiasDireita.map((g: any, i9: number) => (
@@ -802,7 +806,7 @@ export default function EditorDesign({ v }: { v: any }) {
                       ))}
                       <div style={css(v.rightGrid)}>
                         {v.rightFrames.map((f: any, i10: number) => (
-                          <div key={i10} onClick={f.onClick} style={css(f.style)} className="dc30">
+                          <div key={i10} onClick={f.onClick} onContextMenu={f.menu} style={css(f.style)} className="dc30">
                             <img src={f.src} style={css(f.imgStyle)} alt="" />
                             <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" style={css(f.iconStyle)}>
                               <rect x="3" y="4" width="18" height="16" rx="4" />
@@ -812,7 +816,7 @@ export default function EditorDesign({ v }: { v: any }) {
                           </div>
                         ))}
                         <div style={css(v.selDir.box)} data-om-selbox="direita">
-                          <div style={css(v.selDir.mover)} onPointerDown={v.selMoverDown} title="Arraste para reposicionar">
+                          <div style={css(v.selDir.mover)} onPointerDown={v.selMoverDown} onContextMenu={v.selDir.menu} title="Arraste para reposicionar">
                           </div>
                           {v.selDir.rostos.map((rr: any, i11: number) => (
                             <span key={i11} style={css(rr.style)}>
@@ -840,6 +844,15 @@ export default function EditorDesign({ v }: { v: any }) {
                         {v.legendaDireita}
                       </p>
                     </section>
+                  </div>
+                  <div style={css(v.ovMenu)} onClick={v.fecharMenu} onContextMenu={v.fecharMenu}>
+                  </div>
+                  <div style={css(v.menuCtx)}>
+                    {v.itensMenu.map((mi: any, i8: number) => (
+                      <span key={i8} onClick={mi.acao} style={css(mi.style)}>
+                        {mi.rotulo}
+                      </span>
+                    ))}
                   </div>
                   <div style={css(v.turnSheet)}>
                     <div style={css(v.turnFront)}>
@@ -985,6 +998,72 @@ export default function EditorDesign({ v }: { v: any }) {
                 <p style={{ margin: '0', fontSize: '12px', lineHeight: '1.55', color: '#9AA7BC', textAlign: 'center' }}>
                   Clique em uma foto ou texto da lâmina para editar aqui.
                 </p>
+              </div>
+              <div style={css(v.inspTexto)}>
+                <div style={{ padding: '16px 18px', borderBottom: '1px solid #F0F3F9' }}>
+                  <p style={{ margin: '0 0 8px', fontSize: '11px', letterSpacing: '1.2px', textTransform: 'uppercase', color: '#9AA7BC', fontWeight: '700' }}>
+                    Conteúdo
+                  </p>
+                  <textarea value={v.txConteudo} onChange={v.setTxConteudo} style={{ width: '100%', minHeight: '68px', padding: '10px 12px', border: '1px solid #E6EAF2', borderRadius: '10px', fontFamily: 'inherit', fontSize: '13px', lineHeight: '1.45', color: '#0B1220', resize: 'vertical' }}>
+                  </textarea>
+                </div>
+                <div style={{ padding: '16px 18px', borderBottom: '1px solid #F0F3F9' }}>
+                  <p style={{ margin: '0 0 10px', fontSize: '11px', letterSpacing: '1.2px', textTransform: 'uppercase', color: '#9AA7BC', fontWeight: '700' }}>
+                    Tipografia
+                  </p>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginBottom: '11px' }}>
+                    <label style={{ fontSize: '11px', fontWeight: '700', color: '#9AA7BC' }}>
+                      Fonte
+                    </label>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: '6px' }}>
+                      {v.txFontes.map((fo: any, i9: number) => (
+                        <span key={i9} onClick={fo.pick} style={css(fo.style)}>
+                          {fo.rotulo}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: '8px', marginBottom: '11px' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', minWidth: '0' }}>
+                      <label style={{ fontSize: '11px', fontWeight: '700', color: '#9AA7BC' }}>
+                        Tamanho
+                      </label>
+                      <input type="number" step="0.2" min="0.5" max="40" value={v.txTamanho} onChange={v.setTxTamanho} style={{ height: '38px', padding: '0 11px', border: '1px solid #E6EAF2', borderRadius: '10px', fontFamily: 'inherit', fontSize: '13px', fontWeight: '600', color: '#0B1220' }} />
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', minWidth: '0' }}>
+                      <label style={{ fontSize: '11px', fontWeight: '700', color: '#9AA7BC' }}>
+                        Peso
+                      </label>
+                      <input type="number" step="100" min="100" max="900" value={v.txPeso} onChange={v.setTxPeso} style={{ height: '38px', padding: '0 11px', border: '1px solid #E6EAF2', borderRadius: '10px', fontFamily: 'inherit', fontSize: '13px', fontWeight: '600', color: '#0B1220' }} />
+                    </div>
+                  </div>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: '6px', marginBottom: '11px' }}>
+                    {v.txAlinhas.map((al: any, i8: number) => (
+                      <span key={i8} onClick={al.pick} title={al.rotulo} style={css(al.style)}>
+                        {al.rotulo}
+                      </span>
+                    ))}
+                  </div>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: '6px' }}>
+                    <span onClick={v.txToggleCaixa} style={css(v.txCaixaStyle)}>
+                      MAIÚSCULAS
+                    </span>
+                    <span onClick={v.txToggleItalico} style={css(v.txItalicoStyle)}>
+                      Itálico
+                    </span>
+                  </div>
+                </div>
+                <div style={{ padding: '16px 18px' }}>
+                  <p style={{ margin: '0 0 10px', fontSize: '11px', letterSpacing: '1.2px', textTransform: 'uppercase', color: '#9AA7BC', fontWeight: '700' }}>
+                    Cor
+                  </p>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(8, minmax(0, 1fr))', gap: '6px' }}>
+                    {v.txCores.map((cc: any, i8: number) => (
+                      <span key={i8} onClick={cc.pick} style={css(cc.style)}>
+                      </span>
+                    ))}
+                  </div>
+                </div>
               </div>
               <div style={css(v.inspBody)}>
                 <div style={css(v.blocoRosto)}>

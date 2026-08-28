@@ -74,12 +74,36 @@ export type QuadroFoto = {
   borda?: Borda;
 };
 
+/**
+ * Famílias tipográficas oferecidas.
+ *
+ * Poucas e de propósito: todas existem nos sistemas comuns, então o que o
+ * cliente vê na tela é o que sai na impressão. Fonte bonita que só existe na
+ * máquina de quem desenhou vira Times New Roman no papel.
+ */
+export const FONTES = [
+  { id: 'sistema', rotulo: 'Padrão', css: "'Inter','Helvetica Neue',Arial,sans-serif" },
+  { id: 'serifa', rotulo: 'Serifa', css: "Georgia,'Times New Roman',serif" },
+  { id: 'display', rotulo: 'Display', css: "'Trebuchet MS','Segoe UI',sans-serif" },
+  { id: 'mono', rotulo: 'Máquina', css: "'Courier New',monospace" },
+  { id: 'manuscrita', rotulo: 'Manuscrita', css: "'Brush Script MT','Segoe Script',cursive" },
+] as const;
+
+export type FonteId = (typeof FONTES)[number]['id'];
+
 export type QuadroTexto = {
   id: string;
   tipo: 'texto';
   texto: string;
   preset: PresetTexto;
   cor: string;
+  /** Sobrepõem o preset quando presentes. */
+  fonte?: FonteId;
+  /** Tamanho em `cqw` — % da largura da página. */
+  tamanho?: number;
+  peso?: number;
+  alinhamento?: 'left' | 'center' | 'right';
+  italico?: boolean;
   /** O texto não segue o layout: fica onde o usuário largou. */
   ret: Ret;
 };
@@ -113,6 +137,14 @@ export type Quadro = QuadroFoto | QuadroTexto | QuadroElemento;
 
 export type Pagina = {
   layoutId: string;
+  /**
+   * Foto usada como fundo da página inteira.
+   *
+   * Camada distinta do quadro: a foto que virou fundo continua aparecendo no
+   * quadro por cima. `opacidade` permite clarear, para o fundo não competir
+   * com as fotos da frente.
+   */
+  fundoFoto?: { fotoId: string; opacidade: number };
   quadros: Quadro[];
 };
 
@@ -227,6 +259,11 @@ const zQuadro: z.ZodType<Quadro> = z.union([
     texto: z.string().max(2000),
     preset: z.enum(['titulo', 'subtitulo', 'legenda', 'data']),
     cor: z.string().regex(/^#[0-9A-Fa-f]{3,8}$/),
+    fonte: z.enum(['sistema', 'serifa', 'display', 'mono', 'manuscrita']).optional(),
+    tamanho: z.number().min(0.5).max(40).optional(),
+    peso: z.number().min(100).max(900).optional(),
+    alinhamento: z.enum(['left', 'center', 'right']).optional(),
+    italico: z.boolean().optional(),
     ret: zRet,
   }),
   z.object({
@@ -245,6 +282,7 @@ const IDS = LAYOUTS.map((l) => l.id) as [string, ...string[]];
 
 const zPagina = z.object({
   layoutId: z.enum(IDS),
+  fundoFoto: z.object({ fotoId: z.string().min(1), opacidade: z.number().min(0).max(1) }).optional(),
   quadros: z.array(zQuadro).max(60),
 });
 
@@ -448,6 +486,15 @@ function migrarQuadro(bruto: unknown): Quadro | null {
       texto: typeof q.texto === 'string' ? q.texto.slice(0, 2000) : '',
       preset: preset in PRESETS_TEXTO ? preset : 'legenda',
       cor: /^#[0-9A-Fa-f]{3,8}$/.test(String(q.cor)) ? String(q.cor) : '#0B1220',
+      ...(FONTES.some((f) => f.id === q.fonte) ? { fonte: q.fonte as FonteId } : {}),
+      ...(typeof q.tamanho === 'number' && Number.isFinite(q.tamanho)
+        ? { tamanho: Math.min(40, Math.max(0.5, q.tamanho)) }
+        : {}),
+      ...(typeof q.peso === 'number' ? { peso: Math.min(900, Math.max(100, q.peso)) } : {}),
+      ...(['left', 'center', 'right'].includes(String(q.alinhamento))
+        ? { alinhamento: q.alinhamento as 'left' | 'center' | 'right' }
+        : {}),
+      ...(q.italico === true ? { italico: true } : {}),
       ret: migrarRet(q, { x: 10, y: 10, w: 40, h: 12 }),
     };
   }
@@ -495,7 +542,17 @@ function migrarPagina(bruto: unknown, fallback: Quadro[] = []): Pagina {
   while (fotos.length < alvo) fotos.push(novoQuadroFoto());
 
   // Tudo que não é foto tem retângulo próprio e sobrevive à migração.
-  return { layoutId, quadros: [...fotos, ...quadros.filter((q) => q.tipo !== 'foto')] };
+  const ff = (p.fundoFoto ?? null) as Record<string, unknown> | null;
+  const fundoFoto =
+    ff && typeof ff.fotoId === 'string' && ff.fotoId
+      ? { fotoId: ff.fotoId, opacidade: Math.min(1, Math.max(0, num(ff.opacidade, 0.35))) }
+      : undefined;
+
+  return {
+    layoutId,
+    ...(fundoFoto ? { fundoFoto } : {}),
+    quadros: [...fotos, ...quadros.filter((q) => q.tipo !== 'foto')],
+  };
 }
 
 /**
@@ -565,4 +622,24 @@ export function fotosUsadas(laminas: Lamina[]): Set<string> {
 /** Uma lâmina = duas páginas. A capa conta como uma. */
 export function totalPaginas(laminas: Lamina[]): number {
   return Math.max(0, laminas.length * 2);
+}
+
+/**
+ * Tipografia efetiva de um texto: o que o usuário escolheu, ou o preset.
+ *
+ * Uma função só, usada pelo canvas, pelo inspetor e (adiante) pela impressão —
+ * senão cada um chega a um tamanho diferente para o mesmo texto.
+ */
+export function tipografia(q: QuadroTexto) {
+  const p = PRESETS_TEXTO[q.preset];
+  const f = FONTES.find((x) => x.id === (q.fonte ?? 'sistema')) ?? FONTES[0];
+  return {
+    tamanho: q.tamanho ?? p.tamanhoCqw,
+    peso: q.peso ?? p.peso,
+    espacamento: p.espacamento,
+    caixa: p.caixa,
+    alinhamento: q.alinhamento ?? 'center',
+    familia: f.css,
+    italico: !!q.italico,
+  };
 }

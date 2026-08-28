@@ -32,12 +32,17 @@ export type Elemento = {
   proporcao?: number;
 };
 
+/**
+ * Categorias mostradas no painel.
+ *
+ * As antigas "Molduras", "Florais", "Fitas" e "Selos" eram rabiscos de traço
+ * que não se sustentavam ao lado da biblioteca colorida — saíram da vista.
+ * Continuam no catálogo abaixo, e não por descuido: `zod` exige que o `forma`
+ * de todo elemento exista, e apagá-las invalidaria álbuns já gravados que as
+ * usam. Ficam "Formas" e "Linhas", que são primitivas de desenho e servem
+ * para emoldurar e dividir.
+ */
 export const CATEGORIAS: { id: CategoriaElemento | 'todos'; rotulo: string }[] = [
-  { id: 'todos', rotulo: 'Todos' },
-  { id: 'molduras', rotulo: 'Molduras' },
-  { id: 'florais', rotulo: 'Florais' },
-  { id: 'fitas', rotulo: 'Fitas' },
-  { id: 'selos', rotulo: 'Selos' },
   { id: 'formas', rotulo: 'Formas' },
   { id: 'linhas', rotulo: 'Linhas' },
 ];
