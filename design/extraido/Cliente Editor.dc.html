@@ -393,11 +393,11 @@
             <span style="position: absolute; top: 1.6%; bottom: 1.6%; right: .5%; width: 49.6%; border-radius: 2px 13px 12px 8px; border: 1px solid #ECE9E1; transform: skewY(.25deg); background: linear-gradient(180deg,rgba(255,255,255,.88),rgba(255,252,246,.16) 18%,rgba(220,214,203,.1) 76%,rgba(172,163,149,.18)), repeating-linear-gradient(to bottom,#FFFFFF 0 2px,#E9E7DF 2px 3px); box-shadow: 0 1px 0 rgba(255,255,255,.98), 0 2px 0 #E9E6DE, 0 4px 0 #F4F2ED, 0 6px 0 #E6E3DA, 0 8px 10px rgba(83,72,58,.08);"></span>
 
             <div style="position: absolute; inset: 0; display: grid; grid-template-columns: 1fr 1fr; z-index: 3;">
-              <section style="position: relative; overflow: hidden; border-radius: 14px 2px 5px 10px; background: radial-gradient(circle at 50% 45%, rgba(0,0,0,.018), transparent 50%), linear-gradient(90deg,#FFFFFF,#FFFEFB); box-shadow: inset -18px 0 26px -26px rgba(0,0,0,.9), inset 0 1px 0 rgba(255,255,255,.8);">
+              <section style="{{ pageSkew }}">
                 <span style="{{ pageFundo }}"></span>
                 <span style="position: absolute; inset: 4%; border: 1px dashed rgba(245,158,11,.55); border-radius: 3px; pointer-events: none; z-index: 4;"></span>
                 <sc-for list="{{ pageElementos }}" as="el" hint-placeholder-count="1">
-                  <div onClick="{{ el.pick }}" style="{{ el.style }}" title="{{ el.title }}">
+                  <div onClick="{{ el.pick }}" onpointerdown="{{ el.down }}" style="{{ el.style }}" title="{{ el.title }}">
                     <svg viewBox="0 0 48 48" width="100%" height="100%" preserveAspectRatio="none" fill="none" stroke="currentColor" stroke-width="{{ el.sw }}" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke">
                       <sc-for list="{{ el.paths }}" as="pp" hint-placeholder-count="1">
                         <path d="{{ pp.d }}" vector-effect="non-scaling-stroke"/>
@@ -433,11 +433,11 @@
                 <p style="position: absolute; left: 8%; right: 8%; bottom: 9px; margin: 0; min-height: 16px; text-align: center; font-family: Georgia, serif; font-size: 12.5px; color: #7D6F63;">{{ legendaEsquerda }}</p>
               </section>
 
-              <section style="position: relative; overflow: hidden; border-radius: 2px 14px 10px 5px; background: radial-gradient(circle at 50% 45%, rgba(0,0,0,.018), transparent 50%), linear-gradient(270deg,#FFFFFF,#FFFEFB); box-shadow: inset 18px 0 26px -26px rgba(0,0,0,.9), inset 0 1px 0 rgba(255,255,255,.8);">
+              <section style="{{ rightSkew }}">
                 <span style="{{ rightFundo }}"></span>
                 <span style="position: absolute; inset: 4%; border: 1px dashed rgba(245,158,11,.55); border-radius: 3px; pointer-events: none; z-index: 4;"></span>
                 <sc-for list="{{ rightElementos }}" as="el" hint-placeholder-count="1">
-                  <div onClick="{{ el.pick }}" style="{{ el.style }}" title="{{ el.title }}">
+                  <div onClick="{{ el.pick }}" onpointerdown="{{ el.down }}" style="{{ el.style }}" title="{{ el.title }}">
                     <svg viewBox="0 0 48 48" width="100%" height="100%" preserveAspectRatio="none" fill="none" stroke="currentColor" stroke-width="{{ el.sw }}" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke">
                       <sc-for list="{{ el.paths }}" as="pp" hint-placeholder-count="1">
                         <path d="{{ pp.d }}" vector-effect="non-scaling-stroke"/>

@@ -109,3 +109,28 @@ export function estiloLivro(zoom: number): React.CSSProperties {
     filter: 'drop-shadow(0 24px 34px rgba(30,45,75,.18))',
   };
 }
+
+/**
+ * Estilo completo de uma página: o papel do design mais a curvatura.
+ *
+ * A curvatura precisa ficar aqui, e não no contêiner dos quadros: lá dentro
+ * ela criava um contexto de empilhamento que engolia o `z-index` das alças de
+ * seleção, e nada no palco podia ser arrastado.
+ */
+export function estiloPagina(lado: 'esquerda' | 'direita'): string {
+  const esq = lado === 'esquerda';
+  const c = curvaturaPagina(lado);
+  return [
+    'position:relative',
+    'overflow:hidden',
+    `border-radius:${esq ? '14px 2px 5px 10px' : '2px 14px 10px 5px'}`,
+    'background:radial-gradient(circle at 50% 45%, rgba(0,0,0,.018), transparent 50%),' +
+      `linear-gradient(${esq ? '90deg' : '270deg'},#FFFFFF,#FFFEFB)`,
+    `box-shadow:inset ${esq ? '-18px' : '18px'} 0 26px -26px rgba(0,0,0,.9), inset 0 1px 0 rgba(255,255,255,.8)`,
+    `perspective:${c.perspective}`,
+    `perspective-origin:${c.perspectiveOrigin}`,
+    'transform-style:preserve-3d',
+    `transform:${c.transform}`,
+    `transform-origin:${c.transformOrigin}`,
+  ].join(';');
+}

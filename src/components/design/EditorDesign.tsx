@@ -674,13 +674,13 @@ export default function EditorDesign({ v }: { v: any }) {
                   <span style={{ position: 'absolute', top: '1.6%', bottom: '1.6%', right: '.5%', width: '49.6%', borderRadius: '2px 13px 12px 8px', border: '1px solid #ECE9E1', transform: 'skewY(.25deg)', background: 'linear-gradient(180deg,rgba(255,255,255,.88),rgba(255,252,246,.16) 18%,rgba(220,214,203,.1) 76%,rgba(172,163,149,.18)), repeating-linear-gradient(to bottom,#FFFFFF 0 2px,#E9E7DF 2px 3px)', boxShadow: '0 1px 0 rgba(255,255,255,.98), 0 2px 0 #E9E6DE, 0 4px 0 #F4F2ED, 0 6px 0 #E6E3DA, 0 8px 10px rgba(83,72,58,.08)' }}>
                   </span>
                   <div style={{ position: 'absolute', inset: '0', display: 'grid', gridTemplateColumns: '1fr 1fr', zIndex: '3' }}>
-                    <section style={{ position: 'relative', overflow: 'hidden', borderRadius: '14px 2px 5px 10px', background: 'radial-gradient(circle at 50% 45%, rgba(0,0,0,.018), transparent 50%), linear-gradient(90deg,#FFFFFF,#FFFEFB)', boxShadow: 'inset -18px 0 26px -26px rgba(0,0,0,.9), inset 0 1px 0 rgba(255,255,255,.8)' }}>
+                    <section style={css(v.pageSkew)}>
                       <span style={css(v.pageFundo)}>
                       </span>
                       <span style={{ position: 'absolute', inset: '4%', border: '1px dashed rgba(245,158,11,.55)', borderRadius: '3px', pointerEvents: 'none', zIndex: '4' }}>
                       </span>
                       {v.pageElementos.map((el: any, i9: number) => (
-                        <div key={i9} onClick={el.pick} style={css(el.style)} title={el.title}>
+                        <div key={i9} onClick={el.pick} onPointerDown={el.down} style={css(el.style)} title={el.title}>
                           <svg viewBox="0 0 48 48" width="100%" height="100%" preserveAspectRatio="none" fill="none" stroke="currentColor" strokeWidth={el.sw} strokeLinecap="round" strokeLinejoin="round" vectorEffect="non-scaling-stroke">
                             {el.paths.map((pp: any, i12: number) => (
                               <path key={i12} d={pp.d} vectorEffect="non-scaling-stroke" />
@@ -739,13 +739,13 @@ export default function EditorDesign({ v }: { v: any }) {
                         {v.legendaEsquerda}
                       </p>
                     </section>
-                    <section style={{ position: 'relative', overflow: 'hidden', borderRadius: '2px 14px 10px 5px', background: 'radial-gradient(circle at 50% 45%, rgba(0,0,0,.018), transparent 50%), linear-gradient(270deg,#FFFFFF,#FFFEFB)', boxShadow: 'inset 18px 0 26px -26px rgba(0,0,0,.9), inset 0 1px 0 rgba(255,255,255,.8)' }}>
+                    <section style={css(v.rightSkew)}>
                       <span style={css(v.rightFundo)}>
                       </span>
                       <span style={{ position: 'absolute', inset: '4%', border: '1px dashed rgba(245,158,11,.55)', borderRadius: '3px', pointerEvents: 'none', zIndex: '4' }}>
                       </span>
                       {v.rightElementos.map((el: any, i9: number) => (
-                        <div key={i9} onClick={el.pick} style={css(el.style)} title={el.title}>
+                        <div key={i9} onClick={el.pick} onPointerDown={el.down} style={css(el.style)} title={el.title}>
                           <svg viewBox="0 0 48 48" width="100%" height="100%" preserveAspectRatio="none" fill="none" stroke="currentColor" strokeWidth={el.sw} strokeLinecap="round" strokeLinejoin="round" vectorEffect="non-scaling-stroke">
                             {el.paths.map((pp: any, i12: number) => (
                               <path key={i12} d={pp.d} vectorEffect="non-scaling-stroke" />

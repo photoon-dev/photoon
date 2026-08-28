@@ -107,10 +107,10 @@ const opcaoPaginar = (on: boolean) =>
   `display:flex;align-items:flex-start;gap:11px;padding:13px 14px;margin-bottom:10px;` +
   `border-radius:12px;cursor:pointer;` +
   `border:1px solid ${on ? '#2563EB' : '#E6EAF2'};background:${on ? '#F1F5FD' : '#FFFFFF'}`;
-import { curvaturaPagina, luzPagina, estiloPalco, estiloLivro, limitarZoom, PAGINA_AR, ZOOM_PASSO, ZOOM_PADRAO } from '@/lib/livro';
+import { curvaturaPagina, estiloPagina, luzPagina, estiloPalco, estiloLivro, limitarZoom, PAGINA_AR, ZOOM_PASSO, ZOOM_PADRAO } from '@/lib/livro';
 import type { Documento, Lado } from '@/components/editor/useDocumento';
-import type { Enq, Pagina, QuadroFoto } from '@/lib/album';
-import { imagemCss } from '@/lib/imagem';
+import type { Enq, Pagina, Quadro, QuadroFoto } from '@/lib/album';
+import { bordaCss, imagemCss } from '@/lib/imagem';
 import {
   ESCALA_MAX, ESCALA_MIN, ROT_MAX, ROT_MIN,
   escalarEnq, girarEnq, limitarEscala, limitarRot, moverEnq, zoomEnq, zoomParaEscala,
@@ -340,7 +340,7 @@ export function useEditorDesign({
       const cheio = q.fotoId && porId.has(q.fotoId);
       return (
         ret(r) +
-        `;border-radius:2px;overflow:hidden;cursor:pointer;` +
+        `;border-radius:2px;overflow:hidden;cursor:pointer;` + bordaCss(q.borda) +
         (cheio
           ? ''
           : // Quadro vazio agora é vazio de verdade. Antes, `fotos[n % fotos.length]`
@@ -418,6 +418,20 @@ export function useEditorDesign({
               (q.rot ? `transform:rotate(${q.rot}deg);` : '') +
               (sel ? 'outline:2px solid #2563EB;outline-offset:3px;border-radius:2px;' : ''),
             pick: () => doc.setSelecao({ lamina: doc.atual, lado, quadro: q.id }),
+            /**
+             * Arrasta o próprio elemento.
+             *
+             * A superfície de arrasto ficava na caixa de seleção, por cima —
+             * mas a curvatura 3D da página cria um contexto de empilhamento, e
+             * dentro dele o `z-index` da caixa não vale contra o desenho do
+             * elemento. Na prática o clique ia sempre para o `<svg>`, e nada
+             * arrastava. Pegar o objeto direto é mais simples e é o que se
+             * espera de um editor.
+             */
+            down: (e: React.PointerEvent<HTMLElement>) => {
+              doc.setSelecao({ lamina: doc.atual, lado, quadro: q.id });
+              arrastarLivre(e, 'mover', q);
+            },
           };
         });
 
@@ -512,8 +526,12 @@ export function useEditorDesign({
     const arrastarLivre = (
       e: React.PointerEvent<HTMLElement>,
       modo: 'mover' | 'escalar' | 'girar',
+      // Passado explicitamente quando o gesto nasce no próprio elemento: a
+      // seleção só muda na renderização seguinte, e `qualquerSel` ainda estaria
+      // desatualizado aqui.
+      alvoQuadro?: Quadro,
     ) => {
-      const q = qualquerSel;
+      const q = alvoQuadro ?? qualquerSel;
       if (!q || q.tipo === 'foto') return;
       e.preventDefault();
       const alvo = e.currentTarget;
@@ -705,23 +723,11 @@ export function useEditorDesign({
         box: on
           ? ret(retSel!) + ';z-index:9;pointer-events:none;outline:1px solid #2563EB;outline-offset:-1px'
           : 'display:none',
-        // Contorno de cada rosto, no lugar em que ele realmente está. Verde
-        // quando dentro da área segura, âmbar quando toca a margem de corte.
-        rostos: on
-          ? rostosNoQuadro.map((r) => {
-              const d = diagnosticar(r.noQuadro);
-              const cor = d.perto ? '#F59E0B' : '#10B981';
-              return {
-                style:
-                  `position:absolute;left:${(r.noQuadro.x * 100).toFixed(2)}%;` +
-                  `top:${(r.noQuadro.y * 100).toFixed(2)}%;` +
-                  `width:${(r.noQuadro.w * 100).toFixed(2)}%;` +
-                  `height:${(r.noQuadro.h * 100).toFixed(2)}%;` +
-                  `border:1.5px solid ${cor};border-radius:6px;pointer-events:none;` +
-                  `box-shadow:0 0 0 1px rgba(255,255,255,.55);z-index:8`,
-              };
-            })
-          : [],
+        // O contorno sobre cada rosto poluía a foto: o cliente vê retângulos
+        // por cima das pessoas, e o aviso de corte já é dado em texto no
+        // inspetor. A análise continua sendo usada para "Corrigir"; só o
+        // desenho saiu.
+        rostos: [] as { style: string }[],
         // Superfície de mover: cobre o quadro, só quando selecionado.
         // `touch-action:none` impede o navegador de assumir o gesto como
         // rolagem no toque — sem isso, arrastar a foto num tablet rola a página.
@@ -1372,7 +1378,7 @@ export function useEditorDesign({
       // A curvatura vai no CONTÊINER dos quadros: assim a foto inclina junto
       // com o papel, que é o que dá o efeito de livro real. O design curvava
       // só a camada de papel, por baixo, e as fotos ficavam num plano reto.
-      pageGrid: 'position:absolute;inset:0;' + estilo(curvaturaPagina('esquerda')),
+      pageGrid: 'position:absolute;inset:0',
       pageLuz: estilo(luzPagina('esquerda')),
       // O markup do design desenha o primeiro quadro à parte (é o que carrega a
       // marcação de rosto), e mapeia o resto.
@@ -1396,13 +1402,20 @@ export function useEditorDesign({
       selEscalarDown,
       legendaEsquerda: lamina.esquerda.quadros.find((q) => q.tipo === 'texto')?.texto ?? '',
       legendaDireita: lamina.direita.quadros.find((q) => q.tipo === 'texto')?.texto ?? '',
-      rightGrid: 'position:absolute;inset:0;' + estilo(curvaturaPagina('direita')),
+      rightGrid: 'position:absolute;inset:0',
       rightLuz: estilo(luzPagina('direita')),
       rightFrames: framesDir,
 
       // Curvatura e luz — o que faz a foto acompanhar a dobra do papel.
-      pageSkew: estilo(curvaturaPagina('esquerda')),
-      rightSkew: estilo(curvaturaPagina('direita')),
+      // A curvatura fica na PÁGINA inteira, não no contêiner dos quadros.
+      //
+      // No `pageGrid` ela criava um contexto de empilhamento próprio, e dentro
+      // dele o `z-index` da caixa de seleção deixava de valer: o `<svg>` do
+      // elemento ficava por cima das alças, e nada podia ser arrastado nem
+      // redimensionado. Na `<section>` tudo inclina junto — fotos, elementos e
+      // alças — e o empilhamento volta a ser o normal.
+      pageSkew: estiloPagina('esquerda'),
+      rightSkew: estiloPagina('direita'),
       pageLight: estilo(luzPagina('esquerda')),
       rightLight: estilo(luzPagina('direita')),
 
@@ -1421,10 +1434,10 @@ export function useEditorDesign({
       floatBar: `display:${selTipo ? 'flex' : 'none'};position:absolute;left:50%;bottom:50px;` +
         `transform:translateX(-50%);z-index:30;align-items:center;gap:3px;padding:5px;border-radius:12px;` +
         `background:#FFFFFF;border:1px solid #E6EAF2;box-shadow:0 10px 24px rgba(11,18,32,.14);white-space:nowrap`,
-      bwTrack: `width:40px;height:24px;border-radius:999px;background:${qSel?.ajustes.pb ? '#2563EB' : '#E6EAF2'};` +
-        `padding:3px;display:flex;justify-content:${qSel?.ajustes.pb ? 'flex-end' : 'flex-start'};cursor:pointer;flex:0 0 auto`,
+      bwTrack: `width:40px;height:24px;border-radius:999px;background:${qSel?.ajustes.efeito === 'pb' ? '#2563EB' : '#E6EAF2'};` +
+        `padding:3px;display:flex;justify-content:${qSel?.ajustes.efeito === 'pb' ? 'flex-end' : 'flex-start'};cursor:pointer;flex:0 0 auto`,
       // O botão animava, mas `s.bw` não era lido por ninguém.
-      toggleBw: () => doc.mudarAjustes({ pb: !qSel?.ajustes.pb }),
+      toggleBw: () => doc.mudarAjustes({ efeito: qSel?.ajustes.efeito === 'pb' ? 'nenhum' : 'pb' }),
 
       goNext: () => irPara(laminaAtual + 1),
       goPrev: () => irPara(laminaAtual - 1),

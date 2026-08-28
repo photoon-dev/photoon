@@ -35,13 +35,34 @@ export type Enq = {
   espelho: boolean;
 };
 
-/** Correções de imagem. Valores em -100..100, exceto `pb`. */
+/** Efeito de cor aplicado por cima das correções. */
+export type Efeito = 'nenhum' | 'pb' | 'sepia' | 'vintage' | 'frio' | 'quente' | 'desbotado';
+
+export const EFEITOS: { id: Efeito; rotulo: string }[] = [
+  { id: 'nenhum', rotulo: 'Original' },
+  { id: 'pb', rotulo: 'Preto e branco' },
+  { id: 'sepia', rotulo: 'Sépia' },
+  { id: 'vintage', rotulo: 'Vintage' },
+  { id: 'desbotado', rotulo: 'Desbotado' },
+  { id: 'quente', rotulo: 'Quente' },
+  { id: 'frio', rotulo: 'Frio' },
+];
+
+/** Correções de imagem. Valores em -100..100. */
 export type Ajustes = {
   brilho: number;
   contraste: number;
   saturacao: number;
-  pb: boolean;
+  /**
+   * Era um booleano `pb`. Virou lista porque um álbum pede mais que preto e
+   * branco — sépia num casamento antigo, desbotado numa sessão de praia.
+   * `migrarAjustes` converte `pb: true` em `efeito: 'pb'`.
+   */
+  efeito: Efeito;
 };
+
+/** Moldura da foto, em pontos da página. */
+export type Borda = { px: number; cor: string };
 
 export type QuadroFoto = {
   id: string;
@@ -49,6 +70,8 @@ export type QuadroFoto = {
   fotoId: string | null;
   enq: Enq;
   ajustes: Ajustes;
+  /** Ausente = sem moldura. */
+  borda?: Borda;
 };
 
 export type QuadroTexto = {
@@ -114,7 +137,8 @@ export type Lamina = {
 };
 
 export const ENQ_PADRAO: Enq = { modo: 'preencher', escala: 1, dx: 0, dy: 0, rot: 0, espelho: false };
-export const AJUSTES_PADRAO: Ajustes = { brilho: 0, contraste: 0, saturacao: 0, pb: false };
+export const AJUSTES_PADRAO: Ajustes = { brilho: 0, contraste: 0, saturacao: 0, efeito: 'nenhum' };
+export const BORDA_PADRAO: Borda = { px: 6, cor: '#FFFFFF' };
 
 export const PRESETS_TEXTO: Record<
   PresetTexto,
@@ -147,7 +171,12 @@ const zAjustes = z.object({
   brilho: z.number().min(-100).max(100),
   contraste: z.number().min(-100).max(100),
   saturacao: z.number().min(-100).max(100),
-  pb: z.boolean(),
+  efeito: z.enum(['nenhum', 'pb', 'sepia', 'vintage', 'frio', 'quente', 'desbotado']),
+});
+
+const zBorda = z.object({
+  px: z.number().min(0).max(60),
+  cor: z.string().regex(/^#[0-9A-Fa-f]{3,8}$/),
 });
 
 const zRet = z.object({
@@ -164,6 +193,7 @@ const zQuadro: z.ZodType<Quadro> = z.union([
     fotoId: z.string().min(1).nullable(),
     enq: zEnq,
     ajustes: zAjustes,
+    borda: zBorda.optional(),
   }),
   z.object({
     id: z.string().min(1),
@@ -322,12 +352,14 @@ function migrarEnq(q: Record<string, unknown>): Enq {
 function migrarAjustes(q: Record<string, unknown>): Ajustes {
   const a = (q.ajustes ?? {}) as Record<string, unknown>;
   const lim = (v: unknown) => Math.min(100, Math.max(-100, num(v, 0)));
-  return {
-    brilho: lim(a.brilho),
-    contraste: lim(a.contraste),
-    saturacao: lim(a.saturacao),
-    pb: a.pb === true || q.pb === true,
-  };
+  const listados = EFEITOS.map((e) => e.id) as string[];
+  const efeito = listados.includes(String(a.efeito))
+    ? (a.efeito as Efeito)
+    : // v1 e v2 antigos guardavam o booleano.
+      a.pb === true || q.pb === true
+      ? 'pb'
+      : 'nenhum';
+  return { brilho: lim(a.brilho), contraste: lim(a.contraste), saturacao: lim(a.saturacao), efeito };
 }
 
 /**
@@ -378,12 +410,22 @@ function migrarQuadro(bruto: unknown): Quadro | null {
     };
   }
 
+  const bd = (q.borda ?? null) as Record<string, unknown> | null;
+  const b =
+    bd && typeof bd.px === 'number'
+      ? {
+          px: Math.min(60, Math.max(0, bd.px)),
+          cor: /^#[0-9A-Fa-f]{3,8}$/.test(String(bd.cor)) ? String(bd.cor) : '#FFFFFF',
+        }
+      : null;
+
   return {
     id: str(q.id, uid()),
     tipo: 'foto',
     fotoId: typeof q.fotoId === 'string' && q.fotoId ? q.fotoId : null,
     enq: migrarEnq(q),
     ajustes: migrarAjustes(q),
+    ...(b ? { borda: b } : {}),
   };
 }
 

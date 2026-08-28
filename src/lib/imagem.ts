@@ -1,4 +1,22 @@
-import type { Ajustes, Enq } from './album';
+import type { Ajustes, Efeito, Enq } from './album';
+
+/**
+ * Os efeitos, em filtros CSS.
+ *
+ * Combinações e não filtros únicos: "sépia" puro do CSS lava a imagem, então
+ * vem com uma pitada de contraste e saturação. `sepia(.75)` em vez de 1 mantém
+ * algum resquício da cor original, que é o que separa a foto envelhecida da
+ * foto pintada de marrom.
+ */
+const EFEITO_CSS: Record<Efeito, string> = {
+  nenhum: '',
+  pb: 'grayscale(1) contrast(1.06)',
+  sepia: 'sepia(.75) saturate(1.25) contrast(1.05)',
+  vintage: 'sepia(.35) saturate(.85) contrast(.92) brightness(1.06)',
+  desbotado: 'saturate(.6) contrast(.88) brightness(1.1)',
+  quente: 'sepia(.22) saturate(1.2) brightness(1.03)',
+  frio: 'hue-rotate(-12deg) saturate(1.1) brightness(1.02)',
+};
 
 /**
  * Ajustes de imagem e enquadramento, em CSS.
@@ -22,7 +40,10 @@ export function filtroCss(a: Ajustes | undefined): string {
   if (a.brilho) partes.push(`brightness(${mult(a.brilho).toFixed(3)})`);
   if (a.contraste) partes.push(`contrast(${mult(a.contraste).toFixed(3)})`);
   if (a.saturacao) partes.push(`saturate(${mult(a.saturacao, 1).toFixed(3)})`);
-  if (a.pb) partes.push('grayscale(1)');
+  // O efeito entra depois das correções: primeiro acerta a foto, depois dá o
+  // acabamento. Inverter a ordem faz o brilho lavar o sépia.
+  const efeito = EFEITO_CSS[a.efeito];
+  if (efeito) partes.push(efeito);
   return partes.length ? `filter:${partes.join(' ')};` : '';
 }
 
@@ -129,4 +150,12 @@ export function medidasPorcento(
   return trocado
     ? { w: (fw * 100) / k, h: fh * 100 * k }
     : { w: fw * 100, h: fh * 100 };
+}
+
+/** Moldura da foto, em CSS. Vale também na impressão, pela mesma medida. */
+export function bordaCss(b: { px: number; cor: string } | undefined): string {
+  if (!b || b.px <= 0) return '';
+  // `inset` e não `border`: a borda por fora mudaria o tamanho do quadro e
+  // desalinharia a grade do layout.
+  return `box-shadow:inset 0 0 0 ${b.px}px ${b.cor};`;
 }
