@@ -1,0 +1,74 @@
+{
+  "slots": [
+    {
+      "container": "minmax(280px, 1fr)",
+      "ocorrencia": 2,
+      "binding": "cardsProjetos"
+    },
+    {
+      "container": "gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: '14px'",
+      "binding": "indicadores"
+    }
+  ],
+  "trocas": [
+    {
+      "de": "Formatura 2026 · sessão Julia",
+      "para": "{v.nomeGaleria}",
+      "primeira": false
+    },
+    {
+      "de": "Olá, Julia. Falta pouco para o seu álbum.",
+      "para": "{v.saudacao}"
+    },
+    {
+      "de": "liberou 120 fotos e 3 projetos. 1 já está pronto para finalizar.",
+      "para": "{v.resumo}"
+    },
+    {
+      "de": "Julia Martins",
+      "para": "{v.nomeCliente}",
+      "primeira": false
+    },
+    {
+      "de": "julia.martins@email.com",
+      "para": "{v.emailCliente}"
+    },
+    {
+      "de": "JM",
+      "para": "{v.iniciais}"
+    },
+    {
+      "de": "há 2 dias",
+      "para": "{v.galeriaAtualizada}"
+    },
+    {
+      "de": "                  Photoon",
+      "para": "                  {v.nomeLoja}"
+    },
+    {
+      "de": "            Photoon",
+      "para": "            {v.nomeLoja}",
+      "primeira": false
+    },
+    {
+      "de": "            photoon.com.br",
+      "para": "            {v.enderecoLoja}"
+    },
+    {
+      "de": "            contato@photoon.com.br",
+      "para": "            {v.emailLoja}"
+    },
+    {
+      "de": "            (11) 98844-2210",
+      "para": "            {v.telefoneLoja}"
+    },
+    {
+      "de": "width: '33%', height: '100%', borderRadius: '999px', background: 'linear-gradient(90deg,#A78BFA,#E9E5FF)'",
+      "para": "width: v.progressoLargura, height: '100%', borderRadius: '999px', background: 'linear-gradient(90deg,#A78BFA,#E9E5FF)'"
+    },
+    {
+      "de": "                  33%",
+      "para": "                  {v.progressoTexto}"
+    }
+  ]
+}

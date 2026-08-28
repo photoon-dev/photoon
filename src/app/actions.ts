@@ -5,7 +5,7 @@ import { revalidatePath } from 'next/cache';
 import { createClient } from '@/lib/supabase/server';
 import { currentTenantSlug } from '@/lib/tenant';
 import { getLojista, garantirCliente } from '@/lib/data';
-import { novaLamina, laminasSemFoto, calcularProgresso, type Lamina } from '@/lib/album';
+import { novaLamina, laminasSemFoto, calcularProgresso, zLaminas, type Lamina } from '@/lib/album';
 
 /** Cria um album vazio na galeria liberada e abre o editor. */
 export async function criarProjeto(formData: FormData) {
@@ -29,7 +29,7 @@ export async function criarProjeto(formData: FormData) {
       cliente_id: cliente.id,
       galeria_id: typeof galeriaId === 'string' && galeriaId ? galeriaId : null,
       titulo,
-      paginas: [novaLamina(2), novaLamina(2)],
+      paginas: [novaLamina(), novaLamina()],
     })
     .select('id')
     .single();
@@ -55,8 +55,17 @@ export async function renomearProjeto(id: string, titulo: string) {
  * Autosave do editor. Recalcula progresso, avisos e status a partir das
  * laminas, para que "Meus projetos" e o detalhe reflitam o estado real.
  */
-export async function salvarLaminas(id: string, laminas: Lamina[]) {
+export async function salvarLaminas(id: string, entrada: Lamina[]) {
   const supabase = await createClient();
+
+  // O documento chega do navegador e vai direto para o banco. Sem esquema, um
+  // bug no cliente — ou, adiante, a resposta de um modelo — vira lixo
+  // persistido que só aparece na impressão, quando não há mais o que fazer.
+  const conferido = zLaminas.safeParse(entrada);
+  if (!conferido.success) {
+    throw new Error(`Documento inválido: ${conferido.error.issues[0]?.path.join('.')}`);
+  }
+  const laminas = conferido.data;
 
   const vazias = laminasSemFoto(laminas);
   const progresso = calcularProgresso(laminas);

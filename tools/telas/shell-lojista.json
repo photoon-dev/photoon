@@ -1,0 +1,26 @@
+{
+  "slots": [
+    {
+      "container": "'26px 30px 60px'",
+      "binding": "conteudo"
+    },
+    {
+      "container": "css(v.storageCard)",
+      "binding": "cartaoPlano"
+    }
+  ],
+  "trocas": [
+    {
+      "de": "<span style={{ padding: '4px 9px', borderRadius: '8px', background: '#F1F5FD', fontSize: '11px', fontWeight: '600', color: '#6B7A90' }}>",
+      "para": "<span className=\"ph-atalho\" style={{ padding: '4px 9px', borderRadius: '8px', background: '#F1F5FD', fontSize: '11px', fontWeight: '600', color: '#6B7A90' }}>"
+    },
+    {
+      "de": "boxShadow: '0 8px 20px rgba(37,99,235,.28)' }} className=\"dc1\">",
+      "para": "boxShadow: '0 8px 20px rgba(37,99,235,.28)' }} className=\"dc1 ph-acao\">"
+    },
+    {
+      "de": "Novo pedido",
+      "para": "<span className=\"ph-acao-texto\">Novo pedido</span>"
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+{
+  "slots": [
+    { "container": "gap: '9px', minWidth: '0', flex: '1 1 180px'", "binding": "orcamento", "modo": "append" }
+  ],
+  "trocas": [
+    { "de": "<input value=\"Fotolivro da formatura\"", "para": "<input value={v.titulo} onChange={v.onTitulo}" }
+  ]
+}

@@ -199,7 +199,7 @@ export async function criarProjetoParaCliente(fd: FormData) {
 
   // páginas_min é a contagem de páginas; cada lâmina é um par
   const paginas = regras?.paginas_min ?? tpl.paginas_min;
-  const laminas = Array.from({ length: Math.max(1, Math.ceil(paginas / 2)) }, () => novaLamina(2));
+  const laminas = Array.from({ length: Math.max(1, Math.ceil(paginas / 2)) }, () => novaLamina());
 
   const { error } = await supabase.from('projetos').insert({
     lojista_id: loja.id,
