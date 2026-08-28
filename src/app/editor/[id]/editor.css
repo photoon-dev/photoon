@@ -44,26 +44,86 @@
     opacity: 1;
   }
 }
+/* ---------------------------------------------------------------------------
+   A virada da página.
+
+   As referências que o Fábio mandou (quick_flipbook, 3D-Book-Slider) são
+   Three.js com a página como TEXTURA. São bonitas, e não servem de canvas
+   aqui: numa textura não existe clicar num quadro, selecionar nem inspetor —
+   perderíamos justamente a edição. O que dá para trazer delas é o que o olho
+   de fato registra, e isso é CSS sobre o DOM vivo:
+
+     - o giro, com o conteúdo real nas duas faces;
+     - o BRILHO varrendo a folha no meio do movimento (o "shine" do
+       3D-Book-Slider), que é o detalhe que mais vende o papel;
+     - a sombra que a folha projeta na página de baixo enquanto passa;
+     - um encurvamento leve no auge do giro, quando a folha está de perfil.
+
+   `brightness` no auge do giro imita a folha saindo do foco da luz.
+   --------------------------------------------------------------------------- */
 @keyframes flipNext {
   0% {
-    transform: rotateY(0deg);
+    transform: rotateY(0deg) scaleX(1);
   }
-  40% {
-    filter: brightness(0.96);
+  50% {
+    /* de perfil a folha encolhe e escurece, como papel virado contra a luz */
+    transform: rotateY(-90deg) scaleX(0.97);
+    filter: brightness(0.93);
   }
   100% {
-    transform: rotateY(-180deg);
+    transform: rotateY(-180deg) scaleX(1);
+    filter: brightness(1);
   }
 }
 @keyframes flipPrev {
   0% {
-    transform: rotateY(0deg);
+    transform: rotateY(0deg) scaleX(1);
   }
-  40% {
-    filter: brightness(0.96);
+  50% {
+    transform: rotateY(90deg) scaleX(0.97);
+    filter: brightness(0.93);
   }
   100% {
-    transform: rotateY(180deg);
+    transform: rotateY(180deg) scaleX(1);
+    filter: brightness(1);
+  }
+}
+
+/* O brilho que varre a folha. Vai e volta acompanhando o giro: entra pela
+   borda externa, cruza no auge e sai pelo vinco. */
+@keyframes brilhoFolha {
+  0% {
+    opacity: 0;
+    background-position: 140% 0;
+  }
+  28% {
+    opacity: 0.85;
+  }
+  55% {
+    opacity: 1;
+  }
+  80% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 0;
+    background-position: -40% 0;
+  }
+}
+
+/* A sombra que a folha joga sobre a página de baixo enquanto passa. Sem ela a
+   folha parece flutuar, desligada do livro. */
+@keyframes sombraFolha {
+  0% {
+    opacity: 0;
+    transform: scaleX(0.02);
+  }
+  45% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 0;
+    transform: scaleX(1);
   }
 }
 

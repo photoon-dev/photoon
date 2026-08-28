@@ -1,9 +1,9 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import type { Foto } from '@/lib/data';
 import type { PrecoModelo } from '@/lib/preco';
-import { laminasSemFoto, type Lamina } from '@/lib/album';
+import { useDocumento } from '@/components/editor/useDocumento';
 import EditorDesign, { CSS_PSEUDO } from '@/components/design/EditorDesign';
 import EditorMobile from '@/components/editor/EditorMobile';
 import { useEditorDesign } from '@/components/editor/useEditorDesign';
@@ -24,31 +24,23 @@ export default function EditorCliente({
   titulo: string;
   fotos: Foto[];
   modelo: PrecoModelo | null;
-  paginas: Lamina[];
+  paginas: unknown;
 }) {
   const [titulo, setTitulo] = useState(tituloInicial);
 
-  // Fotos distintas realmente usadas nos quadros — é o que entra no preço.
-  const fotosUsadas = useMemo(() => {
-    const usadas = new Set<string>();
-    for (const l of paginas ?? []) {
-      for (const q of l.quadros ?? []) {
-        if (q.tipo === 'foto' && q.fotoId) usadas.add(q.fotoId);
-      }
-    }
-    return usadas.size;
-  }, [paginas]);
-
-  const bloqueadores = useMemo(() => laminasSemFoto(paginas ?? []).length, [paginas]);
+  // O documento do álbum: estado real, desfazer e gravação automática. Antes
+  // não existia — o editor desenhava fotos que não estavam em lugar nenhum.
+  const doc = useDocumento({ projetoId, paginas });
 
   const v = useEditorDesign({
     fotos,
     titulo,
-    bloqueadores,
+    doc,
+    bloqueadores: doc.bloqueadores,
     onTitulo: setTitulo,
     modelo,
-    laminas: paginas?.length ?? 0,
-    fotosUsadas,
+    laminas: doc.laminas.length,
+    fotosUsadas: doc.usadas.size,
     rotas: {
       hrefProjetos: '/meus-projetos',
       // Prévia e Revisão ainda não têm tela própria; por ora levam ao detalhe,

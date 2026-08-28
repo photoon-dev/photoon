@@ -14,8 +14,6 @@ import { calcularPreco, reais, type PrecoModelo } from '@/lib/preco';
 
 export type EstadoEditor = {
   hover: number | null;
-  spread: number;
-  spreadLay: number[];
   turning: 'next' | 'prev' | null;
   tool: number;
   panel: boolean;
@@ -32,21 +30,13 @@ export type EstadoEditor = {
   bw: boolean;
 };
 
-const LAYOUTS = [
-  { n: 1, grid: '1fr', rows: '1fr', cells: 1, span: false },
-  { n: 2, grid: '1fr 1fr', rows: '1fr', cells: 2, span: false },
-  { n: 2, grid: '1fr', rows: '1fr 1fr', cells: 2, span: false },
-  { n: 3, grid: '1.2fr 1fr', rows: '1fr 1fr', cells: 3, span: true },
-  { n: 3, grid: '1fr 1fr 1fr', rows: '1fr', cells: 3, span: false },
-  { n: 4, grid: '1fr 1fr', rows: '1fr 1fr', cells: 4, span: false },
-  { n: 5, grid: '1fr 1fr 1fr', rows: '1fr 1fr', cells: 5, span: false },
-  { n: 6, grid: '1fr 1fr 1fr', rows: '1fr 1fr', cells: 6, span: false },
-  { n: 7, grid: '1fr 1fr 1fr 1fr', rows: '1fr 1fr', cells: 7, span: false },
-  { n: 8, grid: '1fr 1fr 1fr 1fr', rows: '1fr 1fr', cells: 8, span: false },
-  { n: 9, grid: '1fr 1fr 1fr', rows: '1fr 1fr 1fr', cells: 9, span: false },
-];
+// O catálogo de layouts virou `src/lib/layouts.ts`, compartilhado com a página
+// e a miniatura. Havia quatro modelos incompatíveis aqui — era por isso que o
+// botão mostrava três colunas e a página entregava duas empilhadas mais uma
+// inteira.
 
-const ROTULOS_LAMINA = ['Capa', '1–2', '3–4', '5–6', '7–8', '9–10', '11–12', '13–14', '15–16', '17–18'];
+/** Rótulo da lâmina: a primeira é a capa, as demais são o par de páginas. */
+const rotuloLamina = (i: number) => (i === 0 ? 'Capa' : `${i * 2 - 1}–${i * 2}`);
 
 const BG_SW = ['#EAF0FF', '#E4F8FC', '#F1F5FD', '#E6F8F1', '#FEF3E2', '#F8FAFE', '#DCE6FA', '#EEF1F7', '#F4F7FC'];
 const CHIPS = ['#FFFFFF', '#F4F7FC', '#9AA7BC', '#46536A', '#0B1220', '#2563EB', '#06B6D4', '#7C3AED',
@@ -101,6 +91,19 @@ function tocarPapel(ref: React.MutableRefObject<AudioContext | null>) {
   }
 }
 
+import { LAYOUTS as CATALOGO, contagens, layout as layoutPorId } from '@/lib/layouts';
+import { curvaturaPagina, luzPagina, estiloPalco, estiloLivro, limitarZoom, ZOOM_PASSO, ZOOM_PADRAO } from '@/lib/livro';
+import type { Documento, Lado } from '@/components/editor/useDocumento';
+import type { Pagina, QuadroFoto } from '@/lib/album';
+
+/** Serializa um objeto de estilo para a string que o markup do design espera. */
+function estilo(o: React.CSSProperties): string {
+  return Object.entries(o)
+    .filter(([, v]) => v !== undefined && v !== null)
+    .map(([k, v]) => `${k.replace(/[A-Z]/g, (m) => '-' + m.toLowerCase())}:${typeof v === 'number' && !/^(zIndex|opacity|flex|order|fontWeight|lineHeight)$/.test(k) ? v + 'px' : v}`)
+    .join(';');
+}
+
 export type Rotas = {
   hrefProjetos: string;
   hrefPreview: string;
@@ -111,6 +114,7 @@ export function useEditorDesign({
   fotos,
   titulo,
   rotas,
+  doc,
   modelo,
   laminas,
   fotosUsadas,
@@ -120,6 +124,8 @@ export function useEditorDesign({
   fotos: Foto[];
   titulo: string;
   rotas: Rotas;
+  /** O documento do álbum. Sem ele o editor não tem onde escrever. */
+  doc: Documento;
   /** Preço vigente do modelo do álbum; nulo esconde o orçamento. */
   modelo?: PrecoModelo | null;
   /** Lâminas e fotos do projeto, para calcular o valor. */
@@ -130,8 +136,8 @@ export function useEditorDesign({
   onTitulo?: (t: string) => void;
 }) {
   const [s, setS] = useState<EstadoEditor>({
-    hover: null, spread: 5, spreadLay: [0, 3, 5, 1, 6, 3, 2, 5, 4, 7], turning: null,
-    tool: 0, panel: true, insp: false, modal: null, zoom: 64, sel: null,
+    hover: null, turning: null,
+    tool: 0, panel: true, insp: false, modal: null, zoom: ZOOM_PADRAO, sel: null,
     count: 0, lay: 2, photoTab: 1, bgTab: 0, bgCat: 0, elCat: 0, bw: false,
   });
 
@@ -139,17 +145,26 @@ export function useEditorDesign({
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const set = useCallback((p: Partial<EstadoEditor>) => setS((a) => ({ ...a, ...p })), []);
 
+  const totalLaminas = doc.laminas.length;
+  const laminaAtual = doc.atual;
+  const irParaLamina = doc.setAtual;
   const irPara = useCallback(
     (destino: number) => {
       setS((a) => {
-        if (a.turning || destino === a.spread || destino < 0 || destino > 9) return a;
+        // O limite era 9 fixo, do storyboard de dez posições do design.
+        if (a.turning || destino === laminaAtual || destino < 0 || destino >= totalLaminas) return a;
         tocarPapel(ac);
         if (timer.current) clearTimeout(timer.current);
-        timer.current = setTimeout(() => set({ turning: null, spread: destino }), 880);
-        return { ...a, turning: destino > a.spread ? 'next' : 'prev', sel: null };
+        // A lâmina só muda no fim da animação; até lá a folha que vira mostra
+        // a página que sai numa face e a que chega na outra.
+        timer.current = setTimeout(() => {
+          set({ turning: null });
+          irParaLamina(destino);
+        }, 880);
+        return { ...a, turning: destino > laminaAtual ? 'next' : 'prev', sel: null };
       });
     },
-    [set],
+    [set, totalLaminas, laminaAtual, irParaLamina],
   );
 
   const v = useMemo(() => {
@@ -160,78 +175,84 @@ export function useEditorDesign({
         pick: () => set({ [chave]: i } as Partial<EstadoEditor>),
       }));
 
-    const curLay = s.spreadLay[s.spread] ?? s.lay;
-    const total = (LAYOUTS[curLay] ?? LAYOUTS[0]).cells;
-    const split = { left: Math.ceil(total / 2), right: Math.max(1, Math.floor(total / 2)) };
+    const lamina = doc.lamina;
+    const porId = new Map(fotos.map((f) => [f.id, f]));
 
-    /** Foto da galeria para o quadro n; volta ao início quando acabam. */
-    const fotoDe = (n: number): Foto | undefined =>
-      fotos.length ? fotos[n % fotos.length] : undefined;
+    /**
+     * Retângulo do layout, como string de estilo absoluto.
+     *
+     * Miniatura, seletor e página chamam ESTA função. É a garantia mecânica de
+     * que o desenho do botão é o desenho da página: não há segunda conta que
+     * possa divergir.
+     */
+    const ret = (r: { x: number; y: number; w: number; h: number }, escalaX = 1, deslocaX = 0) =>
+      `position:absolute;left:${(r.x * escalaX + deslocaX).toFixed(3)}%;top:${r.y}%;` +
+      `width:${(r.w * escalaX).toFixed(3)}%;height:${r.h}%`;
 
-    const fundoQuadro = (n: number) => {
-      const f = fotoDe(n);
-      return f
-        ? `background-image:url('${f.url}');background-size:cover;background-position:center;`
-        : 'background:linear-gradient(140deg,#DCE6FA,#EAF0FF);';
+    /** Estilo de um quadro de foto na página renderizada. */
+    const quadroEstilo = (q: QuadroFoto, r: { x: number; y: number; w: number; h: number }, sel: boolean) => {
+      const f = q.fotoId ? porId.get(q.fotoId) : undefined;
+      return (
+        ret(r) +
+        `;border-radius:2px;overflow:hidden;cursor:pointer;` +
+        (f
+          ? `background-image:url('${f.url}');background-size:cover;background-position:center;`
+          : // Quadro vazio agora é vazio de verdade. Antes, `fotos[n % fotos.length]`
+            // preenchia tudo com fotos que não estavam no documento.
+            `background:#F8FAFE;border:1.5px dashed #CBD5E6;display:flex;align-items:center;` +
+            `justify-content:center;color:#9AA7BC;`) +
+        (sel ? 'box-shadow:0 0 0 2px #2563EB, 0 6px 18px rgba(37,99,235,.28);' : '')
+      );
     };
 
-    const gridDe = (k: number) => {
-      const cols = k <= 1 ? 1 : k === 2 ? 1 : k <= 4 ? 2 : k <= 6 ? 2 : 3;
-      return { cols, rows: Math.ceil(k / cols) };
-    };
-    const estiloGrid = (k: number) => {
-      const g = gridDe(k);
-      return `position:absolute;top:7%;left:8%;right:8%;bottom:34px;display:grid;` +
-        `grid-template-columns:repeat(${g.cols}, minmax(0, 1fr));` +
-        `grid-template-rows:repeat(${g.rows}, minmax(0, 1fr));gap:${k > 4 ? 7 : 11}px`;
-    };
-
-    const miniCells = (i: number, on: boolean) => {
-      const n = (LAYOUTS[i] ?? LAYOUTS[0]).cells;
-      const metade = Math.ceil(n / 2);
-      const cols = metade <= 1 ? 1 : metade === 2 ? 1 : metade <= 4 ? 2 : 3;
-      return {
-        grid: `flex:1;display:grid;grid-template-columns:repeat(${cols}, minmax(0, 1fr));` +
-          `grid-template-rows:repeat(${Math.ceil(metade / cols)}, minmax(0, 1fr));gap:1.5px;` +
-          `padding:4px;background:linear-gradient(140deg,#DCE6FA,#EAF0FF)`,
-        cells: Array.from({ length: metade }, () => ({
-          style: `border-radius:1.5px;background:${on ? '#5C8FF6' : '#AFC6F7'}`,
-        })),
-      };
-    };
-
-    const layouts = LAYOUTS.map((l, i) => ({ l, i }))
-      .filter(({ l }) => s.count === 0 || l.n === s.count)
-      .map(({ l, i }) => {
-        const on = curLay === i;
+    /** Quadros de uma página, prontos para o markup. */
+    const framesDe = (pagina: Pagina, lado: Lado) =>
+      doc.quadrosDe(pagina).map(({ q, ret: r }) => {
+        const sel = doc.selecao?.quadro === q.id;
         return {
-          title: l.n + (l.n === 1 ? ' foto na lâmina' : ' fotos na lâmina — divididas entre as duas páginas'),
-          style: `flex:0 0 auto;width:54px;height:30px;padding:3px;border-radius:9px;` +
-            `border:${on ? '2px solid #2563EB' : '1px solid #E6EAF2'};background:#FFFFFF;cursor:pointer;` +
-            (on ? 'box-shadow:0 4px 12px rgba(37,99,235,.2);' : ''),
-          grid: `display:grid;grid-template-columns:${l.grid};grid-template-rows:${l.rows};gap:2px;width:100%;height:100%`,
-          cells: Array.from({ length: l.cells }, (_, k) => ({
-            style: `border-radius:2px;background:${on ? '#93B4FB' : '#DCE6FA'};` +
-              (l.span && k === 0 ? 'grid-row:1 / 3;' : ''),
-          })),
-          pick: () =>
-            setS((a) => {
-              const arr = a.spreadLay.slice();
-              arr[a.spread] = i;
-              return { ...a, spreadLay: arr, lay: i };
-            }),
+          id: q.id,
+          vazio: q.tipo === 'foto' && !q.fotoId,
+          style: q.tipo === 'foto' && r ? quadroEstilo(q, r, sel) : 'display:none',
+          iconStyle: q.tipo === 'foto' && !q.fotoId ? 'opacity:.6' : 'display:none',
+          onClick: () => doc.setSelecao({ lamina: doc.atual, lado, quadro: q.id }),
         };
       });
 
-    const counts = ['Todos', '1', '2', '3', '4', '5', '6', '7', '8', '9'].map((label, i) => {
-      const on = s.count === i;
+    const framesEsq = framesDe(lamina.esquerda, 'esquerda');
+    const framesDir = framesDe(lamina.direita, 'direita');
+
+    // O lado que o seletor altera: o da seleção, ou os dois quando nada está
+    // selecionado. Antes trocava um índice global que a página nem lia.
+    const ladoAlvo: Lado | 'ambos' = doc.selecao?.lado ?? 'ambos';
+    const layoutAtual =
+      ladoAlvo === 'ambos' ? lamina.esquerda.layoutId : lamina[ladoAlvo].layoutId;
+
+    const layouts = CATALOGO.filter((l) => s.count === 0 || l.n === s.count).map((l) => {
+      const on = layoutAtual === l.id;
+      return {
+        title: `${l.nome} — ${l.n} ${l.n === 1 ? 'foto' : 'fotos'} por página`,
+        style: `flex:0 0 auto;width:54px;height:30px;padding:3px;border-radius:9px;` +
+          `border:${on ? '2px solid #2563EB' : '1px solid #E6EAF2'};background:#FFFFFF;cursor:pointer;` +
+          (on ? 'box-shadow:0 4px 12px rgba(37,99,235,.2);' : ''),
+        // Mesma função de retângulo da página: o botão não pode divergir.
+        grid: 'position:relative;width:100%;height:100%;border-radius:4px;background:#FFFFFF',
+        cells: l.quadros.map((r) => ({
+          style: ret(r) + `;border-radius:1.5px;background:${on ? '#93B4FB' : '#DCE6FA'}`,
+        })),
+        pick: () => doc.trocarLayout(l.id, ladoAlvo),
+      };
+    });
+
+    const counts = ['Todos', ...contagens().map(String)].map((label, i) => {
+      const n = i === 0 ? 0 : Number(label);
+      const on = s.count === n;
       return {
         label,
         style: `min-width:${i === 0 ? '52px' : '28px'};height:28px;padding:0 ${i === 0 ? 12 : 8}px;` +
           `display:flex;align-items:center;justify-content:center;border-radius:999px;font-size:12px;` +
           `font-weight:${on ? 700 : 600};cursor:pointer;background:${on ? '#0B1220' : 'transparent'};` +
           `color:${on ? '#FFFFFF' : '#6B7A90'}`,
-        pick: () => set({ count: i }),
+        pick: () => set({ count: n }),
       };
     });
 
@@ -240,9 +261,19 @@ export function useEditorDesign({
       style: `position:relative;aspect-ratio:3 / 4;border-radius:10px;` +
         `background-image:url('${f.url}');background-size:cover;background-position:center;` +
         `cursor:grab;transition:box-shadow .15s, transform .15s;` +
-        (s.hover === i ? 'box-shadow:0 0 0 2px #2563EB;transform:scale(1.04);' : ''),
+        (s.hover === i ? 'box-shadow:0 0 0 2px #2563EB;transform:scale(1.04);' : '') +
+        (doc.usadas.has(f.id) ? 'outline:3px solid #10B981;outline-offset:-3px;' : ''),
       enter: () => set({ hover: i }),
       leave: () => setS((a) => (a.hover === i ? { ...a, hover: null } : a)),
+      // Clicar coloca a foto no quadro selecionado; sem seleção, no primeiro
+      // quadro vazio da lâmina. Antes o painel só tinha `hover`: a única forma
+      // de usar uma foto era arrastar, e nem o arrasto gravava.
+      pick: () => doc.definirFoto(f.id),
+      title: doc.selecao
+        ? 'Colocar no quadro selecionado'
+        : doc.usadas.has(f.id)
+          ? 'Já usada — clique para pôr no próximo quadro vazio'
+          : 'Clique para pôr no próximo quadro vazio',
     }));
 
     const fotoHover = s.hover === null ? fotos[0] : fotos[s.hover];
@@ -315,15 +346,33 @@ export function useEditorDesign({
           `box-shadow:0 2px 5px rgba(11,18,32,.18)`,
       })),
 
-      spreads: ROTULOS_LAMINA.map((label, i) => {
-        const on = i === s.spread;
-        const li = s.spreadLay[i] ?? 0;
-        const mini = miniCells(li, on);
-        const n = (LAYOUTS[li] ?? LAYOUTS[0]).n;
+      // O storyboard vinha de dez rótulos fixos; agora sai do documento.
+      spreads: doc.laminas.map((l, i) => {
+        const on = i === laminaAtual;
+        const esq = layoutPorId(l.esquerda.layoutId);
+        const dir = layoutPorId(l.direita.layoutId);
+        const n = esq.n + dir.n;
+        const cheias = new Set(
+          [...l.esquerda.quadros, ...l.direita.quadros]
+            .filter((q) => q.tipo === 'foto' && q.fotoId)
+            .map((q) => q.id),
+        );
+        // A miniatura mostra a lâmina inteira, com as duas páginas na mesma
+        // escala da página renderizada — meia largura para cada.
+        const cells = [
+          ...esq.quadros.map((r, k) => ({
+            style: ret(r, 0.5, 0) + `;border-radius:1.5px;background:${
+              cheias.has(l.esquerda.quadros[k]?.id) ? (on ? '#5C8FF6' : '#AFC6F7') : '#E8EDF7'}`,
+          })),
+          ...dir.quadros.map((r, k) => ({
+            style: ret(r, 0.5, 50) + `;border-radius:1.5px;background:${
+              cheias.has(l.direita.quadros[k]?.id) ? (on ? '#5C8FF6' : '#AFC6F7') : '#E8EDF7'}`,
+          })),
+        ];
         return {
-          label,
-          grid: mini.grid,
-          cells: mini.cells,
+          label: rotuloLamina(i),
+          grid: 'position:relative;flex:1;background:#FFFFFF',
+          cells,
           layText: n + (n === 1 ? ' foto' : ' fotos'),
           layLabel: `font-size:9.5px;font-weight:600;color:${on ? '#2563EB' : '#B5C0D0'};text-align:center`,
           cls: 'om-pagethumb',
@@ -383,38 +432,58 @@ export function useEditorDesign({
           ? 'Título'
           : s.sel
             ? (fotos[0]?.storage_path.split('/').pop() ?? 'foto')
-            : 'lâmina ' + (s.spread + 1),
+            : 'lâmina ' + (laminaAtual + 1),
       spreadTitle:
-        s.spread === 0
+        laminaAtual === 0
           ? 'Capa · frente e verso'
-          : `Lâmina ${s.spread + 1} · páginas ${s.spread * 2 - 1} e ${s.spread * 2}`,
-      spreadNav: `Lâmina ${s.spread + 1} de 10`,
+          : `Lâmina ${laminaAtual + 1} · páginas ${laminaAtual * 2 - 1} e ${laminaAtual * 2}`,
+      spreadNav: `Lâmina ${laminaAtual + 1} de ${doc.laminas.length}`,
+
+      // Estes três botões existiam no design sem nenhuma ação ligada.
+      addSpread: () => doc.adicionarLamina(),
+      undo: () => doc.desfazer(),
+      redo: () => doc.refazer(),
+      undoStyle: `width:34px;height:34px;border-radius:9px;display:flex;align-items:center;` +
+        `justify-content:center;color:${doc.podeDesfazer ? '#46536A' : '#C4CDDB'};` +
+        `cursor:${doc.podeDesfazer ? 'pointer' : 'default'}`,
+      redoStyle: `width:34px;height:34px;border-radius:9px;display:flex;align-items:center;` +
+        `justify-content:center;color:${doc.podeRefazer ? '#46536A' : '#C4CDDB'};` +
+        `cursor:${doc.podeRefazer ? 'pointer' : 'default'}`,
       inspEmpty: s.sel ? 'display:none' : 'display:flex;flex-direction:column;align-items:center;gap:10px;padding:34px 22px',
       inspBody: s.sel ? 'display:block' : 'display:none',
 
-      pageGrid: estiloGrid(split.left),
-      pageFrames: Array.from({ length: Math.max(0, split.left - 1) }, (_, k) => ({
-        style: `border-radius:2px;${fundoQuadro(k + 1)}cursor:pointer`,
-      })),
-      rightGrid: estiloGrid(split.right),
-      rightFrames: Array.from({ length: split.right }, (_, k) => {
-        const vazio = k === split.right - 1 && split.right > 1;
-        return {
-          style: vazio
-            ? 'border-radius:2px;border:1.5px dashed #CBD5E6;background:#F8FAFE;display:flex;' +
-              'align-items:center;justify-content:center;color:#9AA7BC;overflow:hidden;cursor:pointer'
-            : `border-radius:2px;${fundoQuadro(k + split.left)}cursor:pointer`,
-          iconStyle: vazio ? 'flex:0 0 auto' : 'display:none',
-        };
-      }),
+      // Os quadros posicionam-se sozinhos pelo retângulo do layout; o
+      // contêiner deixa de ser grade. É o mesmo desenho do seletor.
+      // A curvatura vai no CONTÊINER dos quadros: assim a foto inclina junto
+      // com o papel, que é o que dá o efeito de livro real. O design curvava
+      // só a camada de papel, por baixo, e as fotos ficavam num plano reto.
+      pageGrid: 'position:absolute;inset:0;' + estilo(curvaturaPagina('esquerda')),
+      pageLuz: estilo(luzPagina('esquerda')),
+      // O markup do design desenha o primeiro quadro à parte (é o que carrega a
+      // marcação de rosto), e mapeia o resto.
+      pageFrames: framesEsq.slice(1),
+      legendaEsquerda: lamina.esquerda.quadros.find((q) => q.tipo === 'texto')?.texto ?? '',
+      legendaDireita: lamina.direita.quadros.find((q) => q.tipo === 'texto')?.texto ?? '',
+      rightGrid: 'position:absolute;inset:0;' + estilo(curvaturaPagina('direita')),
+      rightLuz: estilo(luzPagina('direita')),
+      rightFrames: framesDir,
 
-      selectFrame: () => set({ sel: 'foto', insp: true }),
+      // Curvatura e luz — o que faz a foto acompanhar a dobra do papel.
+      pageSkew: estilo(curvaturaPagina('esquerda')),
+      rightSkew: estilo(curvaturaPagina('direita')),
+      pageLight: estilo(luzPagina('esquerda')),
+      rightLight: estilo(luzPagina('direita')),
+
+      // Clicar num quadro seleciona AQUELE quadro. Antes marcava um `sel`
+      // genérico que não apontava para objeto nenhum — daí o inspetor não
+      // conseguir editar a foto escolhida.
+      selectFrame: framesEsq[0]?.onClick ?? (() => set({ sel: 'foto', insp: true })),
       selectText: () => set({ sel: 'texto', insp: true }),
-      frameA: `position:relative;border-radius:2px;${fundoQuadro(0)}cursor:pointer;` +
-        (s.sel === 'foto' ? 'box-shadow:0 0 0 2px #2563EB;' : ''),
-      faceBox: `display:${s.sel === 'foto' ? 'block' : 'none'};position:absolute;top:16%;left:20%;` +
-        `width:36%;height:40%;border:1.5px solid rgba(255,255,255,.9);border-radius:5px`,
-      faceTag: `display:${s.sel === 'foto' ? 'block' : 'none'};position:absolute;top:6px;left:6px;` +
+      frameA: framesEsq[0] ?? { style: 'display:none', onClick: () => {} },
+      // A marcação de rosto só aparece quando houver análise de verdade
+      // (Fase 5). Um retângulo fixo em 16%/20% mentia sobre a foto.
+      faceBox: 'display:none',
+      faceTag: `display:none;position:absolute;top:6px;left:6px;` +
         `max-width:calc(100% - 12px);overflow:hidden;text-overflow:ellipsis;padding:3px 7px;` +
         `border-radius:6px;background:rgba(11,18,32,.68);color:#FFFFFF;font-size:10px;font-weight:700;white-space:nowrap`,
       floatBar: `display:${s.sel ? 'flex' : 'none'};position:absolute;left:50%;bottom:50px;` +
@@ -424,29 +493,78 @@ export function useEditorDesign({
         `padding:3px;display:flex;justify-content:${s.bw ? 'flex-end' : 'flex-start'};cursor:pointer;flex:0 0 auto`,
       toggleBw: () => set({ bw: !s.bw }),
 
-      goNext: () => irPara(s.spread + 1),
-      goPrev: () => irPara(s.spread - 1),
+      goNext: () => irPara(laminaAtual + 1),
+      goPrev: () => irPara(laminaAtual - 1),
       turnSheet: s.turning
         ? `position:absolute;top:0;bottom:0;` +
           (s.turning === 'next' ? 'left:50%;transform-origin:left center;' : 'left:0;transform-origin:right center;') +
           `width:50%;z-index:20;transform-style:preserve-3d;pointer-events:none;` +
           `animation:${s.turning === 'next' ? 'flipNext' : 'flipPrev'} 880ms cubic-bezier(.56,.08,.18,.96) both`
         : 'display:none',
-      turnFront: 'position:absolute;inset:0;backface-visibility:hidden;overflow:hidden;' +
+      // O design tinha dois retângulos chapados aqui — roxo/azul de um lado,
+      // ciano do outro — que nunca foram ligados a nada. Era a "tela azul" no
+      // meio da virada. Agora mostram a foto da página que sai e da que entra.
+      // Quadros das duas faces: a página que sai e a que entra.
+      turnFrontFrames: (() => {
+        const alvo = s.turning === 'next' ? lamina.direita : lamina.esquerda;
+        return doc.quadrosDe(alvo).map(({ q, ret: r }) => ({
+          style: q.tipo === 'foto' && r ? quadroEstilo(q, r, false) : 'display:none',
+        }));
+      })(),
+      turnBackFrames: (() => {
+        const destino = s.turning === 'next' ? doc.laminas[laminaAtual + 1] : doc.laminas[laminaAtual - 1];
+        const alvo = s.turning === 'next' ? destino?.esquerda : destino?.direita;
+        if (!alvo) return [];
+        return doc.quadrosDe(alvo).map(({ q, ret: r }) => ({
+          style: q.tipo === 'foto' && r ? quadroEstilo(q, r, false) : 'display:none',
+        }));
+      })(),
+      turnFrontFoto: (() => {
+        const alvo = s.turning === 'next' ? lamina.direita : lamina.esquerda;
+        const q = alvo.quadros.find((x) => x.tipo === 'foto' && x.fotoId) as QuadroFoto | undefined;
+        const f = q?.fotoId ? porId.get(q.fotoId) : undefined;
+        return `position:absolute;inset:8% 10% 14%;border-radius:2px;` +
+          (f ? `background-image:url('${f.url}');background-size:cover;background-position:center;`
+             : 'background:#F2EFE7;');
+      })(),
+      turnBackFoto: (() => {
+        const destino = s.turning === 'next' ? doc.laminas[laminaAtual + 1] : doc.laminas[laminaAtual - 1];
+        const alvo = s.turning === 'next' ? destino?.esquerda : destino?.direita;
+        const q = alvo?.quadros.find((x) => x.tipo === 'foto' && x.fotoId) as QuadroFoto | undefined;
+        const f = q?.fotoId ? porId.get(q.fotoId) : undefined;
+        return `position:absolute;inset:8% 10% 14%;border-radius:2px;` +
+          (f ? `background-image:url('${f.url}');background-size:cover;background-position:center;`
+             : 'background:#F2EFE7;');
+      })(),
+      // O brilho gira JUNTO com a folha (é filho dela); a sombra fica sobre a
+      // página de baixo (é irmã), senão giraria junto e não leria como sombra.
+      turnBrilho: s.turning
+        ? 'position:absolute;inset:0;pointer-events:none;z-index:3;border-radius:2px;' +
+          'background:linear-gradient(105deg, rgba(255,255,255,0) 28%, rgba(255,255,255,.62) 46%, ' +
+          'rgba(255,255,255,.9) 52%, rgba(255,255,255,.5) 58%, rgba(255,255,255,0) 76%);' +
+          'background-size:260% 100%;mix-blend-mode:screen;' +
+          'animation:brilhoFolha 880ms cubic-bezier(.56,.08,.18,.96) both'
+        : 'display:none',
+      turnSombra: s.turning
+        ? `position:absolute;top:2%;bottom:2%;${s.turning === 'next' ? 'left:50%' : 'right:50%'};` +
+          `width:50%;z-index:15;pointer-events:none;mix-blend-mode:multiply;` +
+          `transform-origin:${s.turning === 'next' ? 'left' : 'right'} center;` +
+          `background:linear-gradient(${s.turning === 'next' ? 'to right' : 'to left'}, ` +
+          `rgba(40,30,18,.42), rgba(40,30,18,.14) 45%, rgba(40,30,18,0) 85%);` +
+          `animation:sombraFolha 880ms cubic-bezier(.56,.08,.18,.96) both`
+        : 'display:none',
+      turnFront: 'position:absolute;inset:0;overflow:hidden;' +
         'background:linear-gradient(90deg,#FFFFFF,#FFFEFB);box-shadow:-10px 0 25px rgba(0,0,0,.12)',
-      turnBack: 'position:absolute;inset:0;backface-visibility:hidden;overflow:hidden;' +
+      turnBack: 'position:absolute;inset:0;overflow:hidden;' +
         'background:linear-gradient(270deg,#FFFFFF,#FFFEFB);box-shadow:10px 0 25px rgba(0,0,0,.12);' +
         `transform:rotateY(${s.turning === 'prev' ? '-180deg' : '180deg'})`,
-      stageStyle: 'flex:1 1 auto;min-height:150px;width:100%;display:flex;align-items:center;' +
-        'justify-content:center;perspective:2200px',
-      bookStyle: `position:relative;height:100%;max-height:min(100%, ${Math.round((440 * s.zoom) / 64)}px);` +
-        `aspect-ratio:2.04 / 1;max-width:min(100%, ${Math.round((900 * s.zoom) / 64)}px);` +
-        `filter:drop-shadow(0 24px 34px rgba(30,45,75,.18));transition:max-height .2s ease`,
+      stageStyle: estilo(estiloPalco()),
+      bookStyle: estilo(estiloLivro(s.zoom)),
 
       layPrev: () => document.querySelector('.om-laycar')?.scrollBy({ left: -190, behavior: 'smooth' }),
       layNext: () => document.querySelector('.om-laycar')?.scrollBy({ left: 190, behavior: 'smooth' }),
-      zoomIn: () => set({ zoom: Math.min(160, s.zoom + 12) }),
-      zoomOut: () => set({ zoom: Math.max(28, s.zoom - 12) }),
+      zoomIn: () => set({ zoom: limitarZoom(s.zoom + ZOOM_PASSO) }),
+      zoomOut: () => set({ zoom: limitarZoom(s.zoom - ZOOM_PASSO) }),
       openModal: () => set({ modal: 1 }),
       closeModal: () => set({ modal: null }),
       ov: `position:fixed;inset:0;background:rgba(11,18,32,.5);z-index:60;${s.modal ? '' : 'display:none'}`,

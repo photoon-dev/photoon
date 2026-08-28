@@ -95,13 +95,13 @@ export default function EditorDesign({ v }: { v: any }) {
           <div style={{ flex: '1' }}>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '4px', borderRadius: '12px', background: '#F4F7FC', border: '1px solid #E6EAF2', flex: '0 0 auto' }}>
-            <span title="Desfazer" style={{ width: '34px', height: '34px', borderRadius: '9px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#46536A', cursor: 'pointer' }} className="dc3">
+            <span onClick={v.undo} title="Desfazer" style={css(v.undoStyle)} className="dc3">
               <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M4 11a8 8 0 1 1 2.3 5.7" />
                 <path d="M4 5v6h6" />
               </svg>
             </span>
-            <span title="Refazer" style={{ width: '34px', height: '34px', borderRadius: '9px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#9AA7BC', cursor: 'pointer' }} className="dc4">
+            <span onClick={v.redo} title="Refazer" style={css(v.redoStyle)} className="dc4">
               <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M20 11a8 8 0 1 0-2.3 5.7" />
                 <path d="M20 5v6h-6" />
@@ -237,7 +237,7 @@ export default function EditorDesign({ v }: { v: any }) {
               <div style={{ flex: '1 1 auto', minHeight: '120px', overflowX: 'hidden', overflowY: 'auto', padding: '14px 18px' }}>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: '8px' }}>
                   {v.photos.map((p: any, i7: number) => (
-                    <div key={i7} onMouseEnter={p.enter} onMouseLeave={p.leave} style={css(p.style)} title="Arraste para a lâmina">
+                    <div key={i7} onClick={p.pick} onMouseEnter={p.enter} onMouseLeave={p.leave} style={css(p.style)} title={p.title}>
                     </div>
                   ))}
                 </div>
@@ -576,7 +576,7 @@ export default function EditorDesign({ v }: { v: any }) {
                       <span style={{ position: 'absolute', inset: '4%', border: '1px dashed rgba(245,158,11,.55)', borderRadius: '3px', pointerEvents: 'none', zIndex: '4' }}>
                       </span>
                       <div style={css(v.pageGrid)}>
-                        <div onClick={v.selectFrame} style={css(v.frameA)}>
+                        <div onClick={v.frameA.onClick} style={css(v.frameA.style)}>
                           <span style={css(v.faceBox)}>
                           </span>
                           <span style={css(v.faceTag)}>
@@ -592,12 +592,14 @@ export default function EditorDesign({ v }: { v: any }) {
                           </span>
                         </div>
                         {v.pageFrames.map((f: any, i10: number) => (
-                          <div key={i10} style={css(f.style)} className="dc24">
+                          <div key={i10} onClick={f.onClick} style={css(f.style)} className="dc24">
                           </div>
                         ))}
                       </div>
+                      <span style={css(v.pageLuz)}>
+                      </span>
                       <p style={{ position: 'absolute', left: '8%', right: '8%', bottom: '9px', margin: '0', minHeight: '16px', textAlign: 'center', fontFamily: 'Georgia, serif', fontSize: '12.5px', color: '#7D6F63' }}>
-                        Um dia para lembrar
+                        {v.legendaEsquerda}
                       </p>
                     </section>
                     <section style={{ position: 'relative', overflow: 'hidden', borderRadius: '2px 14px 10px 5px', background: 'radial-gradient(circle at 50% 45%, rgba(0,0,0,.018), transparent 50%), linear-gradient(270deg,#FFFFFF,#FFFEFB)', boxShadow: 'inset 18px 0 26px -26px rgba(0,0,0,.9), inset 0 1px 0 rgba(255,255,255,.8)' }}>
@@ -605,7 +607,7 @@ export default function EditorDesign({ v }: { v: any }) {
                       </span>
                       <div style={css(v.rightGrid)}>
                         {v.rightFrames.map((f: any, i10: number) => (
-                          <div key={i10} style={css(f.style)} className="dc25">
+                          <div key={i10} onClick={f.onClick} style={css(f.style)} className="dc25">
                             <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" style={css(f.iconStyle)}>
                               <rect x="3" y="4" width="18" height="16" rx="4" />
                               <path d="m3.5 16 4.6-4.2 4 3.4 3.4-3 5 4.4" />
@@ -614,27 +616,35 @@ export default function EditorDesign({ v }: { v: any }) {
                           </div>
                         ))}
                       </div>
+                      <span style={css(v.rightLuz)}>
+                      </span>
                       <p style={{ position: 'absolute', left: '8%', right: '8%', bottom: '9px', margin: '0', minHeight: '16px', textAlign: 'center', fontFamily: 'Georgia, serif', fontSize: '12.5px', color: '#7D6F63' }}>
-                        Formatura 2026
+                        {v.legendaDireita}
                       </p>
                     </section>
                   </div>
                   <div style={css(v.turnSheet)}>
                     <div style={css(v.turnFront)}>
-                      <span style={{ position: 'absolute', inset: '8% 10% 14%', borderRadius: '2px', background: 'linear-gradient(140deg,#7C3AED,#2563EB)', opacity: '.92' }}>
-                      </span>
+                      {v.turnFrontFrames.map((q: any, i9: number) => (
+                        <div key={i9} style={css(q.style)}>
+                        </div>
+                      ))}
                       <span style={{ position: 'absolute', left: '10%', right: '10%', bottom: '6%', height: '8px', borderRadius: '2px', background: '#EEEAE0' }}>
                       </span>
                     </div>
                     <div style={css(v.turnBack)}>
-                      <span style={{ position: 'absolute', inset: '8% 10% 14%', borderRadius: '2px', background: 'linear-gradient(140deg,#0EA5E9,#22D3EE)', opacity: '.9' }}>
-                      </span>
+                      {v.turnBackFrames.map((q: any, i9: number) => (
+                        <div key={i9} style={css(q.style)}>
+                        </div>
+                      ))}
                       <span style={{ position: 'absolute', left: '10%', right: '10%', bottom: '6%', height: '8px', borderRadius: '2px', background: '#EEEAE0' }}>
                       </span>
                     </div>
-                    <span style={{ position: 'absolute', inset: '0', pointerEvents: 'none', mixBlendMode: 'multiply', opacity: '.45', background: 'linear-gradient(90deg, rgba(0,0,0,.1), transparent 12%, transparent 78%, rgba(255,255,255,.55))' }}>
+                    <span style={css(v.turnBrilho)}>
                     </span>
                   </div>
+                  <span style={css(v.turnSombra)}>
+                  </span>
                   <span onClick={v.goPrev} title="Página anterior" style={{ position: 'absolute', zIndex: '12', top: '0', bottom: '0', left: '0', width: '9%', cursor: 'pointer', borderRadius: '14px 0 0 12px' }} className="dc26">
                   </span>
                   <span onClick={v.goNext} title="Próxima página" style={{ position: 'absolute', zIndex: '12', top: '0', bottom: '0', right: '0', width: '9%', cursor: 'pointer', borderRadius: '0 14px 12px 0' }} className="dc27">
@@ -725,7 +735,7 @@ export default function EditorDesign({ v }: { v: any }) {
                   </div>
                 ))}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '5px', flex: '0 0 auto' }}>
-                  <span style={{ width: '96px', height: '52px', borderRadius: '8px', border: '1px dashed #CBD5E6', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#9AA7BC', cursor: 'pointer' }} className="dc34">
+                  <span onClick={v.addSpread} style={{ width: '96px', height: '52px', borderRadius: '8px', border: '1px dashed #CBD5E6', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#9AA7BC', cursor: 'pointer' }} className="dc34">
                     <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M12 5v14M5 12h14" />
                     </svg>
