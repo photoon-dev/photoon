@@ -200,7 +200,7 @@ body {
 
   /* --- conteúdo, com respiro para a barra inferior --- */
   .om-app main > div {
-    padding: 14px 14px calc(104px + env(safe-area-inset-bottom)) !important;
+    padding: 14px 14px calc(124px + env(safe-area-inset-bottom)) !important;
   }
 
   /* --- larguras fixas do design que estouram a viewport --- */

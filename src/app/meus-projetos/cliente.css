@@ -71,7 +71,7 @@
 
   /* Respiro para a barra inferior. */
   .om-cliente .om-main {
-    padding: 18px 16px calc(96px + env(safe-area-inset-bottom)) !important;
+    padding: 18px 16px calc(124px + env(safe-area-inset-bottom)) !important;
   }
   .om-cliente header {
     padding: 10px 16px !important;

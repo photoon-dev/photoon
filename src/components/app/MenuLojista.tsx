@@ -1,6 +1,6 @@
 'use client';
 
-import MenuInferior, { type ItemMenu } from '@/components/MenuInferior';
+import MenuInferior, { type ItemMenu, type AcaoCentral } from '@/components/MenuInferior';
 import {
   IconGrade,
   IconUsuario,
@@ -10,13 +10,14 @@ import {
   IconCompartilhar,
   IconAlerta,
   IconOlho,
+  IconMais,
 } from '@/components/icons';
 
 /**
  * Navegação de celular do painel do lojista.
  *
- * Quatro destinos no rodapé — os que já existem — e o resto dos 20 módulos
- * do design na folha, esmaecidos enquanto não houver tela.
+ * Dois destinos de cada lado da ação central. Cadastrar cliente é o que o
+ * lojista mais faz, então é ela que ganha o botão em destaque.
  */
 const PRINCIPAIS: ItemMenu[] = [
   { rotulo: 'Início', href: '/', icone: <IconGrade size={30} /> },
@@ -24,6 +25,12 @@ const PRINCIPAIS: ItemMenu[] = [
   { rotulo: 'Modelos', href: '/templates', icone: <IconGaleria size={30} /> },
   { rotulo: 'Ajustes', href: '/configuracoes', icone: <IconRelogio size={30} /> },
 ];
+
+const ACAO: AcaoCentral = {
+  rotulo: 'Novo cliente',
+  href: '/clientes',
+  icone: <IconMais size={28} />,
+};
 
 const EXTRAS: ItemMenu[] = [
   { rotulo: 'Pedidos', icone: <IconCompartilhar size={26} /> },
@@ -35,5 +42,5 @@ const EXTRAS: ItemMenu[] = [
 ];
 
 export default function MenuLojista() {
-  return <MenuInferior principais={PRINCIPAIS} extras={EXTRAS} onSair />;
+  return <MenuInferior principais={PRINCIPAIS} extras={EXTRAS} acao={ACAO} onSair />;
 }

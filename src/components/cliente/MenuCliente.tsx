@@ -12,7 +12,12 @@ import {
   IconUsuario,
 } from '@/components/icons';
 
-/** Navegação de celular da área do cliente final. */
+/**
+ * Navegação de celular da área do cliente final.
+ *
+ * Sem ação central: quem cria álbum é o lojista, e as telas de galeria,
+ * criação e revisão ainda não existem.
+ */
 const PRINCIPAIS: ItemMenu[] = [
   { rotulo: 'Projetos', href: '/meus-projetos', icone: <IconGrade size={30} /> },
   { rotulo: 'Galeria', icone: <IconGaleria size={30} /> },
