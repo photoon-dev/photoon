@@ -63,7 +63,7 @@ export default function ShellLojistaDesign({ v }: { v: any }) {
                 Lab Cores
               </span>
               <span style={{ fontSize: '11.5px', color: '#6B7A90' }}>
-                Filial Centro · Plano Pro
+                {v.lojaSub}
               </span>
             </div>
             <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#9AA7BC" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginLeft: 'auto', flex: '0 0 auto' }}>
@@ -324,7 +324,7 @@ export default function ShellLojistaDesign({ v }: { v: any }) {
                   </div>
                   <div style={{ display: 'flex', flexDirection: 'column', lineHeight: '1.25', textAlign: 'left' }}>
                     <span style={{ fontSize: '13.5px', fontWeight: '700' }}>
-                      Marta Reis
+                      {v.usuarioNome}
                     </span>
                     <span style={{ fontSize: '11.5px', color: '#6B7A90' }}>
                       Administradora
@@ -337,13 +337,13 @@ export default function ShellLojistaDesign({ v }: { v: any }) {
                 <div style={css(v.menuStyle)}>
                   <div style={{ padding: '16px', background: 'linear-gradient(135deg,#EEF3FF,#E4F8FC)' }}>
                     <p style={{ margin: '0', fontSize: '14px', fontWeight: '700' }}>
-                      Marta Reis
+                      {v.usuarioNome}
                     </p>
                     <p style={{ margin: '3px 0 0', fontSize: '12.5px', color: '#6B7A90' }}>
-                      marta@labcores.com.br
+                      {v.usuarioEmail}
                     </p>
                     <span style={{ display: 'inline-block', marginTop: '10px', padding: '4px 10px', borderRadius: '999px', background: '#FFFFFF', fontSize: '11px', fontWeight: '600', color: '#2563EB' }}>
-                      Plano Pro · 8 usuários
+                      {v.planoResumo}
                     </span>
                   </div>
                   <div style={{ padding: '8px' }}>
@@ -369,7 +369,7 @@ export default function ShellLojistaDesign({ v }: { v: any }) {
                     </div>
                   </div>
                   <div style={{ padding: '8px', borderTop: '1px solid #EEF1F7' }}>
-                    <a href="./Login.dc.html" style={{ display: 'flex', alignItems: 'center', gap: '11px', padding: '10px 12px', borderRadius: '12px', fontSize: '13.5px', color: '#E11D48' }} className="dc6">
+                    <a href={v.hrefSair} onClick={v.sair} style={{ display: 'flex', alignItems: 'center', gap: '11px', padding: '10px 12px', borderRadius: '12px', fontSize: '13.5px', color: '#E11D48' }} className="dc6">
                       <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                         <path d="M15 17v2a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v2M10 12h11M18 9l3 3-3 3" />
                       </svg>

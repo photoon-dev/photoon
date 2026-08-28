@@ -1,3 +1,4 @@
+import { identidadeLojista } from '@/lib/lojista';
 import { minhasLojas, souSuperAdmin } from '@/lib/data';
 import DashboardLojista from '@/components/app/DashboardLojista';
 import './app.css';
@@ -30,5 +31,5 @@ export default async function PainelLojistaPage() {
     );
   }
 
-  return <DashboardLojista />;
+  return <DashboardLojista identidade={await identidadeLojista()} />;
 }

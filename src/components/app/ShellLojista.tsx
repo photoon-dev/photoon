@@ -1,39 +1,28 @@
-'use client';
-
-import ShellLojistaDesign, { CSS_PSEUDO } from '@/components/design/ShellLojistaDesign';
-import { useDashboardDesign } from '@/components/app/useDashboardDesign';
-import MenuLojista from '@/components/app/MenuLojista';
+import { identidadeLojista } from '@/lib/lojista';
+import ShellLojistaCliente from '@/components/app/ShellLojistaCliente';
 
 /**
- * Moldura do painel do lojista: menu lateral, cabeçalho e busca, tudo vindo
- * de Dashboard.dc.html. O conteúdo de cada tela entra no slot.
+ * Moldura do painel do lojista.
  *
- * `ativo` é o índice do módulo no menu; `rotas` diz quais já têm tela.
+ * É componente de SERVIDOR só para buscar quem está logado: o design trazia
+ * "Marta Reis" e "marta@labcores.com.br" escritos à mão, então todo lojista
+ * via o nome de outra pessoa. Resolver aqui evita passar a identidade por
+ * propriedade em cada uma das telas.
  */
-export const ROTAS_LOJISTA: Record<number, string> = {
-  0: '/',
-  8: '/clientes',
-  19: '/configuracoes',
-  7: '/templates',
-};
-
-export default function ShellLojista({
+export default async function ShellLojista({
   ativo,
   children,
   cartaoPlano,
 }: {
   ativo: number;
   children: React.ReactNode;
-  /** Cartão de consumo, no rodapé do menu lateral. */
   cartaoPlano?: React.ReactNode;
 }) {
-  const v = useDashboardDesign({ ativo, rotas: ROTAS_LOJISTA });
+  const identidade = await identidadeLojista();
 
   return (
-    <div className="om-app">
-      <style dangerouslySetInnerHTML={{ __html: CSS_PSEUDO }} />
-      <ShellLojistaDesign v={{ ...v, conteudo: children, cartaoPlano }} />
-      <MenuLojista />
-    </div>
+    <ShellLojistaCliente ativo={ativo} cartaoPlano={cartaoPlano} identidade={identidade}>
+      {children}
+    </ShellLojistaCliente>
   );
 }

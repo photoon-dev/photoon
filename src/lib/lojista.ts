@@ -245,3 +245,35 @@ export async function planoDaLoja(lojistaId: string): Promise<Plano | null> {
   const p = (data as { planos: Plano | null } | null)?.planos;
   return p ?? null;
 }
+
+export type IdentidadeLojista = {
+  nome: string;
+  email: string;
+  lojaSub: string;
+  planoResumo: string;
+};
+
+/**
+ * Quem está logado, para o cabeçalho do painel do lojista.
+ *
+ * Existe porque o design trazia "Marta Reis", "marta@labcores.com.br" e
+ * "Plano Pro · 8 usuários" escritos à mão: todo lojista via o nome de outra
+ * pessoa. Fica aqui para o dashboard e a moldura das demais telas usarem a
+ * mesma fonte.
+ */
+export async function identidadeLojista(): Promise<IdentidadeLojista> {
+  const supabase = await createClient();
+  const [{ data: sessao }, loja] = await Promise.all([supabase.auth.getUser(), lojaAtual()]);
+  const plano = loja ? await planoDaLoja(loja.id) : null;
+  const email = sessao.user?.email ?? '';
+
+  return {
+    // Sem nome no perfil, a parte antes do @ é melhor que um espaço vazio.
+    nome:
+      (sessao.user?.user_metadata?.nome as string | undefined) ||
+      (email ? email.split('@')[0] : 'Minha conta'),
+    email,
+    lojaSub: [loja?.nome, plano?.nome && `Plano ${plano.nome}`].filter(Boolean).join(' · '),
+    planoResumo: plano ? `Plano ${plano.nome}` : 'Sem plano',
+  };
+}
