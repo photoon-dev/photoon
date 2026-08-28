@@ -490,7 +490,7 @@ export default function EditorDesign({ v }: { v: any }) {
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: '8px' }}>
                   {v.elements.map((e: any, i7: number) => (
-                    <div key={i7} onClick={e.pick} title={e.title} style={{ aspectRatio: '1 / 1', borderRadius: '12px', border: '1px solid #E6EAF2', background: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#2563EB', cursor: 'pointer' }} className="dc20">
+                    <div key={i7} onClick={e.pick} title={e.title} style={css(e.style)} className="dc20">
                       <svg viewBox="0 0 48 48" width="30" height="30" fill="none" stroke="currentColor" strokeWidth={e.sw} strokeLinecap="round" strokeLinejoin="round">
                         {e.paths.map((pp: any, i10: number) => (
                           <path key={i10} d={pp.d} />

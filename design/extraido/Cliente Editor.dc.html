@@ -271,7 +271,7 @@
           </div>
           <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px;">
             <sc-for list="{{ elements }}" as="e" hint-placeholder-count="12">
-              <div onClick="{{ e.pick }}" title="{{ e.title }}" style="aspect-ratio: 1 / 1; border-radius: 12px; border: 1px solid #E6EAF2; background: #FFFFFF; display: flex; align-items: center; justify-content: center; color: #2563EB; cursor: pointer;" style-hover="border-color: #2563EB; background: #F8FAFE;">
+              <div onClick="{{ e.pick }}" title="{{ e.title }}" style="{{ e.style }}" style-hover="border-color: #2563EB; background: #F8FAFE;">
                 <svg viewBox="0 0 48 48" width="30" height="30" fill="none" stroke="currentColor" stroke-width="{{ e.sw }}" stroke-linecap="round" stroke-linejoin="round">
                   <sc-for list="{{ e.paths }}" as="pp" hint-placeholder-count="1">
                     <path d="{{ pp.d }}"/>

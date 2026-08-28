@@ -335,9 +335,9 @@ export function useDocumento({
 
   /** Insere um elemento na página do lado selecionado (ou na esquerda). */
   const adicionarElemento = useCallback(
-    (forma: string, cor?: string) => {
+    (forma: string, cor?: string, svg?: string) => {
       const lado: Lado = selecao?.lado ?? 'esquerda';
-      const novo = novoQuadroElemento(forma, cor);
+      const novo = novoQuadroElemento(forma, cor, svg);
       mudarLamina(atual, (l) => ({
         ...l,
         [lado]: { ...l[lado], quadros: [...l[lado].quadros, novo] },

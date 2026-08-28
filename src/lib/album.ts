@@ -75,6 +75,15 @@ export type QuadroElemento = {
   cor: string;
   rot: number;
   ret: Ret;
+  /**
+   * SVG da peça, quando ela vem da biblioteca (Noto/Fluent, coloridas).
+   *
+   * As formas antigas são de traço monocromático e desenhadas por `forma` +
+   * `cor`. As da biblioteca já trazem as próprias cores, então guardam o
+   * desenho: assim o álbum não depende de a biblioteca continuar existindo com
+   * aquele id — o que quebraria álbuns antigos a cada atualização do acervo.
+   */
+  svg?: string;
 };
 
 export type Quadro = QuadroFoto | QuadroTexto | QuadroElemento;
@@ -172,6 +181,7 @@ const zQuadro: z.ZodType<Quadro> = z.union([
     cor: z.string().regex(/^#[0-9A-Fa-f]{3,8}$/),
     rot: z.number().min(-360).max(360),
     ret: zRet,
+    svg: z.string().max(200000).optional(),
   }),
 ]);
 
@@ -212,17 +222,21 @@ export function novoQuadroFoto(fotoId: string | null = null): QuadroFoto {
  * Nasce em 22% de largura: grande o bastante para o cliente ver o que inseriu
  * e pequeno o bastante para não tapar a foto.
  */
-export function novoQuadroElemento(forma: string, cor = '#2563EB'): QuadroElemento {
+export function novoQuadroElemento(forma: string, cor = '#2563EB', svg?: string): QuadroElemento {
   const e = ELEMENTOS.find((x) => x.id === forma) ?? ELEMENTOS[0];
   const w = 22;
-  const h = w / (e.proporcao ?? 1);
+  // Peça da biblioteca é quadrada; forma de traço tem a proporção do catálogo.
+  const h = svg ? w : w / (e.proporcao ?? 1);
   return {
     id: uid(),
     tipo: 'elemento',
-    forma: e.id,
+    // Sem `svg`, o id tem de existir no catálogo de formas — a validação exige.
+    // Com `svg`, o desenho vem junto e `forma` fica só como rótulo de origem.
+    forma: svg ? ELEMENTOS[0].id : e.id,
     cor,
     rot: 0,
     ret: { x: 50 - w / 2, y: 50 - h / 2, w, h },
+    ...(svg ? { svg } : {}),
   };
 }
 

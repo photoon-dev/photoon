@@ -118,6 +118,7 @@ import {
   type GestoInicio,
 } from '@/lib/manipulacao';
 import { CATEGORIAS, elemento as formaPorId, porCategoria } from '@/lib/elementos';
+import { useBiblioteca, svgDaPeca } from '@/components/editor/useBiblioteca';
 import { corrigirEnq, diagnosticar, envolver, rostoNoQuadro } from '@/lib/rostos';
 import { contrasteSobre, hexParaHsv, hsvParaHex, normalizarHex } from '@/lib/cor';
 
@@ -175,6 +176,16 @@ export function useEditorDesign({
   const ac = useRef<AudioContext | null>(null);
   // Espelho do estado para os ouvintes de evento, que são registrados uma vez
   // e capturariam o `s` da primeira renderização.
+  // As abas da biblioteca vêm depois das formas de traço; `elCat` continua
+  // sendo o índice único, e aqui decidimos qual dos dois acervos ele aponta.
+  const catsTraco = CATEGORIAS.length;
+  const [catsBib, setCatsBib] = useState<string[]>([]);
+  const catAberta = s.elCat >= catsTraco ? catsBib[s.elCat - catsTraco] ?? null : null;
+  const bib = useBiblioteca(catAberta);
+  useEffect(() => {
+    setCatsBib(bib.categorias.map((c) => c.id));
+  }, [bib.categorias]);
+
   const sRef = useRef(s);
   sRef.current = s;
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -388,14 +399,22 @@ export function useEditorDesign({
         .map((q) => {
           const sel = doc.selecao?.quadro === q.id;
           const forma = formaPorId(q.forma);
+          // Peça da biblioteca (colorida) vira imagem de fundo; a lista de
+          // traços fica vazia e o <svg> do markup não desenha nada. Assim as
+          // duas famílias convivem sem mexer no markup do design.
+          const daBiblioteca = !!q.svg;
           return {
             id: q.id,
             title: forma.nome,
             sw: forma.sw,
-            paths: forma.d.map((d) => ({ d })),
+            paths: daBiblioteca ? [] : forma.d.map((d) => ({ d })),
             style:
               ret(q.ret) +
               `;color:${q.cor};cursor:pointer;z-index:6;` +
+              (daBiblioteca
+                ? `background-image:url("data:image/svg+xml,${encodeURIComponent(q.svg!)}");` +
+                  'background-size:contain;background-position:center;background-repeat:no-repeat;'
+                : '') +
               (q.rot ? `transform:rotate(${q.rot}deg);` : '') +
               (sel ? 'outline:2px solid #2563EB;outline-offset:3px;border-radius:2px;' : ''),
             pick: () => doc.setSelecao({ lamina: doc.atual, lado, quadro: q.id }),
@@ -822,7 +841,10 @@ export function useEditorDesign({
 
       bgTabs: lista(['Texturas', 'Cores', 'Gradientes'], 'bgTab', s.bgTab),
       bgCats: lista(['Suaves', 'Matelassê', 'Arabescos', 'Geométricos', 'Delicados'], 'bgCat', s.bgCat),
-      elCats: CATEGORIAS.map((c, i) => ({
+      elCats: [
+        ...CATEGORIAS.map((c) => ({ rotulo: c.rotulo ?? c.id })),
+        ...bib.categorias.map((c) => ({ rotulo: c.rotulo })),
+      ].map((c, i) => ({
         label: c.rotulo,
         style: chip(s.elCat === i),
         pick: () => set({ elCat: i }),
@@ -876,13 +898,33 @@ export function useEditorDesign({
 
       // Clicar insere na página do lado selecionado; o elemento já nasce
       // selecionado, para o cliente poder arrastá-lo em seguida.
-      elements: porCategoria(CATEGORIAS[s.elCat]?.id ?? 'todos').map((el) => ({
-        id: el.id,
-        title: el.nome,
-        sw: el.sw,
-        paths: el.d.map((d) => ({ d })),
-        pick: () => doc.adicionarElemento(el.id, s.elCor),
-      })),
+      // Duas famílias na mesma grade: as formas de traço, que herdam a cor
+      // escolhida, e as peças da biblioteca, que já vêm coloridas e entram
+      // como imagem SVG. `paths` vazio faz o <svg> do markup não desenhar nada.
+      elements:
+        catAberta !== null
+          ? bib.pecas.map((pc) => ({
+              id: pc.id,
+              title: pc.nome,
+              sw: 0,
+              paths: [] as { d: string }[],
+              style:
+                `aspect-ratio:1 / 1;border-radius:10px;border:1px solid #E6EAF2;cursor:pointer;` +
+                `background-image:url("data:image/svg+xml,${encodeURIComponent(svgDaPeca(pc))}");` +
+                `background-size:62%;background-position:center;background-repeat:no-repeat;background-color:#FFFFFF`,
+              pick: () => doc.adicionarElemento(pc.id, s.elCor, svgDaPeca(pc)),
+            }))
+          : porCategoria(CATEGORIAS[s.elCat]?.id ?? 'todos').map((el) => ({
+              id: el.id,
+              title: el.nome,
+              sw: el.sw,
+              paths: el.d.map((d) => ({ d })),
+              // Mesma caixa do design; a forma de traço é desenhada pelo <svg>.
+              style:
+                'aspect-ratio:1 / 1;border-radius:12px;border:1px solid #E6EAF2;background:#FFFFFF;' +
+                'display:flex;align-items:center;justify-content:center;color:#2563EB;cursor:pointer',
+              pick: () => doc.adicionarElemento(el.id, s.elCor),
+            })),
       elCorAmostra: `width:26px;height:26px;border-radius:8px;background:${s.elCor};flex:0 0 auto`,
       elCorHex: s.elCor,
       elCorChips: CHIPS.map((c) => ({
