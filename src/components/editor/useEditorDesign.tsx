@@ -20,6 +20,9 @@ export type EstadoEditor = {
   arrastandoQuadro: boolean;
   /** Posição do menu de contexto, em pixels de tela. */
   menu: { x: number; y: number } | null;
+  /** Lâmina aberta na prévia; `null` = prévia fechada. */
+  previa: number | null;
+  previaTocando: boolean;
   escopoPaginar: 'vazias' | 'recomecar';
   escopoEspaco: 'album' | 'lamina';
   turning: 'next' | 'prev' | null;
@@ -180,7 +183,7 @@ export function useEditorDesign({
   onTitulo?: (t: string) => void;
 }) {
   const [s, setS] = useState<EstadoEditor>({
-    hover: null, turning: null, espacoAberto: false, escopoEspaco: 'album', paginarAberto: false, escopoPaginar: 'vazias', arrastandoLamina: null, arrastandoQuadro: false, menu: null,
+    hover: null, turning: null, espacoAberto: false, escopoEspaco: 'album', paginarAberto: false, escopoPaginar: 'vazias', arrastandoLamina: null, arrastandoQuadro: false, menu: null, previa: null, previaTocando: false,
     tool: 0, panel: true, insp: false, modal: null, zoom: ZOOM_PADRAO,
     count: 0, lay: 2, photoTab: 0, bgTab: 0, bgCat: 0, elCat: 0, bw: false,
     bgHue: 220, elCor: '#2563EB', rostoIgnorado: [], pessoaAtiva: null,
@@ -275,6 +278,40 @@ export function useEditorDesign({
     },
     [],
   );
+
+  /**
+   * Reprodução automática da prévia.
+   *
+   * 2,6s por lâmina: tempo de ver a página sem ficar esperando. Ao chegar no
+   * fim, para em vez de voltar ao início — o álbum tem fim, e reiniciar sozinho
+   * faz o cliente perder a conta de onde estava.
+   */
+  useEffect(() => {
+    if (!s.previaTocando || s.previa === null) return;
+    const t = setTimeout(() => {
+      setS((a) => {
+        if (a.previa === null) return a;
+        const prox = a.previa + 1;
+        if (prox >= doc.laminas.length) return { ...a, previaTocando: false };
+        return { ...a, previa: prox };
+      });
+    }, 2600);
+    return () => clearTimeout(t);
+  }, [s.previaTocando, s.previa, doc.laminas.length]);
+
+  // Esc fecha a prévia — é o reflexo de todo mundo diante de uma tela cheia.
+  useEffect(() => {
+    if (s.previa === null) return;
+    const tecla = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') set({ previa: null, previaTocando: false });
+      else if (e.key === 'ArrowRight')
+        setS((a) => ({ ...a, previa: Math.min(doc.laminas.length - 1, (a.previa ?? 0) + 1) }));
+      else if (e.key === 'ArrowLeft')
+        setS((a) => ({ ...a, previa: Math.max(0, (a.previa ?? 0) - 1) }));
+    };
+    window.addEventListener('keydown', tecla);
+    return () => window.removeEventListener('keydown', tecla);
+  }, [s.previa, set, doc.laminas.length]);
 
   // --- teclado: setas viram página, +/- dão zoom ---------------------------
   useEffect(() => {
@@ -521,6 +558,52 @@ export function useEditorDesign({
             },
           };
         });
+
+    /* ------------------------- prévia: uma página ------------------------ */
+    const laminaPrevia = s.previa !== null ? doc.laminas[s.previa] : null;
+
+    const previaPagina = (lado: Lado) =>
+      'position:relative;overflow:hidden;container-type:inline-size;' +
+      `background:#FFFFFF;${lado === 'esquerda' ? 'border-right:1px solid rgba(11,18,32,.06)' : ''}`;
+
+    const previaFundo = (lado: Lado) =>
+      laminaPrevia
+        ? 'position:absolute;inset:0;z-index:0;' + estiloFundo(laminaPrevia.fundo || '#FFFFFF')
+        : 'display:none';
+
+    const previaQuadros = (lado: Lado) => {
+      if (!laminaPrevia) return [];
+      return doc.quadrosDe(laminaPrevia[lado]).map(({ q, ret: r }) => {
+        if (q.tipo !== 'foto' || !r) return { style: 'display:none', src: undefined, imgStyle: 'display:none' };
+        const img = quadroImg(q, r);
+        return {
+          // Sem cursor, sem contorno de seleção e sem tracejado: a prévia é o
+          // álbum, não o editor.
+          style: ret(r) + ';overflow:hidden;z-index:2;' + bordaCss(q.borda),
+          src: img.src,
+          imgStyle: img.imgStyle,
+        };
+      });
+    };
+
+    const previaTextos = (lado: Lado) => {
+      if (!laminaPrevia) return [];
+      return laminaPrevia[lado].quadros
+        .filter((q): q is QuadroTexto => q.tipo === 'texto')
+        .map((q) => {
+          const tp = tipografia(q);
+          return {
+            texto: q.texto,
+            style:
+              ret(q.ret) +
+              `;z-index:3;display:flex;align-items:center;justify-content:center;` +
+              `color:${q.cor};white-space:pre-wrap;overflow:hidden;` +
+              `font-size:${tp.tamanho}cqw;font-weight:${tp.peso};font-family:${tp.familia};` +
+              `letter-spacing:${tp.espacamento};text-transform:${tp.caixa};text-align:${tp.alinhamento};` +
+              (tp.italico ? 'font-style:italic;' : ''),
+          };
+        });
+    };
 
     const framesEsq = framesDe(lamina.esquerda, 'esquerda');
     const framesDir = framesDe(lamina.direita, 'direita');
@@ -1468,7 +1551,10 @@ export function useEditorDesign({
           },
           dragEnd: () => set({ arrastandoLamina: null }),
           label: rotuloLamina(i),
-          grid: 'position:relative;flex:1;background:#FFFFFF',
+          // A miniatura mostra o FUNDO da lâmina. Sem isso, aplicar um fundo
+          // ao álbum inteiro não dava sinal nenhum na tira e parecia não ter
+          // funcionado — o cliente só descobriria navegando lâmina a lâmina.
+          grid: 'position:relative;flex:1;' + estiloFundo(l.fundo || '#FFFFFF'),
           cells,
           layText: n + (n === 1 ? ' foto' : ' fotos'),
           layLabel: `font-size:9.5px;font-weight:600;color:${on ? '#2563EB' : '#B5C0D0'};text-align:center`,
@@ -1748,6 +1834,61 @@ export function useEditorDesign({
         if (comFoto) lista.push(it('Excluir a foto do quadro', () => doc.limparQuadro(), true));
         return lista;
       })(),
+
+      /* ---------------------------- prévia -------------------------------
+       * Mostra o álbum como ele vai ficar: sem grade, sem margem de corte, sem
+       * alça de seleção — só as páginas. É o que o cliente aprova.
+       *
+       * A lâmina da prévia é independente da que está sendo editada: passar as
+       * páginas aqui não deve mover o editor por baixo, senão fechar a prévia
+       * deixaria o cliente noutra página sem entender por quê.
+       * ------------------------------------------------------------------ */
+      abrirPrevia: () => set({ previa: 0, previaTocando: false }),
+      fecharPrevia: () => set({ previa: null, previaTocando: false }),
+      ovPrevia:
+        s.previa !== null
+          ? 'position:fixed;inset:0;z-index:80;background:rgba(11,18,32,.72);backdrop-filter:blur(3px)'
+          : 'display:none',
+      shPrevia:
+        s.previa !== null
+          ? 'position:fixed;z-index:81;top:50%;left:50%;transform:translate(-50%,-50%);' +
+            'width:min(1040px, calc(100vw - 48px));max-height:calc(100vh - 48px);overflow:auto;' +
+            'padding:20px 22px;background:#FFFFFF;border-radius:20px;box-shadow:0 30px 80px rgba(11,18,32,.4)'
+          : 'display:none',
+      previaPalco:
+        'display:flex;align-items:center;justify-content:center;padding:8px;' +
+        'background:linear-gradient(180deg,#F7F9FC,#E8EEF6);border-radius:14px',
+      previaLivro:
+        'position:relative;width:100%;aspect-ratio:2.04 / 1;display:grid;' +
+        'grid-template-columns:1fr 1fr;box-shadow:0 18px 40px rgba(30,45,75,.22);border-radius:6px;overflow:hidden',
+      previaEsq: previaPagina('esquerda'),
+      previaDir: previaPagina('direita'),
+      previaFundoEsq: previaFundo('esquerda'),
+      previaFundoDir: previaFundo('direita'),
+      previaQuadrosEsq: previaQuadros('esquerda'),
+      previaQuadrosDir: previaQuadros('direita'),
+      previaTextosEsq: previaTextos('esquerda'),
+      previaTextosDir: previaTextos('direita'),
+      previaRotulo:
+        s.previa !== null
+          ? `${s.previa === 0 ? 'Capa' : `Lâmina ${s.previa}`} · ${s.previa + 1} de ${doc.laminas.length}`
+          : '',
+      previaBotao:
+        'width:36px;height:36px;border-radius:11px;border:1px solid #E6EAF2;background:#FFFFFF;' +
+        'display:flex;align-items:center;justify-content:center;color:#46536A;cursor:pointer',
+      previaBotaoTocar:
+        'width:44px;height:44px;border-radius:999px;background:#2563EB;color:#FFFFFF;' +
+        'display:flex;align-items:center;justify-content:center;cursor:pointer;' +
+        'box-shadow:0 8px 18px rgba(37,99,235,.3)',
+      previaIcone: s.previaTocando ? 'M9 5v14M15 5v14' : 'M7 5l12 7-12 7z',
+      previaTocarTitulo: s.previaTocando ? 'Pausar' : 'Reproduzir',
+      previaTocar: () => set({ previaTocando: !s.previaTocando }),
+      previaInicio: () => set({ previa: 0, previaTocando: false }),
+      previaFim: () => set({ previa: doc.laminas.length - 1, previaTocando: false }),
+      previaAnterior: () =>
+        set({ previa: Math.max(0, (s.previa ?? 0) - 1), previaTocando: false }),
+      previaProxima: () =>
+        set({ previa: Math.min(doc.laminas.length - 1, (s.previa ?? 0) + 1), previaTocando: false }),
 
       pageFundo: `position:absolute;inset:0;z-index:0;` + estiloFundo(fundoAtual),
 

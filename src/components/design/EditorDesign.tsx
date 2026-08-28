@@ -18,43 +18,44 @@ export const CSS_PSEUDO = `
 .dc10:hover { filter: brightness(1.08); }
 .dc11:hover { background: #2563EB; }
 .dc12:hover { background: #F4F7FC; }
-.dc13:hover { filter: brightness(1.08); }
-.dc14:hover { border-color: #2563EB; background: #F8FAFE; }
+.dc13:hover { background: #F4F7FC; }
+.dc14:hover { filter: brightness(1.08); }
 .dc15:hover { border-color: #2563EB; background: #F8FAFE; }
 .dc16:hover { border-color: #2563EB; background: #F8FAFE; }
 .dc17:hover { border-color: #2563EB; background: #F8FAFE; }
-.dc18:hover { border-color: #2563EB; color: #2563EB; }
-.dc19:hover { background: #2563EB; }
-.dc20:hover { border-color: #2563EB; background: #F8FAFE; }
+.dc18:hover { border-color: #2563EB; background: #F8FAFE; }
+.dc19:hover { border-color: #2563EB; color: #2563EB; }
+.dc20:hover { background: #2563EB; }
 .dc21:hover { border-color: #2563EB; background: #F8FAFE; }
 .dc22:hover { border-color: #2563EB; background: #F8FAFE; }
 .dc23:hover { border-color: #2563EB; background: #F8FAFE; }
 .dc24:hover { border-color: #2563EB; background: #F8FAFE; }
-.dc25:hover { border-color: #2563EB; color: #2563EB; }
+.dc25:hover { border-color: #2563EB; background: #F8FAFE; }
 .dc26:hover { border-color: #2563EB; color: #2563EB; }
 .dc27:hover { border-color: #2563EB; color: #2563EB; }
 .dc28:hover { border-color: #2563EB; color: #2563EB; }
-.dc29:hover { box-shadow: 0 0 0 2px rgba(37,99,235,.45); }
+.dc29:hover { border-color: #2563EB; color: #2563EB; }
 .dc30:hover { box-shadow: 0 0 0 2px rgba(37,99,235,.45); }
-.dc31:hover { background: #F1F5FD; color: #2563EB; }
+.dc31:hover { box-shadow: 0 0 0 2px rgba(37,99,235,.45); }
 .dc32:hover { background: #F1F5FD; color: #2563EB; }
 .dc33:hover { background: #F1F5FD; color: #2563EB; }
-.dc34:hover { background: #FFF1F3; }
-.dc35:hover { border-color: #2563EB; color: #2563EB; background: #F8FAFE; }
-.dc36:hover { background: #F1F5FD; color: #2563EB; }
-.dc37:hover { filter: brightness(1.06); }
-.dc38:hover { border-color: #2563EB; color: #2563EB; }
-.dc39:hover { border-color: #2563EB; color: #2563EB; background: #F8FAFE; }
+.dc34:hover { background: #F1F5FD; color: #2563EB; }
+.dc35:hover { background: #FFF1F3; }
+.dc36:hover { border-color: #2563EB; color: #2563EB; background: #F8FAFE; }
+.dc37:hover { background: #F1F5FD; color: #2563EB; }
+.dc38:hover { filter: brightness(1.06); }
+.dc39:hover { border-color: #2563EB; color: #2563EB; }
 .dc40:hover { border-color: #2563EB; color: #2563EB; background: #F8FAFE; }
 .dc41:hover { border-color: #2563EB; color: #2563EB; background: #F8FAFE; }
 .dc42:hover { border-color: #2563EB; color: #2563EB; background: #F8FAFE; }
-.dc43:hover { background: #E4F8FC; }
-.dc44:hover { background: #F1F5FD; color: #2563EB; }
-.dc45:hover { border-color: #2563EB; }
+.dc43:hover { border-color: #2563EB; color: #2563EB; background: #F8FAFE; }
+.dc44:hover { background: #E4F8FC; }
+.dc45:hover { background: #F1F5FD; color: #2563EB; }
 .dc46:hover { border-color: #2563EB; }
 .dc47:hover { border-color: #2563EB; }
-.dc48:hover { background: #F1F5FD; color: #2563EB; }
-.dc49:hover { filter: brightness(1.06); }
+.dc48:hover { border-color: #2563EB; }
+.dc49:hover { background: #F1F5FD; color: #2563EB; }
+.dc50:hover { filter: brightness(1.06); }
 `;
 
 export default function EditorDesign({ v }: { v: any }) {
@@ -127,13 +128,13 @@ export default function EditorDesign({ v }: { v: any }) {
             </span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: '0 0 auto' }}>
-            <a href={v.hrefPreview} style={{ display: 'flex', alignItems: 'center', gap: '8px', height: '40px', padding: '0 14px', borderRadius: '11px', border: '1px solid #E6EAF2', color: '#46536A', fontSize: '13px', fontWeight: '600' }} className="dc7">
+            <span onClick={v.abrirPrevia} style={{ display: 'flex', alignItems: 'center', gap: '8px', height: '40px', padding: '0 14px', borderRadius: '11px', border: '1px solid #E6EAF2', color: '#46536A', fontSize: '13px', fontWeight: '600', cursor: 'pointer' }} className="dc7">
               <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M2.5 12S6 6.5 12 6.5 21.5 12 21.5 12 18 17.5 12 17.5 2.5 12 2.5 12z" />
                 <circle cx="12" cy="12" r="2.8" />
               </svg>
               Prévia
-            </a>
+            </span>
             <span onClick={v.openModal} title="Assistência" style={{ width: '40px', height: '40px', borderRadius: '11px', border: '1px solid #E6EAF2', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#46536A', cursor: 'pointer' }} className="dc8">
               <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M5 19 19 5M15 5h4v4" />
@@ -279,6 +280,82 @@ export default function EditorDesign({ v }: { v: any }) {
                   </svg>
                   Preencher com a assistência
                 </span>
+                <div style={css(v.ovPrevia)} onClick={v.fecharPrevia}>
+                </div>
+                <div style={css(v.shPrevia)}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
+                    <p style={{ margin: '0', fontSize: '17px', fontWeight: '800', letterSpacing: '-.3px' }}>
+                      Prévia do álbum
+                    </p>
+                    <span onClick={v.fecharPrevia} style={{ width: '32px', height: '32px', borderRadius: '9px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#46536A', cursor: 'pointer' }} className="dc12">
+                      <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M6 6l12 12M18 6 6 18" />
+                      </svg>
+                    </span>
+                  </div>
+                  <div style={css(v.previaPalco)}>
+                    <div style={css(v.previaLivro)}>
+                      <section style={css(v.previaEsq)}>
+                        <span style={css(v.previaFundoEsq)}>
+                        </span>
+                        {v.previaQuadrosEsq.map((pq: any, i10: number) => (
+                          <div key={i10} style={css(pq.style)}>
+                            <img src={pq.src} style={css(pq.imgStyle)} />
+                          </div>
+                        ))}
+                        {v.previaTextosEsq.map((pt: any, i10: number) => (
+                          <div key={i10} style={css(pt.style)}>
+                            {pt.texto}
+                          </div>
+                        ))}
+                      </section>
+                      <section style={css(v.previaDir)}>
+                        <span style={css(v.previaFundoDir)}>
+                        </span>
+                        {v.previaQuadrosDir.map((pq: any, i10: number) => (
+                          <div key={i10} style={css(pq.style)}>
+                            <img src={pq.src} style={css(pq.imgStyle)} />
+                          </div>
+                        ))}
+                        {v.previaTextosDir.map((pt: any, i10: number) => (
+                          <div key={i10} style={css(pt.style)}>
+                            {pt.texto}
+                          </div>
+                        ))}
+                      </section>
+                    </div>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', marginTop: '16px' }}>
+                    <span onClick={v.previaInicio} title="Começar do início" style={css(v.previaBotao)}>
+                      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M18 6l-8 6 8 6zM6 5v14" />
+                      </svg>
+                    </span>
+                    <span onClick={v.previaAnterior} title="Anterior" style={css(v.previaBotao)}>
+                      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M14 6l-6 6 6 6" />
+                      </svg>
+                    </span>
+                    <span onClick={v.previaTocar} title={v.previaTocarTitulo} style={css(v.previaBotaoTocar)}>
+                      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d={v.previaIcone} />
+                      </svg>
+                    </span>
+                    <span onClick={v.previaProxima} title="Próxima" style={css(v.previaBotao)}>
+                      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M10 6l6 6-6 6" />
+                      </svg>
+                    </span>
+                    <span onClick={v.previaFim} title="Ir para o fim" style={css(v.previaBotao)}>
+                      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M6 6l8 6-8 6zM18 5v14" />
+                      </svg>
+                    </span>
+                  </div>
+                  <p style={{ margin: '10px 0 0', textAlign: 'center', fontSize: '12.5px', color: '#6B7A90' }}>
+                    {v.previaRotulo}
+                  </p>
+                </div>
                 <div style={css(v.ovPaginar)} onClick={v.fecharPaginar}>
                 </div>
                 <div style={css(v.shPaginar)}>
@@ -314,10 +391,10 @@ export default function EditorDesign({ v }: { v: any }) {
                     {v.resumoPaginar}
                   </p>
                   <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '18px' }}>
-                    <span onClick={v.fecharPaginar} style={{ height: '38px', padding: '0 16px', display: 'flex', alignItems: 'center', borderRadius: '10px', fontSize: '13px', fontWeight: '600', color: '#46536A', cursor: 'pointer' }} className="dc12">
+                    <span onClick={v.fecharPaginar} style={{ height: '38px', padding: '0 16px', display: 'flex', alignItems: 'center', borderRadius: '10px', fontSize: '13px', fontWeight: '600', color: '#46536A', cursor: 'pointer' }} className="dc13">
                       Cancelar
                     </span>
-                    <span onClick={v.paginar} style={{ height: '38px', padding: '0 20px', display: 'flex', alignItems: 'center', borderRadius: '10px', background: '#2563EB', color: '#FFFFFF', fontSize: '13px', fontWeight: '700', cursor: 'pointer' }} className="dc13">
+                    <span onClick={v.paginar} style={{ height: '38px', padding: '0 20px', display: 'flex', alignItems: 'center', borderRadius: '10px', background: '#2563EB', color: '#FFFFFF', fontSize: '13px', fontWeight: '700', cursor: 'pointer' }} className="dc14">
                       Paginar
                     </span>
                   </div>
@@ -334,7 +411,7 @@ export default function EditorDesign({ v }: { v: any }) {
                 </p>
               </div>
               <div style={{ flex: '1 1 auto', minHeight: '0', overflowY: 'auto', padding: '14px 18px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                <div onClick={v.addTextoTitulo} style={{ padding: '16px', borderRadius: '12px', border: '1px solid #E6EAF2', background: '#FFFFFF', cursor: 'pointer' }} className="dc14">
+                <div onClick={v.addTextoTitulo} style={{ padding: '16px', borderRadius: '12px', border: '1px solid #E6EAF2', background: '#FFFFFF', cursor: 'pointer' }} className="dc15">
                   <p style={{ margin: '0', fontSize: '22px', fontWeight: '800', letterSpacing: '-.8px', lineHeight: '1.1' }}>
                     Título
                   </p>
@@ -342,7 +419,7 @@ export default function EditorDesign({ v }: { v: any }) {
                     48 pt, peso forte
                   </p>
                 </div>
-                <div onClick={v.addTextoSubtitulo} style={{ padding: '16px', borderRadius: '12px', border: '1px solid #E6EAF2', background: '#FFFFFF', cursor: 'pointer' }} className="dc15">
+                <div onClick={v.addTextoSubtitulo} style={{ padding: '16px', borderRadius: '12px', border: '1px solid #E6EAF2', background: '#FFFFFF', cursor: 'pointer' }} className="dc16">
                   <p style={{ margin: '0', fontSize: '16px', fontWeight: '500', color: '#46536A' }}>
                     Subtítulo
                   </p>
@@ -350,7 +427,7 @@ export default function EditorDesign({ v }: { v: any }) {
                     Médio, discreto
                   </p>
                 </div>
-                <div onClick={v.addTextoLegenda} style={{ padding: '16px', borderRadius: '12px', border: '1px solid #E6EAF2', background: '#FFFFFF', cursor: 'pointer' }} className="dc16">
+                <div onClick={v.addTextoLegenda} style={{ padding: '16px', borderRadius: '12px', border: '1px solid #E6EAF2', background: '#FFFFFF', cursor: 'pointer' }} className="dc17">
                   <p style={{ margin: '0', fontSize: '12px', fontWeight: '700', letterSpacing: '1.6px', textTransform: 'uppercase', color: '#46536A' }}>
                     Legenda
                   </p>
@@ -358,7 +435,7 @@ export default function EditorDesign({ v }: { v: any }) {
                     Pequena, em caixa alta
                   </p>
                 </div>
-                <div onClick={v.addTextoData} style={{ padding: '16px', borderRadius: '12px', border: '1px solid #E6EAF2', background: '#FFFFFF', cursor: 'pointer' }} className="dc17">
+                <div onClick={v.addTextoData} style={{ padding: '16px', borderRadius: '12px', border: '1px solid #E6EAF2', background: '#FFFFFF', cursor: 'pointer' }} className="dc18">
                   <p style={{ margin: '0', fontSize: '14px', fontWeight: '600', color: '#46536A' }}>
                     12 · dezembro · 2026
                   </p>
@@ -447,10 +524,10 @@ export default function EditorDesign({ v }: { v: any }) {
                   </div>
                 </div>
                 <div style={{ display: 'flex', gap: '8px' }}>
-                  <span onClick={v.bgSoEsta} style={{ flex: '1', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '11px', border: '1px solid #E6EAF2', fontSize: '12.5px', fontWeight: '600', color: '#46536A', cursor: 'pointer' }} className="dc18">
+                  <span onClick={v.bgSoEsta} style={{ flex: '1', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '11px', border: '1px solid #E6EAF2', fontSize: '12.5px', fontWeight: '600', color: '#46536A', cursor: 'pointer' }} className="dc19">
                     Só nesta lâmina
                   </span>
-                  <span onClick={v.bgTudo} style={{ flex: '1', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '11px', background: '#0B1220', color: '#FFFFFF', fontSize: '12.5px', fontWeight: '700', cursor: 'pointer' }} className="dc19">
+                  <span onClick={v.bgTudo} style={{ flex: '1', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '11px', background: '#0B1220', color: '#FFFFFF', fontSize: '12.5px', fontWeight: '700', cursor: 'pointer' }} className="dc20">
                     Todo o álbum
                   </span>
                 </div>
@@ -502,7 +579,7 @@ export default function EditorDesign({ v }: { v: any }) {
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: '8px' }}>
                   {v.elements.map((e: any, i7: number) => (
-                    <div key={i7} onClick={e.pick} title={e.title} style={css(e.style)} className="dc20">
+                    <div key={i7} onClick={e.pick} title={e.title} style={css(e.style)} className="dc21">
                       <svg viewBox="0 0 48 48" width="30" height="30" fill="none" stroke="currentColor" strokeWidth={e.sw} strokeLinecap="round" strokeLinejoin="round">
                         {e.paths.map((pp: any, i10: number) => (
                           <path key={i10} d={pp.d} />
@@ -531,7 +608,7 @@ export default function EditorDesign({ v }: { v: any }) {
                     Nenhum quadro vazio nesta lâmina
                   </p>
                 </div>
-                <div onClick={v.openModal} style={{ padding: '14px 15px', borderRadius: '12px', border: '1px solid #E6EAF2', background: '#FFFFFF', cursor: 'pointer' }} className="dc21">
+                <div onClick={v.openModal} style={{ padding: '14px 15px', borderRadius: '12px', border: '1px solid #E6EAF2', background: '#FFFFFF', cursor: 'pointer' }} className="dc22">
                   <p style={{ margin: '0', fontSize: '13.5px', fontWeight: '700' }}>
                     Escolher o melhor layout
                   </p>
@@ -539,7 +616,7 @@ export default function EditorDesign({ v }: { v: any }) {
                     Reorganiza os quadros pela quantidade de fotos
                   </p>
                 </div>
-                <div onClick={v.openModal} style={{ padding: '14px 15px', borderRadius: '12px', border: '1px solid #E6EAF2', background: '#FFFFFF', cursor: 'pointer' }} className="dc22">
+                <div onClick={v.openModal} style={{ padding: '14px 15px', borderRadius: '12px', border: '1px solid #E6EAF2', background: '#FFFFFF', cursor: 'pointer' }} className="dc23">
                   <p style={{ margin: '0', fontSize: '13.5px', fontWeight: '700' }}>
                     Equilibrar espaçamento
                   </p>
@@ -547,7 +624,7 @@ export default function EditorDesign({ v }: { v: any }) {
                     Volta ao respiro recomendado de 4 mm
                   </p>
                 </div>
-                <div onClick={v.openModal} style={{ padding: '14px 15px', borderRadius: '12px', border: '1px solid #E6EAF2', background: '#FFFFFF', cursor: 'pointer' }} className="dc23">
+                <div onClick={v.openModal} style={{ padding: '14px 15px', borderRadius: '12px', border: '1px solid #E6EAF2', background: '#FFFFFF', cursor: 'pointer' }} className="dc24">
                   <p style={{ margin: '0', fontSize: '13.5px', fontWeight: '700' }}>
                     Harmonizar o fundo
                   </p>
@@ -555,7 +632,7 @@ export default function EditorDesign({ v }: { v: any }) {
                     Aplica um tom claro que não briga com as fotos
                   </p>
                 </div>
-                <div onClick={v.openModal} style={{ padding: '14px 15px', borderRadius: '12px', border: '1px solid #E6EAF2', background: '#FFFFFF', cursor: 'pointer' }} className="dc24">
+                <div onClick={v.openModal} style={{ padding: '14px 15px', borderRadius: '12px', border: '1px solid #E6EAF2', background: '#FFFFFF', cursor: 'pointer' }} className="dc25">
                   <p style={{ margin: '0', fontSize: '13.5px', fontWeight: '700' }}>
                     Deixar em preto e branco
                   </p>
@@ -606,7 +683,7 @@ export default function EditorDesign({ v }: { v: any }) {
               <span style={{ width: '1px', height: '30px', background: '#E6EAF2', flex: '0 0 auto' }}>
               </span>
               <div style={{ display: 'flex', alignItems: 'center', gap: '7px', flexWrap: 'nowrap', flex: '1 0 240px', minWidth: '240px' }}>
-                <span onClick={v.layPrev} title="Anterior" style={{ width: '28px', height: '28px', borderRadius: '9px', border: '1px solid #E6EAF2', background: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#46536A', cursor: 'pointer', flex: '0 0 auto' }} className="dc25">
+                <span onClick={v.layPrev} title="Anterior" style={{ width: '28px', height: '28px', borderRadius: '9px', border: '1px solid #E6EAF2', background: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#46536A', cursor: 'pointer', flex: '0 0 auto' }} className="dc26">
                   <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M14 6l-6 6 6 6" />
                   </svg>
@@ -623,7 +700,7 @@ export default function EditorDesign({ v }: { v: any }) {
                     </div>
                   ))}
                 </div>
-                <span onClick={v.layNext} title="Próximo" style={{ width: '28px', height: '28px', borderRadius: '9px', border: '1px solid #E6EAF2', background: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#46536A', cursor: 'pointer', flex: '0 0 auto' }} className="dc26">
+                <span onClick={v.layNext} title="Próximo" style={{ width: '28px', height: '28px', borderRadius: '9px', border: '1px solid #E6EAF2', background: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#46536A', cursor: 'pointer', flex: '0 0 auto' }} className="dc27">
                   <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M10 6l6 6-6 6" />
                   </svg>
@@ -663,7 +740,7 @@ export default function EditorDesign({ v }: { v: any }) {
                   {v.spreadTitle}
                 </span>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: '0 0 auto' }}>
-                  <span onClick={v.goPrev} style={{ width: '28px', height: '28px', borderRadius: '9px', background: '#FFFFFF', border: '1px solid #E6EAF2', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#46536A', cursor: 'pointer' }} className="dc27">
+                  <span onClick={v.goPrev} style={{ width: '28px', height: '28px', borderRadius: '9px', background: '#FFFFFF', border: '1px solid #E6EAF2', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#46536A', cursor: 'pointer' }} className="dc28">
                     <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M14 6l-6 6 6 6" />
                     </svg>
@@ -671,7 +748,7 @@ export default function EditorDesign({ v }: { v: any }) {
                   <span style={{ fontSize: '12px', fontWeight: '600', color: '#46536A', whiteSpace: 'nowrap' }}>
                     {v.spreadNav}
                   </span>
-                  <span onClick={v.goNext} style={{ width: '28px', height: '28px', borderRadius: '9px', background: '#FFFFFF', border: '1px solid #E6EAF2', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#46536A', cursor: 'pointer' }} className="dc28">
+                  <span onClick={v.goNext} style={{ width: '28px', height: '28px', borderRadius: '9px', background: '#FFFFFF', border: '1px solid #E6EAF2', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#46536A', cursor: 'pointer' }} className="dc29">
                     <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M10 6l6 6-6 6" />
                     </svg>
@@ -746,7 +823,7 @@ export default function EditorDesign({ v }: { v: any }) {
                           </span>
                         </div>
                         {v.pageFrames.map((f: any, i10: number) => (
-                          <div key={i10} onClick={f.onClick} onContextMenu={f.menu} style={css(f.style)} className="dc29">
+                          <div key={i10} onClick={f.onClick} onContextMenu={f.menu} style={css(f.style)} className="dc30">
                             <img src={f.src} style={css(f.imgStyle)} alt="" />
                           </div>
                         ))}
@@ -806,7 +883,7 @@ export default function EditorDesign({ v }: { v: any }) {
                       ))}
                       <div style={css(v.rightGrid)}>
                         {v.rightFrames.map((f: any, i10: number) => (
-                          <div key={i10} onClick={f.onClick} onContextMenu={f.menu} style={css(f.style)} className="dc30">
+                          <div key={i10} onClick={f.onClick} onContextMenu={f.menu} style={css(f.style)} className="dc31">
                             <img src={f.src} style={css(f.imgStyle)} alt="" />
                             <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" style={css(f.iconStyle)}>
                               <rect x="3" y="4" width="18" height="16" rx="4" />
@@ -883,18 +960,18 @@ export default function EditorDesign({ v }: { v: any }) {
                 </div>
               </div>
               <div style={css(v.floatBar)}>
-                <span title="Trocar foto" style={{ width: '32px', height: '32px', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#46536A', cursor: 'pointer' }} className="dc31">
+                <span title="Trocar foto" style={{ width: '32px', height: '32px', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#46536A', cursor: 'pointer' }} className="dc32">
                   <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M7 8h13l-3-3M17 16H4l3 3" />
                   </svg>
                 </span>
-                <span title="Recortar" style={{ width: '32px', height: '32px', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#46536A', cursor: 'pointer' }} className="dc32">
+                <span title="Recortar" style={{ width: '32px', height: '32px', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#46536A', cursor: 'pointer' }} className="dc33">
                   <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M6 3v13a2 2 0 0 0 2 2h13" />
                     <path d="M3 6h13a2 2 0 0 1 2 2v13" />
                   </svg>
                 </span>
-                <span title="Girar" style={{ width: '32px', height: '32px', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#46536A', cursor: 'pointer' }} className="dc33">
+                <span title="Girar" style={{ width: '32px', height: '32px', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#46536A', cursor: 'pointer' }} className="dc34">
                   <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M20 11a8 8 0 1 0-2.3 5.7" />
                     <path d="M20 5v6h-6" />
@@ -902,7 +979,7 @@ export default function EditorDesign({ v }: { v: any }) {
                 </span>
                 <span style={{ width: '1px', height: '20px', background: '#E6EAF2', margin: '0 2px' }}>
                 </span>
-                <span title="Remover" style={{ width: '32px', height: '32px', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#E11D48', cursor: 'pointer' }} className="dc34">
+                <span title="Remover" style={{ width: '32px', height: '32px', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#E11D48', cursor: 'pointer' }} className="dc35">
                   <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M4 7h16M9 7V5h6v2M6 7l1 13h10l1-13" />
                   </svg>
@@ -952,7 +1029,7 @@ export default function EditorDesign({ v }: { v: any }) {
                   </div>
                 ))}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '5px', flex: '0 0 auto' }}>
-                  <span onClick={v.addSpread} style={{ width: '96px', height: '52px', borderRadius: '8px', border: '1px dashed #CBD5E6', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#9AA7BC', cursor: 'pointer' }} className="dc35">
+                  <span onClick={v.addSpread} style={{ width: '96px', height: '52px', borderRadius: '8px', border: '1px dashed #CBD5E6', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#9AA7BC', cursor: 'pointer' }} className="dc36">
                     <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M12 5v14M5 12h14" />
                     </svg>
@@ -978,7 +1055,7 @@ export default function EditorDesign({ v }: { v: any }) {
                 <span style={{ padding: '4px 9px', borderRadius: '999px', background: '#EAF0FF', color: '#2563EB', fontSize: '11px', fontWeight: '700' }}>
                   {v.inspTag}
                 </span>
-                <span onClick={v.toggleInsp} title="Recolher" style={{ width: '30px', height: '30px', borderRadius: '10px', border: '1px solid #E6EAF2', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#6B7A90', cursor: 'pointer' }} className="dc36">
+                <span onClick={v.toggleInsp} title="Recolher" style={{ width: '30px', height: '30px', borderRadius: '10px', border: '1px solid #E6EAF2', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#6B7A90', cursor: 'pointer' }} className="dc37">
                   <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="m10 6 6 6-6 6" />
                   </svg>
@@ -1084,10 +1161,10 @@ export default function EditorDesign({ v }: { v: any }) {
                     </div>
                   </div>
                   <div style={{ display: 'flex', gap: '8px' }}>
-                    <span style={css(v.botaoCorrigir)} onClick={v.corrigirRosto} className="dc37">
+                    <span style={css(v.botaoCorrigir)} onClick={v.corrigirRosto} className="dc38">
                       Corrigir
                     </span>
-                    <span style={{ flex: '1', height: '38px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '10px', border: '1px solid #E6EAF2', fontSize: '12.5px', fontWeight: '600', color: '#46536A', cursor: 'pointer' }} onClick={v.manterRosto} className="dc38">
+                    <span style={{ flex: '1', height: '38px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '10px', border: '1px solid #E6EAF2', fontSize: '12.5px', fontWeight: '600', color: '#46536A', cursor: 'pointer' }} onClick={v.manterRosto} className="dc39">
                       Manter
                     </span>
                   </div>
@@ -1097,16 +1174,16 @@ export default function EditorDesign({ v }: { v: any }) {
                     Enquadramento
                   </p>
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: '8px', marginBottom: '12px' }}>
-                    <span onClick={v.enqPreencher.pick} style={css(v.enqPreencher.style)} className="dc39">
+                    <span onClick={v.enqPreencher.pick} style={css(v.enqPreencher.style)} className="dc40">
                       Preencher
                     </span>
-                    <span onClick={v.enqEncaixar.pick} style={css(v.enqEncaixar.style)} className="dc40">
+                    <span onClick={v.enqEncaixar.pick} style={css(v.enqEncaixar.style)} className="dc41">
                       Encaixar
                     </span>
-                    <span onClick={v.enqGirar.pick} style={css(v.enqGirar.style)} className="dc41">
+                    <span onClick={v.enqGirar.pick} style={css(v.enqGirar.style)} className="dc42">
                       Girar
                     </span>
-                    <span onClick={v.enqEspelhar.pick} style={css(v.enqEspelhar.style)} className="dc42">
+                    <span onClick={v.enqEspelhar.pick} style={css(v.enqEspelhar.style)} className="dc43">
                       Espelhar
                     </span>
                   </div>
@@ -1225,7 +1302,7 @@ export default function EditorDesign({ v }: { v: any }) {
                     <p style={{ margin: '0 0 12px', fontSize: '13px', lineHeight: '1.5', color: 'rgba(255,255,255,.78)' }}>
                       Quer melhorar esta lâmina sem mexer no resto do álbum?
                     </p>
-                    <span onClick={v.openModal} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', height: '38px', borderRadius: '10px', background: '#FFFFFF', color: '#0B1220', fontSize: '12.5px', fontWeight: '700', cursor: 'pointer' }} className="dc43">
+                    <span onClick={v.openModal} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', height: '38px', borderRadius: '10px', background: '#FFFFFF', color: '#0B1220', fontSize: '12.5px', fontWeight: '700', cursor: 'pointer' }} className="dc44">
                       Melhorar esta lâmina
                     </span>
                   </div>
@@ -1248,7 +1325,7 @@ export default function EditorDesign({ v }: { v: any }) {
                 A mudança vale apenas para a lâmina 5.
               </p>
             </div>
-            <span onClick={v.closeModal} style={{ width: '34px', height: '34px', borderRadius: '12px', border: '1px solid #E6EAF2', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#6B7A90', cursor: 'pointer', flex: '0 0 auto' }} className="dc44">
+            <span onClick={v.closeModal} style={{ width: '34px', height: '34px', borderRadius: '12px', border: '1px solid #E6EAF2', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#6B7A90', cursor: 'pointer', flex: '0 0 auto' }} className="dc45">
               <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M18 6 6 18M6 6l12 12" />
               </svg>
@@ -1259,13 +1336,13 @@ export default function EditorDesign({ v }: { v: any }) {
               <span style={{ padding: '13px 14px', borderRadius: '12px', border: '1.5px solid #2563EB', background: '#F1F5FD', fontSize: '13px', fontWeight: '700', color: '#2563EB', cursor: 'pointer' }}>
                 Corrigir cortes de rosto
               </span>
-              <span style={{ padding: '13px 14px', borderRadius: '12px', border: '1.5px solid #E6EAF2', background: '#FFFFFF', fontSize: '13px', fontWeight: '600', color: '#46536A', cursor: 'pointer' }} className="dc45">
+              <span style={{ padding: '13px 14px', borderRadius: '12px', border: '1.5px solid #E6EAF2', background: '#FFFFFF', fontSize: '13px', fontWeight: '600', color: '#46536A', cursor: 'pointer' }} className="dc46">
                 Equilibrar espaços
               </span>
-              <span style={{ padding: '13px 14px', borderRadius: '12px', border: '1.5px solid #E6EAF2', background: '#FFFFFF', fontSize: '13px', fontWeight: '600', color: '#46536A', cursor: 'pointer' }} className="dc46">
+              <span style={{ padding: '13px 14px', borderRadius: '12px', border: '1.5px solid #E6EAF2', background: '#FFFFFF', fontSize: '13px', fontWeight: '600', color: '#46536A', cursor: 'pointer' }} className="dc47">
                 Trocar o layout
               </span>
-              <span style={{ padding: '13px 14px', borderRadius: '12px', border: '1.5px solid #E6EAF2', background: '#FFFFFF', fontSize: '13px', fontWeight: '600', color: '#46536A', cursor: 'pointer' }} className="dc47">
+              <span style={{ padding: '13px 14px', borderRadius: '12px', border: '1.5px solid #E6EAF2', background: '#FFFFFF', fontSize: '13px', fontWeight: '600', color: '#46536A', cursor: 'pointer' }} className="dc48">
                 Harmonizar o fundo
               </span>
             </div>
@@ -1304,10 +1381,10 @@ export default function EditorDesign({ v }: { v: any }) {
             </p>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '10px', padding: '16px 26px', borderTop: '1px solid #F0F3F9', background: '#F8FAFE' }}>
-            <button onClick={v.closeModal} style={{ height: '44px', padding: '0 18px', border: '1px solid #E6EAF2', borderRadius: '12px', background: '#FFFFFF', color: '#46536A', fontFamily: 'inherit', fontSize: '14px', fontWeight: '600', cursor: 'pointer' }} className="dc48">
+            <button onClick={v.closeModal} style={{ height: '44px', padding: '0 18px', border: '1px solid #E6EAF2', borderRadius: '12px', background: '#FFFFFF', color: '#46536A', fontFamily: 'inherit', fontSize: '14px', fontWeight: '600', cursor: 'pointer' }} className="dc49">
               Descartar
             </button>
-            <button onClick={v.closeModal} style={{ height: '44px', padding: '0 20px', border: '0', borderRadius: '12px', background: 'linear-gradient(135deg,#2563EB,#06B6D4)', color: '#FFFFFF', fontFamily: 'inherit', fontSize: '14px', fontWeight: '700', cursor: 'pointer', boxShadow: '0 8px 18px rgba(37,99,235,.24)' }} className="dc49">
+            <button onClick={v.closeModal} style={{ height: '44px', padding: '0 20px', border: '0', borderRadius: '12px', background: 'linear-gradient(135deg,#2563EB,#06B6D4)', color: '#FFFFFF', fontFamily: 'inherit', fontSize: '14px', fontWeight: '700', cursor: 'pointer', boxShadow: '0 8px 18px rgba(37,99,235,.24)' }} className="dc50">
               Aplicar na lâmina
             </button>
           </div>
