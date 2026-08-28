@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { Foto } from '@/lib/data';
 import { calcularPreco, reais, type PrecoModelo } from '@/lib/preco';
 
@@ -20,7 +20,6 @@ export type EstadoEditor = {
   insp: boolean;
   modal: number | null;
   zoom: number;
-  sel: 'foto' | 'texto' | null;
   count: number;
   lay: number;
   photoTab: number;
@@ -137,16 +136,21 @@ export function useEditorDesign({
 }) {
   const [s, setS] = useState<EstadoEditor>({
     hover: null, turning: null,
-    tool: 0, panel: true, insp: false, modal: null, zoom: ZOOM_PADRAO, sel: null,
+    tool: 0, panel: true, insp: false, modal: null, zoom: ZOOM_PADRAO,
     count: 0, lay: 2, photoTab: 1, bgTab: 0, bgCat: 0, elCat: 0, bw: false,
   });
 
   const ac = useRef<AudioContext | null>(null);
+  // Espelho do estado para os ouvintes de evento, que são registrados uma vez
+  // e capturariam o `s` da primeira renderização.
+  const sRef = useRef(s);
+  sRef.current = s;
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const set = useCallback((p: Partial<EstadoEditor>) => setS((a) => ({ ...a, ...p })), []);
 
   const totalLaminas = doc.laminas.length;
   const laminaAtual = doc.atual;
+  const limparSelecao = useCallback(() => doc.setSelecao(null), [doc]);
   const irParaLamina = doc.setAtual;
   const irPara = useCallback(
     (destino: number) => {
@@ -161,11 +165,38 @@ export function useEditorDesign({
           set({ turning: null });
           irParaLamina(destino);
         }, 880);
-        return { ...a, turning: destino > laminaAtual ? 'next' : 'prev', sel: null };
+        limparSelecao();
+        return { ...a, turning: destino > laminaAtual ? 'next' : 'prev' };
       });
     },
-    [set, totalLaminas, laminaAtual, irParaLamina],
+    [set, totalLaminas, laminaAtual, irParaLamina, limparSelecao],
   );
+
+  // Selecionar abre o inspetor. Antes o painel ficava recolhido e o cliente
+  // precisava descobrir a abinha na borda para ver que havia o que editar.
+  useEffect(() => {
+    if (doc.selecao) set({ insp: true });
+  }, [doc.selecao, set]);
+
+  // --- teclado: setas viram página, +/- dão zoom ---------------------------
+  useEffect(() => {
+    const tecla = (e: KeyboardEvent) => {
+      const alvo = e.target as HTMLElement | null;
+      if (alvo && /^(INPUT|TEXTAREA|SELECT)$/.test(alvo.tagName)) return;
+      if (e.ctrlKey || e.metaKey || e.altKey) return;
+
+      if (e.key === 'ArrowRight' || e.key === 'PageDown') { e.preventDefault(); irPara(doc.atual + 1); }
+      else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); irPara(doc.atual - 1); }
+      else if (e.key === '+' || e.key === '=') { e.preventDefault(); set({ zoom: limitarZoom(sRef.current.zoom + ZOOM_PASSO) }); }
+      else if (e.key === '-' || e.key === '_') { e.preventDefault(); set({ zoom: limitarZoom(sRef.current.zoom - ZOOM_PASSO) }); }
+      else if (e.key === 'Escape') doc.setSelecao(null);
+      else if (e.key === 'Delete' || e.key === 'Backspace') {
+        if (doc.selecao) { e.preventDefault(); doc.limparQuadro(); }
+      }
+    };
+    window.addEventListener('keydown', tecla);
+    return () => window.removeEventListener('keydown', tecla);
+  }, [irPara, set, doc]);
 
   const v = useMemo(() => {
     const lista = (rotulos: string[], chave: keyof EstadoEditor, atual: number) =>
@@ -177,6 +208,14 @@ export function useEditorDesign({
 
     const lamina = doc.lamina;
     const porId = new Map(fotos.map((f) => [f.id, f]));
+
+    // O que está selecionado, segundo o documento — não segundo um segundo
+    // estado paralelo que ninguém mantinha em dia.
+    const qSel = doc.quadroSelecionado;
+    const selTipo: 'foto' | 'texto' | null = doc.selecao
+      ? (qSel ? 'foto' : 'texto')
+      : null;
+    const fotoSel = qSel?.fotoId ? porId.get(qSel.fotoId) : undefined;
 
     /**
      * Retângulo do layout, como string de estilo absoluto.
@@ -426,11 +465,11 @@ export function useEditorDesign({
           'border:1px solid #E6EAF2;border-right:0;color:#6B7A90;cursor:pointer;box-shadow:-4px 0 12px rgba(11,18,32,.06);z-index:3',
       toggleInsp: () => set({ insp: !s.insp }),
 
-      inspTitle: s.sel === 'texto' ? 'Texto selecionado' : s.sel ? 'Foto selecionada' : 'Inspetor',
+      inspTitle: selTipo === 'texto' ? 'Texto selecionado' : selTipo ? 'Foto selecionada' : 'Inspetor',
       inspTag:
-        s.sel === 'texto'
+        selTipo === 'texto'
           ? 'Título'
-          : s.sel
+          : selTipo
             ? (fotos[0]?.storage_path.split('/').pop() ?? 'foto')
             : 'lâmina ' + (laminaAtual + 1),
       spreadTitle:
@@ -449,8 +488,8 @@ export function useEditorDesign({
       redoStyle: `width:34px;height:34px;border-radius:9px;display:flex;align-items:center;` +
         `justify-content:center;color:${doc.podeRefazer ? '#46536A' : '#C4CDDB'};` +
         `cursor:${doc.podeRefazer ? 'pointer' : 'default'}`,
-      inspEmpty: s.sel ? 'display:none' : 'display:flex;flex-direction:column;align-items:center;gap:10px;padding:34px 22px',
-      inspBody: s.sel ? 'display:block' : 'display:none',
+      inspEmpty: selTipo ? 'display:none' : 'display:flex;flex-direction:column;align-items:center;gap:10px;padding:34px 22px',
+      inspBody: selTipo ? 'display:block' : 'display:none',
 
       // Os quadros posicionam-se sozinhos pelo retângulo do layout; o
       // contêiner deixa de ser grade. É o mesmo desenho do seletor.
@@ -477,8 +516,8 @@ export function useEditorDesign({
       // Clicar num quadro seleciona AQUELE quadro. Antes marcava um `sel`
       // genérico que não apontava para objeto nenhum — daí o inspetor não
       // conseguir editar a foto escolhida.
-      selectFrame: framesEsq[0]?.onClick ?? (() => set({ sel: 'foto', insp: true })),
-      selectText: () => set({ sel: 'texto', insp: true }),
+      selectFrame: framesEsq[0]?.onClick ?? (() => {}),
+      selectText: () => {},
       frameA: framesEsq[0] ?? { style: 'display:none', onClick: () => {} },
       // A marcação de rosto só aparece quando houver análise de verdade
       // (Fase 5). Um retângulo fixo em 16%/20% mentia sobre a foto.
@@ -486,7 +525,7 @@ export function useEditorDesign({
       faceTag: `display:none;position:absolute;top:6px;left:6px;` +
         `max-width:calc(100% - 12px);overflow:hidden;text-overflow:ellipsis;padding:3px 7px;` +
         `border-radius:6px;background:rgba(11,18,32,.68);color:#FFFFFF;font-size:10px;font-weight:700;white-space:nowrap`,
-      floatBar: `display:${s.sel ? 'flex' : 'none'};position:absolute;left:50%;bottom:50px;` +
+      floatBar: `display:${selTipo ? 'flex' : 'none'};position:absolute;left:50%;bottom:50px;` +
         `transform:translateX(-50%);z-index:30;align-items:center;gap:3px;padding:5px;border-radius:12px;` +
         `background:#FFFFFF;border:1px solid #E6EAF2;box-shadow:0 10px 24px rgba(11,18,32,.14);white-space:nowrap`,
       bwTrack: `width:40px;height:24px;border-radius:999px;background:${s.bw ? '#2563EB' : '#E6EAF2'};` +
@@ -597,7 +636,7 @@ export function useEditorDesign({
     const POS = ['top:-6px;left:-6px', 'top:-6px;right:-6px', 'bottom:-6px;left:-6px', 'bottom:-6px;right:-6px'];
     for (let i = 1; i <= 4; i++) {
       v['h' + i] =
-        (s.sel === 'foto' ? '' : 'display:none;') +
+        (selTipo === 'foto' ? '' : 'display:none;') +
         `position:absolute;width:11px;height:11px;border-radius:3px;background:#FFFFFF;` +
         `border:1.5px solid #2563EB;${POS[i - 1]};z-index:9`;
     }

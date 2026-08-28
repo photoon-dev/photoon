@@ -315,7 +315,7 @@
           </div>
         </div>
 
-        <div style="{{ stageStyle }}">
+        <div data-om-palco="1" style="{{ stageStyle }}">
           <div style="{{ bookStyle }}">
             <span style="position: absolute; top: 3.5%; left: -1.4%; right: -1.4%; bottom: -3.8%; border-radius: 10px 10px 16px 16px; background: linear-gradient(180deg,#28497F 0%,#1B3565 42%,#0E2249 100%); box-shadow: inset 0 0 0 1px rgba(255,255,255,.16), inset 0 2px 0 rgba(255,255,255,.2), 0 7px 0 #0B1D43, 0 16px 32px rgba(16,31,64,.26);"></span>
             <span style="position: absolute; top: 3.5%; bottom: -3.8%; left: 50%; width: 26px; transform: translateX(-50%); background: linear-gradient(90deg, rgba(0,0,0,.34), rgba(255,255,255,.1) 45%, rgba(255,255,255,.14) 55%, rgba(0,0,0,.34)); border-radius: 2px;"></span>
@@ -371,9 +371,6 @@
               <span style="{{ turnBrilho }}"></span>
             </div>
             <span style="{{ turnSombra }}"></span>
-
-            <span onClick="{{ goPrev }}" title="Página anterior" style="position: absolute; z-index: 12; top: 0; bottom: 0; left: 0; width: 9%; cursor: pointer; border-radius: 14px 0 0 12px;" style-hover="background: linear-gradient(90deg, rgba(11,18,32,.08), transparent);"></span>
-            <span onClick="{{ goNext }}" title="Próxima página" style="position: absolute; z-index: 12; top: 0; bottom: 0; right: 0; width: 9%; cursor: pointer; border-radius: 0 14px 12px 0;" style-hover="background: linear-gradient(270deg, rgba(11,18,32,.08), transparent);"></span>
 
             <span style="position: absolute; z-index: 8; left: 50%; top: 1%; bottom: 1.5%; width: 34px; transform: translateX(-50%); pointer-events: none; opacity: .28; mix-blend-mode: multiply; background: radial-gradient(ellipse at center, rgba(0,0,0,.22), rgba(0,0,0,.08) 28%, transparent 70%);"></span>
           </div>
@@ -448,40 +445,40 @@
         </div>
 
         <div style="{{ inspBody }}">
-          <div style="padding: 16px 18px; border-bottom: 1px solid #F0F3F9;">
+          <div style="{{ blocoRosto }}">
             <div style="display: flex; align-items: flex-start; gap: 11px; padding: 13px 14px; border-radius: 12px; background: #FEF3E2; border: 1px solid #FCE9CE; margin-bottom: 12px;">
               <span style="color: #B45309; flex: 0 0 auto; margin-top: 1px;"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 8v5M12 16.5h.01"/></svg></span>
               <div style="flex: 1; min-width: 0;">
                 <p style="margin: 0; font-size: 12.5px; font-weight: 700; color: #7A5410;">Rosto perto do corte</p>
-                <p style="margin: 3px 0 0; font-size: 11.5px; line-height: 1.5; color: #8A6520;">O rosto está a 4 mm da margem. Podemos reenquadrar mantendo o rosto inteiro.</p>
+                <p style="margin: 3px 0 0; font-size: 11.5px; line-height: 1.5; color: #8A6520;">{{ textoRosto }}</p>
               </div>
             </div>
             <div style="display: flex; gap: 8px;">
-              <span style="flex: 1; height: 38px; display: flex; align-items: center; justify-content: center; gap: 7px; border-radius: 10px; background: linear-gradient(135deg,#2563EB,#06B6D4); color: #FFFFFF; font-size: 12.5px; font-weight: 700; cursor: pointer;" style-hover="filter: brightness(1.06);">Corrigir</span>
-              <span style="flex: 1; height: 38px; display: flex; align-items: center; justify-content: center; border-radius: 10px; border: 1px solid #E6EAF2; font-size: 12.5px; font-weight: 600; color: #46536A; cursor: pointer;" style-hover="border-color: #2563EB; color: #2563EB;">Manter</span>
+              <span style="flex: 1; height: 38px; display: flex; align-items: center; justify-content: center; gap: 7px; border-radius: 10px; background: linear-gradient(135deg,#2563EB,#06B6D4); color: #FFFFFF; font-size: 12.5px; font-weight: 700; cursor: pointer;" style-hover="filter: brightness(1.06);" onClick="{{ corrigirRosto }}">Corrigir</span>
+              <span style="flex: 1; height: 38px; display: flex; align-items: center; justify-content: center; border-radius: 10px; border: 1px solid #E6EAF2; font-size: 12.5px; font-weight: 600; color: #46536A; cursor: pointer;" style-hover="border-color: #2563EB; color: #2563EB;" onClick="{{ manterRosto }}">Manter</span>
             </div>
           </div>
 
           <div style="padding: 16px 18px; border-bottom: 1px solid #F0F3F9;">
             <p style="margin: 0 0 12px; font-size: 11px; letter-spacing: 1.2px; text-transform: uppercase; color: #9AA7BC; font-weight: 700;">Enquadramento</p>
             <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-bottom: 12px;">
-              <span style="height: 38px; display: flex; align-items: center; justify-content: center; gap: 7px; border: 1px solid #E6EAF2; border-radius: 10px; background: #FFFFFF; color: #46536A; font-size: 12px; font-weight: 600; cursor: pointer;" style-hover="border-color: #2563EB; color: #2563EB; background: #F8FAFE;">Preencher</span>
-              <span style="height: 38px; display: flex; align-items: center; justify-content: center; gap: 7px; border: 1px solid #E6EAF2; border-radius: 10px; background: #FFFFFF; color: #46536A; font-size: 12px; font-weight: 600; cursor: pointer;" style-hover="border-color: #2563EB; color: #2563EB; background: #F8FAFE;">Encaixar</span>
-              <span style="height: 38px; display: flex; align-items: center; justify-content: center; gap: 7px; border: 1px solid #E6EAF2; border-radius: 10px; background: #FFFFFF; color: #46536A; font-size: 12px; font-weight: 600; cursor: pointer;" style-hover="border-color: #2563EB; color: #2563EB; background: #F8FAFE;">Girar</span>
-              <span style="height: 38px; display: flex; align-items: center; justify-content: center; gap: 7px; border: 1px solid #E6EAF2; border-radius: 10px; background: #FFFFFF; color: #46536A; font-size: 12px; font-weight: 600; cursor: pointer;" style-hover="border-color: #2563EB; color: #2563EB; background: #F8FAFE;">Espelhar</span>
+              <span onClick="{{ enqPreencher.pick }}" style="{{ enqPreencher.style }}" style-hover="border-color: #2563EB; color: #2563EB; background: #F8FAFE;">Preencher</span>
+              <span onClick="{{ enqEncaixar.pick }}" style="{{ enqEncaixar.style }}" style-hover="border-color: #2563EB; color: #2563EB; background: #F8FAFE;">Encaixar</span>
+              <span onClick="{{ enqGirar.pick }}" style="{{ enqGirar.style }}" style-hover="border-color: #2563EB; color: #2563EB; background: #F8FAFE;">Girar</span>
+              <span onClick="{{ enqEspelhar.pick }}" style="{{ enqEspelhar.style }}" style-hover="border-color: #2563EB; color: #2563EB; background: #F8FAFE;">Espelhar</span>
             </div>
             <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px;">
               <div style="display: flex; flex-direction: column; gap: 6px; min-width: 0;">
                 <label style="font-size: 11px; font-weight: 700; color: #9AA7BC;">Zoom</label>
                 <div style="display: flex; align-items: center; gap: 6px; min-width: 0; height: 38px; padding: 0 11px; border: 1px solid #E6EAF2; border-radius: 10px; background: #FFFFFF;">
-                  <input value="118" style="flex: 1; width: 100%; min-width: 0; border: 0; background: transparent; font-family: inherit; font-size: 13px; font-weight: 600; color: #0B1220;"/>
+                  <input type="number" value="{{ zoomFoto }}" onChange="{{ setZoomFoto }}" style="flex: 1; width: 100%; min-width: 0; border: 0; background: transparent; font-family: inherit; font-size: 13px; font-weight: 600; color: #0B1220;"/>
                   <span style="font-size: 11px; color: #9AA7BC; flex: 0 0 auto;">%</span>
                 </div>
               </div>
               <div style="display: flex; flex-direction: column; gap: 6px; min-width: 0;">
                 <label style="font-size: 11px; font-weight: 700; color: #9AA7BC;">Rotação</label>
                 <div style="display: flex; align-items: center; gap: 6px; min-width: 0; height: 38px; padding: 0 11px; border: 1px solid #E6EAF2; border-radius: 10px; background: #FFFFFF;">
-                  <input value="0" style="flex: 1; width: 100%; min-width: 0; border: 0; background: transparent; font-family: inherit; font-size: 13px; font-weight: 600; color: #0B1220;"/>
+                  <input type="number" value="{{ rotFoto }}" onChange="{{ setRotFoto }}" style="flex: 1; width: 100%; min-width: 0; border: 0; background: transparent; font-family: inherit; font-size: 13px; font-weight: 600; color: #0B1220;"/>
                   <span style="font-size: 11px; color: #9AA7BC; flex: 0 0 auto;">°</span>
                 </div>
               </div>
@@ -494,7 +491,7 @@
               <sc-for list="{{ sliders }}" as="s" hint-placeholder-count="3">
                 <div>
                   <div style="display: flex; justify-content: space-between; margin-bottom: 6px;"><span style="font-size: 12px; color: #46536A;">{{ s.label }}</span><span style="font-size: 12px; font-weight: 700;">{{ s.value }}</span></div>
-                  <div style="height: 6px; border-radius: 999px; background: #EEF1F7; position: relative;"><div style="{{ s.fill }}"></div><span style="{{ s.knob }}"></span></div>
+                  <div style="height: 6px; border-radius: 999px; background: #EEF1F7; position: relative;"><div style="{{ s.fill }}"></div><span style="{{ s.knob }}"></span><input type="range" min="{{ s.min }}" max="{{ s.max }}" value="{{ s.raw }}" onChange="{{ s.set }}" style="position: absolute; inset: -9px 0; width: 100%; height: 24px; opacity: 0; cursor: pointer; margin: 0;"/></div>
                 </div>
               </sc-for>
               <div style="display: flex; align-items: center; gap: 10px; padding: 11px 13px; border-radius: 11px; background: #F8FAFE; border: 1px solid #EEF1F7;">
