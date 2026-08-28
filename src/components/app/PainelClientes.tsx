@@ -1,0 +1,329 @@
+'use client';
+
+import { useState } from 'react';
+import { createClient } from '@/lib/supabase/client';
+import type { ClienteDaLoja, Template } from '@/lib/lojista';
+import {
+  cadastrarCliente,
+  criarGaleria,
+  criarProjetoParaCliente,
+  registrarFotos,
+  removerCliente,
+} from '@/app/app/actions';
+
+const CARD = 'rounded-[18px] border border-line bg-surface';
+const BOTAO_PRIMARIO =
+  'flex h-11 items-center justify-center gap-2 rounded-[14px] bg-lente px-4 text-[13.5px] font-bold text-white shadow-card hover:brightness-[1.06] disabled:opacity-50';
+const BOTAO =
+  'flex h-11 items-center justify-center gap-2 rounded-[14px] border border-line bg-surface px-4 text-[13.5px] font-semibold text-ink hover:border-[#D6E2FC] hover:bg-blue-soft hover:text-blue disabled:opacity-50';
+const CAMPO =
+  'h-11 w-full rounded-[14px] border border-line bg-surface px-3.5 text-[14px] text-ink outline-none focus:border-blue';
+const ROTULO = 'text-[12.5px] font-semibold text-ink-3';
+
+const STATUS_ROTULO: Record<string, string> = {
+  nao_iniciado: 'Não iniciado',
+  em_edicao: 'Em edição',
+  com_pendencias: 'Com pendências',
+  pronto: 'Pronto',
+  finalizado: 'Finalizado',
+};
+
+export default function PainelClientes({
+  clientes,
+  templates,
+  slugLoja,
+  dominio,
+}: {
+  clientes: ClienteDaLoja[];
+  templates: Template[];
+  slugLoja: string;
+  dominio: string;
+}) {
+  const [aberto, setAberto] = useState<string | null>(null);
+  const [erro, setErro] = useState<string | null>(null);
+  const [enviando, setEnviando] = useState<string | null>(null);
+  const [progresso, setProgresso] = useState({ feitas: 0, total: 0 });
+
+  const linkDaLoja = `https://${slugLoja}.${dominio}/entrar`;
+
+  /**
+   * Envia as fotos direto do navegador para o Storage, com a sessão do
+   * lojista, e só então registra os metadados. Passar os arquivos por uma
+   * server action obrigaria a subir tudo duas vezes.
+   */
+  async function enviarFotos(galeriaId: string, arquivos: FileList) {
+    setErro(null);
+    setEnviando(galeriaId);
+    setProgresso({ feitas: 0, total: arquivos.length });
+
+    const supabase = createClient();
+    const registrados: { storage_path: string; largura?: number; altura?: number }[] = [];
+
+    try {
+      for (let i = 0; i < arquivos.length; i++) {
+        const arq = arquivos[i];
+        const nome = `${Date.now()}-${i}-${arq.name.replace(/[^\w.\-]/g, '_')}`;
+        const caminho = `${galeriaId}/${nome}`;
+
+        const { error } = await supabase.storage
+          .from('galerias')
+          .upload(caminho, arq, { contentType: arq.type, upsert: false });
+
+        if (error) throw new Error(`${arq.name}: ${error.message}`);
+
+        registrados.push({ storage_path: caminho });
+        setProgresso({ feitas: i + 1, total: arquivos.length });
+      }
+
+      await registrarFotos(galeriaId, registrados);
+      location.reload();
+    } catch (e) {
+      setErro(e instanceof Error ? e.message : 'Falha ao enviar as fotos.');
+    } finally {
+      setEnviando(null);
+    }
+  }
+
+  return (
+    <>
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <div className="min-w-0">
+          <p className="m-0 text-[12.5px] font-semibold uppercase tracking-[1.2px] text-muted-2">
+            Comercial · Clientes
+          </p>
+          <h1 className="m-0 mt-1.5 text-[26px] font-extrabold tracking-[-.9px]">
+            Clientes da loja
+          </h1>
+          <p className="m-0 mt-1.5 text-[13.5px] text-muted">
+            {clientes.length} cadastrado{clientes.length === 1 ? '' : 's'} ·{' '}
+            {clientes.filter((c) => c.user_id).length} já acessaram
+          </p>
+        </div>
+
+        <div className={`${CARD} flex items-center gap-3 px-4 py-3`}>
+          <div className="min-w-0">
+            <p className="m-0 text-[11.5px] font-semibold text-muted-2">Link de acesso da loja</p>
+            <p className="m-0 truncate text-[13px] font-semibold text-blue">{linkDaLoja}</p>
+          </div>
+          <button
+            onClick={() => navigator.clipboard?.writeText(linkDaLoja)}
+            className="h-9 flex-none rounded-[12px] border border-line px-3 text-[12.5px] font-semibold text-ink-3 hover:bg-blue-soft hover:text-blue"
+          >
+            Copiar
+          </button>
+        </div>
+      </div>
+
+      {erro && (
+        <p className="m-0 rounded-[14px] bg-coral-surface px-4 py-3 text-[13px] font-semibold text-coral">
+          {erro}
+        </p>
+      )}
+
+      {/* ---------------- cadastro ---------------- */}
+      <form action={cadastrarCliente} className={`${CARD} p-6`}>
+        <p className="m-0 mb-1 text-[15px] font-bold">Cadastrar cliente</p>
+        <p className="m-0 mb-4 text-[12.5px] leading-[1.55] text-muted">
+          O acesso é por e-mail. A conta se vincula sozinha quando a pessoa entrar pelo link da
+          loja com esse mesmo e-mail — você não precisa criar senha para ela.
+        </p>
+        <div className="grid gap-3 sm:grid-cols-[1fr_1fr_180px_auto]">
+          <label className="flex flex-col gap-1.5">
+            <span className={ROTULO}>E-mail</span>
+            <input name="email" type="email" required placeholder="cliente@email.com" className={CAMPO} />
+          </label>
+          <label className="flex flex-col gap-1.5">
+            <span className={ROTULO}>Nome</span>
+            <input name="nome" placeholder="Nome do cliente" className={CAMPO} />
+          </label>
+          <label className="flex flex-col gap-1.5">
+            <span className={ROTULO}>Telefone</span>
+            <input name="telefone" placeholder="(11) 90000-0000" className={CAMPO} />
+          </label>
+          <div className="flex items-end">
+            <button type="submit" className={BOTAO_PRIMARIO}>
+              Cadastrar
+            </button>
+          </div>
+        </div>
+      </form>
+
+      {/* ---------------- lista ---------------- */}
+      {clientes.length === 0 ? (
+        <div className={`${CARD} px-6 py-14 text-center`}>
+          <p className="m-0 text-[15px] font-bold">Nenhum cliente ainda</p>
+          <p className="m-0 mt-1.5 text-[13.5px] text-muted">
+            Cadastre o primeiro acima e envie o link da loja para ele.
+          </p>
+        </div>
+      ) : (
+        <div className="flex flex-col gap-4">
+          {clientes.map((c) => {
+            const galeria = c.galerias?.[0];
+            const totalFotos = galeria?.galeria_fotos?.[0]?.count ?? 0;
+            const expandido = aberto === c.id;
+
+            return (
+              <div key={c.id} className={CARD}>
+                <div className="flex flex-wrap items-center gap-4 px-6 py-5">
+                  <span className="flex h-11 w-11 flex-none items-center justify-center rounded-[14px] bg-ink text-[13px] font-bold text-white">
+                    {(c.nome ?? c.email ?? '?').slice(0, 2).toUpperCase()}
+                  </span>
+
+                  <div className="min-w-[200px] flex-1">
+                    <p className="m-0 text-[15px] font-bold">{c.nome ?? c.email}</p>
+                    <p className="m-0 mt-0.5 text-[12.5px] text-muted">{c.email}</p>
+                  </div>
+
+                  <span
+                    className={`rounded-full px-3 py-1.5 text-[11.5px] font-bold ${
+                      c.user_id
+                        ? 'bg-green-surface text-[#059669]'
+                        : 'bg-amber-surface text-[#B45309]'
+                    }`}
+                  >
+                    {c.user_id ? 'Acesso ativo' : 'Aguardando 1º acesso'}
+                  </span>
+
+                  <div className="text-right">
+                    <p className="m-0 text-[12.5px] text-muted-2">Fotos liberadas</p>
+                    <p className="m-0 text-[15px] font-extrabold">{totalFotos}</p>
+                  </div>
+
+                  <div className="text-right">
+                    <p className="m-0 text-[12.5px] text-muted-2">Álbuns</p>
+                    <p className="m-0 text-[15px] font-extrabold">{c.projetos?.length ?? 0}</p>
+                  </div>
+
+                  <button
+                    onClick={() => setAberto(expandido ? null : c.id)}
+                    className={`${BOTAO} flex-none`}
+                  >
+                    {expandido ? 'Fechar' : 'Gerenciar'}
+                  </button>
+                </div>
+
+                {expandido && (
+                  <div className="grid gap-6 border-t border-line-2 px-6 py-5 lg:grid-cols-2">
+                    {/* ---- galeria ---- */}
+                    <div>
+                      <p className="m-0 mb-3 text-[13.5px] font-bold">Galeria de fotos</p>
+
+                      {galeria ? (
+                        <>
+                          <p className="m-0 mb-3 text-[12.5px] text-muted">
+                            {galeria.nome} · {totalFotos} foto{totalFotos === 1 ? '' : 's'}
+                          </p>
+                          <label className={`${BOTAO} cursor-pointer`}>
+                            {enviando === galeria.id
+                              ? `Enviando ${progresso.feitas}/${progresso.total}…`
+                              : 'Enviar fotos'}
+                            <input
+                              type="file"
+                              accept="image/*"
+                              multiple
+                              className="hidden"
+                              disabled={enviando !== null}
+                              onChange={(e) =>
+                                e.target.files?.length && enviarFotos(galeria.id, e.target.files)
+                              }
+                            />
+                          </label>
+                        </>
+                      ) : (
+                        <form action={criarGaleria} className="flex flex-col gap-2.5">
+                          <input type="hidden" name="cliente_id" value={c.id} />
+                          <input
+                            name="nome"
+                            required
+                            placeholder="Nome da sessão. Ex: Casamento Ana e João"
+                            className={CAMPO}
+                          />
+                          <label className="flex items-center gap-2.5">
+                            <span className={ROTULO}>Máximo de álbuns</span>
+                            <input
+                              name="max_albuns"
+                              type="number"
+                              min={1}
+                              max={20}
+                              defaultValue={4}
+                              className={`${CAMPO} w-24`}
+                            />
+                          </label>
+                          <button type="submit" className={BOTAO_PRIMARIO}>
+                            Criar galeria
+                          </button>
+                        </form>
+                      )}
+                    </div>
+
+                    {/* ---- álbuns ---- */}
+                    <div>
+                      <p className="m-0 mb-3 text-[13.5px] font-bold">Álbuns</p>
+
+                      {(c.projetos ?? []).length > 0 && (
+                        <ul className="m-0 mb-3 flex list-none flex-col gap-2 p-0">
+                          {c.projetos.map((p) => (
+                            <li
+                              key={p.id}
+                              className="flex items-center justify-between gap-3 rounded-[12px] border border-[#EEF1F7] bg-surface-2 px-3 py-2"
+                            >
+                              <span className="min-w-0 truncate text-[13px] font-semibold">
+                                {p.titulo}
+                              </span>
+                              <span className="flex-none text-[12px] text-muted">
+                                {STATUS_ROTULO[p.status] ?? p.status} · {p.progresso}%
+                              </span>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+
+                      {galeria ? (
+                        <form action={criarProjetoParaCliente} className="flex flex-col gap-2.5">
+                          <input type="hidden" name="cliente_id" value={c.id} />
+                          <input type="hidden" name="galeria_id" value={galeria.id} />
+                          <select name="template_id" required className={CAMPO}>
+                            <option value="">Escolha o modelo…</option>
+                            {templates
+                              .filter((t) => t.publicado)
+                              .map((t) => (
+                                <option key={t.id} value={t.id}>
+                                  {t.nome} — {t.largura_mm / 10}×{t.altura_mm / 10} cm
+                                  {t.lojista_id ? '' : ' (padrão)'}
+                                </option>
+                              ))}
+                          </select>
+                          <input name="titulo" placeholder="Nome do álbum (opcional)" className={CAMPO} />
+                          <button type="submit" className={BOTAO_PRIMARIO}>
+                            Criar álbum para o cliente
+                          </button>
+                        </form>
+                      ) : (
+                        <p className="m-0 text-[12.5px] text-muted">
+                          Crie a galeria primeiro: o álbum puxa as fotos dela.
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="lg:col-span-2">
+                      <form action={removerCliente}>
+                        <input type="hidden" name="cliente_id" value={c.id} />
+                        <button
+                          type="submit"
+                          className="text-[12.5px] font-semibold text-[#E11D48] hover:underline"
+                        >
+                          Remover acesso deste cliente
+                        </button>
+                      </form>
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </>
+  );
+}

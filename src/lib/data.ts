@@ -109,20 +109,46 @@ export async function garantirCliente(lojistaId: string): Promise<Cliente | null
 
   const email = user.email ?? '';
 
+  // 1. já vinculado?
   const { data: existente } = await supabase
     .from('clientes')
     .select('id, nome')
     .eq('user_id', user.id)
     .eq('lojista_id', lojistaId)
     .maybeSingle();
+
   if (existente) return { ...existente, email };
 
+  // 2. o lojista deixou um convite com este e-mail?
+  //
+  //    A linha do convite tem user_id nulo, então nenhuma policy do cliente
+  //    a alcança — nem para ler, nem para atualizar. Quem reivindica é a
+  //    função `reivindicar_convite`, SECURITY DEFINER, que confere o e-mail
+  //    do próprio auth.uid() antes de gravar.
+  if (email) {
+    const { data: idReivindicado } = await supabase.rpc('reivindicar_convite', {
+      p_lojista: lojistaId,
+    });
+
+    if (idReivindicado) {
+      const { data: agora } = await supabase
+        .from('clientes')
+        .select('id, nome')
+        .eq('id', idReivindicado as string)
+        .maybeSingle();
+      if (agora) return { ...agora, email };
+    }
+  }
+
+  // 3. sem convite: cria o vínculo direto (loja de acesso aberto)
   const { data: criado } = await supabase
     .from('clientes')
     .insert({
       user_id: user.id,
       lojista_id: lojistaId,
+      email: email || null,
       nome: (user.user_metadata?.nome as string) ?? null,
+      primeiro_acesso_em: new Date().toISOString(),
     })
     .select('id, nome')
     .single();
