@@ -27,11 +27,34 @@ export type Layout = {
 /** Margem da página, em % — a área branca que emoldura as fotos. */
 const MX = 8;
 const MY = 7;
-/** Respiro entre quadros, em %. */
-const G = 2.5;
+/** Respiro padrão entre quadros, em % da página. */
+export const G_PADRAO = 2.5;
+
+/**
+ * Espaçamento em milímetros convertido para % da página.
+ *
+ * O concorrente oferece o controle em mm, que é a unidade do produto impresso —
+ * o cliente pensa "3 mm entre as fotos", não "2,5% da largura". A conversão
+ * precisa da largura física da página, que vem do template.
+ */
+/**
+ * Largura suposta da página quando o projeto não tem template, em mm.
+ *
+ * Devolver o padrão e ignorar o valor em mm faria o controle nascer morto em
+ * todo projeto sem template — que é o caso da maioria hoje. Uma suposição
+ * razoável é melhor: 30 cm é a página de um álbum 30x30, o formato mais comum.
+ * Quando houver template, a conta usa a medida de verdade.
+ */
+const LARGURA_SUPOSTA_MM = 300;
+
+export function espacoEmPorcento(mm: number | undefined, larguraMm?: number): number {
+  if (mm == null) return G_PADRAO;
+  const largura = larguraMm && larguraMm > 0 ? larguraMm : LARGURA_SUPOSTA_MM;
+  return Math.min(20, Math.max(0, (mm / largura) * 100));
+}
 
 /** Grade regular dentro da margem. */
-function grade(cols: number, linhas: number, n = cols * linhas): Ret[] {
+function grade(cols: number, linhas: number, n = cols * linhas, G = G_PADRAO): Ret[] {
   const w = (100 - 2 * MX - (cols - 1) * G) / cols;
   const h = (100 - 2 * MY - (linhas - 1) * G) / linhas;
   return Array.from({ length: n }, (_, i) => ({
@@ -43,7 +66,7 @@ function grade(cols: number, linhas: number, n = cols * linhas): Ret[] {
 }
 
 /** Um quadro grande ocupando `fracao` da altura, com `n` menores embaixo. */
-function destaqueTopo(n: number, fracao = 0.62): Ret[] {
+function destaqueTopo(n: number, fracao = 0.62, G = G_PADRAO): Ret[] {
   const alturaUtil = 100 - 2 * MY;
   const hGrande = +(alturaUtil * fracao).toFixed(2);
   const hPeq = +(alturaUtil - hGrande - G).toFixed(2);
@@ -60,7 +83,7 @@ function destaqueTopo(n: number, fracao = 0.62): Ret[] {
 }
 
 /** Um quadro alto à esquerda e `n` empilhados à direita. */
-function destaqueLado(n: number, fracao = 0.56): Ret[] {
+function destaqueLado(n: number, fracao = 0.56, G = G_PADRAO): Ret[] {
   const larguraUtil = 100 - 2 * MX;
   const alturaUtil = 100 - 2 * MY;
   const wGrande = +(larguraUtil * fracao).toFixed(2);
@@ -77,28 +100,61 @@ function destaqueLado(n: number, fracao = 0.56): Ret[] {
   ];
 }
 
-export const LAYOUTS: Layout[] = [
-  { id: 'cheia', nome: 'Página inteira', n: 1, quadros: [{ x: 0, y: 0, w: 100, h: 100 }] },
-  { id: 'unica', nome: 'Uma foto', n: 1, quadros: grade(1, 1) },
-  { id: 'dupla-h', nome: 'Duas lado a lado', n: 2, quadros: grade(2, 1) },
-  { id: 'dupla-v', nome: 'Duas empilhadas', n: 2, quadros: grade(1, 2) },
-  { id: 'destaque-3', nome: 'Destaque e duas', n: 3, quadros: destaqueLado(2) },
-  { id: 'tripla-v', nome: 'Três em coluna', n: 3, quadros: grade(1, 3) },
-  { id: 'quadro-4', nome: 'Quatro em grade', n: 4, quadros: grade(2, 2) },
-  { id: 'destaque-5', nome: 'Destaque e quatro', n: 5, quadros: destaqueTopo(4) },
-  { id: 'grade-6', nome: 'Seis em grade', n: 6, quadros: grade(3, 2) },
-  { id: 'destaque-7', nome: 'Destaque e seis', n: 7, quadros: destaqueTopo(6, 0.58) },
-  { id: 'grade-8', nome: 'Oito em grade', n: 8, quadros: grade(4, 2) },
-  { id: 'mosaico-9', nome: 'Mosaico de nove', n: 9, quadros: grade(3, 3) },
+type Molde = { id: string; nome: string; n: number; constroi: (g: number) => Ret[] };
+
+const MOLDES: Molde[] = [
+  { id: 'cheia', nome: 'Página inteira', n: 1, constroi: () => [{ x: 0, y: 0, w: 100, h: 100 }] },
+  { id: 'unica', nome: 'Uma foto', n: 1, constroi: (g) => grade(1, 1, 1, g) },
+  { id: 'dupla-h', nome: 'Duas lado a lado', n: 2, constroi: (g) => grade(2, 1, 2, g) },
+  { id: 'dupla-v', nome: 'Duas empilhadas', n: 2, constroi: (g) => grade(1, 2, 2, g) },
+  { id: 'destaque-3', nome: 'Destaque e duas', n: 3, constroi: (g) => destaqueLado(2, 0.56, g) },
+  { id: 'tripla-v', nome: 'Três em coluna', n: 3, constroi: (g) => grade(1, 3, 3, g) },
+  { id: 'quadro-4', nome: 'Quatro em grade', n: 4, constroi: (g) => grade(2, 2, 4, g) },
+  { id: 'destaque-5', nome: 'Destaque e quatro', n: 5, constroi: (g) => destaqueTopo(4, 0.62, g) },
+  { id: 'grade-6', nome: 'Seis em grade', n: 6, constroi: (g) => grade(3, 2, 6, g) },
+  { id: 'destaque-7', nome: 'Destaque e seis', n: 7, constroi: (g) => destaqueTopo(6, 0.58, g) },
+  { id: 'grade-8', nome: 'Oito em grade', n: 8, constroi: (g) => grade(4, 2, 8, g) },
+  { id: 'mosaico-9', nome: 'Mosaico de nove', n: 9, constroi: (g) => grade(3, 3, 9, g) },
 ];
+
+const materializar = (m: Molde, g: number): Layout => ({
+  id: m.id,
+  nome: m.nome,
+  n: m.n,
+  quadros: m.constroi(g),
+});
+
+export const LAYOUTS: Layout[] = MOLDES.map((m) => materializar(m, G_PADRAO));
 
 export const LAYOUT_PADRAO = 'dupla-h';
 
-const PORID = new Map(LAYOUTS.map((l) => [l.id, l]));
+const PORID = new Map(MOLDES.map((m) => [m.id, m]));
 
-/** Nunca devolve indefinido: um id desconhecido cai no padrão. */
-export function layout(id: string | undefined | null): Layout {
-  return (id ? PORID.get(id) : undefined) ?? PORID.get(LAYOUT_PADRAO)!;
+// Recalcular a cada chamada seria desperdício: a página redesenha a cada
+// movimento do cursor e o respiro muda raramente.
+const cache = new Map<string, Layout>();
+
+/**
+ * Nunca devolve indefinido: um id desconhecido cai no padrão.
+ *
+ * `g` é o respiro entre quadros, em % da página. Sem ele vale o padrão — é o
+ * que mantém o seletor e a miniatura idênticos à página quando o cliente não
+ * mexeu no espaçamento.
+ */
+export function layout(id: string | undefined | null, g = G_PADRAO): Layout {
+  const m = (id ? PORID.get(id) : undefined) ?? PORID.get(LAYOUT_PADRAO)!;
+  const chave = `${m.id}@${g.toFixed(3)}`;
+  let pronto = cache.get(chave);
+  if (!pronto) {
+    pronto = materializar(m, g);
+    cache.set(chave, pronto);
+  }
+  return pronto;
+}
+
+/** Todos os layouts com um respiro específico — para o seletor não mentir. */
+export function layoutsCom(g = G_PADRAO): Layout[] {
+  return MOLDES.map((m) => layout(m.id, g));
 }
 
 /** Quantidades de foto oferecidas no filtro do seletor. */

@@ -87,6 +87,14 @@ export type Pagina = {
 export type Lamina = {
   id: string;
   fundo: string;
+  /**
+   * Respiro entre as fotos, em MILÍMETROS do produto impresso.
+   *
+   * Em mm, e não em %, porque é a unidade do produto: o cliente pensa "3 mm
+   * entre as fotos". A conversão para % usa a largura da página do template.
+   * Ausente = padrão do sistema.
+   */
+  espacoMm?: number;
   esquerda: Pagina;
   direita: Pagina;
   /**
@@ -177,6 +185,7 @@ const zPagina = z.object({
 export const zLamina = z.object({
   id: z.string().min(1),
   fundo: z.string().regex(/^#[0-9A-Fa-f]{3,8}$/),
+  espacoMm: z.number().min(0).max(50).optional(),
   esquerda: zPagina,
   direita: zPagina,
   reserva: z.array(z.string().min(1)).max(500),
@@ -412,6 +421,10 @@ export function migrarLamina(bruto: unknown): Lamina {
   return {
     id: str(l.id, uid()),
     fundo: /^#[0-9A-Fa-f]{3,8}$/.test(String(l.fundo)) ? String(l.fundo) : '#FFFFFF',
+    espacoMm:
+      typeof l.espacoMm === 'number' && Number.isFinite(l.espacoMm)
+        ? Math.min(50, Math.max(0, l.espacoMm))
+        : undefined,
     esquerda: migrarPagina(l.esquerda),
     direita: migrarPagina(l.direita),
     reserva: Array.isArray(l.reserva) ? l.reserva.filter((r): r is string => typeof r === 'string') : [],

@@ -561,6 +561,31 @@ export default function EditorDesign({ v }: { v: any }) {
                     <path d="M10 6l6 6-6 6" />
                   </svg>
                 </span>
+                <span onClick={v.abrirEspaco} title="Espaçamento entre as fotos" style={css(v.botaoEspaco)}>
+                  <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="3" y="3" width="7" height="7" rx="1" />
+                    <rect x="14" y="3" width="7" height="7" rx="1" />
+                    <rect x="3" y="14" width="7" height="7" rx="1" />
+                    <rect x="14" y="14" width="7" height="7" rx="1" />
+                  </svg>
+                </span>
+                <div style={css(v.painelEspaco)}>
+                  <p style={{ margin: '0 0 10px', fontSize: '12.5px', fontWeight: '700', color: '#0B1220' }}>
+                    Espaçamento entre as fotos (mm)
+                  </p>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
+                    <input type="range" min="0" max="20" step="0.5" value={v.espacoMm} onChange={v.setEspaco} style={{ flex: '1', minWidth: '0', cursor: 'pointer' }} />
+                    <input type="number" min="0" max="20" step="0.5" value={v.espacoMm} onChange={v.setEspaco} style={{ width: '58px', height: '30px', padding: '0 8px', border: '1px solid #E6EAF2', borderRadius: '8px', fontFamily: 'inherit', fontSize: '12.5px', fontWeight: '600', color: '#0B1220' }} />
+                  </div>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12.5px', color: '#46536A', cursor: 'pointer', marginBottom: '6px' }}>
+                    <input type="radio" name="escopoEspaco" checked={v.escopoAlbum} onChange={v.setEscopoAlbum} />
+                    álbum todo
+                  </label>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12.5px', color: '#46536A', cursor: 'pointer' }}>
+                    <input type="radio" name="escopoEspaco" checked={v.escopoLamina} onChange={v.setEscopoLamina} />
+                    apenas nesta lâmina
+                  </label>
+                </div>
               </div>
             </div>
             <div style={{ position: 'relative', flex: '1', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px', padding: '12px 26px 48px', minHeight: '0', overflow: 'hidden', background: 'linear-gradient(180deg,#F7F9FC,#E8EEF6)' }}>

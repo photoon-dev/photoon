@@ -323,6 +323,24 @@
           </sc-for>
         </div>
         <span onClick="{{ layNext }}" title="Próximo" style="width: 28px; height: 28px; border-radius: 9px; border: 1px solid #E6EAF2; background: #FFFFFF; display: flex; align-items: center; justify-content: center; color: #46536A; cursor: pointer; flex: 0 0 auto;" style-hover="border-color: #2563EB; color: #2563EB;"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 6l6 6-6 6"/></svg></span>
+
+        <span onClick="{{ abrirEspaco }}" title="Espaçamento entre as fotos" style="{{ botaoEspaco }}"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span>
+
+        <div style="{{ painelEspaco }}">
+          <p style="margin: 0 0 10px; font-size: 12.5px; font-weight: 700; color: #0B1220;">Espaçamento entre as fotos (mm)</p>
+          <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+            <input type="range" min="0" max="20" step="0.5" value="{{ espacoMm }}" onChange="{{ setEspaco }}" style="flex: 1; min-width: 0; cursor: pointer;"/>
+            <input type="number" min="0" max="20" step="0.5" value="{{ espacoMm }}" onChange="{{ setEspaco }}" style="width: 58px; height: 30px; padding: 0 8px; border: 1px solid #E6EAF2; border-radius: 8px; font-family: inherit; font-size: 12.5px; font-weight: 600; color: #0B1220;"/>
+          </div>
+          <label style="display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: #46536A; cursor: pointer; margin-bottom: 6px;">
+            <input type="radio" name="escopoEspaco" checked="{{ escopoAlbum }}" onChange="{{ setEscopoAlbum }}"/>
+            álbum todo
+          </label>
+          <label style="display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: #46536A; cursor: pointer;">
+            <input type="radio" name="escopoEspaco" checked="{{ escopoLamina }}" onChange="{{ setEscopoLamina }}"/>
+            apenas nesta lâmina
+          </label>
+        </div>
         </div>
       </div>
 

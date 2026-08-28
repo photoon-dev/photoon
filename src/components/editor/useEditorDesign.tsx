@@ -14,6 +14,8 @@ import { calcularPreco, reais, type PrecoModelo } from '@/lib/preco';
 
 export type EstadoEditor = {
   hover: number | null;
+  espacoAberto: boolean;
+  escopoEspaco: 'album' | 'lamina';
   turning: 'next' | 'prev' | null;
   tool: number;
   panel: boolean;
@@ -93,7 +95,10 @@ function tocarPapel(ref: React.MutableRefObject<AudioContext | null>) {
   }
 }
 
-import { LAYOUTS as CATALOGO, contagens, layout as layoutPorId } from '@/lib/layouts';
+import { contagens, layout as layoutPorId, layoutsCom } from '@/lib/layouts';
+
+/** Respiro de fábrica, em mm — o que a maioria dos álbuns usa. */
+const ESPACO_MM_PADRAO = 3;
 import { curvaturaPagina, luzPagina, estiloPalco, estiloLivro, limitarZoom, PAGINA_AR, ZOOM_PASSO, ZOOM_PADRAO } from '@/lib/livro';
 import type { Documento, Lado } from '@/components/editor/useDocumento';
 import type { Enq, Pagina, QuadroFoto } from '@/lib/album';
@@ -153,7 +158,7 @@ export function useEditorDesign({
   onTitulo?: (t: string) => void;
 }) {
   const [s, setS] = useState<EstadoEditor>({
-    hover: null, turning: null,
+    hover: null, turning: null, espacoAberto: false, escopoEspaco: 'album',
     tool: 0, panel: true, insp: false, modal: null, zoom: ZOOM_PADRAO,
     count: 0, lay: 2, photoTab: 0, bgTab: 0, bgCat: 0, elCat: 0, bw: false,
     bgHue: 220, elCor: '#2563EB', rostoIgnorado: [], pessoaAtiva: null,
@@ -609,7 +614,7 @@ export function useEditorDesign({
     const layoutAtual =
       ladoAlvo === 'ambos' ? lamina.esquerda.layoutId : lamina[ladoAlvo].layoutId;
 
-    const layouts = CATALOGO.filter((l) => s.count === 0 || l.n === s.count).map((l) => {
+    const layouts = layoutsCom(doc.respiro).filter((l) => s.count === 0 || l.n === s.count).map((l) => {
       const on = layoutAtual === l.id;
       return {
         title: `${l.nome} — ${l.n} ${l.n === 1 ? 'foto' : 'fotos'} por página`,
@@ -1034,8 +1039,8 @@ export function useEditorDesign({
       // O storyboard vinha de dez rótulos fixos; agora sai do documento.
       spreads: doc.laminas.map((l, i) => {
         const on = i === laminaAtual;
-        const esq = layoutPorId(l.esquerda.layoutId);
-        const dir = layoutPorId(l.direita.layoutId);
+        const esq = layoutPorId(l.esquerda.layoutId, doc.respiro);
+        const dir = layoutPorId(l.direita.layoutId, doc.respiro);
         const n = esq.n + dir.n;
         const cheias = new Set(
           [...l.esquerda.quadros, ...l.direita.quadros]
@@ -1123,6 +1128,33 @@ export function useEditorDesign({
           ? 'Capa · frente e verso'
           : `Lâmina ${laminaAtual + 1} · páginas ${laminaAtual * 2 - 1} e ${laminaAtual * 2}`,
       spreadNav: `Lâmina ${laminaAtual + 1} de ${doc.laminas.length}`,
+
+      /* --------------------- espaçamento entre as fotos -------------------
+       * Em milímetros porque é a unidade do produto impresso: o cliente pensa
+       * "3 mm entre as fotos", não "2,5% da largura da página". A conversão
+       * usa a largura do template.
+       * ------------------------------------------------------------------ */
+      abrirEspaco: () => set({ espacoAberto: !s.espacoAberto }),
+      botaoEspaco:
+        `width:28px;height:28px;border-radius:9px;flex:0 0 auto;display:flex;` +
+        `align-items:center;justify-content:center;cursor:pointer;` +
+        `border:1px solid ${s.espacoAberto ? '#2563EB' : '#E6EAF2'};` +
+        `background:${s.espacoAberto ? '#F1F5FD' : '#FFFFFF'};` +
+        `color:${s.espacoAberto ? '#2563EB' : '#46536A'}`,
+      painelEspaco: s.espacoAberto
+        ? 'position:absolute;top:52px;right:18px;z-index:45;width:280px;padding:14px 16px;' +
+          'background:#FFFFFF;border:1px solid #E6EAF2;border-radius:14px;' +
+          'box-shadow:0 18px 40px rgba(11,18,32,.18)'
+        : 'display:none',
+      espacoMm: doc.espacoMm ?? ESPACO_MM_PADRAO,
+      setEspaco: (e: React.ChangeEvent<HTMLInputElement>) => {
+        const n = Number(e.target.value);
+        if (Number.isFinite(n)) doc.mudarEspaco(n, s.escopoEspaco);
+      },
+      escopoAlbum: s.escopoEspaco === 'album',
+      escopoLamina: s.escopoEspaco === 'lamina',
+      setEscopoAlbum: () => set({ escopoEspaco: 'album' }),
+      setEscopoLamina: () => set({ escopoEspaco: 'lamina' }),
 
       // Estes três botões existiam no design sem nenhuma ação ligada.
       addSpread: () => doc.adicionarLamina(),

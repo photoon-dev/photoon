@@ -1,3 +1,4 @@
+import { getTemplate } from '@/lib/lojista';
 import { notFound } from 'next/navigation';
 import { currentTenantSlug } from '@/lib/tenant';
 import {
@@ -25,16 +26,19 @@ export default async function EditorPage({ params }: { params: Promise<{ id: str
   const projeto = await getProjeto(id);
   if (!projeto) notFound();
 
-  const [fotos, modelo, rostos, pessoas] = await Promise.all([
+  const [fotos, modelo, rostos, pessoas, template] = await Promise.all([
     projeto.galeria_id ? listarFotosGaleria(projeto.galeria_id) : Promise.resolve([]),
     projeto.template_id ? getPrecoDoModelo(projeto.template_id) : Promise.resolve(null),
     projeto.galeria_id ? listarRostosGaleria(projeto.galeria_id) : Promise.resolve([]),
     projeto.galeria_id ? listarPessoasGaleria(projeto.galeria_id) : Promise.resolve([]),
+    // Largura física da página: converte o espaçamento de mm em % da página.
+    projeto.template_id ? getTemplate(projeto.template_id) : Promise.resolve(null),
   ]);
 
   return (
     <EditorCliente
       projetoId={projeto.id}
+      larguraMm={template?.largura_mm}
       titulo={projeto.titulo}
       fotos={fotos}
       rostos={rostos}

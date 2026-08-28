@@ -15,6 +15,7 @@ import { useTelaPequena } from '@/components/editor/useTelaPequena';
  */
 export default function EditorCliente({
   projetoId,
+  larguraMm,
   titulo: tituloInicial,
   fotos,
   rostos,
@@ -24,6 +25,8 @@ export default function EditorCliente({
 }: {
   projetoId: string;
   titulo: string;
+  /** Largura da página em mm, do template — para o espaçamento em mm. */
+  larguraMm?: number;
   fotos: Foto[];
   /** Rostos detectados no envio (Fase 5). Vazio quando a galeria é antiga. */
   rostos?: RostoDaFoto[];
@@ -35,7 +38,7 @@ export default function EditorCliente({
 
   // O documento do álbum: estado real, desfazer e gravação automática. Antes
   // não existia — o editor desenhava fotos que não estavam em lugar nenhum.
-  const doc = useDocumento({ projetoId, paginas });
+  const doc = useDocumento({ projetoId, paginas, larguraMm });
 
   const v = useEditorDesign({
     fotos,

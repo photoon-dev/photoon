@@ -20,7 +20,7 @@ import {
   type QuadroFoto,
 } from '@/lib/album';
 import type { Ret } from '@/lib/layouts';
-import { LAYOUT_PADRAO, layout } from '@/lib/layouts';
+import { LAYOUT_PADRAO, layout, espacoEmPorcento } from '@/lib/layouts';
 
 /**
  * Camada de documento do editor.
@@ -41,7 +41,16 @@ export type EstadoSalvamento = 'salvo' | 'salvando' | 'erro';
 
 export type Documento = ReturnType<typeof useDocumento>;
 
-export function useDocumento({ projetoId, paginas }: { projetoId: string; paginas: unknown }) {
+export function useDocumento({
+  projetoId,
+  paginas,
+  larguraMm,
+}: {
+  projetoId: string;
+  paginas: unknown;
+  /** Largura física da página, do template — converte o espaçamento de mm em %. */
+  larguraMm?: number;
+}) {
   const [laminas, definirLaminas] = useState<Lamina[]>(() => {
     const migradas = migrarLaminas(paginas);
     return migradas.length ? migradas : [novaLamina(LAYOUT_PADRAO)];
@@ -367,6 +376,21 @@ export function useDocumento({ projetoId, paginas }: { projetoId: string; pagina
     [atual, selecao, mudarLamina],
   );
 
+  /**
+   * Espaçamento entre as fotos, em mm.
+   *
+   * `escopo` existe porque o cliente quase sempre quer o álbum inteiro com o
+   * mesmo respiro — mas quer poder abrir uma exceção numa lâmina.
+   */
+  const mudarEspaco = useCallback(
+    (mm: number, escopo: 'lamina' | 'album' = 'album') => {
+      const v = Math.min(50, Math.max(0, mm));
+      if (escopo === 'album') aplicar((ls) => ls.map((l) => ({ ...l, espacoMm: v })));
+      else mudarLamina(atual, (l) => ({ ...l, espacoMm: v }));
+    },
+    [aplicar, mudarLamina, atual],
+  );
+
   const mudarFundo = useCallback(
     (fundo: string) => mudarLamina(atual, (l) => ({ ...l, fundo })),
     [atual, mudarLamina],
@@ -421,16 +445,21 @@ export function useDocumento({ projetoId, paginas }: { projetoId: string; pagina
   const bloqueadores = useMemo(() => laminasSemFoto(laminas).length, [laminas]);
 
   /** Quadros da página com o retângulo do layout — o desenho é um só. */
+  /** Respiro da lâmina atual, já convertido para % da página. */
+  const respiro = espacoEmPorcento(laminas[Math.min(atual, laminas.length - 1)]?.espacoMm, larguraMm);
+
   const quadrosDe = useCallback((pagina: Pagina) => {
-    const rets = layout(pagina.layoutId).quadros;
+    const rets = layout(pagina.layoutId, respiro).quadros;
     let i = 0;
     return pagina.quadros.map((q: Quadro) =>
       q.tipo === 'foto' ? { q, ret: rets[i++] ?? null } : { q, ret: q.ret },
     );
-  }, []);
+  }, [respiro]);
 
   return {
     laminas,
+    respiro,
+    espacoMm: laminas[Math.min(atual, laminas.length - 1)]?.espacoMm,
     lamina,
     atual,
     setAtual,
@@ -455,6 +484,7 @@ export function useDocumento({ projetoId, paginas }: { projetoId: string; pagina
     removerQuadro,
     trocarLayout,
     mudarFundo,
+    mudarEspaco,
     mudarFundoTudo,
     adicionarLamina,
     removerLamina,
