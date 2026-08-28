@@ -64,7 +64,7 @@ export function modelosProntos(): boolean {
  * em 416px de qualquer forma. A caixa sai normalizada, então a redução não
  * afeta o resultado gravado.
  */
-async function paraCanvas(arquivo: File): Promise<{
+async function paraCanvas(arquivo: Blob): Promise<{
   canvas: HTMLCanvasElement;
   largura: number;
   altura: number;
@@ -94,7 +94,7 @@ async function paraCanvas(arquivo: File): Promise<{
  * Nunca lança: um envio de fotos não pode falhar porque a análise de rosto
  * falhou. Sem rosto detectado a foto entra na galeria como sempre entrou.
  */
-export async function analisarFoto(arquivo: File): Promise<{
+export async function analisarFoto(arquivo: Blob): Promise<{
   largura: number | null;
   altura: number | null;
   rostos: RostoDetectado[];
@@ -145,5 +145,29 @@ export async function medirFoto(arquivo: File): Promise<{ largura: number | null
     return r;
   } catch {
     return { largura: null, altura: null };
+  }
+}
+
+/**
+ * Analisa uma foto que JÁ está no Storage, a partir da URL assinada.
+ *
+ * Existe porque a detecção acontece no envio, e toda galeria enviada antes
+ * desta função ficaria sem rosto para sempre — nenhum lojista vai reenviar a
+ * galeria inteira. É o mesmo caminho de `analisarFoto`, só que a imagem vem
+ * da rede em vez do seletor de arquivos.
+ *
+ * Nunca lança: uma foto que falhe é pulada, e o lote continua.
+ */
+export async function analisarUrl(url: string): Promise<{
+  largura: number | null;
+  altura: number | null;
+  rostos: RostoDetectado[];
+} | null> {
+  try {
+    const r = await fetch(url, { mode: 'cors' });
+    if (!r.ok) return null;
+    return await analisarFoto(await r.blob());
+  } catch {
+    return null;
   }
 }

@@ -206,6 +206,81 @@ export async function registrarFotos(
 }
 
 /**
+ * Fotos da galeria que ainda não passaram pela detecção de rosto.
+ *
+ * A detecção acontece no envio. Toda galeria enviada antes dessa função
+ * existir ficaria sem rosto para sempre, e nenhum lojista vai reenviar a
+ * galeria inteira — daí o reprocessamento.
+ *
+ * Devolve a URL assinada porque a análise roda no navegador do lojista: o
+ * servidor não baixa nem decodifica imagem nenhuma.
+ */
+export async function fotosSemAnalise(galeriaId: string, limite = 40) {
+  await exigirLoja();
+  const supabase = await createClient();
+
+  const { data: fotos } = await supabase
+    .from('galeria_fotos')
+    .select('id, storage_path')
+    .eq('galeria_id', galeriaId)
+    .is('analisada_em', null)
+    .limit(limite);
+
+  if (!fotos?.length) return [];
+
+  const { data: assinadas } = await supabase.storage
+    .from('galerias')
+    .createSignedUrls(fotos.map((f) => f.storage_path), 60 * 30);
+
+  const porCaminho = new Map((assinadas ?? []).map((a) => [a.path, a.signedUrl]));
+  return fotos
+    .map((f) => ({ id: f.id, url: porCaminho.get(f.storage_path) ?? null }))
+    .filter((f): f is { id: string; url: string } => !!f.url);
+}
+
+/**
+ * Grava os rostos de fotos que já estavam na galeria.
+ *
+ * Marca `analisada_em` mesmo quando não achou rosto nenhum: sem isso a foto
+ * sem gente voltaria em toda passagem e o reprocessamento nunca terminaria.
+ */
+export async function salvarRostosExistentes(
+  galeriaId: string,
+  resultados: { fotoId: string; largura?: number | null; altura?: number | null; rostos: RostoEnviado[] }[],
+) {
+  await exigirLoja();
+  if (resultados.length === 0) return { rostos: 0 };
+  const supabase = await createClient();
+
+  const linhas = resultados.flatMap((r) =>
+    r.rostos
+      .filter((x) => Array.isArray(x.vetor) && x.vetor.length === 128)
+      .map((x) => ({
+        galeria_foto_id: r.fotoId,
+        caixa: x.caixa,
+        vetor: x.vetor,
+        conf: x.conf ?? 0,
+      })),
+  );
+
+  if (linhas.length) await supabase.from('rostos').insert(linhas);
+
+  for (const r of resultados) {
+    await supabase
+      .from('galeria_fotos')
+      .update({
+        analisada_em: new Date().toISOString(),
+        ...(r.largura ? { largura: r.largura, altura: r.altura } : {}),
+      })
+      .eq('id', r.fotoId);
+  }
+
+  await reagruparPessoas(galeriaId);
+  revalidatePath('/clientes');
+  return { rostos: linhas.length };
+}
+
+/**
  * Reagrupa os rostos da galeria em pessoas.
  *
  * DBSCAN sobre os descritores de 128 dimensões — matemática pura, sem IA e sem

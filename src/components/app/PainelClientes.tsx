@@ -8,12 +8,14 @@ import {
   criarGaleria,
   criarProjetoParaCliente,
   reagruparPessoas,
+  fotosSemAnalise,
+  salvarRostosExistentes,
   registrarFotos,
   removerCliente,
   renomearPessoa,
   type RostoEnviado,
 } from '@/app/app/actions';
-import { analisarFoto, medirFoto } from '@/lib/faceapi';
+import { analisarFoto, analisarUrl, medirFoto } from '@/lib/faceapi';
 
 const CARD = 'rounded-[18px] border border-line bg-surface';
 const BOTAO_PRIMARIO =
@@ -31,6 +33,40 @@ const STATUS_ROTULO: Record<string, string> = {
   pronto: 'Pronto',
   finalizado: 'Finalizado',
 };
+
+/**
+ * Analisa, no navegador do lojista, as fotos que já estavam na galeria.
+ *
+ * A detecção acontece no envio; toda galeria enviada antes disso ficaria sem
+ * rosto para sempre. Vai em lotes porque a aba precisa continuar respondendo:
+ * são ~7 MB de modelo e algumas centenas de milissegundos por foto.
+ */
+async function analisarGaleria(
+  galeriaId: string,
+  aoAndar: (feitas: number, achados: number) => void,
+) {
+  let feitas = 0;
+  let achados = 0;
+  // Sempre pede o próximo lote ao servidor: `analisada_em` faz a fila encolher,
+  // então não há risco de repetir foto nem de laço infinito.
+  for (;;) {
+    const lote = await fotosSemAnalise(galeriaId, 20);
+    if (!lote.length) break;
+
+    const resultados = [];
+    for (const f of lote) {
+      const r = await analisarUrl(f.url);
+      // Foto que falhou entra como analisada sem rosto: melhor pular uma do que
+      // travar o lote inteiro numa imagem corrompida.
+      resultados.push({ fotoId: f.id, largura: r?.largura, altura: r?.altura, rostos: r?.rostos ?? [] });
+      achados += r?.rostos.length ?? 0;
+      feitas += 1;
+      aoAndar(feitas, achados);
+    }
+    await salvarRostosExistentes(galeriaId, resultados);
+  }
+  return { feitas, achados };
+}
 
 export default function PainelClientes({
   clientes,
@@ -51,6 +87,7 @@ export default function PainelClientes({
   porPagina: number;
   busca: string;
 }) {
+  const [analise, setAnalise] = useState<{ galeria: string; feitas: number; achados: number } | null>(null);
   const [aberto, setAberto] = useState<string | null>(null);
   const [erro, setErro] = useState<string | null>(null);
   const [enviando, setEnviando] = useState<string | null>(null);
@@ -379,6 +416,25 @@ export default function PainelClientes({
                                   className="mt-2 text-[11.5px] font-semibold text-blue hover:underline"
                                 >
                                   Reagrupar rostos
+                                </button>
+                                <button
+                                  onClick={async () => {
+                                    setAnalise({ galeria: g.id, feitas: 0, achados: 0 });
+                                    try {
+                                      await analisarGaleria(g.id, (feitas, achados) =>
+                                        setAnalise({ galeria: g.id, feitas, achados }),
+                                      );
+                                      location.reload();
+                                    } finally {
+                                      setAnalise(null);
+                                    }
+                                  }}
+                                  disabled={analise?.galeria === g.id}
+                                  className="ml-3 mt-2 text-[11.5px] font-semibold text-blue hover:underline disabled:text-muted disabled:no-underline"
+                                >
+                                  {analise?.galeria === g.id
+                                    ? `Analisando… ${analise.feitas} fotos, ${analise.achados} rostos`
+                                    : 'Detectar rostos nas fotos antigas'}
                                 </button>
                               </div>
                             )}
