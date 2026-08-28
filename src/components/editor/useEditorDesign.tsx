@@ -257,7 +257,15 @@ export function useEditorDesign({
       else if (e.key === '-' || e.key === '_') { e.preventDefault(); set({ zoom: limitarZoom(sRef.current.zoom - ZOOM_PASSO) }); }
       else if (e.key === 'Escape') doc.setSelecao(null);
       else if (e.key === 'Delete' || e.key === 'Backspace') {
-        if (doc.selecao) { e.preventDefault(); doc.limparQuadro(); }
+        if (!doc.selecao) return;
+        e.preventDefault();
+        // Numa foto, Delete esvazia o quadro — o quadro faz parte do layout e
+        // some sozinho só ao trocar de layout. Num elemento ou texto, que o
+        // usuário inseriu, Delete apaga de verdade: antes chamava
+        // `limparQuadro`, que não faz nada nesses tipos, e a tecla parecia
+        // quebrada.
+        if (doc.quadroSel?.tipo === 'foto') doc.limparQuadro();
+        else doc.removerQuadro();
       }
     };
     window.addEventListener('keydown', tecla);
@@ -286,9 +294,12 @@ export function useEditorDesign({
     // O que está selecionado, segundo o documento — não segundo um segundo
     // estado paralelo que ninguém mantinha em dia.
     const qSel = doc.quadroSelecionado;
-    const selTipo: 'foto' | 'texto' | null = doc.selecao
-      ? (qSel ? 'foto' : 'texto')
-      : null;
+    // Genérico: foto, texto OU elemento. A caixa de seleção lia só o de foto,
+    // então elemento e texto não ganhavam alça nenhuma — nem superfície de
+    // mover, nem canto de redimensionar. Era por isso que não dava para
+    // posicionar nem apagar um elemento.
+    const qualquerSel = doc.quadroSel;
+    const selTipo: 'foto' | 'texto' | 'elemento' | null = qualquerSel?.tipo ?? null;
     const fotoSel = qSel?.fotoId ? porId.get(qSel.fotoId) : undefined;
 
     /**
@@ -397,8 +408,8 @@ export function useEditorDesign({
 
     /** Retângulo do quadro selecionado, na página dele (em %). */
     const retSel =
-      qSel && doc.selecao
-        ? doc.quadrosDe(lamina[doc.selecao.lado]).find((x) => x.q.id === qSel.id)?.ret ?? null
+      qualquerSel && doc.selecao
+        ? doc.quadrosDe(lamina[doc.selecao.lado]).find((x) => x.q.id === qualquerSel.id)?.ret ?? null
         : null;
 
     /**
@@ -565,14 +576,21 @@ export function useEditorDesign({
      * quadros chegavam a se tocar, e o clique ia para a errada.
      */
     const alcaCanto = (pos: string, cursor: string) =>
-      `position:absolute;${pos};width:13px;height:13px;border-radius:4px;background:#FFFFFF;` +
-      `border:2px solid #2563EB;box-shadow:0 1px 4px rgba(11,18,32,.3);cursor:${cursor};` +
+      // Quadradinho pequeno e reto, no lugar do losango arredondado de 13px com
+      // borda de 2px: aquele competia com a foto. Este é o formato que os
+      // editores usam há décadas e some da vista quando não se precisa dele.
+      `position:absolute;${pos};width:9px;height:9px;border-radius:1px;background:#FFFFFF;` +
+      `border:1px solid #2563EB;box-shadow:0 0 0 .5px rgba(255,255,255,.9);cursor:${cursor};` +
       `pointer-events:auto;touch-action:none;z-index:10`;
 
     const caixaSel = (lado: Lado) => {
-      const on = selTipo === 'foto' && doc.selecao?.lado === lado && retSel;
+      const on = !!selTipo && doc.selecao?.lado === lado && !!retSel;
       return {
-        box: on ? ret(retSel) + ';z-index:9;pointer-events:none' : 'display:none',
+        // Contorno fino em volta do que está selecionado: é o que diz onde
+        // termina o objeto, e dispensa alça grossa para isso.
+        box: on
+          ? ret(retSel!) + ';z-index:9;pointer-events:none;outline:1px solid #2563EB;outline-offset:-1px'
+          : 'display:none',
         // Contorno de cada rosto, no lugar em que ele realmente está. Verde
         // quando dentro da área segura, âmbar quando toca a margem de corte.
         rostos: on
@@ -601,10 +619,11 @@ export function useEditorDesign({
         // vinco e da barra flutuante, e continua dentro do recorte.
         cantoSE: alcaCanto('bottom:3px;right:3px', 'nwse-resize'),
         girar:
-          'position:absolute;bottom:3px;left:50%;transform:translateX(-50%);width:26px;height:26px;' +
-          'border-radius:999px;background:#FFFFFF;border:2px solid #2563EB;display:flex;align-items:center;' +
+          // Menor e mais claro que a versão anterior de 26px com borda de 2px.
+          'position:absolute;bottom:4px;left:50%;transform:translateX(-50%);width:18px;height:18px;' +
+          'border-radius:999px;background:#FFFFFF;border:1px solid #2563EB;display:flex;align-items:center;' +
           'justify-content:center;color:#2563EB;cursor:grab;pointer-events:auto;touch-action:none;' +
-          'box-shadow:0 2px 8px rgba(11,18,32,.25);z-index:11',
+          'box-shadow:0 1px 3px rgba(11,18,32,.2);z-index:11',
       };
     };
 
@@ -1116,7 +1135,14 @@ export function useEditorDesign({
           'border:1px solid #E6EAF2;border-right:0;color:#6B7A90;cursor:pointer;box-shadow:-4px 0 12px rgba(11,18,32,.06);z-index:3',
       toggleInsp: () => set({ insp: !s.insp }),
 
-      inspTitle: selTipo === 'texto' ? 'Texto selecionado' : selTipo ? 'Foto selecionada' : 'Inspetor',
+      inspTitle:
+        selTipo === 'texto'
+          ? 'Texto selecionado'
+          : selTipo === 'elemento'
+            ? 'Elemento selecionado'
+            : selTipo
+              ? 'Foto selecionada'
+              : 'Inspetor',
       inspTag:
         selTipo === 'texto'
           ? 'Título'
