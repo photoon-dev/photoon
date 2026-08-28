@@ -314,7 +314,10 @@ export async function reagruparPessoas(galeriaId: string) {
   if (lista.length === 0) return;
 
   const grupos = agrupar(lista.map((r) => r.vetor));
-  const total = Math.max(0, ...grupos) + 1;
+  // `Math.max(0, ...)` criava o grupo 0 mesmo quando TODOS os rostos eram
+  // ruído (−1): nascia uma pessoa sem nenhum rosto, e a aba enchia de bolinha
+  // vazia. Com −1 como piso, ruído puro não gera pessoa nenhuma.
+  const total = Math.max(-1, ...grupos) + 1;
 
   // Nome herdado: para cada grupo, a pessoa antiga mais frequente nele.
   const { data: antigas } = await supabase

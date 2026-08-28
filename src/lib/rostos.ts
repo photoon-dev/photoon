@@ -212,7 +212,11 @@ export function corrigirEnq(
    --------------------------------------------------------------------------- */
 
 export const EPS_PADRAO = 0.6;
-export const MIN_PONTOS = 2;
+export // 1, e não 2, de propósito: quem aparece numa foto só continua sendo uma
+// pessoa. Com `minPontos = 2` o DBSCAN classificava como ruído todo convidado
+// que apareceu uma única vez — numa galeria de 24 fotos, TODOS os sete rostos
+// viraram ruído e nenhum grupo se formou.
+const MIN_PONTOS = 1;
 
 export function distancia(a: number[], b: number[]): number {
   let s = 0;

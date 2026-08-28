@@ -169,6 +169,6 @@ export async function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     // tudo, menos estáticos e arquivos com extensão
-    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|txt|xml)$).*)',
+    '/((?!_next/static|_next/image|favicon.ico|modelos-rosto|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|txt|xml|json|bin)$).*)',
   ],
 };

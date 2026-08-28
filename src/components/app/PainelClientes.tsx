@@ -374,6 +374,30 @@ export default function PainelClientes({
                               Identificar pessoas nas fotos
                             </label>
 
+                            {/* O reprocessamento fica FORA do bloco de pessoas:
+                                era ele que criava as pessoas, e estando dentro
+                                da condição `pessoas.length > 0` nunca apareceria
+                                numa galeria que ainda não tem nenhuma. */}
+                                <button
+                                onClick={async () => {
+                                  setAnalise({ galeria: g.id, feitas: 0, achados: 0 });
+                                  try {
+                                    await analisarGaleria(g.id, (feitas, achados) =>
+                                      setAnalise({ galeria: g.id, feitas, achados }),
+                                    );
+                                    location.reload();
+                                  } finally {
+                                    setAnalise(null);
+                                  }
+                                }}
+                                disabled={analise?.galeria === g.id}
+                                className="ml-3 mt-2 text-[11.5px] font-semibold text-blue hover:underline disabled:text-muted disabled:no-underline"
+                                >
+                                {analise?.galeria === g.id
+                                  ? `Analisando… ${analise.feitas} fotos, ${analise.achados} rostos`
+                                  : 'Detectar rostos nas fotos antigas'}
+                                </button>
+
                             {/* Pessoas reconhecidas. Nomear é o que transforma
                                 a bolinha do editor em alguém — e o nome
                                 sobrevive aos reagrupamentos seguintes. */}
@@ -416,25 +440,6 @@ export default function PainelClientes({
                                   className="mt-2 text-[11.5px] font-semibold text-blue hover:underline"
                                 >
                                   Reagrupar rostos
-                                </button>
-                                <button
-                                  onClick={async () => {
-                                    setAnalise({ galeria: g.id, feitas: 0, achados: 0 });
-                                    try {
-                                      await analisarGaleria(g.id, (feitas, achados) =>
-                                        setAnalise({ galeria: g.id, feitas, achados }),
-                                      );
-                                      location.reload();
-                                    } finally {
-                                      setAnalise(null);
-                                    }
-                                  }}
-                                  disabled={analise?.galeria === g.id}
-                                  className="ml-3 mt-2 text-[11.5px] font-semibold text-blue hover:underline disabled:text-muted disabled:no-underline"
-                                >
-                                  {analise?.galeria === g.id
-                                    ? `Analisando… ${analise.feitas} fotos, ${analise.achados} rostos`
-                                    : 'Detectar rostos nas fotos antigas'}
                                 </button>
                               </div>
                             )}
