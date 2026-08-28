@@ -107,7 +107,19 @@ export async function analisarFoto(arquivo: Blob): Promise<{
 
     const faceapi = await carregar();
     const achados = await faceapi
-      .detectAllFaces(canvas, new faceapi.TinyFaceDetectorOptions({ inputSize: 416, scoreThreshold: 0.5 }))
+      /*
+       * inputSize 608 e limiar 0,35, não 416 e 0,5.
+       *
+       * Com os valores anteriores, 24 fotos de casamento renderam 7 rostos:
+       * convidado ao fundo e rosto de perfil passavam batido. O detector
+       * redimensiona a imagem para `inputSize`, então rosto pequeno vira
+       * poucos pixels — 608 é o degrau seguinte da rede e recupera a maioria.
+       *
+       * Um limiar mais baixo traz algum falso positivo. Na prática isso é
+       * preferível: o lojista apaga uma bolinha errada em um clique, mas não
+       * tem como recuperar a pessoa que o detector nunca viu.
+       */
+      .detectAllFaces(canvas, new faceapi.TinyFaceDetectorOptions({ inputSize: 608, scoreThreshold: 0.35 }))
       .withFaceLandmarks()
       .withFaceDescriptors();
 
