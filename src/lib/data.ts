@@ -42,6 +42,7 @@ export type Projeto = {
   total_paginas: number;
   atualizado_em: string;
   galeria_id: string | null;
+  template_id: string | null;
   paginas: unknown[];
   fotos_usadas: number;
 };
@@ -67,7 +68,7 @@ export type Foto = {
 
 const CAMPOS_PROJETO =
   'id, titulo, status, produto_nome, produto_tamanho, preco_estimado, progresso, avisos, ' +
-  'capa_url, total_paginas, atualizado_em, galeria_id, paginas, projeto_fotos(count)';
+  'capa_url, total_paginas, atualizado_em, galeria_id, template_id, paginas, projeto_fotos(count)';
 
 type LinhaProjeto = Omit<Projeto, 'avisos' | 'fotos_usadas'> & {
   avisos: Aviso[] | null;
@@ -310,4 +311,15 @@ export async function souSuperAdmin(): Promise<boolean> {
   const supabase = await createClient();
   const { data } = await supabase.from('super_admins').select('user_id').limit(1);
   return (data?.length ?? 0) > 0;
+}
+
+/** Preço vigente do modelo de um álbum, para o orçamento no editor. */
+export async function getPrecoDoModelo(templateId: string) {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from('templates')
+    .select('preco_base, paginas_incluidas, fotos_incluidas, preco_pagina_extra, preco_foto_extra')
+    .eq('id', templateId)
+    .maybeSingle();
+  return (data as unknown as import('@/lib/preco').PrecoModelo) ?? null;
 }

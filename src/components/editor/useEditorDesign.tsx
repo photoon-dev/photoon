@@ -2,6 +2,7 @@
 
 import { useCallback, useMemo, useRef, useState } from 'react';
 import type { Foto } from '@/lib/data';
+import { calcularPreco, reais, type PrecoModelo } from '@/lib/preco';
 
 /**
  * Porte da classe `Component extends DCLogic` de `Cliente Editor.dc.html`.
@@ -110,10 +111,20 @@ export function useEditorDesign({
   fotos,
   titulo,
   rotas,
+  modelo,
+  laminas,
+  fotosUsadas,
+  onTitulo,
 }: {
   fotos: Foto[];
   titulo: string;
   rotas: Rotas;
+  /** Preço vigente do modelo do álbum; nulo esconde o orçamento. */
+  modelo?: PrecoModelo | null;
+  /** Lâminas e fotos do projeto, para calcular o valor. */
+  laminas: number;
+  fotosUsadas: number;
+  onTitulo?: (t: string) => void;
 }) {
   const [s, setS] = useState<EstadoEditor>({
     hover: null, spread: 5, spreadLay: [0, 3, 5, 1, 6, 3, 2, 5, 4, 7], turning: null,
@@ -234,6 +245,37 @@ export function useEditorDesign({
     const fotoHover = s.hover === null ? fotos[0] : fotos[s.hover];
 
     const painelW = 'clamp(240px, 24vw, 316px)';
+
+    const conta = calcularPreco(modelo, { paginas: laminas * 2, fotos: fotosUsadas });
+    const detalhe = [
+      conta.paginasExtras > 0 &&
+        `${conta.paginasExtras} pág. extra${conta.paginasExtras === 1 ? '' : 's'}`,
+      conta.fotosExtras > 0 && `${conta.fotosExtras} foto${conta.fotosExtras === 1 ? '' : 's'} extra`,
+    ]
+      .filter(Boolean)
+      .join(' · ');
+
+    const orcamento = modelo ? (
+      <span
+        title={detalhe || 'Valor do álbum'}
+        style={{
+          display: 'flex',
+          alignItems: 'baseline',
+          gap: '6px',
+          padding: '5px 11px',
+          borderRadius: '999px',
+          background: '#EAF0FF',
+          color: '#2563EB',
+          fontSize: '11.5px',
+          fontWeight: 700,
+          flex: '0 0 auto',
+          whiteSpace: 'nowrap',
+        }}
+      >
+        {reais(conta.total)}
+        {detalhe && <span style={{ fontWeight: 500, opacity: 0.75 }}>{detalhe}</span>}
+      </span>
+    ) : null;
 
     const v: Record<string, unknown> = {
       ...rotas,
@@ -409,6 +451,13 @@ export function useEditorDesign({
         `padding:24px;pointer-events:none;${s.modal ? '' : 'display:none'}`,
 
       titulo,
+      onTitulo: onTitulo
+        ? (e: { target: { value: string } }) => onTitulo(e.target.value)
+        : undefined,
+
+      // O total sobe conforme o cliente adiciona lâmina ou foto. O valor é
+      // sempre o da tabela vigente do modelo.
+      orcamento: orcamento,
     };
 
     for (let i = 0; i < 5; i++) {
@@ -432,7 +481,7 @@ export function useEditorDesign({
     }
 
     return v;
-  }, [s, fotos, titulo, rotas, set, irPara]);
+  }, [s, fotos, titulo, rotas, modelo, laminas, fotosUsadas, onTitulo, set, irPara]);
 
   return v;
 }

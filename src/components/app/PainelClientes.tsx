@@ -259,6 +259,20 @@ export default function PainelClientes({
                               {fotos} foto{fotos === 1 ? '' : 's'} · {albuns.length} álbum
                               {albuns.length === 1 ? '' : 'ns'}
                             </p>
+                            <p className="m-0 mt-1 text-[11.5px] text-muted-2">
+                              {[
+                                g.templates_permitidos?.length
+                                  ? `${g.templates_permitidos.length} modelo(s) liberado(s)`
+                                  : 'todos os modelos',
+                                g.paginas_min || g.paginas_max
+                                  ? `${g.paginas_min ?? '?'}–${g.paginas_max ?? '?'} páginas`
+                                  : null,
+                                g.fotos_max ? `até ${g.fotos_max} fotos` : null,
+                                g.permite_paginas_extras ? null : 'sem páginas extras',
+                              ]
+                                .filter(Boolean)
+                                .join(' · ')}
+                            </p>
                             <label className={`${BOTAO} mt-3 cursor-pointer`}>
                               {enviando === g.id
                                 ? `Enviando ${progresso.feitas}/${progresso.total}…`
@@ -302,6 +316,11 @@ export default function PainelClientes({
                                 <option value="">Escolha o modelo…</option>
                                 {templates
                                   .filter((t) => t.publicado)
+                                  .filter(
+                                    (t) =>
+                                      !g.templates_permitidos?.length ||
+                                      g.templates_permitidos.includes(t.id),
+                                  )
                                   .map((t) => (
                                     <option key={t.id} value={t.id}>
                                       {t.nome} — {t.largura_mm / 10}×{t.altura_mm / 10} cm
@@ -323,33 +342,124 @@ export default function PainelClientes({
                       );
                     })}
 
-                    {/* ---- novo evento ---- */}
+                    {/* ---- novo evento, com as regras do que o cliente pode escolher ---- */}
                     <form
                       action={criarGaleria}
-                      className="flex flex-wrap items-end gap-3 rounded-[14px] border border-dashed border-line p-4"
+                      className="flex flex-col gap-4 rounded-[14px] border border-dashed border-line p-4"
                     >
                       <input type="hidden" name="cliente_id" value={c.id} />
-                      <label className="flex min-w-[240px] flex-1 flex-col gap-1.5">
-                        <span className={ROTULO}>Novo evento</span>
-                        <input
-                          name="nome"
-                          required
-                          placeholder="Ex: Casamento Ana e João"
-                          className={CAMPO}
-                        />
-                      </label>
-                      <label className="flex flex-col gap-1.5">
-                        <span className={ROTULO}>Máx. álbuns</span>
-                        <input
-                          name="max_albuns"
-                          type="number"
-                          min={1}
-                          max={20}
-                          defaultValue={4}
-                          className={`${CAMPO} w-28`}
-                        />
-                      </label>
-                      <button type="submit" className={BOTAO_PRIMARIO}>
+
+                      <div className="flex flex-wrap items-end gap-3">
+                        <label className="flex min-w-[240px] flex-1 flex-col gap-1.5">
+                          <span className={ROTULO}>Novo evento</span>
+                          <input
+                            name="nome"
+                            required
+                            placeholder="Ex: Casamento Ana e João"
+                            className={CAMPO}
+                          />
+                        </label>
+                        <label className="flex flex-col gap-1.5">
+                          <span className={ROTULO}>Máx. álbuns</span>
+                          <input
+                            name="max_albuns"
+                            type="number"
+                            min={1}
+                            max={20}
+                            defaultValue={4}
+                            className={`${CAMPO} w-28`}
+                          />
+                        </label>
+                      </div>
+
+                      <details className="rounded-[12px] border border-line bg-surface-2 px-4 py-3">
+                        <summary className="cursor-pointer text-[13px] font-bold">
+                          Regras deste evento
+                          <span className="ml-2 font-medium text-muted">
+                            (opcional — vazio libera tudo)
+                          </span>
+                        </summary>
+
+                        <div className="mt-4 flex flex-col gap-4">
+                          <div>
+                            <span className={`${ROTULO} mb-2 block`}>
+                              Modelos que o cliente pode escolher
+                            </span>
+                            <div className="grid gap-1.5 [grid-template-columns:repeat(auto-fill,minmax(220px,1fr))]">
+                              {templates
+                                .filter((t) => t.publicado)
+                                .map((t) => (
+                                  <label
+                                    key={t.id}
+                                    className="flex cursor-pointer items-center gap-2 text-[12.5px] text-ink-3"
+                                  >
+                                    <input
+                                      type="checkbox"
+                                      name="templates_permitidos"
+                                      value={t.id}
+                                      className="h-4 w-4 accent-[#2563EB]"
+                                    />
+                                    {t.nome} — {t.largura_mm / 10}×{t.altura_mm / 10} cm
+                                  </label>
+                                ))}
+                            </div>
+                            <span className="mt-1.5 block text-[11.5px] text-muted-2">
+                              Nenhum marcado = o cliente escolhe entre todos.
+                            </span>
+                          </div>
+
+                          <div className="grid gap-3 sm:grid-cols-3">
+                            <label className="flex flex-col gap-1.5">
+                              <span className={ROTULO}>Páginas mínimas</span>
+                              <input
+                                name="paginas_min"
+                                type="number"
+                                min={1}
+                                placeholder="do modelo"
+                                className={CAMPO}
+                              />
+                            </label>
+                            <label className="flex flex-col gap-1.5">
+                              <span className={ROTULO}>Páginas máximas</span>
+                              <input
+                                name="paginas_max"
+                                type="number"
+                                min={1}
+                                placeholder="do modelo"
+                                className={CAMPO}
+                              />
+                            </label>
+                            <label className="flex flex-col gap-1.5">
+                              <span className={ROTULO}>Máximo de fotos</span>
+                              <input
+                                name="fotos_max"
+                                type="number"
+                                min={1}
+                                placeholder="sem limite"
+                                className={CAMPO}
+                              />
+                            </label>
+                          </div>
+
+                          <label className="flex cursor-pointer items-center gap-2.5">
+                            <input
+                              type="checkbox"
+                              name="permite_paginas_extras"
+                              defaultChecked
+                              className="h-4 w-4 accent-[#2563EB]"
+                            />
+                            <span className="text-[13px] text-ink-3">
+                              O cliente pode adicionar páginas além do incluído
+                            </span>
+                          </label>
+                          <span className="text-[11.5px] leading-[1.55] text-muted-2">
+                            Para número exato de páginas, ponha o mesmo valor em mínimas e máximas
+                            e desmarque a opção acima.
+                          </span>
+                        </div>
+                      </details>
+
+                      <button type="submit" className={`${BOTAO_PRIMARIO} self-start`}>
                         Criar evento
                       </button>
                     </form>

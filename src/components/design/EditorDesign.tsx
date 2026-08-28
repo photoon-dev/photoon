@@ -83,13 +83,14 @@ export default function EditorDesign({ v }: { v: any }) {
             <circle cx="98" cy="19" r="5.5" fill="#06B6D4" />
           </svg>
           <div style={{ display: 'flex', alignItems: 'center', gap: '9px', minWidth: '0', flex: '1 1 180px' }}>
-            <input value="Fotolivro da formatura" style={{ width: '100%', maxWidth: '220px', minWidth: '90px', height: '38px', padding: '0 12px', border: '1px solid transparent', borderRadius: '10px', background: 'transparent', fontFamily: 'inherit', fontSize: '14.5px', fontWeight: '700', color: '#0B1220' }} className="dc2" />
+            <input value={v.titulo} onChange={v.onTitulo} style={{ width: '100%', maxWidth: '220px', minWidth: '90px', height: '38px', padding: '0 12px', border: '1px solid transparent', borderRadius: '10px', background: 'transparent', fontFamily: 'inherit', fontSize: '14.5px', fontWeight: '700', color: '#0B1220' }} className="dc2" />
             <span style={{ display: 'flex', alignItems: 'center', gap: '7px', padding: '5px 11px', borderRadius: '999px', background: '#E6F8F1', color: '#059669', fontSize: '11.5px', fontWeight: '700', flex: '0 0 auto', whiteSpace: 'nowrap' }}>
               <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M5 12.5 10 17.5 19 7" />
               </svg>
               Salvo agora
             </span>
+            {v.orcamento}
           </div>
           <div style={{ flex: '1' }}>
           </div>

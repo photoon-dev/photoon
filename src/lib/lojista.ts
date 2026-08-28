@@ -27,7 +27,16 @@ export type ClienteDaLoja = {
   convidado_em: string | null;
   primeiro_acesso_em: string | null;
   /** Uma galeria por evento: casamento, batizado, formatura… */
-  galerias: { id: string; nome: string; galeria_fotos: { count: number }[] }[];
+  galerias: {
+    id: string;
+    nome: string;
+    templates_permitidos: string[] | null;
+    paginas_min: number | null;
+    paginas_max: number | null;
+    fotos_max: number | null;
+    permite_paginas_extras: boolean;
+    galeria_fotos: { count: number }[];
+  }[];
   projetos: { id: string; titulo: string; status: string; progresso: number; galeria_id: string | null }[];
 };
 
@@ -72,7 +81,8 @@ export async function listarClientesDaLoja(
     .from('clientes')
     .select(
       'id, nome, email, telefone, user_id, convidado_em, primeiro_acesso_em, ' +
-        'galerias(id, nome, galeria_fotos(count)), ' +
+        'galerias(id, nome, templates_permitidos, paginas_min, paginas_max, fotos_max, ' +
+        'permite_paginas_extras, galeria_fotos(count)), ' +
         'projetos(id, titulo, status, progresso, galeria_id)',
       { count: 'exact' },
     )

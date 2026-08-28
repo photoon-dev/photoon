@@ -284,6 +284,7 @@ def aplicar_slots(saida, slots):
       container  trecho que identifica a linha de abertura do container
       ocorrencia qual ocorrência usar (0 = primeira)
       binding    nome do valor em `v`
+      modo       'replace' (padrão) troca os filhos; 'append' acrescenta ao fim
     """
     for slot in slots:
         achados = [i for i, l in enumerate(saida) if slot['container'] in l]
@@ -305,13 +306,44 @@ def aplicar_slots(saida, slots):
             print(f"// fechamento nao encontrado para {slot['container']!r}", file=sys.stderr)
             continue
 
-        saida[abre + 1:fecha] = [' ' * (indent + 2) + '{v.' + slot['binding'] + '}']
+        linha = ' ' * (indent + 2) + '{v.' + slot['binding'] + '}'
+        if slot.get('modo') == 'append':
+            # mantém os filhos do design e acrescenta um ao fim
+            saida.insert(fecha, linha)
+        else:
+            saida[abre + 1:fecha] = [linha]
+    return saida
+
+
+def aplicar_trocas(saida, trocas):
+    """
+    Substituições literais no JSX gerado.
+
+    Serve para os valores que o design deixou escritos à mão onde deveria
+    haver binding — o nome do álbum, por exemplo. Cada troca é conferida:
+    se o alvo não existir, avisa em vez de falhar em silêncio.
+    """
+    for t in trocas:
+        alvo, novo = t['de'], t['para']
+        achou = False
+        for i, linha in enumerate(saida):
+            if alvo in linha:
+                saida[i] = linha.replace(alvo, novo)
+                achou = True
+                if t.get('primeira', True):
+                    break
+        if not achou:
+            print(f"// troca nao encontrada: {alvo!r}", file=sys.stderr)
     return saida
 
 
 def main():
     caminho, componente = sys.argv[1], sys.argv[2]
-    slots = json.loads(sys.argv[3]) if len(sys.argv) > 3 else []
+    cfg = json.loads(sys.argv[3]) if len(sys.argv) > 3 else {}
+    if isinstance(cfg, list):
+        cfg = {'slots': cfg}
+    slots = cfg.get('slots', [])
+    trocas = cfg.get('trocas', [])
     bruto = open(caminho, encoding='utf-8').read()
     corpo = bruto.split('<x-dc>')[1].split('</x-dc>')[0]
     corpo = re.sub(r'<helmet>[\s\S]*?</helmet>', '', corpo)
@@ -319,6 +351,7 @@ def main():
     c = Conversor()
     c.feed(corpo)
     c.saida = aplicar_slots(c.saida, slots)
+    c.saida = aplicar_trocas(c.saida, trocas)
 
     print(f"// Gerado por tools/dc2tsx.py a partir de {caminho.split('/')[-1]}")
     print('// Transliteração fiel do design: não editar à mão, editar o .dc.html.')

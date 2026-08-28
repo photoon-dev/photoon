@@ -77,10 +77,25 @@ export async function criarGaleria(fd: FormData) {
   const nome = texto(fd, 'nome') || 'Nova galeria';
   const maxAlbuns = Number(texto(fd, 'max_albuns')) || 4;
 
+  // Regras do que o cliente pode escolher neste evento. Vazio = sem restrição.
+  const permitidos = fd.getAll('templates_permitidos').filter((v) => typeof v === 'string');
+  const inteiro = (campo: string) => {
+    const v = texto(fd, campo);
+    return v ? Number(v) : null;
+  };
+
   const supabase = await createClient();
-  const { error } = await supabase
-    .from('galerias')
-    .insert({ lojista_id: loja.id, cliente_id: clienteId, nome, max_albuns: maxAlbuns });
+  const { error } = await supabase.from('galerias').insert({
+    lojista_id: loja.id,
+    cliente_id: clienteId,
+    nome,
+    max_albuns: maxAlbuns,
+    templates_permitidos: permitidos.length ? permitidos : null,
+    paginas_min: inteiro('paginas_min'),
+    paginas_max: inteiro('paginas_max'),
+    fotos_max: inteiro('fotos_max'),
+    permite_paginas_extras: fd.get('permite_paginas_extras') !== null,
+  });
 
   if (error) throw new Error(error.message);
 
@@ -164,10 +179,27 @@ export async function criarProjetoParaCliente(fd: FormData) {
 
   if (!tpl) throw new Error('Modelo não encontrado.');
 
+  // As regras do evento mandam. Sem elas, vale o que o modelo define.
+  const { data: galeria } = galeriaId
+    ? await supabase
+        .from('galerias')
+        .select('templates_permitidos, paginas_min')
+        .eq('id', galeriaId)
+        .maybeSingle()
+    : { data: null };
+
+  const regras = galeria as {
+    templates_permitidos: string[] | null;
+    paginas_min: number | null;
+  } | null;
+
+  if (regras?.templates_permitidos?.length && !regras.templates_permitidos.includes(templateId)) {
+    throw new Error('Este modelo não está liberado para o evento.');
+  }
+
   // páginas_min é a contagem de páginas; cada lâmina é um par
-  const laminas = Array.from({ length: Math.max(1, Math.ceil(tpl.paginas_min / 2)) }, () =>
-    novaLamina(2),
-  );
+  const paginas = regras?.paginas_min ?? tpl.paginas_min;
+  const laminas = Array.from({ length: Math.max(1, Math.ceil(paginas / 2)) }, () => novaLamina(2));
 
   const { error } = await supabase.from('projetos').insert({
     lojista_id: loja.id,
