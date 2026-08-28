@@ -89,6 +89,103 @@ export const PADROES: Padrao[] = [
     id: 'ondas', nome: 'Ondas', lado: 40,
     desenho: '<path d="M0 20q10-8 20 0t20 0" fill="none" stroke="COR" stroke-width="1.3"/>',
   },
+
+  /* ------------------------- os mais elegantes -------------------------- */
+  {
+    id: 'art-deco', nome: 'Art déco', lado: 44,
+    desenho:
+      '<g fill="none" stroke="COR" stroke-width="1.1">' +
+      '<path d="M22 4 40 22 22 40 4 22z"/><path d="M22 12 32 22 22 32 12 22z"/>' +
+      '<path d="M0 0h4M40 0h4M0 44h4M40 44h4"/></g>',
+  },
+  {
+    id: 'damasco', nome: 'Damasco', lado: 56,
+    desenho:
+      '<g fill="none" stroke="COR" stroke-width="1.1">' +
+      '<path d="M28 8c7 6 7 14 0 20-7-6-7-14 0-20z"/>' +
+      '<path d="M28 28c7 6 7 14 0 20-7-6-7-14 0-20z"/>' +
+      '<path d="M8 18c6 5 6 12 0 17M48 18c-6 5-6 12 0 17"/></g>',
+  },
+  {
+    id: 'leque', nome: 'Leques', lado: 36,
+    desenho:
+      '<g fill="none" stroke="COR" stroke-width="1"><path d="M0 36a18 18 0 0 1 36 0"/>' +
+      '<path d="M6 36a12 12 0 0 1 24 0"/><path d="M12 36a6 6 0 0 1 12 0"/></g>',
+  },
+  {
+    id: 'entrelacado', nome: 'Entrelaçado', lado: 40,
+    desenho:
+      '<g fill="none" stroke="COR" stroke-width="1.1">' +
+      '<circle cx="10" cy="10" r="9"/><circle cx="30" cy="10" r="9"/>' +
+      '<circle cx="10" cy="30" r="9"/><circle cx="30" cy="30" r="9"/></g>',
+  },
+  {
+    id: 'espinha', nome: 'Espinha de peixe', lado: 24,
+    desenho:
+      '<g fill="none" stroke="COR" stroke-width="1.4">' +
+      '<path d="M0 0 6 6 0 12M12 0l6 6-6 6M0 12l6 6-6 6M12 12l6 6-6 6"/></g>',
+  },
+  {
+    id: 'trelica', nome: 'Treliça', lado: 30,
+    desenho:
+      '<g fill="none" stroke="COR" stroke-width="1"><path d="M15 0 30 15 15 30 0 15z"/>' +
+      '<circle cx="15" cy="15" r="2.4"/><circle cx="0" cy="15" r="1.4"/><circle cx="30" cy="15" r="1.4"/></g>',
+  },
+  {
+    id: 'ramos', nome: 'Ramos', lado: 50,
+    desenho:
+      '<g fill="none" stroke="COR" stroke-width="1"><path d="M25 4v42"/>' +
+      '<path d="M25 12c-6-2-9-6-9-6M25 12c6-2 9-6 9-6"/>' +
+      '<path d="M25 24c-6-2-9-6-9-6M25 24c6-2 9-6 9-6"/>' +
+      '<path d="M25 36c-6-2-9-6-9-6M25 36c6-2 9-6 9-6"/></g>',
+  },
+  {
+    id: 'pontilhado', nome: 'Pontilhado fino', lado: 10,
+    desenho: '<circle cx="5" cy="5" r=".9" fill="COR"/>',
+  },
+  {
+    id: 'micro-grade', nome: 'Micro grade', lado: 8,
+    desenho: '<path d="M0 0h8M0 0v8" stroke="COR" stroke-width=".5"/>',
+  },
+  {
+    id: 'gotas', nome: 'Gotas', lado: 34,
+    desenho:
+      '<path d="M17 8c4 5 6 8 6 11a6 6 0 0 1-12 0c0-3 2-6 6-11z" fill="none" stroke="COR" stroke-width="1.1"/>',
+  },
+  {
+    id: 'triangulos', nome: 'Triângulos', lado: 30,
+    desenho: '<path d="M15 6 27 26H3z" fill="none" stroke="COR" stroke-width="1.1"/>',
+  },
+  {
+    id: 'hexagonos', nome: 'Hexágonos', lado: 34,
+    desenho:
+      '<path d="M17 3 30 10.5v15L17 33 4 25.5v-15z" fill="none" stroke="COR" stroke-width="1"/>',
+  },
+  {
+    id: 'plumas', nome: 'Plumas', lado: 46,
+    desenho:
+      '<g fill="none" stroke="COR" stroke-width="1"><path d="M23 6v34"/>' +
+      '<path d="M23 10q-8 3-8 9M23 10q8 3 8 9M23 22q-8 3-8 9M23 22q8 3 8 9"/></g>',
+  },
+  {
+    id: 'malha', nome: 'Malha diagonal', lado: 20,
+    desenho:
+      '<g stroke="COR" stroke-width=".8"><path d="M-5 5 5 -5M0 20 20 0M15 25 25 15"/>' +
+      '<path d="M-5 15 5 25M0 0 20 20M15 -5 25 5"/></g>',
+  },
+  {
+    id: 'lacos', nome: 'Laços', lado: 48,
+    desenho:
+      '<g fill="none" stroke="COR" stroke-width="1.1">' +
+      '<path d="M24 24c-10-10-10-18 0-18s10 8 0 18z"/>' +
+      '<path d="M24 24c10 10 10 18 0 18s-10-8 0-18z"/></g>',
+  },
+  {
+    id: 'estrelinhas', nome: 'Estrelinhas', lado: 26,
+    desenho:
+      '<path d="M13 7v12M7 13h12" stroke="COR" stroke-width="1"/>' +
+      '<path d="M9 9l8 8M17 9l-8 8" stroke="COR" stroke-width=".7"/>',
+  },
 ];
 
 /**

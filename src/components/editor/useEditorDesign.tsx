@@ -17,6 +17,7 @@ export type EstadoEditor = {
   espacoAberto: boolean;
   paginarAberto: boolean;
   arrastandoLamina: number | null;
+  arrastandoQuadro: boolean;
   escopoPaginar: 'vazias' | 'recomecar';
   escopoEspaco: 'album' | 'lamina';
   turning: 'next' | 'prev' | null;
@@ -110,8 +111,17 @@ const opcaoPaginar = (on: boolean) =>
   `border:1px solid ${on ? '#2563EB' : '#E6EAF2'};background:${on ? '#F1F5FD' : '#FFFFFF'}`;
 import { curvaturaPagina, estiloPagina, luzPagina, estiloPalco, estiloLivro, limitarZoom, PAGINA_AR, ZOOM_PASSO, ZOOM_PADRAO } from '@/lib/livro';
 import type { Documento, Lado } from '@/components/editor/useDocumento';
+import { EFEITOS } from '@/lib/album';
 import type { Enq, Pagina, Quadro, QuadroFoto } from '@/lib/album';
-import { bordaCss, imagemCss } from '@/lib/imagem';
+import { bordaCss, filtroDoEfeito, imagemCss } from '@/lib/imagem';
+import {
+  CORES_FUNDO,
+  PADROES,
+  estiloFundo,
+  fundoCss,
+  interpretar as interpretarFundo,
+  serializar as serializarFundo,
+} from '@/lib/fundos';
 import {
   ESCALA_MAX, ESCALA_MIN, ROT_MAX, ROT_MIN,
   escalarEnq, girarEnq, limitarEscala, limitarRot, moverEnq, zoomEnq, zoomParaEscala,
@@ -168,7 +178,7 @@ export function useEditorDesign({
   onTitulo?: (t: string) => void;
 }) {
   const [s, setS] = useState<EstadoEditor>({
-    hover: null, turning: null, espacoAberto: false, escopoEspaco: 'album', paginarAberto: false, escopoPaginar: 'vazias', arrastandoLamina: null,
+    hover: null, turning: null, espacoAberto: false, escopoEspaco: 'album', paginarAberto: false, escopoPaginar: 'vazias', arrastandoLamina: null, arrastandoQuadro: false,
     tool: 0, panel: true, insp: false, modal: null, zoom: ZOOM_PADRAO,
     count: 0, lay: 2, photoTab: 0, bgTab: 0, bgCat: 0, elCat: 0, bw: false,
     bgHue: 220, elCor: '#2563EB', rostoIgnorado: [], pessoaAtiva: null,
@@ -561,16 +571,46 @@ export function useEditorDesign({
           if (Math.hypot(ev.clientX - ini.x, ev.clientY - ini.y) < 3) return;
           ativo = true;
           doc.iniciarGesto();
+          set({ arrastandoQuadro: true });
         }
         const dx = ((ev.clientX - ini.x) / rp.width) * 100;
         const dy = ((ev.clientY - ini.y) / rp.height) * 100;
 
         if (modo === 'mover') {
+          let nx = ini.ret.x + dx;
+          let ny = ini.ret.y + dy;
+
+          // Ímã: encaixa quando chega perto do centro da página ou de outro
+          // quadro. Mostrar a linha sem encaixar deixa o alinhamento por conta
+          // do pulso — a guia vira enfeite.
+          if (!ev.altKey) {
+            const alvos: number[] = [50];
+            for (const outro of lamina[doc.selecao!.lado].quadros) {
+              if (outro.id === q.id || outro.tipo === 'foto') continue;
+              alvos.push(outro.ret.x, outro.ret.x + outro.ret.w / 2, outro.ret.x + outro.ret.w);
+            }
+            const alvosY: number[] = [50];
+            for (const outro of lamina[doc.selecao!.lado].quadros) {
+              if (outro.id === q.id || outro.tipo === 'foto') continue;
+              alvosY.push(outro.ret.y, outro.ret.y + outro.ret.h / 2, outro.ret.y + outro.ret.h);
+            }
+            const encaixar = (v: number, tam: number, refs: number[]) => {
+              for (const p of refs) {
+                for (const [borda, desl] of [[v, 0], [v + tam / 2, tam / 2], [v + tam, tam]] as const) {
+                  if (Math.abs(borda - p) <= 0.8) return p - desl;
+                }
+              }
+              return v;
+            };
+            nx = encaixar(nx, ini.ret.w, alvos);
+            ny = encaixar(ny, ini.ret.h, alvosY);
+          }
+
           // Deixa sair um pouco da página: elemento na borda é decisão de
           // design, não erro. Sair de vez, não — some e o cliente não acha.
           doc.mudarRet({
-            x: Math.min(100 - ini.ret.w / 2, Math.max(-ini.ret.w / 2, ini.ret.x + dx)),
-            y: Math.min(100 - ini.ret.h / 2, Math.max(-ini.ret.h / 2, ini.ret.y + dy)),
+            x: Math.min(100 - ini.ret.w / 2, Math.max(-ini.ret.w / 2, nx)),
+            y: Math.min(100 - ini.ret.h / 2, Math.max(-ini.ret.h / 2, ny)),
           });
         } else if (modo === 'escalar') {
           // Mantém a proporção e o canto oposto parado, que é o que se espera
@@ -591,6 +631,7 @@ export function useEditorDesign({
       const soltar = (ev: PointerEvent) => {
         if (ev.pointerId !== id) return;
         if (ativo) doc.fimGesto();
+        set({ arrastandoQuadro: false });
         try { alvo.releasePointerCapture(id); } catch { /* já liberado */ }
         window.removeEventListener('pointermove', mover);
         window.removeEventListener('pointerup', soltar);
@@ -599,6 +640,47 @@ export function useEditorDesign({
       window.addEventListener('pointermove', mover);
       window.addEventListener('pointerup', soltar);
       window.addEventListener('pointercancel', soltar);
+    };
+
+    /** Tolerância do encaixe, em % da página. */
+    const IMA = 0.8;
+
+    /**
+     * Guias visíveis para o quadro que está sendo arrastado.
+     *
+     * Só aparecem durante o gesto, e só quando há coincidência real: guia que
+     * fica sempre na tela vira ruído e o olho para de vê-la.
+     */
+    const guiasDe = (lado: Lado): { style: string }[] => {
+      if (!s.arrastandoQuadro || !doc.selecao || doc.selecao.lado !== lado) return [];
+      const alvo = qualquerSel;
+      if (!alvo || alvo.tipo === 'foto') return [];
+
+      const r = alvo.ret;
+      const meuX = [r.x, r.x + r.w / 2, r.x + r.w];
+      const meuY = [r.y, r.y + r.h / 2, r.y + r.h];
+
+      // Referências: o centro da página e os outros quadros livres.
+      const refX = [50];
+      const refY = [50];
+      for (const q of lamina[lado].quadros) {
+        if (q.id === alvo.id || q.tipo === 'foto') continue;
+        refX.push(q.ret.x, q.ret.x + q.ret.w / 2, q.ret.x + q.ret.w);
+        refY.push(q.ret.y, q.ret.y + q.ret.h / 2, q.ret.y + q.ret.h);
+      }
+
+      const linhas: { style: string }[] = [];
+      const traco = (vertical: boolean, pos: number) => ({
+        style:
+          `position:absolute;pointer-events:none;z-index:12;background:#EC4899;` +
+          (vertical
+            ? `left:${pos}%;top:0;bottom:0;width:1px;`
+            : `top:${pos}%;left:0;right:0;height:1px;`),
+      });
+
+      for (const p of refX) if (meuX.some((m) => Math.abs(m - p) <= IMA)) linhas.push(traco(true, p));
+      for (const p of refY) if (meuY.some((m) => Math.abs(m - p) <= IMA)) linhas.push(traco(false, p));
+      return linhas;
     };
 
     type PDown = React.PointerEvent<HTMLElement>;
@@ -660,6 +742,7 @@ export function useEditorDesign({
 
     /** A cor da lâmina atual — o documento é a fonte, não um estado paralelo. */
     const fundoAtual = lamina.fundo || '#FFFFFF';
+    const fundoLido = interpretarFundo(fundoAtual);
     const hsvFundo = hexParaHsv(fundoAtual);
 
     /**
@@ -946,11 +1029,35 @@ export function useEditorDesign({
 
       /* ------------------------------ fundos ----------------------------- */
 
-      bgSwatches: BG_SW.map((c) => ({
-        style: `aspect-ratio:1 / 1;border-radius:10px;background:${c};` +
-          `border:${fundoAtual.toUpperCase() === c.toUpperCase() ? '2px solid #2563EB' : '1px solid #E6EAF2'};cursor:pointer`,
-        pick: () => doc.mudarFundo(c),
-      })),
+      /**
+       * Fundos: cor do papel e padrão, separados.
+       *
+       * Os padrões são vetoriais — um fundo rasterizado que serve na tela vira
+       * borrão ao imprimir em 300 dpi numa página de 30 cm. Trinta padrões por
+       * doze cores dão 360 combinações sem guardar imagem nenhuma.
+       */
+      bgPapeis: CORES_FUNDO.map((c) => {
+        const on = fundoLido.papel.toUpperCase() === c.papel.toUpperCase();
+        return {
+          nome: c.nome,
+          style:
+            `aspect-ratio:1 / 1;border-radius:9px;background:${c.papel};cursor:pointer;` +
+            `border:${on ? '2px solid #2563EB' : '1px solid #E6EAF2'}`,
+          pick: () => doc.mudarFundo(serializarFundo(fundoLido.padrao, c.papel, c.traco)),
+        };
+      }),
+      bgPadroes: PADROES.map((pd) => {
+        const on = fundoLido.padrao === pd.id;
+        const css = fundoCss(pd.id, fundoLido.papel, fundoLido.traco);
+        return {
+          nome: pd.nome,
+          style:
+            `aspect-ratio:1 / 1;border-radius:9px;cursor:pointer;background-color:${fundoLido.papel};` +
+            (css.startsWith('url(') ? `background-image:${css};` : '') +
+            `border:${on ? '2px solid #2563EB' : '1px solid #E6EAF2'}`,
+          pick: () => doc.mudarFundo(serializarFundo(pd.id, fundoLido.papel, fundoLido.traco)),
+        };
+      }),
       colorChips: CHIPS.map((c) => ({
         style: `aspect-ratio:1 / 1;border-radius:7px;background:${c};cursor:pointer;` +
           `border:${fundoAtual.toUpperCase() === c.toUpperCase() ? '2px solid #2563EB' : '1px solid rgba(11,18,32,.1)'}`,
@@ -1384,6 +1491,10 @@ export function useEditorDesign({
        * usa a largura do template.
        * ------------------------------------------------------------------ */
       abrirEspaco: () => set({ espacoAberto: !s.espacoAberto }),
+      // Camada invisível atrás do painel: clicar em qualquer lugar fecha.
+      // Sem ela o painel ficava aberto para sempre, tapando a barra de layouts.
+      fecharEspaco: () => set({ espacoAberto: false }),
+      ovEspaco: s.espacoAberto ? 'position:fixed;inset:0;z-index:44' : 'display:none',
       botaoEspaco:
         `width:28px;height:28px;border-radius:9px;flex:0 0 auto;display:flex;` +
         `align-items:center;justify-content:center;cursor:pointer;` +
@@ -1431,7 +1542,7 @@ export function useEditorDesign({
 
       // O fundo da lâmina era gravado e NUNCA desenhado: o cliente escolhia uma
       // cor e a página continuava branca. Fica sob os quadros, sobre o papel.
-      pageFundo: `position:absolute;inset:0;background:${fundoAtual};z-index:0`,
+      pageFundo: `position:absolute;inset:0;z-index:0;` + estiloFundo(fundoAtual),
       rightFundo: `position:absolute;inset:0;background:${fundoAtual};z-index:0`,
 
       pageElementos: elementosDe(lamina.esquerda, 'esquerda'),
@@ -1459,6 +1570,31 @@ export function useEditorDesign({
       // elemento ficava por cima das alças, e nada podia ser arrastado nem
       // redimensionado. Na `<section>` tudo inclina junto — fotos, elementos e
       // alças — e o empilhamento volta a ser o normal.
+      /**
+       * Área de corte: o que está FORA da margem segura aparece clareado.
+       *
+       * As linhas tracejadas sozinhas não diziam o que era o quê. Com a
+       * sangria clareada, o cliente vê de relance o que a guilhotina vai levar
+       * — que é a informação que evita rosto cortado no álbum impresso.
+       *
+       * Um `box-shadow` de raio enorme a partir da margem pinta tudo para fora
+       * dela, e o `overflow:hidden` da página recorta o excesso. Uma peça só,
+       * em vez de quatro faixas.
+       */
+      areaCorte:
+        'position:absolute;inset:4%;border:1px dashed rgba(245,158,11,.55);border-radius:3px;' +
+        'pointer-events:none;z-index:4;box-shadow:0 0 0 9999px rgba(255,255,255,.42)',
+
+      /**
+       * Guias de alinhamento, só enquanto se arrasta.
+       *
+       * Compara o quadro em movimento com o centro da página e com as bordas e
+       * centros dos outros quadros. Cálculo local: não há nada a guardar no
+       * documento, a guia some quando o gesto acaba.
+       */
+      guias: guiasDe('esquerda'),
+      guiasDireita: guiasDe('direita'),
+
       pageSkew: estiloPagina('esquerda'),
       rightSkew: estiloPagina('direita'),
       pageLight: estilo(luzPagina('esquerda')),
@@ -1483,6 +1619,33 @@ export function useEditorDesign({
         `padding:3px;display:flex;justify-content:${qSel?.ajustes.efeito === 'pb' ? 'flex-end' : 'flex-start'};cursor:pointer;flex:0 0 auto`,
       // O botão animava, mas `s.bw` não era lido por ninguém.
       toggleBw: () => doc.mudarAjustes({ efeito: qSel?.ajustes.efeito === 'pb' ? 'nenhum' : 'pb' }),
+
+      /**
+       * Efeitos com amostra da PRÓPRIA foto.
+       *
+       * O nome sozinho não diz nada — "vintage" e "desbotado" só se distinguem
+       * vendo. Cada amostra usa a foto selecionada, com o filtro aplicado, para
+       * o cliente escolher olhando o resultado e não a palavra.
+       */
+      efeitos: EFEITOS.map((ef) => {
+        const on = (qSel?.ajustes.efeito ?? 'nenhum') === ef.id;
+        return {
+          rotulo: ef.rotulo,
+          wrap: 'display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer',
+          amostra:
+            `width:100%;aspect-ratio:1 / 1;border-radius:9px;background-size:cover;background-position:center;` +
+            (fotoSel
+              ? `background-image:url('${fotoSel.url}');`
+              : 'background:linear-gradient(135deg,#DCE6FA,#EAF0FF);') +
+            filtroDoEfeito(ef.id) +
+            `border:${on ? '2px solid #2563EB' : '1px solid #E6EAF2'};` +
+            (on ? 'box-shadow:0 3px 10px rgba(37,99,235,.24);' : ''),
+          legenda:
+            `font-size:10px;line-height:1.2;text-align:center;` +
+            `color:${on ? '#2563EB' : '#9AA7BC'};font-weight:${on ? 700 : 500}`,
+          pick: () => doc.mudarAjustes({ efeito: ef.id }),
+        };
+      }),
 
       goNext: () => irPara(laminaAtual + 1),
       goPrev: () => irPara(laminaAtual - 1),

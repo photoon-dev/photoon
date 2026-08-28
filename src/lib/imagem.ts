@@ -159,3 +159,9 @@ export function bordaCss(b: { px: number; cor: string } | undefined): string {
   // desalinharia a grade do layout.
   return `box-shadow:inset 0 0 0 ${b.px}px ${b.cor};`;
 }
+
+/** Só o filtro do efeito, para as amostras do inspetor. */
+export function filtroDoEfeito(e: Efeito): string {
+  const f = EFEITO_CSS[e];
+  return f ? `filter:${f};` : '';
+}

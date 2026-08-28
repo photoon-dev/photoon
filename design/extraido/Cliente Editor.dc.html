@@ -206,9 +206,16 @@
               <span onClick="{{ c.pick }}" style="{{ c.style }}">{{ c.label }}</span>
             </sc-for>
           </div>
-          <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-bottom: 16px;">
-            <sc-for list="{{ bgSwatches }}" as="s" hint-placeholder-count="9">
-              <span onClick="{{ s.pick }}" style="{{ s.style }}"></span>
+          <p style="margin: 0 0 8px; font-size: 11px; letter-spacing: 1.2px; text-transform: uppercase; color: #9AA7BC; font-weight: 700;">Cor do papel</p>
+          <div style="display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 6px; margin-bottom: 14px;">
+            <sc-for list="{{ bgPapeis }}" as="c" hint-placeholder-count="12">
+              <span onClick="{{ c.pick }}" title="{{ c.nome }}" style="{{ c.style }}"></span>
+            </sc-for>
+          </div>
+          <p style="margin: 0 0 8px; font-size: 11px; letter-spacing: 1.2px; text-transform: uppercase; color: #9AA7BC; font-weight: 700;">Padrão</p>
+          <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 7px; margin-bottom: 16px;">
+            <sc-for list="{{ bgPadroes }}" as="s" hint-placeholder-count="16">
+              <span onClick="{{ s.pick }}" title="{{ s.nome }}" style="{{ s.style }}"></span>
             </sc-for>
           </div>
           <div style="padding: 14px; border-radius: 12px; background: #F8FAFE; border: 1px solid #EEF1F7; margin-bottom: 12px;">
@@ -356,6 +363,7 @@
 
         <span onClick="{{ abrirEspaco }}" title="Espaçamento entre as fotos" style="{{ botaoEspaco }}"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span>
 
+        <div style="{{ ovEspaco }}" onClick="{{ fecharEspaco }}"></div>
         <div style="{{ painelEspaco }}">
           <p style="margin: 0 0 10px; font-size: 12.5px; font-weight: 700; color: #0B1220;">Espaçamento entre as fotos (mm)</p>
           <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
@@ -374,9 +382,14 @@
         </div>
       </div>
 
-      <div style="position: relative; flex: 1; display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 12px 26px 48px; min-height: 0; overflow: hidden; background: linear-gradient(180deg,#F7F9FC,#E8EEF6);">
+      <div style="position: relative; flex: 1; display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 12px 26px 14px; min-height: 0; overflow: hidden; background: linear-gradient(180deg,#F7F9FC,#E8EEF6);">
         <div class="om-slidebar" style="width: 100%; max-width: 940px; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex: 0 0 auto;">
           <span style="padding: 6px 12px; border-radius: 999px; background: #FFFFFF; border: 1px solid #E6EAF2; font-size: 12px; font-weight: 700; color: #46536A; white-space: nowrap;">{{ spreadTitle }}</span>
+          <div style="display: flex; align-items: center; gap: 8px; flex: 0 0 auto;">
+            <span onClick="{{ goPrev }}" style="width: 28px; height: 28px; border-radius: 9px; background: #FFFFFF; border: 1px solid #E6EAF2; display: flex; align-items: center; justify-content: center; color: #46536A; cursor: pointer;" style-hover="border-color: #2563EB; color: #2563EB;"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M14 6l-6 6 6 6"/></svg></span>
+            <span style="font-size: 12px; font-weight: 600; color: #46536A; white-space: nowrap;">{{ spreadNav }}</span>
+            <span onClick="{{ goNext }}" style="width: 28px; height: 28px; border-radius: 9px; background: #FFFFFF; border: 1px solid #E6EAF2; display: flex; align-items: center; justify-content: center; color: #46536A; cursor: pointer;" style-hover="border-color: #2563EB; color: #2563EB;"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M10 6l6 6-6 6"/></svg></span>
+          </div>
           <div class="om-legend" style="display: flex; align-items: center; gap: 14px;">
             <span style="display: flex; align-items: center; gap: 7px; font-size: 11.5px; color: #6B7A90; white-space: nowrap;"><span style="width: 14px; height: 3px; border-radius: 2px; background: #F59E0B;"></span>margem de corte</span>
             <span style="display: flex; align-items: center; gap: 7px; font-size: 11.5px; color: #6B7A90; white-space: nowrap;"><span style="width: 14px; height: 3px; border-radius: 2px; background: #93C5FD;"></span>área segura</span>
@@ -395,7 +408,10 @@
             <div style="position: absolute; inset: 0; display: grid; grid-template-columns: 1fr 1fr; z-index: 3;">
               <section style="{{ pageSkew }}">
                 <span style="{{ pageFundo }}"></span>
-                <span style="position: absolute; inset: 4%; border: 1px dashed rgba(245,158,11,.55); border-radius: 3px; pointer-events: none; z-index: 4;"></span>
+                <span style="{{ areaCorte }}"></span>
+                <sc-for list="{{ guias }}" as="g" hint-placeholder-count="0">
+                  <span style="{{ g.style }}"></span>
+                </sc-for>
                 <sc-for list="{{ pageElementos }}" as="el" hint-placeholder-count="1">
                   <div onClick="{{ el.pick }}" onpointerdown="{{ el.down }}" style="{{ el.style }}" title="{{ el.title }}">
                     <svg viewBox="0 0 48 48" width="100%" height="100%" preserveAspectRatio="none" fill="none" stroke="currentColor" stroke-width="{{ el.sw }}" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke">
@@ -435,7 +451,10 @@
 
               <section style="{{ rightSkew }}">
                 <span style="{{ rightFundo }}"></span>
-                <span style="position: absolute; inset: 4%; border: 1px dashed rgba(245,158,11,.55); border-radius: 3px; pointer-events: none; z-index: 4;"></span>
+                <span style="{{ areaCorte }}"></span>
+                <sc-for list="{{ guiasDireita }}" as="g" hint-placeholder-count="0">
+                  <span style="{{ g.style }}"></span>
+                </sc-for>
                 <sc-for list="{{ rightElementos }}" as="el" hint-placeholder-count="1">
                   <div onClick="{{ el.pick }}" onpointerdown="{{ el.down }}" style="{{ el.style }}" title="{{ el.title }}">
                     <svg viewBox="0 0 48 48" width="100%" height="100%" preserveAspectRatio="none" fill="none" stroke="currentColor" stroke-width="{{ el.sw }}" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke">
@@ -498,11 +517,6 @@
           <span title="Remover" style="width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #E11D48; cursor: pointer;" style-hover="background: #FFF1F3;"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9 7V5h6v2M6 7l1 13h10l1-13"/></svg></span>
                             </div>
 
-        <div style="position: absolute; left: 50%; bottom: 6px; transform: translateX(-50%); z-index: 25; display: flex; align-items: center; gap: 12px;">
-          <span onClick="{{ goPrev }}" style="width: 34px; height: 34px; border-radius: 11px; background: #FFFFFF; border: 1px solid #E6EAF2; display: flex; align-items: center; justify-content: center; color: #46536A; cursor: pointer;" style-hover="border-color: #2563EB; color: #2563EB;"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M14 6l-6 6 6 6"/></svg></span>
-          <span style="font-size: 12.5px; font-weight: 600; color: #46536A; white-space: nowrap;">{{ spreadNav }}</span>
-          <span onClick="{{ goNext }}" style="width: 34px; height: 34px; border-radius: 11px; background: #FFFFFF; border: 1px solid #E6EAF2; display: flex; align-items: center; justify-content: center; color: #46536A; cursor: pointer;" style-hover="border-color: #2563EB; color: #2563EB;"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M10 6l6 6-6 6"/></svg></span>
-        </div>
       </div>
 
       <div class="om-pagestrip" style="flex: 0 0 auto; padding: 10px 18px 12px; background: #FFFFFF; border-top: 1px solid #E6EAF2;">
@@ -619,9 +633,16 @@
                   <div style="height: 6px; border-radius: 999px; background: #EEF1F7; position: relative;"><div style="{{ s.fill }}"></div><span style="{{ s.knob }}"></span><input type="range" min="{{ s.min }}" max="{{ s.max }}" value="{{ s.raw }}" onChange="{{ s.set }}" style="position: absolute; inset: -9px 0; width: 100%; height: 24px; opacity: 0; cursor: pointer; margin: 0;"/></div>
                 </div>
               </sc-for>
-              <div style="display: flex; align-items: center; gap: 10px; padding: 11px 13px; border-radius: 11px; background: #F8FAFE; border: 1px solid #EEF1F7;">
-                <span style="flex: 1; min-width: 0; font-size: 12.5px; font-weight: 600; color: #46536A;">Preto e branco</span>
-                <span onClick="{{ toggleBw }}" style="{{ bwTrack }}"><span style="width: 18px; height: 18px; border-radius: 999px; background: #FFFFFF; box-shadow: 0 2px 4px rgba(11,18,32,.16);"></span></span>
+              <div>
+                <p style="margin: 0 0 9px; font-size: 11px; letter-spacing: 1.2px; text-transform: uppercase; color: #9AA7BC; font-weight: 700;">Efeito</p>
+                <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 7px;">
+                  <sc-for list="{{ efeitos }}" as="ef" hint-placeholder-count="7">
+                    <div onClick="{{ ef.pick }}" title="{{ ef.rotulo }}" style="{{ ef.wrap }}">
+                      <span style="{{ ef.amostra }}"></span>
+                      <span style="{{ ef.legenda }}">{{ ef.rotulo }}</span>
+                    </div>
+                  </sc-for>
+                </div>
               </div>
             </div>
           </div>
