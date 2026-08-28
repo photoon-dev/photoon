@@ -1,5 +1,28 @@
 # Photoon — estado do projeto e continuação
 
+> **Revisado em 28/08/2026, após auditoria contra o código.** Vários itens da
+> seção 7 já foram feitos por outra sessão. O quadro abaixo vale mais que o
+> texto antigo das subseções:
+>
+> | Item | Situação |
+> |---|---|
+> | 7.1 inspetor | **feito** (mais o `<img>`: Girar e Espelhar aparecem) |
+> | 7.2 arrastar / redimensionar | **feito** |
+> | 7.3 roda do mouse dá zoom | **FALTA** |
+> | 7.4 filtros de foto | **feito**, com largura/altura no banco |
+> | 7.5 espaçamento entre fotos em mm | **FALTA** |
+> | 7.6 fundos e elementos | **feito** (`src/lib/elementos.ts`) |
+> | 7.7 rostos | **em andamento** — `src/lib/rostos.ts` tem DBSCAN, `corrigirEnq`, `diagnosticar`; falta ligar à interface e à aba "Pessoas" |
+> | 7.9 galeria de fotos (U04) | FALTA |
+> | 7.10 IA | FALTA |
+> | 7.11 impressão / PDF | FALTA |
+> | 7.12 cabeçalhos padronizados | FALTA |
+>
+> **Modelos de rosto:** ficam em `public/modelos-rosto/`, copiados do pacote npm
+> por `tools/copiar-modelos.mjs` na build — não estão no Git. Se derem **404**,
+> o contêiner foi construído antes de eles existirem: `docker compose up -d
+> --build app` resolve. Sem isso a detecção falha **em silêncio**.
+
 Documento de passagem. Escrito em **28/08/2026**; Fase 3 concluída.
 Leia inteiro antes de tocar em qualquer arquivo: há **seis** armadilhas neste
 projeto que já custaram retrabalho e estão descritas em "Armadilhas" — a 3.4
