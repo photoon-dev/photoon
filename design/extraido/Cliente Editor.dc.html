@@ -130,7 +130,37 @@
           <p style="{{ photoVazio }}">{{ photoVazioTexto }}</p>
         </div>
         <div style="padding: 12px 18px; border-top: 1px solid #F0F3F9; display: flex; gap: 8px;">
+          <span onClick="{{ abrirPaginar }}" style="flex: 1; height: 40px; display: flex; align-items: center; justify-content: center; gap: 8px; border-radius: 11px; background: #2563EB; color: #FFFFFF; font-size: 12.5px; font-weight: 700; cursor: pointer;" style-hover="filter: brightness(1.08);"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Aplicar todas as fotos</span>
           <span onClick="{{ openModal }}" style="flex: 1; height: 40px; display: flex; align-items: center; justify-content: center; gap: 8px; border-radius: 11px; background: #0B1220; color: #FFFFFF; font-size: 12.5px; font-weight: 700; cursor: pointer;" style-hover="background: #2563EB;"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M5 19 19 5M15 5h4v4"/><path d="M7 4v4M5 6h4M17 15v4M15 17h4"/></svg>Preencher com a assistência</span>
+
+        <div style="{{ ovPaginar }}" onClick="{{ fecharPaginar }}"></div>
+        <div style="{{ shPaginar }}">
+          <p style="margin: 0; font-size: 17px; font-weight: 800; letter-spacing: -.3px;">Paginação automática</p>
+          <p style="margin: 6px 0 16px; font-size: 13px; color: #6B7A90;">Distribua as fotos da galeria pelas lâminas.</p>
+
+          <label style="{{ opcaoVazias }}">
+            <input type="radio" name="escopoPaginar" checked="{{ paginarVazias }}" onChange="{{ setPaginarVazias }}" style="margin-top: 2px;"/>
+            <span style="flex: 1; min-width: 0;">
+              <span style="display: block; font-size: 13.5px; font-weight: 700; color: #0B1220;">Somente quadros vazios</span>
+              <span style="display: block; margin-top: 3px; font-size: 12px; line-height: 1.5; color: #6B7A90;">Preenche o que está vazio e mantém o que você já montou.</span>
+            </span>
+          </label>
+
+          <label style="{{ opcaoRecomecar }}">
+            <input type="radio" name="escopoPaginar" checked="{{ paginarRecomecar }}" onChange="{{ setPaginarRecomecar }}" style="margin-top: 2px;"/>
+            <span style="flex: 1; min-width: 0;">
+              <span style="display: block; font-size: 13.5px; font-weight: 700; color: #0B1220;">Todas as lâminas (recomeçar)</span>
+              <span style="display: block; margin-top: 3px; font-size: 12px; line-height: 1.5; color: #6B7A90;">Remove o que está montado e redistribui todas as fotos.</span>
+            </span>
+          </label>
+
+          <p style="margin: 14px 0 0; padding: 9px 12px; border-radius: 10px; background: #F8FAFE; font-size: 12px; color: #46536A;">{{ resumoPaginar }}</p>
+
+          <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 18px;">
+            <span onClick="{{ fecharPaginar }}" style="height: 38px; padding: 0 16px; display: flex; align-items: center; border-radius: 10px; font-size: 13px; font-weight: 600; color: #46536A; cursor: pointer;" style-hover="background: #F4F7FC;">Cancelar</span>
+            <span onClick="{{ paginar }}" style="height: 38px; padding: 0 20px; display: flex; align-items: center; border-radius: 10px; background: #2563EB; color: #FFFFFF; font-size: 13px; font-weight: 700; cursor: pointer;" style-hover="filter: brightness(1.08);">Paginar</span>
+          </div>
+        </div>
         </div>
       </div>
 

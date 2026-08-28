@@ -15,6 +15,8 @@ import { calcularPreco, reais, type PrecoModelo } from '@/lib/preco';
 export type EstadoEditor = {
   hover: number | null;
   espacoAberto: boolean;
+  paginarAberto: boolean;
+  escopoPaginar: 'vazias' | 'recomecar';
   escopoEspaco: 'album' | 'lamina';
   turning: 'next' | 'prev' | null;
   tool: number;
@@ -99,6 +101,12 @@ import { contagens, layout as layoutPorId, layoutsCom } from '@/lib/layouts';
 
 /** Respiro de fábrica, em mm — o que a maioria dos álbuns usa. */
 const ESPACO_MM_PADRAO = 3;
+
+/** Cartão de opção do diálogo de paginação, marcado quando escolhido. */
+const opcaoPaginar = (on: boolean) =>
+  `display:flex;align-items:flex-start;gap:11px;padding:13px 14px;margin-bottom:10px;` +
+  `border-radius:12px;cursor:pointer;` +
+  `border:1px solid ${on ? '#2563EB' : '#E6EAF2'};background:${on ? '#F1F5FD' : '#FFFFFF'}`;
 import { curvaturaPagina, luzPagina, estiloPalco, estiloLivro, limitarZoom, PAGINA_AR, ZOOM_PASSO, ZOOM_PADRAO } from '@/lib/livro';
 import type { Documento, Lado } from '@/components/editor/useDocumento';
 import type { Enq, Pagina, QuadroFoto } from '@/lib/album';
@@ -158,7 +166,7 @@ export function useEditorDesign({
   onTitulo?: (t: string) => void;
 }) {
   const [s, setS] = useState<EstadoEditor>({
-    hover: null, turning: null, espacoAberto: false, escopoEspaco: 'album',
+    hover: null, turning: null, espacoAberto: false, escopoEspaco: 'album', paginarAberto: false, escopoPaginar: 'vazias',
     tool: 0, panel: true, insp: false, modal: null, zoom: ZOOM_PADRAO,
     count: 0, lay: 2, photoTab: 0, bgTab: 0, bgCat: 0, elCat: 0, bw: false,
     bgHue: 220, elCor: '#2563EB', rostoIgnorado: [], pessoaAtiva: null,
@@ -1154,6 +1162,41 @@ export function useEditorDesign({
           ? 'Capa · frente e verso'
           : `Lâmina ${laminaAtual + 1} · páginas ${laminaAtual * 2 - 1} e ${laminaAtual * 2}`,
       spreadNav: `Lâmina ${laminaAtual + 1} de ${doc.laminas.length}`,
+
+      /* ---------------------- paginação automática -----------------------
+       * Distribuir as fotos uma a uma é o trabalho mais chato do editor, e o
+       * concorrente resolve com um diálogo. As duas opções existem porque
+       * "recomeçar" destrói o que o cliente montou: tem de ser escolha
+       * explícita, nunca o padrão.
+       * ------------------------------------------------------------------ */
+      abrirPaginar: () => set({ paginarAberto: true }),
+      fecharPaginar: () => set({ paginarAberto: false }),
+      ovPaginar: s.paginarAberto
+        ? 'position:fixed;inset:0;z-index:60;background:rgba(11,18,32,.42);backdrop-filter:blur(2px)'
+        : 'display:none',
+      shPaginar: s.paginarAberto
+        ? 'position:fixed;z-index:61;top:50%;left:50%;transform:translate(-50%,-50%);' +
+          'width:min(440px, calc(100vw - 32px));padding:24px;background:#FFFFFF;' +
+          'border-radius:18px;box-shadow:0 30px 70px rgba(11,18,32,.32)'
+        : 'display:none',
+      paginarVazias: s.escopoPaginar === 'vazias',
+      paginarRecomecar: s.escopoPaginar === 'recomecar',
+      setPaginarVazias: () => set({ escopoPaginar: 'vazias' }),
+      setPaginarRecomecar: () => set({ escopoPaginar: 'recomecar' }),
+      opcaoVazias: opcaoPaginar(s.escopoPaginar === 'vazias'),
+      opcaoRecomecar: opcaoPaginar(s.escopoPaginar === 'recomecar'),
+      resumoPaginar: (() => {
+        const sobrando = fotos.length - doc.usadas.size;
+        return s.escopoPaginar === 'recomecar'
+          ? `${fotos.length} foto${fotos.length === 1 ? '' : 's'} na galeria · o que está montado será desfeito`
+          : `${doc.quadrosVazios} quadro${doc.quadrosVazios === 1 ? '' : 's'} vazio${
+              doc.quadrosVazios === 1 ? '' : 's'
+            } · ${sobrando} foto${sobrando === 1 ? '' : 's'} ainda não usada${sobrando === 1 ? '' : 's'}`;
+      })(),
+      paginar: () => {
+        doc.paginarAutomatico(fotos.map((f) => f.id), s.escopoPaginar);
+        set({ paginarAberto: false });
+      },
 
       /* --------------------- espaçamento entre as fotos -------------------
        * Em milímetros porque é a unidade do produto impresso: o cliente pensa

@@ -402,6 +402,53 @@ export function useDocumento({
     [aplicar],
   );
 
+  /**
+   * Distribui as fotos da galeria pelas lâminas.
+   *
+   * `escopo`:
+   *   `vazias`   — só preenche quadro vazio, mantendo o que o cliente montou;
+   *   `recomecar` — limpa tudo e redistribui.
+   *
+   * A ordem das fotos é a da galeria, que é a cronológica do evento: é o que
+   * faz o álbum contar a história na sequência em que ela aconteceu.
+   *
+   * Não repete foto: quando acabam, os quadros restantes ficam vazios em vez de
+   * dar a volta — foto repetida num álbum impresso é defeito, não recurso.
+   */
+  const paginarAutomatico = useCallback(
+    (fotoIds: string[], escopo: 'vazias' | 'recomecar' = 'vazias') => {
+      aplicar((ls) => {
+        const usadasAntes = escopo === 'vazias' ? fotosDoAlbum(ls) : new Set<string>();
+        const fila = fotoIds.filter((id) => !usadasAntes.has(id));
+        let i = 0;
+
+        const preencher = (p: Pagina): Pagina => ({
+          ...p,
+          quadros: p.quadros.map((q) => {
+            if (q.tipo !== 'foto') return q;
+            if (escopo === 'vazias' && q.fotoId) return q;
+            const id = fila[i];
+            if (id === undefined) return escopo === 'recomecar' ? { ...q, fotoId: null } : q;
+            i += 1;
+            return { ...q, fotoId: id };
+          }),
+        });
+
+        return ls.map((l) => ({ ...l, esquerda: preencher(l.esquerda), direita: preencher(l.direita) }));
+      });
+    },
+    [aplicar],
+  );
+
+  /** Quantos quadros de foto estão vazios — alimenta o aviso do diálogo. */
+  const quadrosVazios = useMemo(
+    () =>
+      laminas
+        .flatMap((l) => [...l.esquerda.quadros, ...l.direita.quadros])
+        .filter((q) => q.tipo === 'foto' && !q.fotoId).length,
+    [laminas],
+  );
+
   const adicionarLamina = useCallback(() => {
     aplicar((ls) => {
       const nova = [...ls];
@@ -486,6 +533,8 @@ export function useDocumento({
     mudarFundo,
     mudarEspaco,
     mudarFundoTudo,
+    paginarAutomatico,
+    quadrosVazios,
     adicionarLamina,
     removerLamina,
     desfazer,
