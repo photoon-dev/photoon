@@ -17,3 +17,64 @@
   @keyframes gridDrift { from { transform: translate3d(0,0,0) } to { transform: translate3d(-40px,-40px,0) } }
   @keyframes blobFloat { 0% { transform: translate3d(0,0,0) scale(1) } 50% { transform: translate3d(18px,-14px,0) scale(1.06) } 100% { transform: translate3d(0,0,0) scale(1) } }
 
+
+/* ---------------------------------------------------------------------------
+   Celular. A pílula lateral já sai em 720px pela regra do design; o que
+   faltava era o resto.
+
+   Os seletores por atributo usam a forma SEM espaço depois do dois-pontos,
+   que é como o React serializa `style` no HTML. Com espaço não casa nada.
+   --------------------------------------------------------------------------- */
+@media (max-width: 860px) {
+  /* Larguras fixas do design que estouram uma tela de 390px. */
+  .om-cliente [style*="width:624px"],
+  .om-cliente [style*="width:410px"],
+  .om-cliente [style*="width:340px"],
+  .om-cliente [style*="width:333px"],
+  .om-cliente [style*="width:300px"] {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  /* O cartão de progresso do hero vinha posicionado por coordenada fixa.
+     Só ele — nada de mexer em todo elemento absoluto, que quebraria os
+     brilhos do fundo e a gaveta de notificações. */
+  .om-cliente [style*="left:662px"] {
+    position: static !important;
+    width: 100% !important;
+    height: auto !important;
+    margin-top: 18px;
+  }
+
+  /* O título do hero tinha altura travada. */
+  .om-cliente [style*="height:71px"] {
+    height: auto !important;
+  }
+
+  /* A gaveta de notificações ocupa a tela toda. */
+  .om-cliente [style*="width:420px"] {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  /* Respiro para a barra inferior. */
+  .om-cliente .om-main {
+    padding: 18px 16px calc(96px + env(safe-area-inset-bottom)) !important;
+  }
+  .om-cliente header {
+    padding: 10px 16px !important;
+    gap: 12px !important;
+  }
+
+  /* Toque e leitura. Abaixo de 16px o iOS dá zoom ao focar um campo. */
+  .om-cliente input,
+  .om-cliente select,
+  .om-cliente textarea {
+    font-size: 16px !important;
+    min-height: 46px;
+  }
+  .om-cliente button,
+  .om-cliente a[style*="border-radius"] {
+    min-height: 44px;
+  }
+}

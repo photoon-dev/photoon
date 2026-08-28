@@ -2,6 +2,7 @@
 
 import ShellLojistaDesign, { CSS_PSEUDO } from '@/components/design/ShellLojistaDesign';
 import { useDashboardDesign } from '@/components/app/useDashboardDesign';
+import MenuLojista from '@/components/app/MenuLojista';
 
 /**
  * Moldura do painel do lojista: menu lateral, cabeçalho e busca, tudo vindo
@@ -19,16 +20,20 @@ export const ROTAS_LOJISTA: Record<number, string> = {
 export default function ShellLojista({
   ativo,
   children,
+  cartaoPlano,
 }: {
   ativo: number;
   children: React.ReactNode;
+  /** Cartão de consumo, no rodapé do menu lateral. */
+  cartaoPlano?: React.ReactNode;
 }) {
   const v = useDashboardDesign({ ativo, rotas: ROTAS_LOJISTA });
 
   return (
     <div className="om-app">
       <style dangerouslySetInnerHTML={{ __html: CSS_PSEUDO }} />
-      <ShellLojistaDesign v={{ ...v, conteudo: children }} />
+      <ShellLojistaDesign v={{ ...v, conteudo: children, cartaoPlano }} />
+      <MenuLojista />
     </div>
   );
 }

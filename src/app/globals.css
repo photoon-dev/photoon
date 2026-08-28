@@ -37,3 +37,13 @@ textarea::placeholder {
   border-radius: 8px;
   border: 3px solid #f4f7fc;
 }
+
+/* Folha do menu inferior, subindo de baixo (formato de aplicativo). */
+@keyframes subir {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: none;
+  }
+}

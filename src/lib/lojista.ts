@@ -227,3 +227,19 @@ export async function usoAtual(lojistaId: string): Promise<{ projetos: number; l
 
   return (data as { projetos: number; laminas: number } | null) ?? { projetos: 0, laminas: 0 };
 }
+
+/** Plano da loja mais o consumo do mês — para o cartão de plano. */
+export async function planoDaLoja(lojistaId: string): Promise<Plano | null> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from('lojistas')
+    .select(
+      'planos(id, nome, descricao, valor_mensal, valor_por_projeto, valor_por_lamina, ' +
+        'limite_projetos, limite_clientes, limite_armazenamento_gb, ativo, ordem)',
+    )
+    .eq('id', lojistaId)
+    .maybeSingle();
+
+  const p = (data as { planos: Plano | null } | null)?.planos;
+  return p ?? null;
+}

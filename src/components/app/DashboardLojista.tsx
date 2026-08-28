@@ -3,6 +3,7 @@
 import DashboardDesign, { CSS_PSEUDO } from '@/components/design/DashboardDesign';
 import { useDashboardDesign } from '@/components/app/useDashboardDesign';
 import { ROTAS_LOJISTA } from '@/components/app/ShellLojista';
+import MenuLojista from '@/components/app/MenuLojista';
 
 /**
  * Dashboard do lojista — app.photoon.com.br
@@ -17,6 +18,7 @@ export default function DashboardLojista() {
     <div className="om-app">
       <style dangerouslySetInnerHTML={{ __html: CSS_PSEUDO }} />
       <DashboardDesign v={v} />
+      <MenuLojista />
     </div>
   );
 }

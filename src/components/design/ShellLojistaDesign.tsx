@@ -277,25 +277,7 @@ export default function ShellLojistaDesign({ v }: { v: any }) {
           </nav>
           <div style={{ padding: '12px 14px 16px', display: 'flex', flexDirection: 'column', gap: '10px', flex: '0 0 auto' }}>
             <div style={css(v.storageCard)}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '9px', marginBottom: '10px' }}>
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#2563EB" strokeWidth="1.9" strokeLinecap="round">
-                  <ellipse cx="12" cy="6" rx="7.5" ry="3" />
-                  <path d="M4.5 6v12c0 1.7 3.4 3 7.5 3s7.5-1.3 7.5-3V6M4.5 12c0 1.7 3.4 3 7.5 3s7.5-1.3 7.5-3" />
-                </svg>
-                <span style={{ fontSize: '13px', fontWeight: '700' }}>
-                  Armazenamento
-                </span>
-                <span style={{ marginLeft: 'auto', fontSize: '11.5px', color: '#6B7A90' }}>
-                  72%
-                </span>
-              </div>
-              <div style={{ height: '7px', borderRadius: '999px', background: '#E3E9F5', overflow: 'hidden' }}>
-                <div style={{ width: '72%', height: '100%', borderRadius: '999px', background: 'linear-gradient(90deg,#2563EB,#06B6D4)' }}>
-                </div>
-              </div>
-              <p style={{ margin: '10px 0 0', fontSize: '11.5px', color: '#6B7A90' }}>
-                1,44 TB de 2 TB · originais e produção
-              </p>
+              {v.cartaoPlano}
             </div>
             <div onClick={v.toggleSide} style={css(v.collapseBtn)}>
               <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" style={css(v.chevStyle)}>

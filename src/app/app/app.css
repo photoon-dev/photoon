@@ -13,3 +13,57 @@
   @keyframes drawLine { from { stroke-dashoffset: 1600 } to { stroke-dashoffset: 0 } }
   @keyframes pulseDot { 0%,100% { transform: scale(1); opacity: 1 } 50% { transform: scale(1.35); opacity: .55 } }
 
+
+/* ---------------------------------------------------------------------------
+   Celular. O menu lateral de 262px não cabe: ele sai e a navegação passa
+   para a barra inferior (MenuInferior).
+
+   Seletores por atributo na forma sem espaço, que é como o React serializa
+   `style` no HTML.
+   --------------------------------------------------------------------------- */
+@media (max-width: 860px) {
+  .om-app aside {
+    display: none !important;
+  }
+  .om-app main {
+    min-width: 0 !important;
+  }
+
+  /* O cabeçalho da tela empilha em vez de empurrar tudo para fora. */
+  .om-app main > header {
+    min-height: auto !important;
+    flex-wrap: wrap !important;
+    gap: 10px !important;
+    padding: 12px 16px !important;
+  }
+  .om-app main > header > * {
+    max-width: 100% !important;
+  }
+
+  /* Conteúdo, com respiro para a barra inferior. */
+  .om-app main > div {
+    padding: 16px 16px calc(96px + env(safe-area-inset-bottom)) !important;
+  }
+
+  /* Larguras fixas do design que estouram a viewport. */
+  .om-app [style*="width:262px"],
+  .om-app [style*="width:260px"],
+  .om-app [style*="width:240px"] {
+    width: 100% !important;
+  }
+
+  /* Toque e leitura. Abaixo de 16px o iOS dá zoom ao focar um campo. */
+  .om-app {
+    font-size: 15px;
+  }
+  .om-app input,
+  .om-app select,
+  .om-app textarea {
+    font-size: 16px !important;
+    min-height: 46px;
+  }
+  .om-app button,
+  .om-app a[class*="rounded"] {
+    min-height: 44px;
+  }
+}
