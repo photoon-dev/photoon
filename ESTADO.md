@@ -1,8 +1,9 @@
 # Photoon — estado do projeto e continuação
 
-Documento de passagem. Escrito em **28/08/2026**, no meio da Fase 3.
-Leia inteiro antes de tocar em qualquer arquivo: há três armadilhas neste
-projeto que já custaram retrabalho e estão descritas em "Armadilhas".
+Documento de passagem. Escrito em **28/08/2026**; Fase 3 concluída.
+Leia inteiro antes de tocar em qualquer arquivo: há **seis** armadilhas neste
+projeto que já custaram retrabalho e estão descritas em "Armadilhas" — a 3.4
+(dimensionamento da foto) foi a mais cara até agora.
 
 ---
 
@@ -100,7 +101,39 @@ precisar de um segundo lugar para guardar a mesma informação, pare.
 Escrevi um bloco inteiro de CSS responsivo que não fazia nada por causa disso.
 Confira no pacote construído, não no fonte.
 
-### 3.4. Outras
+### 3.4. `object-position` não serve para manipulação direta
+Com `object-fit:cover` a imagem só transborda em **um** eixo; no outro ela
+preenche a caixa exatamente e `object-position` **não tem curso nenhum**.
+Arrastar a foto nesse eixo não movia um pixel — mas gravava, entrava no
+desfazer e disparava a gravação. `transform:scale()` não resolve: amplia o
+recorte já feito.
+
+O modelo correto (em `src/lib/imagem.ts`) dimensiona o `<img>` em % calculadas
+a partir da proporção da FOTO e da CAIXA (`medidasPorcento`), preservando a
+proporção por construção. É a mesma conta que `caixaFonte()` vai precisar na
+Fase 4. `PAGINA_AR` (em `livro.ts`) é o que dá a proporção da caixa.
+
+Duas ciladas dentro dessa cilada:
+- **`min-width:100%` + `min-height:100%` ESTICA a foto.** O algoritmo de
+  mínimos do CSS satisfaz as duas restrições deformando o elemento
+  substituído: uma foto 800×600 virava 121×250. Por isso as duas medidas são
+  calculadas, nunca `auto`.
+- **O preflight do Tailwind aplica `img { max-width:100%; height:auto }`**, que
+  truncava a largura calculada de volta ao tamanho do quadro. Todo `<img>` de
+  foto precisa de `max-width:none;max-height:none` inline.
+
+Ao conferir isto, **meça o retângulo renderizado** (`offsetWidth` × `scale`),
+não a string de estilo: a string pode estar certa e o navegador ignorá-la.
+
+### 3.5. Não use `pkill -f next`
+Mata o processo do contêiner Docker de **produção** (o Docker o reergue, mas o
+site cai por alguns segundos). Mate por PID, e só o servidor de dev que você
+mesmo subiu — confira com `ps -eo pid,cmd | grep next`.
+
+Depois de `npm run build`, o `.next` do servidor de dev fica inconsistente:
+mate o dev, apague o `.next` e suba de novo.
+
+### 3.6. Outras
 - `next start` **não funciona** com `output: 'standalone'`; use
   `node .next/standalone/server.js` (ou o Docker, que já faz certo).
 - `NEXT_PUBLIC_*` são embutidas **no build**. Mudou `.env`? Reconstrua.
@@ -135,7 +168,11 @@ Costura: `src/components/editor/EditorCliente.tsx`.
 |---|---|
 | `src/lib/layouts.ts` | catálogo **único** de layouts, em % **por página** |
 | `src/lib/album.ts` | documento v2, validação zod, `migrarLamina` |
-| `src/lib/livro.ts` | curvatura, luz e zoom do livro |
+| `src/lib/livro.ts` | curvatura, luz, zoom e `PAGINA_AR` |
+| `src/lib/imagem.ts` | `filtroCss`, `imagemCss`, `medidasPorcento` |
+| `src/lib/manipulacao.ts` | contas puras dos gestos + faixas de rot/escala |
+| `src/lib/elementos.ts` | catálogo de 56 elementos, por categoria |
+| `src/lib/cor.ts` | hex ↔ HSV do seletor de fundo |
 | `src/lib/preco.ts` | preço (verificado rodando a função compilada) |
 | `src/app/actions.ts` | `salvarLaminas` (valida com zod antes de gravar) |
 | `src/middleware.ts` | roteamento multi-inquilino. **Tem que ficar em `src/`** |
@@ -144,8 +181,9 @@ Costura: `src/components/editor/EditorCliente.tsx`.
 ```ts
 Lamina  = { id, fundo, esquerda: Pagina, direita: Pagina, reserva: string[] }
 Pagina  = { layoutId: string, quadros: Quadro[] }
-Quadro  = QuadroFoto | QuadroTexto
+Quadro  = QuadroFoto | QuadroTexto | QuadroElemento
 QuadroFoto  = { id, tipo:'foto', fotoId, enq: Enq, ajustes: Ajustes }
+QuadroElemento = { id, tipo:'elemento', forma, cor, rot, ret }
 Enq     = { modo:'preencher'|'encaixar', escala, dx, dy, rot, espelho }
 Ajustes = { brilho, contraste, saturacao, pb }   // -100..100
 ```
@@ -214,9 +252,9 @@ texto; painel do inspetor abre com 306px e mostra "Enquadramento"):
    `escala` como `transform:scale()`. É a mesma modelagem que o `sharp` vai usar
    na impressão. Vale para os quadros da página, o primeiro quadro (com a
    marcação de rosto) e as duas faces da virada.
-   *Ressalva:* com `rot` em 90°/270° e quadro não quadrado, `object-fit:cover`
-   encaixa antes de girar e sobra faixa. O recobrimento exato depende das
-   dimensões da foto e entra com `caixaFonte()` na Fase 4.
+   *Atualizado:* o `object-fit` saiu — ver armadilha 3.4. As medidas do `<img>`
+   são calculadas de `medidasPorcento()`, o giro de 90°/270° já cobre o quadro
+   corretamente, e a proporção da foto é preservada por construção.
 2. **`insp: true` expande o painel sozinho** — não há segundo estado de largura.
    `inspectorStyle` é o único controle: `s.insp` → `width:clamp(238px,23vw,306px)`,
    senão `display:none`. O corpo (com "Enquadramento") depende ainda de haver
@@ -241,20 +279,35 @@ Ainda falta para a **impressão** (Fase 4, ver 7.11), não para o editor:
 - `src/lib/imagem.ts` — `aplicarSharp(img, ajustes)` a partir da **mesma**
   fórmula de `filtroCss()`.
 
-### 7.2. Arrastar para mover e redimensionar
-Não funciona para foto nem para texto. Precisa de manipulador de ponteiro nos
-quadros, escrevendo em `enq.dx/dy/escala` (foto) e em `ret` (texto).
+### 7.2. Arrastar para mover e redimensionar — FEITO para foto
+No palco, com um quadro de foto selecionado:
+- **arrastar o meio** desloca o recorte, acompanhando o cursor (verificado:
+  40px de cursor = 40px de foto, nos dois eixos);
+- **arrastar um canto** amplia/reduz (razão da distância ao centro);
+- **arrastar o botão redondo** (base do quadro) gira; **Shift** trava de 15 em
+  15 graus;
+- a foto **nunca** sai de cima do quadro no modo Preencher: o deslocamento
+  trava na sobra disponível.
 
-### 7.3. Roda do mouse dá zoom
-O palco já está marcado com `data-om-palco="1"` no `.dc.html` — use isso para
-prender o ouvinte de `wheel`. Teclado já funciona (setas viram página, `+`/`-`
-dão zoom, `Esc` desmarca, `Delete` esvazia o quadro).
+As alças ficam DENTRO do quadro (`inset` positivo). Em `-8px` eram recortadas
+pelo `overflow:hidden` da página nos quadros da linha de cima e invadiam o
+quadro vizinho.
 
-### 7.4. Filtros do painel de fotos
-"Todas / Não usadas / Favoritas / Verticais / Horizontais" são decorativos.
-`doc.usadas` já dá o conjunto de fotos usadas. Vertical/horizontal precisa das
-dimensões da foto — conferir se `galeria_fotos` guarda largura/altura; se não,
-é migração nova.
+**Falta:** texto e elemento ainda não são arrastáveis (precisam do mesmo gesto
+escrevendo em `ret`, não em `enq`). `doc.mudarRet()` já existe para isso.
+
+### 7.3. Roda do mouse dá zoom — FEITO
+A roda amplia a FOTO quando o cursor está sobre ela (ou com Ctrl/⌘); fora dela,
+aproxima a visualização. Uma sequência de rodadas é **um** passo de desfazer.
+Teclado já funciona (setas viram página, `+`/`-` zoom, `Esc` desmarca, `Delete`
+esvazia o quadro).
+
+### 7.4. Filtros do painel de fotos — FEITO
+"Todas / Não usadas / Verticais / Horizontais" filtram de verdade, e o
+contador do cabeçalho mostra `N de M` em vez do "38 de 120" cravado.
+**"Favoritas" foi removida**: não existe a coluna no banco, e um filtro que não
+filtra é pior que a ausência dele. Volta quando houver onde marcar.
+Vertical/horizontal usa `galeria_fotos.largura/altura`, que já existem.
 
 ### 7.5. Layouts mostrando as DUAS páginas + espaçamento
 O usuário mandou print de concorrente. Dois pedidos:
@@ -267,9 +320,31 @@ O usuário mandou print de concorrente. Dois pedidos:
 Também pediu: na área de sangria (fora da margem de corte) a foto deve
 aparecer **clareada**, não sumir — para o cliente ver o que será cortado.
 
-### 7.6. Fundos e Elementos
-Painéis existem, não aplicam nada. Fundo precisa de "aplicar a tudo".
-Elementos: ele quer muitos mais que os poucos do design.
+### 7.6. Fundos e Elementos — FEITO (o essencial)
+
+**Fundos.** `lamina.fundo` era gravado e **nunca desenhado** — o cliente
+escolhia uma cor e a página continuava branca. Agora:
+- o fundo aparece na página, sob os quadros;
+- as 9 amostras e as 16 pastilhas aplicam de verdade, e marcam a cor vigente;
+- a área de saturação/brilho e a barra de matiz são arrastáveis
+  (`src/lib/cor.ts` faz hex ↔ HSV); o campo hex aceita 3 ou 6 dígitos;
+- **"Todo o álbum"** aplica em todas as lâminas (`doc.mudarFundoTudo`).
+
+A cor vive no documento; a UI guarda só o MATIZ corrente, porque o hex não o
+devolve quando o brilho vai a zero (a barra saltaria para o vermelho sozinha).
+
+**Elementos.** O documento não tinha onde guardá-los: `Quadro` era só
+`foto | texto`. Agora existe `QuadroElemento { forma, cor, rot, ret }`, com
+schema zod que **recusa forma fora do catálogo**, e `src/lib/elementos.ts` com
+**56 formas** em 6 categorias (Molduras, Florais, Fitas, Selos, Formas,
+Linhas) — contra as 12 soltas do design. O que grava é o `id` da forma, não o
+`d` do SVG: o desenho pode ser corrigido sem reescrever o álbum de ninguém.
+
+Clicar insere na página do lado selecionado, já selecionado. As pastilhas de
+cor pintam o próximo e também o elemento selecionado.
+
+**Falta:** arrastar/redimensionar o elemento na lâmina (ver 7.2), e o campo de
+busca do painel.
 
 ### 7.7. Rostos (Fase 5) — ele chama de urgente e de diferencial
 Já existem no banco (migração 0010): tabelas `rostos` e `pessoas`.
@@ -352,8 +427,9 @@ Solução: um `CabecalhoApp` único alimentado por props, reusando
 ## 8. Ordem sugerida
 
 1. ~~Terminar a seção 6 (inspetor)~~ — FEITO. Próximo passo real é o de baixo.
-2. **7.2 e 7.3** (arrastar, roda do mouse) — mesma área do código.
-3. 7.4 e 7.5 (filtros, layouts das duas páginas, espaçamento).
+2. ~~7.2 e 7.3 (arrastar, roda do mouse)~~ — FEITO para FOTO. Falta o mesmo
+   gesto para TEXTO e ELEMENTO (`ret`), que ainda não são arrastáveis.
+3. 7.5 (layouts das duas páginas no seletor, espaçamento em mm).
 4. **7.7 (rostos)** — o usuário chama de urgente e é o diferencial dele.
    Destrava 7.8 automaticamente.
 5. 7.9 (galeria), 7.6 (fundos/elementos).

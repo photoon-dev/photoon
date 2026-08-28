@@ -30,35 +30,103 @@ export function filtroCss(a: Ajustes | undefined): string {
  * Estilo do `<img>` dentro do quadro (que tem `overflow:hidden`).
  *
  * A foto é um elemento de verdade, não um `background-image`: só assim `rot` e
- * `espelho` aparecem no render — `background` não gira — e só assim a conta
- * bate com o recorte do `sharp` na impressão, onde a foto também é girada antes
- * de ser encaixada.
+ * `espelho` aparecem no render — `background` não gira.
  *
- * `escala` 1 = o mínimo que satisfaz o modo (cobrir ou caber). `dx`/`dy` vão de
- * −1 a 1 e deslocam dentro da sobra via `object-position`, então o
- * enquadramento não depende do tamanho em pixels do quadro na tela.
+ * **Por que não `object-fit` + `object-position`.** Com `object-fit:cover` a
+ * imagem só transborda em UM eixo; no outro ela preenche a caixa exatamente e
+ * `object-position` não tem curso nenhum. Arrastar a foto no eixo sem sobra não
+ * movia um pixel — mas gravava, entrava no desfazer e disparava a gravação.
+ * Ampliar não resolvia: `scale()` amplia o recorte já feito.
  *
- * Ressalva: com `rot` em 90°/270° e quadro não quadrado, `object-fit:cover`
- * encaixa antes de girar e sobra faixa. O recobrimento exato depende das
- * dimensões da foto — entra com `caixaFonte()` na Fase 4 (impressão).
+ * O modelo aqui é o mesmo que o `sharp` vai precisar na impressão:
+ *
+ *   - o `<img>` é dimensionado pelo MÍNIMO que satisfaz o modo, com a proporção
+ *     natural preservada (`min-width/min-height` para cobrir, `max-*` para
+ *     caber). É o "escala = 1";
+ *   - `escala` amplia esse mínimo;
+ *   - `dx`/`dy` (−1..1) deslocam em fração de MEIA imagem, e valem nos dois
+ *     eixos sempre, porque a imagem é um elemento maior que a caixa;
+ *   - o deslocamento entra multiplicado por `escala` e ANTES de `rotate`, para
+ *     o arrasto seguir o cursor na tela e não no eixo girado da foto.
  */
-export function imagemCss(e: Enq | undefined, a?: Ajustes): string {
-  const modo = e?.modo === 'encaixar' ? 'contain' : 'cover';
-  // −1..1 → 0..100% da sobra
-  const px = ((((e?.dx ?? 0) + 1) / 2) * 100).toFixed(1);
-  const py = ((((e?.dy ?? 0) + 1) / 2) * 100).toFixed(1);
+export function imagemCss(
+  e: Enq | undefined,
+  a?: Ajustes,
+  /** Proporção natural da foto (largura/altura). */
+  proporcaoFoto?: number | null,
+  /** Proporção do quadro na página (largura/altura). */
+  proporcaoCaixa?: number | null,
+): string {
   const escala = e?.escala ?? 1;
   const rot = e?.rot ?? 0;
+  const dx = e?.dx ?? 0;
+  const dy = e?.dy ?? 0;
 
-  const transform = ['translate(-50%,-50%)'];
-  if (escala !== 1) transform.push(`scale(${escala.toFixed(3)})`);
+  // Percentagem do translate resolve contra a caixa da própria imagem; o fator
+  // `escala` compensa o `scale()` que vem depois, para o deslocamento na tela
+  // ser exatamente `dx · metade da imagem já ampliada`.
+  const px = (dx * 50 * escala).toFixed(3);
+  const py = (dy * 50 * escala).toFixed(3);
+
+  const transform = [`translate(calc(-50% + ${px}%), calc(-50% + ${py}%))`];
+  if (escala !== 1) transform.push(`scale(${escala.toFixed(4)})`);
   if (rot) transform.push(`rotate(${rot}deg)`);
   if (e?.espelho) transform.push('scaleX(-1)');
 
-  return (
-    'position:absolute;left:50%;top:50%;width:100%;height:100%;' +
-    `object-fit:${modo};object-position:${px}% ${py}%;` +
+  const comum =
+    // `max-width:none;max-height:none` é obrigatório: o preflight do Tailwind
+    // aplica `img { max-width:100%; height:auto }`, que truncava a largura
+    // calculada de volta ao tamanho do quadro. A foto era desenhada esmagada e
+    // o arrasto horizontal andava um terço do cursor.
+    'position:absolute;left:50%;top:50%;max-width:none;max-height:none;' +
     `transform:${transform.join(' ')};` +
-    filtroCss(a)
-  );
+    filtroCss(a);
+
+  // Sem as dimensões da foto não dá para dimensionar preservando a proporção.
+  // `object-fit` não deforma, então é o refúgio seguro — perde-se só o
+  // deslocamento no eixo sem sobra.
+  if (!proporcaoFoto || !proporcaoCaixa) {
+    const fit = e?.modo === 'encaixar' ? 'contain' : 'cover';
+    return `width:100%;height:100%;object-fit:${fit};` + comum;
+  }
+
+  const { w, h } = medidasPorcento(e, proporcaoFoto, proporcaoCaixa);
+  return `width:${w.toFixed(3)}%;height:${h.toFixed(3)}%;` + comum;
+}
+
+/**
+ * Tamanho da imagem em % do quadro, preservando a proporção da foto.
+ *
+ * `min-width:100%` + `min-height:100%` parecia resolver, mas o algoritmo de
+ * mínimos do CSS satisfaz as duas restrições ESTICANDO o elemento substituído:
+ * uma foto 800×600 era renderizada em 121×250. Aqui as duas medidas saem
+ * calculadas, então a proporção é exata por construção.
+ */
+export function medidasPorcento(
+  e: Enq | undefined,
+  proporcaoFoto: number,
+  proporcaoCaixa: number,
+): { w: number; h: number } {
+  // Girar 90°/270° troca os eixos: para cobrir DEPOIS de girar, a imagem tem
+  // de cobrir uma caixa de proporção invertida.
+  const quartos = Math.round(((e?.rot ?? 0) % 360) / 90);
+  const trocado = Math.abs(quartos) % 2 === 1;
+  const k = proporcaoCaixa || 1;
+  const kEfetivo = trocado ? 1 / k : k;
+
+  const razao = proporcaoFoto / kEfetivo;
+  const cobrir = e?.modo !== 'encaixar';
+  // Fatores no referencial da imagem: quanto ela mede em relação à caixa
+  // EFETIVA. Cobrir cresce no eixo folgado; caber encolhe no apertado.
+  const fw = cobrir ? Math.max(1, razao) : Math.min(1, razao);
+  const fh = cobrir ? Math.max(1, 1 / razao) : Math.min(1, 1 / razao);
+
+  // `width:%` do CSS resolve contra a LARGURA da caixa e `height:%` contra a
+  // ALTURA dela. Quando a caixa efetiva está girada, os fatores acima estão no
+  // eixo trocado e precisam da razão da caixa para voltar — dividindo na
+  // largura e multiplicando na altura. Invertido, a foto saía com proporção
+  // 23:1 em vez de 4:3.
+  return trocado
+    ? { w: (fw * 100) / k, h: fh * 100 * k }
+    : { w: fw * 100, h: fh * 100 };
 }

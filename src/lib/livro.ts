@@ -87,6 +87,15 @@ export function estiloPalco(): React.CSSProperties {
   };
 }
 
+/**
+ * Proporção de UMA página (a lâmina aberta é 2.04:1, dividida ao meio).
+ *
+ * O enquadramento da foto precisa disto: sem saber se a caixa é mais larga ou
+ * mais alta que a foto, não dá para dimensionar a imagem preservando a
+ * proporção — e o navegador acaba esticando a foto para caber.
+ */
+export const PAGINA_AR = 2.04 / 2;
+
 export function estiloLivro(zoom: number): React.CSSProperties {
   return {
     position: 'relative',

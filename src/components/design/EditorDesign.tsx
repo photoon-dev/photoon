@@ -209,7 +209,7 @@ export default function EditorDesign({ v }: { v: any }) {
                     Fotos
                   </h2>
                   <span style={{ padding: '4px 9px', borderRadius: '999px', background: '#F1F5FD', color: '#46536A', fontSize: '11px', fontWeight: '700', whiteSpace: 'nowrap' }}>
-                    38 de 120
+                    {v.photoConta}
                   </span>
                 </div>
                 <p style={{ margin: '4px 0 12px', fontSize: '12px', color: '#9AA7BC' }}>
@@ -239,6 +239,9 @@ export default function EditorDesign({ v }: { v: any }) {
                     </div>
                   ))}
                 </div>
+                <p style={css(v.photoVazio)}>
+                  {v.photoVazioTexto}
+                </p>
               </div>
               <div style={{ padding: '12px 18px', borderTop: '1px solid #F0F3F9', display: 'flex', gap: '8px' }}>
                 <span onClick={v.openModal} style={{ flex: '1', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', borderRadius: '11px', background: '#0B1220', color: '#FFFFFF', fontSize: '12.5px', fontWeight: '700', cursor: 'pointer' }} className="dc10">
@@ -332,15 +335,15 @@ export default function EditorDesign({ v }: { v: any }) {
                     <span style={{ fontSize: '12.5px', fontWeight: '700', color: '#46536A' }}>
                       Cor do fundo
                     </span>
-                    <span style={{ width: '22px', height: '22px', borderRadius: '999px', background: '#EAF0FF', border: '1px solid #D6E2FC', flex: '0 0 auto' }}>
+                    <span style={css(v.bgPonto)}>
                     </span>
                   </div>
-                  <div style={{ position: 'relative', height: '96px', borderRadius: '10px', background: 'linear-gradient(to top, #000000, transparent), linear-gradient(to right, #FFFFFF, #2563EB)', marginBottom: '8px', cursor: 'crosshair' }}>
-                    <span style={{ position: 'absolute', top: '16%', left: '12%', width: '14px', height: '14px', borderRadius: '999px', border: '2px solid #FFFFFF', boxShadow: '0 1px 4px rgba(11,18,32,.4)' }}>
+                  <div onPointerDown={v.bgAreaDown} style={css(v.bgArea)}>
+                    <span style={css(v.bgAlvo)}>
                     </span>
                   </div>
-                  <div style={{ position: 'relative', height: '10px', borderRadius: '999px', background: 'linear-gradient(90deg,#EF4444,#F59E0B,#10B981,#06B6D4,#2563EB,#8B5CF6,#EC4899,#EF4444)', marginBottom: '10px', cursor: 'pointer' }}>
-                    <span style={{ position: 'absolute', top: '50%', left: '62%', transform: 'translate(-50%,-50%)', width: '14px', height: '14px', borderRadius: '999px', background: '#2563EB', border: '2px solid #FFFFFF', boxShadow: '0 1px 4px rgba(11,18,32,.4)' }}>
+                  <div onPointerDown={v.bgHueDown} style={{ position: 'relative', height: '10px', borderRadius: '999px', background: 'linear-gradient(90deg,#FF0000,#FFFF00,#00FF00,#00FFFF,#0000FF,#FF00FF,#FF0000)', margin: '8px 0 10px', cursor: 'pointer' }}>
+                    <span style={css(v.bgHueKnob)}>
                     </span>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
@@ -348,23 +351,23 @@ export default function EditorDesign({ v }: { v: any }) {
                       <span style={{ fontSize: '12px', color: '#9AA7BC' }}>
                         #
                       </span>
-                      <input value="EAF0FF" style={{ flex: '1', minWidth: '0', border: '0', background: 'transparent', fontFamily: 'inherit', fontSize: '13px', fontWeight: '600', letterSpacing: '.5px', color: '#0B1220' }} />
+                      <input value={v.bgHex} onChange={v.setBgHex} style={{ flex: '1', minWidth: '0', border: '0', background: 'transparent', fontFamily: 'inherit', fontSize: '13px', fontWeight: '600', letterSpacing: '.5px', color: '#0B1220' }} />
                     </div>
-                    <span style={{ width: '38px', height: '38px', borderRadius: '10px', background: '#EAF0FF', border: '1px solid #E6EAF2', flex: '0 0 auto' }}>
+                    <span style={css(v.bgAmostra)}>
                     </span>
                   </div>
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(8, minmax(0, 1fr))', gap: '6px' }}>
                     {v.colorChips.map((c: any, i8: number) => (
-                      <span key={i8} style={css(c.style)}>
+                      <span key={i8} onClick={c.pick} style={css(c.style)}>
                       </span>
                     ))}
                   </div>
                 </div>
                 <div style={{ display: 'flex', gap: '8px' }}>
-                  <span style={{ flex: '1', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '11px', border: '1px solid #E6EAF2', fontSize: '12.5px', fontWeight: '600', color: '#46536A', cursor: 'pointer' }} className="dc15">
+                  <span onClick={v.bgSoEsta} style={{ flex: '1', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '11px', border: '1px solid #E6EAF2', fontSize: '12.5px', fontWeight: '600', color: '#46536A', cursor: 'pointer' }} className="dc15">
                     Só nesta lâmina
                   </span>
-                  <span style={{ flex: '1', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '11px', background: '#0B1220', color: '#FFFFFF', fontSize: '12.5px', fontWeight: '700', cursor: 'pointer' }} className="dc16">
+                  <span onClick={v.bgTudo} style={{ flex: '1', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '11px', background: '#0B1220', color: '#FFFFFF', fontSize: '12.5px', fontWeight: '700', cursor: 'pointer' }} className="dc16">
                     Todo o álbum
                   </span>
                 </div>
@@ -378,20 +381,23 @@ export default function EditorDesign({ v }: { v: any }) {
                 <p style={{ margin: '4px 0 12px', fontSize: '12px', color: '#9AA7BC' }}>
                   Clique para inserir na lâmina
                 </p>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '11px', padding: '10px 12px', borderRadius: '11px', background: '#F8FAFE', border: '1px solid #EEF1F7', marginBottom: '10px', cursor: 'pointer' }}>
-                  <span style={{ width: '26px', height: '26px', borderRadius: '8px', background: '#2563EB', flex: '0 0 auto' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '11px', padding: '10px 12px', borderRadius: '11px', background: '#F8FAFE', border: '1px solid #EEF1F7', marginBottom: '10px' }}>
+                  <span style={css(v.elCorAmostra)}>
                   </span>
                   <div style={{ flex: '1', minWidth: '0' }}>
                     <p style={{ margin: '0', fontSize: '12.5px', fontWeight: '700' }}>
                       Cor do elemento
                     </p>
                     <p style={{ margin: '1px 0 0', fontSize: '11px', color: '#9AA7BC', letterSpacing: '.4px' }}>
-                      #2563EB
+                      {v.elCorHex}
                     </p>
                   </div>
-                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#6B7A90" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flex: '0 0 auto' }}>
-                    <path d="m6 9 6 6 6-6" />
-                  </svg>
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(8, minmax(0, 1fr))', gap: '6px', marginBottom: '10px' }}>
+                  {v.elCorChips.map((c: any, i7: number) => (
+                    <span key={i7} onClick={c.pick} style={css(c.style)}>
+                    </span>
+                  ))}
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '9px', height: '40px', padding: '0 12px', border: '1px solid #E6EAF2', borderRadius: '11px', background: '#F8FAFE' }}>
                   <span style={{ color: '#9AA7BC', flex: '0 0 auto' }}>
@@ -413,9 +419,11 @@ export default function EditorDesign({ v }: { v: any }) {
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: '8px' }}>
                   {v.elements.map((e: any, i7: number) => (
-                    <div key={i7} style={{ aspectRatio: '1 / 1', borderRadius: '12px', border: '1px solid #E6EAF2', background: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#2563EB', cursor: 'pointer' }} className="dc17">
+                    <div key={i7} onClick={e.pick} title={e.title} style={{ aspectRatio: '1 / 1', borderRadius: '12px', border: '1px solid #E6EAF2', background: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#2563EB', cursor: 'pointer' }} className="dc17">
                       <svg viewBox="0 0 48 48" width="30" height="30" fill="none" stroke="currentColor" strokeWidth={e.sw} strokeLinecap="round" strokeLinejoin="round">
-                        <path d={e.d} />
+                        {e.paths.map((pp: any, i10: number) => (
+                          <path key={i10} d={pp.d} />
+                        ))}
                       </svg>
                     </div>
                   ))}
@@ -557,7 +565,7 @@ export default function EditorDesign({ v }: { v: any }) {
                   </span>
                 </div>
               </div>
-              <div data-om-palco="1" style={css(v.stageStyle)}>
+              <div data-om-palco="1" onWheel={v.palcoWheel} style={css(v.stageStyle)}>
                 <div style={css(v.bookStyle)}>
                   <span style={{ position: 'absolute', top: '3.5%', left: '-1.4%', right: '-1.4%', bottom: '-3.8%', borderRadius: '10px 10px 16px 16px', background: 'linear-gradient(180deg,#28497F 0%,#1B3565 42%,#0E2249 100%)', boxShadow: 'inset 0 0 0 1px rgba(255,255,255,.16), inset 0 2px 0 rgba(255,255,255,.2), 0 7px 0 #0B1D43, 0 16px 32px rgba(16,31,64,.26)' }}>
                   </span>
@@ -571,8 +579,19 @@ export default function EditorDesign({ v }: { v: any }) {
                   </span>
                   <div style={{ position: 'absolute', inset: '0', display: 'grid', gridTemplateColumns: '1fr 1fr', zIndex: '3' }}>
                     <section style={{ position: 'relative', overflow: 'hidden', borderRadius: '14px 2px 5px 10px', background: 'radial-gradient(circle at 50% 45%, rgba(0,0,0,.018), transparent 50%), linear-gradient(90deg,#FFFFFF,#FFFEFB)', boxShadow: 'inset -18px 0 26px -26px rgba(0,0,0,.9), inset 0 1px 0 rgba(255,255,255,.8)' }}>
+                      <span style={css(v.pageFundo)}>
+                      </span>
                       <span style={{ position: 'absolute', inset: '4%', border: '1px dashed rgba(245,158,11,.55)', borderRadius: '3px', pointerEvents: 'none', zIndex: '4' }}>
                       </span>
+                      {v.pageElementos.map((el: any, i9: number) => (
+                        <div key={i9} onClick={el.pick} style={css(el.style)} title={el.title}>
+                          <svg viewBox="0 0 48 48" width="100%" height="100%" preserveAspectRatio="none" fill="none" stroke="currentColor" strokeWidth={el.sw} strokeLinecap="round" strokeLinejoin="round" vectorEffect="non-scaling-stroke">
+                            {el.paths.map((pp: any, i12: number) => (
+                              <path key={i12} d={pp.d} vectorEffect="non-scaling-stroke" />
+                            ))}
+                          </svg>
+                        </div>
+                      ))}
                       <div style={css(v.pageGrid)}>
                         <div onClick={v.frameA.onClick} style={css(v.frameA.style)}>
                           <img src={v.frameA.src} style={css(v.frameA.imgStyle)} alt="" />
@@ -595,6 +614,24 @@ export default function EditorDesign({ v }: { v: any }) {
                             <img src={f.src} style={css(f.imgStyle)} alt="" />
                           </div>
                         ))}
+                        <div style={css(v.selEsq.box)} data-om-selbox="esquerda">
+                          <div style={css(v.selEsq.mover)} onPointerDown={v.selMoverDown} title="Arraste para reposicionar">
+                          </div>
+                          <span style={css(v.selEsq.girar)} onPointerDown={v.selGirarDown} title="Arraste para girar (Shift trava de 15 em 15)">
+                            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <path d="M20 11a8 8 0 1 0-2.3 5.7" />
+                              <path d="M20 5v6h-6" />
+                            </svg>
+                          </span>
+                          <span style={css(v.selEsq.cantoNO)} onPointerDown={v.selEscalarDown} title="Arraste para ampliar">
+                          </span>
+                          <span style={css(v.selEsq.cantoNE)} onPointerDown={v.selEscalarDown} title="Arraste para ampliar">
+                          </span>
+                          <span style={css(v.selEsq.cantoSO)} onPointerDown={v.selEscalarDown} title="Arraste para ampliar">
+                          </span>
+                          <span style={css(v.selEsq.cantoSE)} onPointerDown={v.selEscalarDown} title="Arraste para ampliar">
+                          </span>
+                        </div>
                       </div>
                       <span style={css(v.pageLuz)}>
                       </span>
@@ -603,8 +640,19 @@ export default function EditorDesign({ v }: { v: any }) {
                       </p>
                     </section>
                     <section style={{ position: 'relative', overflow: 'hidden', borderRadius: '2px 14px 10px 5px', background: 'radial-gradient(circle at 50% 45%, rgba(0,0,0,.018), transparent 50%), linear-gradient(270deg,#FFFFFF,#FFFEFB)', boxShadow: 'inset 18px 0 26px -26px rgba(0,0,0,.9), inset 0 1px 0 rgba(255,255,255,.8)' }}>
+                      <span style={css(v.rightFundo)}>
+                      </span>
                       <span style={{ position: 'absolute', inset: '4%', border: '1px dashed rgba(245,158,11,.55)', borderRadius: '3px', pointerEvents: 'none', zIndex: '4' }}>
                       </span>
+                      {v.rightElementos.map((el: any, i9: number) => (
+                        <div key={i9} onClick={el.pick} style={css(el.style)} title={el.title}>
+                          <svg viewBox="0 0 48 48" width="100%" height="100%" preserveAspectRatio="none" fill="none" stroke="currentColor" strokeWidth={el.sw} strokeLinecap="round" strokeLinejoin="round" vectorEffect="non-scaling-stroke">
+                            {el.paths.map((pp: any, i12: number) => (
+                              <path key={i12} d={pp.d} vectorEffect="non-scaling-stroke" />
+                            ))}
+                          </svg>
+                        </div>
+                      ))}
                       <div style={css(v.rightGrid)}>
                         {v.rightFrames.map((f: any, i10: number) => (
                           <div key={i10} onClick={f.onClick} style={css(f.style)} className="dc25">
@@ -616,6 +664,24 @@ export default function EditorDesign({ v }: { v: any }) {
                             </svg>
                           </div>
                         ))}
+                        <div style={css(v.selDir.box)} data-om-selbox="direita">
+                          <div style={css(v.selDir.mover)} onPointerDown={v.selMoverDown} title="Arraste para reposicionar">
+                          </div>
+                          <span style={css(v.selDir.girar)} onPointerDown={v.selGirarDown} title="Arraste para girar (Shift trava de 15 em 15)">
+                            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <path d="M20 11a8 8 0 1 0-2.3 5.7" />
+                              <path d="M20 5v6h-6" />
+                            </svg>
+                          </span>
+                          <span style={css(v.selDir.cantoNO)} onPointerDown={v.selEscalarDown} title="Arraste para ampliar">
+                          </span>
+                          <span style={css(v.selDir.cantoNE)} onPointerDown={v.selEscalarDown} title="Arraste para ampliar">
+                          </span>
+                          <span style={css(v.selDir.cantoSO)} onPointerDown={v.selEscalarDown} title="Arraste para ampliar">
+                          </span>
+                          <span style={css(v.selDir.cantoSE)} onPointerDown={v.selEscalarDown} title="Arraste para ampliar">
+                          </span>
+                        </div>
                       </div>
                       <span style={css(v.rightLuz)}>
                       </span>
@@ -847,6 +913,42 @@ export default function EditorDesign({ v }: { v: any }) {
                         <span style={{ fontSize: '11px', color: '#9AA7BC', flex: '0 0 auto' }}>
                           °
                         </span>
+                      </div>
+                    </div>
+                  </div>
+                  <div style={{ marginTop: '14px', display: 'flex', flexDirection: 'column', gap: '13px' }}>
+                    <div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
+                        <span style={{ fontSize: '12px', color: '#46536A' }}>
+                          Girar
+                        </span>
+                        <span style={{ fontSize: '12px', fontWeight: '700' }}>
+                          {v.rotSlider.value}
+                        </span>
+                      </div>
+                      <div style={{ height: '6px', borderRadius: '999px', background: '#EEF1F7', position: 'relative' }}>
+                        <div style={css(v.rotSlider.fill)}>
+                        </div>
+                        <span style={css(v.rotSlider.knob)}>
+                        </span>
+                        <input type="range" min={v.rotSlider.min} max={v.rotSlider.max} value={v.rotSlider.raw} onChange={v.rotSlider.set} onPointerDown={v.rotSlider.down} onPointerUp={v.rotSlider.up} style={{ position: 'absolute', inset: '-9px 0', width: '100%', height: '24px', opacity: '0', cursor: 'pointer', margin: '0' }} />
+                      </div>
+                    </div>
+                    <div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
+                        <span style={{ fontSize: '12px', color: '#46536A' }}>
+                          Ampliar
+                        </span>
+                        <span style={{ fontSize: '12px', fontWeight: '700' }}>
+                          {v.zoomSlider.value}
+                        </span>
+                      </div>
+                      <div style={{ height: '6px', borderRadius: '999px', background: '#EEF1F7', position: 'relative' }}>
+                        <div style={css(v.zoomSlider.fill)}>
+                        </div>
+                        <span style={css(v.zoomSlider.knob)}>
+                        </span>
+                        <input type="range" min={v.zoomSlider.min} max={v.zoomSlider.max} value={v.zoomSlider.raw} onChange={v.zoomSlider.set} onPointerDown={v.zoomSlider.down} onPointerUp={v.zoomSlider.up} style={{ position: 'absolute', inset: '-9px 0', width: '100%', height: '24px', opacity: '0', cursor: 'pointer', margin: '0' }} />
                       </div>
                     </div>
                   </div>

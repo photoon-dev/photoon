@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { LAYOUTS, LAYOUT_PADRAO, layout, type Ret } from './layouts';
+import { ELEMENTOS, existeElemento } from './elementos';
 
 /**
  * Documento do álbum, persistido em `projetos.paginas`.
@@ -60,7 +61,23 @@ export type QuadroTexto = {
   ret: Ret;
 };
 
-export type Quadro = QuadroFoto | QuadroTexto;
+/**
+ * Enfeite gráfico (moldura, folha, fita, selo…).
+ *
+ * Guarda o `forma` do catálogo (`src/lib/elementos.ts`), não o `d` do SVG: o
+ * desenho pode ser corrigido depois sem reescrever o álbum de ninguém. Como o
+ * texto, tem retângulo próprio — não entra na contagem do layout.
+ */
+export type QuadroElemento = {
+  id: string;
+  tipo: 'elemento';
+  forma: string;
+  cor: string;
+  rot: number;
+  ret: Ret;
+};
+
+export type Quadro = QuadroFoto | QuadroTexto | QuadroElemento;
 
 export type Pagina = {
   layoutId: string;
@@ -139,6 +156,15 @@ const zQuadro: z.ZodType<Quadro> = z.union([
     cor: z.string().regex(/^#[0-9A-Fa-f]{3,8}$/),
     ret: zRet,
   }),
+  z.object({
+    id: z.string().min(1),
+    tipo: z.literal('elemento'),
+    // Só formas que existem no catálogo: um id inventado renderizaria vazio.
+    forma: z.string().min(1).refine(existeElemento, 'forma fora do catálogo'),
+    cor: z.string().regex(/^#[0-9A-Fa-f]{3,8}$/),
+    rot: z.number().min(-360).max(360),
+    ret: zRet,
+  }),
 ]);
 
 const IDS = LAYOUTS.map((l) => l.id) as [string, ...string[]];
@@ -171,6 +197,26 @@ export function novoQuadroFoto(fotoId: string | null = null): QuadroFoto {
   return { id: uid(), tipo: 'foto', fotoId, enq: { ...ENQ_PADRAO }, ajustes: { ...AJUSTES_PADRAO } };
 }
 
+/**
+ * Elemento novo, no meio da página, com a caixa proporcional à forma.
+ *
+ * Nasce em 22% de largura: grande o bastante para o cliente ver o que inseriu
+ * e pequeno o bastante para não tapar a foto.
+ */
+export function novoQuadroElemento(forma: string, cor = '#2563EB'): QuadroElemento {
+  const e = ELEMENTOS.find((x) => x.id === forma) ?? ELEMENTOS[0];
+  const w = 22;
+  const h = w / (e.proporcao ?? 1);
+  return {
+    id: uid(),
+    tipo: 'elemento',
+    forma: e.id,
+    cor,
+    rot: 0,
+    ret: { x: 50 - w / 2, y: 50 - h / 2, w, h },
+  };
+}
+
 export function novaPagina(layoutId = LAYOUT_PADRAO): Pagina {
   return {
     layoutId,
@@ -199,7 +245,9 @@ export function aplicarLayout(lamina: Lamina, lado: 'esquerda' | 'direita', layo
   const pagina = lamina[lado];
   const alvo = layout(layoutId).quadros.length;
   const fotos = pagina.quadros.filter((q): q is QuadroFoto => q.tipo === 'foto');
-  const textos = pagina.quadros.filter((q) => q.tipo === 'texto');
+  // Texto e elemento têm retângulo próprio: o layout não os posiciona, então
+  // atravessam a troca intactos. Filtrar só por 'texto' apagava os elementos.
+  const livres = pagina.quadros.filter((q) => q.tipo !== 'foto');
   const reserva = [...lamina.reserva];
 
   const mantidos = fotos.slice(0, alvo);
@@ -213,7 +261,7 @@ export function aplicarLayout(lamina: Lamina, lado: 'esquerda' | 'direita', layo
   return {
     ...lamina,
     reserva,
-    [lado]: { layoutId, quadros: [...mantidos, ...novos, ...textos] },
+    [lado]: { layoutId, quadros: [...mantidos, ...novos, ...livres] },
   };
 }
 
@@ -223,7 +271,7 @@ export function retDoQuadro(pagina: Pagina, quadroId: string): Ret | null {
   const i = fotos.findIndex((q) => q.id === quadroId);
   if (i < 0) {
     const t = pagina.quadros.find((q) => q.id === quadroId);
-    return t && t.tipo === 'texto' ? t.ret : null;
+    return t && t.tipo !== 'foto' ? t.ret : null;
   }
   return layout(pagina.layoutId).quadros[i] ?? null;
 }
@@ -257,9 +305,41 @@ function migrarAjustes(q: Record<string, unknown>): Ajustes {
   };
 }
 
+/**
+ * Retângulo de um quadro livre (texto, elemento).
+ *
+ * O v2 grava em `q.ret`; o v1 gravava x/y/w/h soltos no quadro. Ler só o
+ * formato antigo devolvia o padrão a CADA carregamento — o texto que o cliente
+ * posicionou voltava sozinho para o canto ao reabrir o álbum.
+ */
+function migrarRet(q: Record<string, unknown>, padrao: Ret): Ret {
+  const r = (q.ret ?? q) as Record<string, unknown>;
+  return {
+    x: num(r.x, padrao.x),
+    y: num(r.y, padrao.y),
+    w: num(r.w, padrao.w),
+    h: num(r.h, padrao.h),
+  };
+}
+
 function migrarQuadro(bruto: unknown): Quadro | null {
   if (!bruto || typeof bruto !== 'object') return null;
   const q = bruto as Record<string, unknown>;
+
+  if (q.tipo === 'elemento') {
+    const forma = str(q.forma, '');
+    // Forma desconhecida (catálogo mudou, documento adulterado): descarta o
+    // quadro em vez de renderizar um buraco. Nunca lança.
+    if (!existeElemento(forma)) return null;
+    return {
+      id: str(q.id, uid()),
+      tipo: 'elemento',
+      forma,
+      cor: /^#[0-9A-Fa-f]{3,8}$/.test(String(q.cor)) ? String(q.cor) : '#2563EB',
+      rot: Math.min(360, Math.max(-360, num(q.rot, 0))),
+      ret: migrarRet(q, { x: 39, y: 39, w: 22, h: 22 }),
+    };
+  }
 
   if (q.tipo === 'texto') {
     const preset = str(q.preset, 'legenda') as PresetTexto;
@@ -269,12 +349,7 @@ function migrarQuadro(bruto: unknown): Quadro | null {
       texto: typeof q.texto === 'string' ? q.texto.slice(0, 2000) : '',
       preset: preset in PRESETS_TEXTO ? preset : 'legenda',
       cor: /^#[0-9A-Fa-f]{3,8}$/.test(String(q.cor)) ? String(q.cor) : '#0B1220',
-      ret: {
-        x: num(q.x, 10),
-        y: num(q.y, 10),
-        w: num(q.w, 40),
-        h: num(q.h, 12),
-      },
+      ret: migrarRet(q, { x: 10, y: 10, w: 40, h: 12 }),
     };
   }
 
@@ -310,7 +385,8 @@ function migrarPagina(bruto: unknown, fallback: Quadro[] = []): Pagina {
   const fotos = quadros.filter((q): q is QuadroFoto => q.tipo === 'foto').slice(0, alvo);
   while (fotos.length < alvo) fotos.push(novoQuadroFoto());
 
-  return { layoutId, quadros: [...fotos, ...quadros.filter((q) => q.tipo === 'texto')] };
+  // Tudo que não é foto tem retângulo próprio e sobrevive à migração.
+  return { layoutId, quadros: [...fotos, ...quadros.filter((q) => q.tipo !== 'foto')] };
 }
 
 /**

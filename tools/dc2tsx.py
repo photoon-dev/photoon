@@ -38,12 +38,15 @@ RENOMEAR = {
     'crossorigin': 'crossOrigin', 'maxlength': 'maxLength', 'readonly': 'readOnly',
     'colspan': 'colSpan', 'rowspan': 'rowSpan', 'tabindex': 'tabIndex',
     'aria-label': 'aria-label', 'viewbox': 'viewBox', 'preserveaspectratio': 'preserveAspectRatio',
+    'vector-effect': 'vectorEffect',
     'backface-visibility': 'backfaceVisibility',
     # o HTMLParser rebaixa os nomes de atributo; devolve o camelCase do React
     'onclick': 'onClick', 'onmouseenter': 'onMouseEnter', 'onmouseleave': 'onMouseLeave',
     'onmousedown': 'onMouseDown', 'onmouseup': 'onMouseUp', 'onchange': 'onChange',
     'onfocus': 'onFocus', 'onblur': 'onBlur', 'oninput': 'onInput', 'onkeydown': 'onKeyDown',
     'ondragstart': 'onDragStart', 'ondragover': 'onDragOver', 'ondrop': 'onDrop',
+    'onpointerdown': 'onPointerDown', 'onpointermove': 'onPointerMove', 'onpointerup': 'onPointerUp',
+    'onwheel': 'onWheel',
 }
 
 IGNORAR = {'hint-placeholder-count', 'hint-placeholder-val', 'data-dc-script', 'data-props'}

@@ -27,6 +27,17 @@ export type EstadoEditor = {
   bgCat: number;
   elCat: number;
   bw: boolean;
+  /**
+   * Matiz corrente do seletor de fundo.
+   *
+   * A cor aplicada mora no documento (`lamina.fundo`) — isto NÃO é uma segunda
+   * cópia dela. É só a memória do matiz, que o hex não consegue devolver
+   * quando o cliente arrasta o brilho até o branco ou o preto: sem guardar,
+   * a barra de matiz saltaria para o vermelho sozinha.
+   */
+  bgHue: number;
+  /** Cor com que os elementos novos nascem. */
+  elCor: string;
 };
 
 // O catálogo de layouts virou `src/lib/layouts.ts`, compartilhado com a página
@@ -41,20 +52,8 @@ const BG_SW = ['#EAF0FF', '#E4F8FC', '#F1F5FD', '#E6F8F1', '#FEF3E2', '#F8FAFE',
 const CHIPS = ['#FFFFFF', '#F4F7FC', '#9AA7BC', '#46536A', '#0B1220', '#2563EB', '#06B6D4', '#7C3AED',
   '#E11D48', '#F59E0B', '#059669', '#EC4899', '#93C5FD', '#A5B4FC', '#67E8F9', '#FDE68A'];
 
-const EL = [
-  { d: 'M24 40C24 40 8 30 8 20a8 8 0 0 1 16-4 8 8 0 0 1 16 4c0 10-16 20-16 20z', sw: 2.4 },
-  { d: 'M10 10h28v28H10z', sw: 2 },
-  { d: 'M24 8 40 24 24 40 8 24z', sw: 2 },
-  { d: 'M8 24h32M24 8v32', sw: 2 },
-  { d: 'M8 30c6-14 12-14 16 0s10 14 16 0', sw: 2 },
-  { d: 'M12 12h24v24H12zM12 20h24M20 12v24', sw: 2 },
-  { d: 'M24 6l5 12 13 1-10 8 3 13-11-7-11 7 3-13-10-8 13-1z', sw: 2 },
-  { d: 'M10 34c8 0 8-20 14-20s6 20 14 20', sw: 2 },
-  { d: 'M14 12h20v24a4 4 0 0 1-4 4H18a4 4 0 0 1-4-4z', sw: 2 },
-  { d: 'M24 10a14 14 0 1 0 .01 0M18 24h12', sw: 2 },
-  { d: 'M8 18h32v12H8zM8 24h32', sw: 2 },
-  { d: 'M12 36V16l12-6 12 6v20', sw: 2 },
-];
+// As doze formas soltas do design viraram `src/lib/elementos.ts`, com id
+// estável, categoria e proporção — o painel filtra por categoria de verdade.
 
 const chip = (on: boolean) =>
   `white-space:nowrap;padding:7px 12px;border-radius:999px;border:1px solid ${on ? '#0B1220' : '#E6EAF2'};` +
@@ -91,10 +90,18 @@ function tocarPapel(ref: React.MutableRefObject<AudioContext | null>) {
 }
 
 import { LAYOUTS as CATALOGO, contagens, layout as layoutPorId } from '@/lib/layouts';
-import { curvaturaPagina, luzPagina, estiloPalco, estiloLivro, limitarZoom, ZOOM_PASSO, ZOOM_PADRAO } from '@/lib/livro';
+import { curvaturaPagina, luzPagina, estiloPalco, estiloLivro, limitarZoom, PAGINA_AR, ZOOM_PASSO, ZOOM_PADRAO } from '@/lib/livro';
 import type { Documento, Lado } from '@/components/editor/useDocumento';
-import type { Pagina, QuadroFoto } from '@/lib/album';
+import type { Enq, Pagina, QuadroFoto } from '@/lib/album';
 import { imagemCss } from '@/lib/imagem';
+import {
+  ESCALA_MAX, ESCALA_MIN, ROT_MAX, ROT_MIN,
+  escalarEnq, girarEnq, limitarEscala, limitarRot, moverEnq, zoomEnq, zoomParaEscala,
+  normalizarRot,
+  type GestoInicio,
+} from '@/lib/manipulacao';
+import { CATEGORIAS, elemento as formaPorId, porCategoria } from '@/lib/elementos';
+import { contrasteSobre, hexParaHsv, hsvParaHex, normalizarHex } from '@/lib/cor';
 
 /** Serializa um objeto de estilo para a string que o markup do design espera. */
 function estilo(o: React.CSSProperties): string {
@@ -138,7 +145,8 @@ export function useEditorDesign({
   const [s, setS] = useState<EstadoEditor>({
     hover: null, turning: null,
     tool: 0, panel: true, insp: false, modal: null, zoom: ZOOM_PADRAO,
-    count: 0, lay: 2, photoTab: 1, bgTab: 0, bgCat: 0, elCat: 0, bw: false,
+    count: 0, lay: 2, photoTab: 0, bgTab: 0, bgCat: 0, elCat: 0, bw: false,
+    bgHue: 220, elCor: '#2563EB',
   });
 
   const ac = useRef<AudioContext | null>(null);
@@ -147,6 +155,8 @@ export function useEditorDesign({
   const sRef = useRef(s);
   sRef.current = s;
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // Junta uma sequência de rodadas do mouse num só passo de desfazer.
+  const rodaTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const set = useCallback((p: Partial<EstadoEditor>) => setS((a) => ({ ...a, ...p })), []);
 
   const totalLaminas = doc.laminas.length;
@@ -178,6 +188,46 @@ export function useEditorDesign({
   useEffect(() => {
     if (doc.selecao) set({ insp: true });
   }, [doc.selecao, set]);
+
+  /**
+   * Fecha o gesto da roda por EVENTO, não só por tempo.
+   *
+   * Qualquer outra ação — clicar, teclar, trocar de seleção, sair da janela —
+   * encerra a sequência de zoom, então o passo de desfazer fecha no momento
+   * certo mesmo que o cliente gire a roda devagar.
+   */
+  // Depende de `doc.fimGesto` (estável), NÃO de `doc` — `doc` é objeto novo a
+  // cada render, e com ele o efeito abaixo disparava depois de cada evento de
+  // roda, fechando o gesto que ele deveria manter aberto. Era por isso que o
+  // Ctrl+Z continuava desfazendo um clique de roda por vez.
+  const fimGesto = doc.fimGesto;
+  const fecharGestoRoda = useCallback(() => {
+    if (!rodaTimer.current) return;
+    clearTimeout(rodaTimer.current);
+    rodaTimer.current = null;
+    fimGesto();
+  }, [fimGesto]);
+
+  useEffect(() => {
+    const eventos = ['pointerdown', 'keydown', 'blur'] as const;
+    for (const n of eventos) window.addEventListener(n, fecharGestoRoda);
+    return () => {
+      for (const n of eventos) window.removeEventListener(n, fecharGestoRoda);
+    };
+  }, [fecharGestoRoda]);
+
+  // Trocar de seleção também fecha.
+  useEffect(() => { fecharGestoRoda(); }, [doc.selecao, fecharGestoRoda]);
+
+  // Fios soltos no desmonte: os dois temporizadores ficavam a escrever em refs
+  // de um componente que já saiu da tela.
+  useEffect(
+    () => () => {
+      if (rodaTimer.current) clearTimeout(rodaTimer.current);
+      if (timer.current) clearTimeout(timer.current);
+    },
+    [],
+  );
 
   // --- teclado: setas viram página, +/- dão zoom ---------------------------
   useEffect(() => {
@@ -248,12 +298,21 @@ export function useEditorDesign({
       );
     };
 
-    /** `<img>` do quadro: fonte e estilo (enquadramento + ajustes de cor). */
-    const quadroImg = (q: QuadroFoto): { src: string | undefined; imgStyle: string } => {
+    /**
+     * `<img>` do quadro: fonte e estilo (enquadramento + ajustes de cor).
+     *
+     * Precisa do retângulo do layout para saber a proporção da CAIXA — sem ela
+     * não dá para dimensionar a foto sem esticá-la.
+     */
+    const quadroImg = (
+      q: QuadroFoto,
+      r?: { w: number; h: number } | null,
+    ): { src: string | undefined; imgStyle: string } => {
       const f = q.fotoId ? porId.get(q.fotoId) : undefined;
-      return f
-        ? { src: f.url, imgStyle: imagemCss(q.enq, q.ajustes) }
-        : { src: undefined, imgStyle: 'display:none' };
+      if (!f) return { src: undefined, imgStyle: 'display:none' };
+      const arFoto = f.largura && f.altura ? f.largura / f.altura : null;
+      const arCaixa = r && r.h ? (r.w / r.h) * PAGINA_AR : null;
+      return { src: f.url, imgStyle: imagemCss(q.enq, q.ajustes, arFoto, arCaixa) };
     };
 
     const SEM_IMG = { src: undefined as string | undefined, imgStyle: 'display:none' };
@@ -262,7 +321,7 @@ export function useEditorDesign({
     const framesDe = (pagina: Pagina, lado: Lado) =>
       doc.quadrosDe(pagina).map(({ q, ret: r }) => {
         const sel = doc.selecao?.quadro === q.id;
-        const img = q.tipo === 'foto' ? quadroImg(q) : SEM_IMG;
+        const img = q.tipo === 'foto' ? quadroImg(q, r) : SEM_IMG;
         return {
           id: q.id,
           vazio: q.tipo === 'foto' && !q.fotoId,
@@ -274,6 +333,33 @@ export function useEditorDesign({
         };
       });
 
+    /**
+     * Elementos gráficos de uma página.
+     *
+     * Saem em lista própria, não misturados aos quadros de foto: o quadro de
+     * foto é um `<div>` com `<img>` recortada, e o elemento é um `<svg>` que
+     * herda a cor. Misturar obrigaria o markup a adivinhar o tipo.
+     */
+    const elementosDe = (pagina: Pagina, lado: Lado) =>
+      pagina.quadros
+        .filter((q) => q.tipo === 'elemento')
+        .map((q) => {
+          const sel = doc.selecao?.quadro === q.id;
+          const forma = formaPorId(q.forma);
+          return {
+            id: q.id,
+            title: forma.nome,
+            sw: forma.sw,
+            paths: forma.d.map((d) => ({ d })),
+            style:
+              ret(q.ret) +
+              `;color:${q.cor};cursor:pointer;z-index:6;` +
+              (q.rot ? `transform:rotate(${q.rot}deg);` : '') +
+              (sel ? 'outline:2px solid #2563EB;outline-offset:3px;border-radius:2px;' : ''),
+            pick: () => doc.setSelecao({ lamina: doc.atual, lado, quadro: q.id }),
+          };
+        });
+
     /** Botão do enquadramento: mesma caixa do design, marcada quando ativo. */
     const botaoEnq = (ativo: boolean) =>
       `height:38px;display:flex;align-items:center;justify-content:center;gap:7px;` +
@@ -283,6 +369,162 @@ export function useEditorDesign({
 
     const framesEsq = framesDe(lamina.esquerda, 'esquerda');
     const framesDir = framesDe(lamina.direita, 'direita');
+
+    /* --------- manipulação direta no palco: mover, girar, ampliar --------- */
+
+    /** Retângulo do quadro selecionado, na página dele (em %). */
+    const retSel =
+      qSel && doc.selecao
+        ? doc.quadrosDe(lamina[doc.selecao.lado]).find((x) => x.q.id === qSel.id)?.ret ?? null
+        : null;
+
+    /**
+     * Começa um gesto de arrasto: captura o estado e devolve o controle a
+     * `passo`. Um gesto inteiro = um passo de desfazer (ver `doc.iniciarGesto`).
+     *
+     * Usa `setPointerCapture` e escuta `pointercancel`: só com `pointerup` os
+     * ouvintes ficavam pendurados na janela para sempre quando o navegador
+     * assumia o gesto (rolagem no toque) ou o botão era solto fora da janela —
+     * e a foto passava a seguir o cursor sem nenhum botão pressionado.
+     */
+    const arrastar = (
+      e: React.PointerEvent<HTMLElement>,
+      passo: (ini: GestoInicio, x: number, y: number, ev: PointerEvent) => Partial<Enq>,
+    ) => {
+      if (!qSel) return;
+      e.preventDefault();
+      const alvo = e.currentTarget;
+      const caixa = (alvo.closest('[data-om-selbox]') as HTMLElement | null) ?? alvo;
+      const r = caixa.getBoundingClientRect();
+      const f = qSel.fotoId ? porId.get(qSel.fotoId) : undefined;
+      const ini: GestoInicio = {
+        x: e.clientX,
+        y: e.clientY,
+        cx: r.left + r.width / 2,
+        cy: r.top + r.height / 2,
+        larguraBox: r.width || 1,
+        alturaBox: r.height || 1,
+        // Sem as dimensões da foto não dá para saber quanto ela transborda, e
+        // o arrasto deixa de acompanhar o cursor.
+        proporcao: f?.largura && f?.altura ? f.largura / f.altura : 1,
+        enq: { ...qSel.enq },
+      };
+
+      const id = e.pointerId;
+      try { alvo.setPointerCapture(id); } catch { /* ponteiro já solto */ }
+
+      // O gesto (e o passo de desfazer) só começa quando o ponteiro anda de
+      // fato — um clique seco na foto não deve entrar no histórico.
+      let ativo = false;
+      const mover = (ev: PointerEvent) => {
+        // Um segundo dedo não pode disputar o mesmo gesto.
+        if (ev.pointerId !== id) return;
+        if (!ativo) {
+          if (Math.hypot(ev.clientX - ini.x, ev.clientY - ini.y) < 3) return;
+          ativo = true;
+          doc.iniciarGesto();
+        }
+        doc.mudarEnq(passo(ini, ev.clientX, ev.clientY, ev));
+      };
+      const soltar = (ev: PointerEvent) => {
+        if (ev.pointerId !== id) return;
+        if (ativo) doc.fimGesto();
+        try { alvo.releasePointerCapture(id); } catch { /* já liberado */ }
+        window.removeEventListener('pointermove', mover);
+        window.removeEventListener('pointerup', soltar);
+        window.removeEventListener('pointercancel', soltar);
+      };
+      window.addEventListener('pointermove', mover);
+      window.addEventListener('pointerup', soltar);
+      window.addEventListener('pointercancel', soltar);
+    };
+
+    type PDown = React.PointerEvent<HTMLElement>;
+    const selMoverDown = (e: PDown) => arrastar(e, (ini, x, y) => moverEnq(ini, x, y));
+    // Os cantos AMPLIAM (é o que todo editor faz num canto); girar é o botão
+    // redondo. Antes os cantos giravam e o botão de girar ficava recortado pelo
+    // `overflow:hidden` da página — ou seja, nada escalava no palco.
+    const selEscalarDown = (e: PDown) => arrastar(e, (ini, x, y) => escalarEnq(ini, x, y));
+    const selGirarDown = (e: PDown) => arrastar(e, (ini, x, y, ev) => girarEnq(ini, x, y, ev.shiftKey));
+
+    /* ------------------------- seletor de cor do fundo -------------------- */
+
+    /** A cor da lâmina atual — o documento é a fonte, não um estado paralelo. */
+    const fundoAtual = lamina.fundo || '#FFFFFF';
+    const hsvFundo = hexParaHsv(fundoAtual);
+
+    /**
+     * Arrasto sobre uma superfície do seletor: entrega a posição do ponteiro
+     * normalizada (0..1) dentro do retângulo do elemento, do `pointerdown` até
+     * o `pointerup`. Um arrasto inteiro = um passo de desfazer.
+     */
+    const arrastarEm = (e: PDown, aplicarPos: (u: number, w: number) => void) => {
+      e.preventDefault();
+      const r = e.currentTarget.getBoundingClientRect();
+      const pos = (x: number, y: number) =>
+        aplicarPos(
+          Math.min(1, Math.max(0, (x - r.left) / (r.width || 1))),
+          Math.min(1, Math.max(0, (y - r.top) / (r.height || 1))),
+        );
+      doc.iniciarGesto();
+      pos(e.clientX, e.clientY);
+      const mover = (ev: PointerEvent) => pos(ev.clientX, ev.clientY);
+      const soltar = () => {
+        doc.fimGesto();
+        window.removeEventListener('pointermove', mover);
+        window.removeEventListener('pointerup', soltar);
+      };
+      window.addEventListener('pointermove', mover);
+      window.addEventListener('pointerup', soltar);
+    };
+
+    const arrastarArea = (e: PDown) =>
+      arrastarEm(e, (u, w) =>
+        doc.mudarFundo(hsvParaHex({ h: sRef.current.bgHue, s: u * 100, v: (1 - w) * 100 })),
+      );
+
+    const arrastarMatiz = (e: PDown) =>
+      arrastarEm(e, (u) => {
+        const h = u * 360;
+        set({ bgHue: h });
+        // Mantém saturação e brilho: mover o matiz não pode clarear a cor.
+        doc.mudarFundo(hsvParaHex({ h, s: hsvFundo.s, v: hsvFundo.v }));
+      });
+
+    /**
+     * Alça de canto.
+     *
+     * Fica DENTRO do quadro (`inset` positivo). Em −8px ela era recortada pelo
+     * `overflow:hidden` da página nos quadros da linha de cima e invadia 8px do
+     * quadro vizinho — com o respiro do layout em 2,5% (~7px) as alças de dois
+     * quadros chegavam a se tocar, e o clique ia para a errada.
+     */
+    const alcaCanto = (pos: string, cursor: string) =>
+      `position:absolute;${pos};width:13px;height:13px;border-radius:4px;background:#FFFFFF;` +
+      `border:2px solid #2563EB;box-shadow:0 1px 4px rgba(11,18,32,.3);cursor:${cursor};` +
+      `pointer-events:auto;touch-action:none;z-index:10`;
+
+    const caixaSel = (lado: Lado) => {
+      const on = selTipo === 'foto' && doc.selecao?.lado === lado && retSel;
+      return {
+        box: on ? ret(retSel) + ';z-index:9;pointer-events:none' : 'display:none',
+        // Superfície de mover: cobre o quadro, só quando selecionado.
+        // `touch-action:none` impede o navegador de assumir o gesto como
+        // rolagem no toque — sem isso, arrastar a foto num tablet rola a página.
+        mover: 'position:absolute;inset:0;pointer-events:auto;cursor:move;touch-action:none',
+        cantoNO: alcaCanto('top:3px;left:3px', 'nwse-resize'),
+        cantoNE: alcaCanto('top:3px;right:3px', 'nesw-resize'),
+        cantoSO: alcaCanto('bottom:3px;left:3px', 'nesw-resize'),
+        // O canto inferior-direito é o de girar: fica no lugar mais afastado do
+        // vinco e da barra flutuante, e continua dentro do recorte.
+        cantoSE: alcaCanto('bottom:3px;right:3px', 'nwse-resize'),
+        girar:
+          'position:absolute;bottom:3px;left:50%;transform:translateX(-50%);width:26px;height:26px;' +
+          'border-radius:999px;background:#FFFFFF;border:2px solid #2563EB;display:flex;align-items:center;' +
+          'justify-content:center;color:#2563EB;cursor:grab;pointer-events:auto;touch-action:none;' +
+          'box-shadow:0 2px 8px rgba(11,18,32,.25);z-index:11',
+      };
+    };
 
     // O lado que o seletor altera: o da seleção, ou os dois quando nada está
     // selecionado. Antes trocava um índice global que a página nem lia.
@@ -319,8 +561,22 @@ export function useEditorDesign({
       };
     });
 
+    /* ------------------- filtros do painel de fotos (7.4) ------------------ */
+
+    // Eram cinco pastilhas decorativas: clicar trocava o realce e a lista
+    // continuava a mesma. `Favoritas` fica de fora até existir a coluna no
+    // banco — melhor não oferecer um filtro que não filtra.
+    const FILTROS: { rotulo: string; testa: (f: Foto) => boolean }[] = [
+      { rotulo: 'Todas', testa: () => true },
+      { rotulo: 'Não usadas', testa: (f) => !doc.usadas.has(f.id) },
+      { rotulo: 'Verticais', testa: (f) => !!f.largura && !!f.altura && f.altura > f.largura },
+      { rotulo: 'Horizontais', testa: (f) => !!f.largura && !!f.altura && f.largura > f.altura },
+    ];
+    const filtroAtivo = FILTROS[s.photoTab] ?? FILTROS[0];
+    const fotosVisiveis = fotos.filter(filtroAtivo.testa);
+
     // O painel do design tinha 12 gradientes; aqui são as fotos reais da galeria.
-    const photos = fotos.map((f, i) => ({
+    const photos = fotosVisiveis.map((f, i) => ({
       style: `position:relative;aspect-ratio:3 / 4;border-radius:10px;` +
         `background-image:url('${f.url}');background-size:cover;background-position:center;` +
         `cursor:grab;transition:box-shadow .15s, transform .15s;` +
@@ -339,7 +595,9 @@ export function useEditorDesign({
           : 'Clique para pôr no próximo quadro vazio',
     }));
 
-    const fotoHover = s.hover === null ? fotos[0] : fotos[s.hover];
+    // A prévia acompanha a LISTA VISÍVEL: com um filtro ligado, o índice do
+    // hover não aponta mais para a mesma posição em `fotos`.
+    const fotoHover = s.hover === null ? fotosVisiveis[0] : fotosVisiveis[s.hover];
 
     const painelW = 'clamp(240px, 24vw, 316px)';
 
@@ -380,20 +638,97 @@ export function useEditorDesign({
       zoomLabel: s.zoom + '%',
       counts, layouts, photos,
 
-      photoTabs: lista(['Todas', 'Não usadas', 'Favoritas', 'Verticais', 'Horizontais'], 'photoTab', s.photoTab),
+      photoTabs: FILTROS.map((f, i) => ({
+        label: f.rotulo,
+        style: chip(s.photoTab === i),
+        pick: () => set({ photoTab: i, hover: null }),
+      })),
+      // Quantas fotos o filtro deixou passar — o design trazia "38 de 120"
+      // escrito à mão.
+      photoConta: `${fotosVisiveis.length} de ${fotos.length}`,
+      photoVazio:
+        fotosVisiveis.length === 0
+          ? 'padding:22px 4px;text-align:center;font-size:12px;color:#9AA7BC'
+          : 'display:none',
+      photoVazioTexto:
+        s.photoTab === 1
+          ? 'Todas as fotos já estão no álbum.'
+          : 'Nenhuma foto neste filtro.',
+
       bgTabs: lista(['Texturas', 'Cores', 'Gradientes'], 'bgTab', s.bgTab),
       bgCats: lista(['Suaves', 'Matelassê', 'Arabescos', 'Geométricos', 'Delicados'], 'bgCat', s.bgCat),
-      elCats: lista(['Todos', 'Molduras', 'Florais', 'Fitas', 'Selos', 'Formas', 'Linhas'], 'elCat', s.elCat),
+      elCats: CATEGORIAS.map((c, i) => ({
+        label: c.rotulo,
+        style: chip(s.elCat === i),
+        pick: () => set({ elCat: i }),
+      })),
 
-      bgSwatches: BG_SW.map((c, i) => ({
+      /* ------------------------------ fundos ----------------------------- */
+
+      bgSwatches: BG_SW.map((c) => ({
         style: `aspect-ratio:1 / 1;border-radius:10px;background:${c};` +
-          `border:${i === 0 ? '2px solid #2563EB' : '1px solid #E6EAF2'};cursor:pointer`,
-        pick: () => {},
+          `border:${fundoAtual.toUpperCase() === c.toUpperCase() ? '2px solid #2563EB' : '1px solid #E6EAF2'};cursor:pointer`,
+        pick: () => doc.mudarFundo(c),
       })),
       colorChips: CHIPS.map((c) => ({
-        style: `aspect-ratio:1 / 1;border-radius:7px;background:${c};border:1px solid rgba(11,18,32,.1);cursor:pointer`,
+        style: `aspect-ratio:1 / 1;border-radius:7px;background:${c};cursor:pointer;` +
+          `border:${fundoAtual.toUpperCase() === c.toUpperCase() ? '2px solid #2563EB' : '1px solid rgba(11,18,32,.1)'}`,
+        pick: () => doc.mudarFundo(c),
       })),
-      elements: EL,
+
+      // Área de saturação/brilho: o gradiente do design, agora com o matiz
+      // corrente por baixo e um alvo na posição real da cor da lâmina.
+      bgArea:
+        'position:relative;height:96px;border-radius:10px;cursor:crosshair;' +
+        `background:linear-gradient(to top,#000000,transparent),` +
+        `linear-gradient(to right,#FFFFFF,${hsvParaHex({ h: s.bgHue, s: 100, v: 100 })})`,
+      bgAlvo:
+        `position:absolute;top:${(100 - hsvFundo.v).toFixed(1)}%;left:${hsvFundo.s.toFixed(1)}%;` +
+        'width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:999px;border:2px solid #FFFFFF;' +
+        'box-shadow:0 1px 4px rgba(11,18,32,.4);pointer-events:none',
+      bgAreaDown: (e: React.PointerEvent<HTMLElement>) => arrastarArea(e),
+
+      bgHueDown: (e: React.PointerEvent<HTMLElement>) => arrastarMatiz(e),
+      bgHueKnob:
+        `position:absolute;top:50%;left:${((s.bgHue / 360) * 100).toFixed(1)}%;` +
+        `transform:translate(-50%,-50%);width:14px;height:14px;border-radius:999px;` +
+        `background:${hsvParaHex({ h: s.bgHue, s: 100, v: 100 })};border:2px solid #FFFFFF;` +
+        'box-shadow:0 1px 4px rgba(11,18,32,.4);pointer-events:none',
+
+      bgHex: fundoAtual.replace('#', ''),
+      setBgHex: (e: React.ChangeEvent<HTMLInputElement>) => {
+        const c = normalizarHex(e.target.value);
+        if (c) doc.mudarFundo(c);
+      },
+      bgAmostra: `width:38px;height:38px;border-radius:10px;background:${fundoAtual};` +
+        'border:1px solid #E6EAF2;flex:0 0 auto',
+      bgPonto: `width:22px;height:22px;border-radius:999px;background:${fundoAtual};` +
+        'border:1px solid #D6E2FC;flex:0 0 auto',
+      bgSoEsta: () => doc.mudarFundo(fundoAtual),
+      bgTudo: () => doc.mudarFundoTudo(fundoAtual),
+
+      /* ----------------------------- elementos --------------------------- */
+
+      // Clicar insere na página do lado selecionado; o elemento já nasce
+      // selecionado, para o cliente poder arrastá-lo em seguida.
+      elements: porCategoria(CATEGORIAS[s.elCat]?.id ?? 'todos').map((el) => ({
+        id: el.id,
+        title: el.nome,
+        sw: el.sw,
+        paths: el.d.map((d) => ({ d })),
+        pick: () => doc.adicionarElemento(el.id, s.elCor),
+      })),
+      elCorAmostra: `width:26px;height:26px;border-radius:8px;background:${s.elCor};flex:0 0 auto`,
+      elCorHex: s.elCor,
+      elCorChips: CHIPS.map((c) => ({
+        style: `aspect-ratio:1 / 1;border-radius:7px;background:${c};cursor:pointer;` +
+          `border:${s.elCor.toUpperCase() === c.toUpperCase() ? '2px solid #2563EB' : '1px solid rgba(11,18,32,.1)'}`,
+        // Muda a cor dos próximos e, se houver um elemento selecionado, a dele.
+        pick: () => {
+          set({ elCor: c });
+          if (doc.elementoSel) doc.mudarElemento({ cor: c });
+        },
+      })),
 
       // Eram três valores literais (+4, 0, −6) sem nenhum manipulador: o
       // slider desenhava, não ajustava nada.
@@ -446,7 +781,7 @@ export function useEditorDesign({
       enqGirar: {
         style: botaoEnq(!!qSel && qSel.enq.rot % 360 !== 0),
         // Gira de 90 em 90, que é o que se espera de um botão sem campo.
-        pick: () => doc.mudarEnq({ rot: ((qSel?.enq.rot ?? 0) + 90) % 360 }),
+        pick: () => doc.mudarEnq((enq) => ({ rot: limitarRot(normalizarRot(enq.rot + 90)) })),
       },
       enqEspelhar: {
         style: botaoEnq(!!qSel?.enq.espelho),
@@ -456,12 +791,90 @@ export function useEditorDesign({
       zoomFoto: Math.round((qSel?.enq.escala ?? 1) * 100),
       setZoomFoto: (e: React.ChangeEvent<HTMLInputElement>) => {
         const n = Number(e.target.value);
-        if (Number.isFinite(n)) doc.mudarEnq({ escala: Math.min(20, Math.max(0.05, n / 100)) });
+        if (Number.isFinite(n)) doc.mudarEnq(zoomParaEscala(n));
       },
       rotFoto: Math.round(qSel?.enq.rot ?? 0),
       setRotFoto: (e: React.ChangeEvent<HTMLInputElement>) => {
         const n = Number(e.target.value);
-        if (Number.isFinite(n)) doc.mudarEnq({ rot: Math.min(360, Math.max(-360, n)) });
+        if (Number.isFinite(n)) doc.mudarEnq({ rot: limitarRot(n) });
+      },
+
+      // Barras de arrasto do inspetor: giram/ampliam de forma contínua, com
+      // um único passo de desfazer por varredura (pointerdown → pointerup).
+      // Faixa ÚNICA por grandeza, vinda de `manipulacao.ts` — campo, slider e
+      // roda concordam. Antes o slider cortava em ±180/400% enquanto o campo
+      // aceitava ±360/2000%: o rótulo dizia "800%" com o botão encostado no fim
+      // da trilha, e o primeiro arrasto derrubava a escala sem aviso.
+      rotSlider: (() => {
+        const rot = Math.round(qSel?.enq.rot ?? 0);
+        const pct = ((limitarRot(rot) - ROT_MIN) / (ROT_MAX - ROT_MIN)) * 100;
+        return {
+          min: ROT_MIN,
+          max: ROT_MAX,
+          raw: limitarRot(rot),
+          value: rot + '°',
+          down: () => doc.iniciarGesto(),
+          up: () => doc.fimGesto(),
+          set: (e: React.ChangeEvent<HTMLInputElement>) =>
+            doc.mudarEnq({ rot: limitarRot(Number(e.target.value)) }),
+          fill: `width:${pct.toFixed(1)}%;height:100%;border-radius:999px;` +
+            `background:${rot !== 0 ? 'linear-gradient(90deg,#2563EB,#06B6D4)' : '#CBD5E6'}`,
+          knob: `position:absolute;left:${pct.toFixed(1)}%;top:50%;transform:translate(-50%,-50%);` +
+            `width:15px;height:15px;border-radius:999px;background:#FFFFFF;border:2px solid #2563EB;` +
+            `box-shadow:0 2px 5px rgba(11,18,32,.18)`,
+        };
+      })(),
+      zoomSlider: (() => {
+        const escala = qSel?.enq.escala ?? 1;
+        const pct = Math.round(escala * 100);
+        const min = ESCALA_MIN * 100;
+        const max = ESCALA_MAX * 100;
+        const t = ((limitarEscala(escala) * 100 - min) / (max - min)) * 100;
+        return {
+          min,
+          max,
+          raw: Math.round(limitarEscala(escala) * 100),
+          value: pct + '%',
+          down: () => doc.iniciarGesto(),
+          up: () => doc.fimGesto(),
+          set: (e: React.ChangeEvent<HTMLInputElement>) =>
+            doc.mudarEnq(zoomParaEscala(Number(e.target.value))),
+          fill: `width:${t.toFixed(1)}%;height:100%;border-radius:999px;` +
+            `background:${pct !== 100 ? 'linear-gradient(90deg,#2563EB,#06B6D4)' : '#CBD5E6'}`,
+          knob: `position:absolute;left:${t.toFixed(1)}%;top:50%;transform:translate(-50%,-50%);` +
+            `width:15px;height:15px;border-radius:999px;background:#FFFFFF;border:2px solid #2563EB;` +
+            `box-shadow:0 2px 5px rgba(11,18,32,.18)`,
+        };
+      })(),
+
+      // Roda do mouse sobre o palco: amplia a foto selecionada; sem seleção,
+      // aproxima a visualização (o mesmo que +/- no teclado).
+      palcoWheel: (e: React.WheelEvent) => {
+        // A roda só amplia a FOTO quando o cursor está sobre ela (ou com
+        // Ctrl/⌘). Antes, ter uma foto selecionada mudava o significado da roda
+        // em todo o palco — mesmo a 300px da foto —, que é o inverso da
+        // convenção e foi como a edição às cegas apareceu.
+        const sobreFoto =
+          !!qSel &&
+          (e.ctrlKey ||
+            e.metaKey ||
+            !!(document.elementFromPoint(e.clientX, e.clientY) as HTMLElement | null)?.closest(
+              '[data-om-selbox]',
+            ));
+
+        if (!sobreFoto) {
+          set({ zoom: limitarZoom(sRef.current.zoom + (e.deltaY < 0 ? ZOOM_PASSO : -ZOOM_PASSO)) });
+          return;
+        }
+        doc.iniciarGesto();
+        // Parte sempre do valor corrente, não do capturado no memo.
+        doc.mudarEnq((enq) => zoomEnq(enq, e.deltaY));
+        // O fim do gesto por tempo agrupava só quem varria a roda depressa:
+        // com 500ms entre cliques — o ritmo de quem ajusta com cuidado — cada
+        // clique virava um passo de desfazer. A janela agora é folgada, e
+        // qualquer outra ação fecha o gesto na hora (ver `fecharGestoRoda`).
+        if (rodaTimer.current) clearTimeout(rodaTimer.current);
+        rodaTimer.current = setTimeout(() => doc.fimGesto(), 1500);
       },
 
       // O storyboard vinha de dez rótulos fixos; agora sai do documento.
@@ -580,6 +993,23 @@ export function useEditorDesign({
       // O markup do design desenha o primeiro quadro à parte (é o que carrega a
       // marcação de rosto), e mapeia o resto.
       pageFrames: framesEsq.slice(1),
+
+      // O fundo da lâmina era gravado e NUNCA desenhado: o cliente escolhia uma
+      // cor e a página continuava branca. Fica sob os quadros, sobre o papel.
+      pageFundo: `position:absolute;inset:0;background:${fundoAtual};z-index:0`,
+      rightFundo: `position:absolute;inset:0;background:${fundoAtual};z-index:0`,
+
+      pageElementos: elementosDe(lamina.esquerda, 'esquerda'),
+      rightElementos: elementosDe(lamina.direita, 'direita'),
+
+      // Alças de manipulação sobre o quadro selecionado (uma por página; só a do
+      // lado da seleção aparece). Cantos e botão de cima giram arrastando; o
+      // meio move o recorte. Zoom fica na roda do mouse e no inspetor.
+      selEsq: caixaSel('esquerda'),
+      selDir: caixaSel('direita'),
+      selMoverDown,
+      selGirarDown,
+      selEscalarDown,
       legendaEsquerda: lamina.esquerda.quadros.find((q) => q.tipo === 'texto')?.texto ?? '',
       legendaDireita: lamina.direita.quadros.find((q) => q.tipo === 'texto')?.texto ?? '',
       rightGrid: 'position:absolute;inset:0;' + estilo(curvaturaPagina('direita')),
@@ -627,7 +1057,7 @@ export function useEditorDesign({
       turnFrontFrames: (() => {
         const alvo = s.turning === 'next' ? lamina.direita : lamina.esquerda;
         return doc.quadrosDe(alvo).map(({ q, ret: r }) => {
-          const img = q.tipo === 'foto' ? quadroImg(q) : SEM_IMG;
+          const img = q.tipo === 'foto' ? quadroImg(q, r) : SEM_IMG;
           return {
             style: q.tipo === 'foto' && r ? quadroEstilo(q, r, false) : 'display:none',
             src: img.src,
@@ -640,7 +1070,7 @@ export function useEditorDesign({
         const alvo = s.turning === 'next' ? destino?.esquerda : destino?.direita;
         if (!alvo) return [];
         return doc.quadrosDe(alvo).map(({ q, ret: r }) => {
-          const img = q.tipo === 'foto' ? quadroImg(q) : SEM_IMG;
+          const img = q.tipo === 'foto' ? quadroImg(q, r) : SEM_IMG;
           return {
             style: q.tipo === 'foto' && r ? quadroEstilo(q, r, false) : 'display:none',
             src: img.src,
@@ -723,16 +1153,19 @@ export function useEditorDesign({
       v['p' + i] = s.tool === i ? 'flex:1 1 auto;min-height:0;display:flex;flex-direction:column' : 'display:none';
     }
 
-    const POS = ['top:-6px;left:-6px', 'top:-6px;right:-6px', 'bottom:-6px;left:-6px', 'bottom:-6px;right:-6px'];
-    for (let i = 1; i <= 4; i++) {
-      v['h' + i] =
-        (selTipo === 'foto' ? '' : 'display:none;') +
-        `position:absolute;width:11px;height:11px;border-radius:3px;background:#FFFFFF;` +
-        `border:1.5px solid #2563EB;${POS[i - 1]};z-index:9`;
-    }
+    // As alças de canto do primeiro quadro saíram: a caixa de seleção
+    // (`selEsq`/`selDir`) agora desenha as alças sobre QUALQUER quadro
+    // selecionado, não só o primeiro.
+    for (let i = 1; i <= 4; i++) v['h' + i] = 'display:none';
 
     return v;
-  }, [s, fotos, titulo, rotas, modelo, laminas, fotosUsadas, bloqueadores, onTitulo, set, irPara]);
+    // `doc` PRECISA estar aqui: o corpo lê `doc.lamina`, `doc.selecao`,
+    // `doc.quadroSel`… e `arrastar()` fecha sobre `qSel`. Sem ele o memo só
+    // recalculava por acidente — `rotas` chega como objeto literal e `irPara`
+    // depende de `doc` —, e bastava alguém estabilizar qualquer um dos dois
+    // para o editor inteiro congelar: alça no quadro errado, inspetor com a
+    // foto anterior, arrasto partindo de um enquadramento velho.
+  }, [s, fotos, titulo, rotas, modelo, laminas, fotosUsadas, bloqueadores, onTitulo, set, irPara, doc]);
 
   return v;
 }
