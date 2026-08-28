@@ -114,6 +114,7 @@ export function useEditorDesign({
   modelo,
   laminas,
   fotosUsadas,
+  bloqueadores,
   onTitulo,
 }: {
   fotos: Foto[];
@@ -124,6 +125,8 @@ export function useEditorDesign({
   /** Lâminas e fotos do projeto, para calcular o valor. */
   laminas: number;
   fotosUsadas: number;
+  /** Lâminas com quadro vazio: travam a finalização. */
+  bloqueadores: number;
   onTitulo?: (t: string) => void;
 }) {
   const [s, setS] = useState<EstadoEditor>({
@@ -451,6 +454,7 @@ export function useEditorDesign({
         `padding:24px;pointer-events:none;${s.modal ? '' : 'display:none'}`,
 
       titulo,
+      bloqueadores,
       onTitulo: onTitulo
         ? (e: { target: { value: string } }) => onTitulo(e.target.value)
         : undefined,
@@ -481,7 +485,7 @@ export function useEditorDesign({
     }
 
     return v;
-  }, [s, fotos, titulo, rotas, modelo, laminas, fotosUsadas, onTitulo, set, irPara]);
+  }, [s, fotos, titulo, rotas, modelo, laminas, fotosUsadas, bloqueadores, onTitulo, set, irPara]);
 
   return v;
 }

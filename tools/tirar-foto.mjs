@@ -4,8 +4,10 @@
  * Existe porque eu não enxergo o resultado renderizado: sem isso, cada ajuste
  * de layout dependia de um print do celular do Fábio para eu saber se quebrou.
  *
- * uso: node tools/tirar-foto.mjs <perfil> <caminho> [nome] [largura]
+ * uso: node tools/tirar-foto.mjs <perfil> <caminho> [nome] [largura] [clicar]
  *      perfil: lojista | cliente | admin
+ *      clicar: texto de um botão a acionar antes da foto, para fotografar
+ *              estados que só existem depois de um toque (folhas, menus)
  */
 import puppeteer from 'puppeteer-core';
 import { mkdirSync } from 'node:fs';
@@ -19,7 +21,8 @@ const PERFIS = {
   admin: { host: 'https://admin.photoon.com.br', email: 'admin@photoon.com.br' },
 };
 
-const [perfil = 'lojista', caminho = '/', nome = 'tela', largura = '390'] = process.argv.slice(2);
+const [perfil = 'lojista', caminho = '/', nome = 'tela', largura = '390', clicar = ''] =
+  process.argv.slice(2);
 const p = PERFIS[perfil];
 if (!p) throw new Error(`perfil desconhecido: ${perfil}`);
 if (!SENHA) throw new Error('defina SENHA_TESTE no ambiente');
@@ -46,6 +49,21 @@ try {
 
   await aba.goto(`${p.host}${caminho}`, { waitUntil: 'networkidle2', timeout: 45000 });
   await new Promise((r) => setTimeout(r, 1200));
+
+  if (clicar) {
+    const achou = await aba.evaluate((texto) => {
+      const alvo = [...document.querySelectorAll('button, a')].find(
+        (e) => e.textContent?.trim() === texto,
+      );
+      if (alvo) {
+        alvo.click();
+        return true;
+      }
+      return false;
+    }, clicar);
+    console.log(achou ? `clicou em "${clicar}"` : `NAO achou o botao "${clicar}"`);
+    await new Promise((r) => setTimeout(r, 800));
+  }
 
   // Mede a rolagem lateral, que é o defeito mais comum e o mais fácil de perder.
   const medida = await aba.evaluate(() => ({

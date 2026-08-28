@@ -108,3 +108,19 @@
     display: none !important;
   }
 }
+
+/* ---------------------------------------------------------------------------
+   No celular o editor tem layout próprio (EditorMobile): o canvas ocupa a
+   tela e as ferramentas viram folha. Aqui só garantimos que nada role de
+   lado e que os campos não provoquem o zoom automático do iOS.
+   --------------------------------------------------------------------------- */
+@media (max-width: 860px) {
+  .om-editor {
+    max-width: 100vw;
+    overflow-x: hidden;
+  }
+  .om-editor input,
+  .om-editor select {
+    font-size: 16px !important;
+  }
+}

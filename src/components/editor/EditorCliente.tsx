@@ -3,9 +3,11 @@
 import { useMemo, useState } from 'react';
 import type { Foto } from '@/lib/data';
 import type { PrecoModelo } from '@/lib/preco';
-import type { Lamina } from '@/lib/album';
+import { laminasSemFoto, type Lamina } from '@/lib/album';
 import EditorDesign, { CSS_PSEUDO } from '@/components/design/EditorDesign';
+import EditorMobile from '@/components/editor/EditorMobile';
 import { useEditorDesign } from '@/components/editor/useEditorDesign';
+import { useTelaPequena } from '@/components/editor/useTelaPequena';
 
 /**
  * Cola o markup transliterado do design (EditorDesign) com a lógica portada
@@ -37,9 +39,12 @@ export default function EditorCliente({
     return usadas.size;
   }, [paginas]);
 
+  const bloqueadores = useMemo(() => laminasSemFoto(paginas ?? []).length, [paginas]);
+
   const v = useEditorDesign({
     fotos,
     titulo,
+    bloqueadores,
     onTitulo: setTitulo,
     modelo,
     laminas: paginas?.length ?? 0,
@@ -53,10 +58,14 @@ export default function EditorCliente({
     },
   });
 
+  // Layouts distintos, mesma lógica. Espremer o de desktop empurra o canvas
+  // para fora da tela; renderizar os dois duplicaria o DOM do editor.
+  const pequena = useTelaPequena();
+
   return (
-    <div className="om-editor">
+    <div className="om-editor h-full">
       <style dangerouslySetInnerHTML={{ __html: CSS_PSEUDO }} />
-      <EditorDesign v={v} />
+      {pequena ? <EditorMobile v={v} projetoId={projetoId} /> : <EditorDesign v={v} />}
     </div>
   );
 }

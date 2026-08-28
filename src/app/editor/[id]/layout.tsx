@@ -6,5 +6,5 @@ import './editor.css';
  * Ocupa a tela inteira e não usa o cabeçalho da loja.
  */
 export default function EditorLayout({ children }: { children: React.ReactNode }) {
-  return <div className="h-screen overflow-hidden bg-[#EEF3F9]">{children}</div>;
+  return <div className="h-[100dvh] overflow-hidden bg-[#EEF3F9]">{children}</div>;
 }
