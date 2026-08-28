@@ -111,8 +111,8 @@ const opcaoPaginar = (on: boolean) =>
   `border:1px solid ${on ? '#2563EB' : '#E6EAF2'};background:${on ? '#F1F5FD' : '#FFFFFF'}`;
 import { curvaturaPagina, estiloPagina, luzPagina, estiloPalco, estiloLivro, limitarZoom, PAGINA_AR, ZOOM_PASSO, ZOOM_PADRAO } from '@/lib/livro';
 import type { Documento, Lado } from '@/components/editor/useDocumento';
-import { EFEITOS } from '@/lib/album';
-import type { Enq, Pagina, Quadro, QuadroFoto } from '@/lib/album';
+import { EFEITOS, PRESETS_TEXTO } from '@/lib/album';
+import type { Enq, Pagina, Quadro, QuadroFoto, QuadroTexto } from '@/lib/album';
 import { bordaCss, filtroDoEfeito, imagemCss } from '@/lib/imagem';
 import {
   CORES_FUNDO,
@@ -452,6 +452,58 @@ export function useEditorDesign({
       `border:1px solid ${ativo ? '#2563EB' : '#E6EAF2'};border-radius:10px;` +
       `background:${ativo ? '#F1F5FD' : '#FFFFFF'};color:${ativo ? '#2563EB' : '#46536A'};` +
       `font-size:12px;font-weight:${ativo ? 700 : 600};cursor:pointer`;
+
+    /**
+     * Textos da página.
+     *
+     * O painel de Texto era markup morto: os quatro cartões não tinham ação,
+     * o documento não sabia criar texto e a página não renderizava nenhum.
+     * Duplo clique edita o conteúdo no lugar — é onde o cliente está olhando,
+     * e evita a viagem até o inspetor para trocar uma palavra.
+     */
+    const textosDe = (pagina: Pagina, lado: Lado) =>
+      pagina.quadros
+        .filter((q): q is QuadroTexto => q.tipo === 'texto')
+        .map((q) => {
+          const sel = doc.selecao?.quadro === q.id;
+          const pr = PRESETS_TEXTO[q.preset];
+          return {
+            id: q.id,
+            texto: q.texto,
+            style:
+              ret(q.ret) +
+              `;z-index:7;cursor:move;display:flex;align-items:center;justify-content:center;` +
+              `text-align:center;padding:2px;color:${q.cor};white-space:pre-wrap;overflow:hidden;` +
+              `font-size:${pr.tamanhoCqw}cqw;font-weight:${pr.peso};` +
+              `letter-spacing:${pr.espacamento};text-transform:${pr.caixa};` +
+              (sel ? 'outline:1px solid #2563EB;outline-offset:2px;' : ''),
+            pick: () => doc.setSelecao({ lamina: doc.atual, lado, quadro: q.id }),
+            down: (e: React.PointerEvent<HTMLElement>) => {
+              doc.setSelecao({ lamina: doc.atual, lado, quadro: q.id });
+              arrastarLivre(e, 'mover', q);
+            },
+            editar: (e: React.MouseEvent<HTMLElement>) => {
+              const alvo = e.currentTarget;
+              alvo.contentEditable = 'true';
+              alvo.style.cursor = 'text';
+              alvo.focus();
+              // Seleciona tudo: quem dá duplo clique quase sempre vai trocar a
+              // frase inteira, não emendar uma palavra.
+              const r = document.createRange();
+              r.selectNodeContents(alvo);
+              const sl = window.getSelection();
+              sl?.removeAllRanges();
+              sl?.addRange(r);
+              const sair = () => {
+                alvo.contentEditable = 'false';
+                alvo.style.cursor = 'move';
+                doc.mudarTexto({ texto: (alvo.textContent ?? '').slice(0, 2000) });
+                alvo.removeEventListener('blur', sair);
+              };
+              alvo.addEventListener('blur', sair);
+            },
+          };
+        });
 
     const framesEsq = framesDe(lamina.esquerda, 'esquerda');
     const framesDir = framesDe(lamina.direita, 'direita');
@@ -1545,6 +1597,12 @@ export function useEditorDesign({
       pageFundo: `position:absolute;inset:0;z-index:0;` + estiloFundo(fundoAtual),
       rightFundo: `position:absolute;inset:0;background:${fundoAtual};z-index:0`,
 
+      pageTextos: textosDe(lamina.esquerda, 'esquerda'),
+      rightTextos: textosDe(lamina.direita, 'direita'),
+      addTextoTitulo: () => doc.adicionarTexto('titulo'),
+      addTextoSubtitulo: () => doc.adicionarTexto('subtitulo'),
+      addTextoLegenda: () => doc.adicionarTexto('legenda'),
+      addTextoData: () => doc.adicionarTexto('data'),
       pageElementos: elementosDe(lamina.esquerda, 'esquerda'),
       rightElementos: elementosDe(lamina.direita, 'direita'),
 

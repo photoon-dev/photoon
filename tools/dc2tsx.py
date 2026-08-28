@@ -46,6 +46,7 @@ RENOMEAR = {
     'onfocus': 'onFocus', 'onblur': 'onBlur', 'oninput': 'onInput', 'onkeydown': 'onKeyDown',
     'ondragstart': 'onDragStart', 'ondragover': 'onDragOver', 'ondrop': 'onDrop',
     'ondragend': 'onDragEnd', 'ondragleave': 'onDragLeave',
+    'ondblclick': 'onDoubleClick', 'ondoubleclick': 'onDoubleClick',
     'onpointerdown': 'onPointerDown', 'onpointermove': 'onPointerMove', 'onpointerup': 'onPointerUp',
     'onwheel': 'onWheel',
 }

@@ -142,12 +142,38 @@ export const BORDA_PADRAO: Borda = { px: 6, cor: '#FFFFFF' };
 
 export const PRESETS_TEXTO: Record<
   PresetTexto,
-  { rotulo: string; descricao: string; classe: string }
+  {
+    rotulo: string;
+    descricao: string;
+    exemplo: string;
+    /**
+     * Tamanho em `cqw` — porcentagem da largura da PÁGINA.
+     *
+     * Não em px: o mesmo documento é desenhado a 64% de zoom na tela e a 300
+     * dpi na impressão. Em px o título sairia minúsculo no papel.
+     */
+    tamanhoCqw: number;
+    peso: number;
+    espacamento: string;
+    caixa: 'none' | 'uppercase';
+  }
 > = {
-  titulo: { rotulo: 'Título', descricao: '48 pt, peso forte', classe: 'text-[2.6cqw] font-extrabold tracking-[-.03em]' },
-  subtitulo: { rotulo: 'Subtítulo', descricao: 'Médio, discreto', classe: 'text-[1.5cqw] font-medium' },
-  legenda: { rotulo: 'Legenda', descricao: 'Pequena, em caixa alta', classe: 'text-[1cqw] font-bold uppercase tracking-[.18em]' },
-  data: { rotulo: 'Data', descricao: 'Para marcar o momento', classe: 'text-[1.2cqw] font-semibold tracking-[.1em]' },
+  titulo: {
+    rotulo: 'Título', descricao: '48 pt, peso forte', exemplo: 'Nosso dia',
+    tamanhoCqw: 7.2, peso: 800, espacamento: '-.03em', caixa: 'none',
+  },
+  subtitulo: {
+    rotulo: 'Subtítulo', descricao: 'Médio, discreto', exemplo: 'Um dia para lembrar',
+    tamanhoCqw: 4, peso: 500, espacamento: '0', caixa: 'none',
+  },
+  legenda: {
+    rotulo: 'Legenda', descricao: 'Pequena, em caixa alta', exemplo: 'Legenda',
+    tamanhoCqw: 2.4, peso: 700, espacamento: '.18em', caixa: 'uppercase',
+  },
+  data: {
+    rotulo: 'Data', descricao: 'Para marcar o momento', exemplo: '12 · dezembro · 2026',
+    tamanhoCqw: 3, peso: 600, espacamento: '.1em', caixa: 'none',
+  },
 };
 
 /* ---------------------------------------------------------------------------
@@ -254,6 +280,22 @@ export function novoQuadroFoto(fotoId: string | null = null): QuadroFoto {
  * Nasce em 22% de largura: grande o bastante para o cliente ver o que inseriu
  * e pequeno o bastante para não tapar a foto.
  */
+/** Texto novo, no meio da página, com o tamanho do preset. */
+export function novoQuadroTexto(preset: PresetTexto = 'titulo'): QuadroTexto {
+  // Altura por preset: um título ocupa mais linha que uma legenda, e nascer
+  // com a caixa certa evita o texto sair cortado antes do primeiro ajuste.
+  const h = preset === 'titulo' ? 14 : preset === 'subtitulo' ? 10 : 7;
+  const w = 60;
+  return {
+    id: uid(),
+    tipo: 'texto',
+    texto: PRESETS_TEXTO[preset].exemplo,
+    preset,
+    cor: '#0B1220',
+    ret: { x: 50 - w / 2, y: 50 - h / 2, w, h },
+  };
+}
+
 export function novoQuadroElemento(forma: string, cor = '#2563EB', svg?: string): QuadroElemento {
   const e = ELEMENTOS.find((x) => x.id === forma) ?? ELEMENTOS[0];
   const w = 22;

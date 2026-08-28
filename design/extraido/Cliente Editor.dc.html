@@ -170,19 +170,19 @@
           <p style="margin: 4px 0 0; font-size: 12px; color: #9AA7BC;">Clique para inserir na lâmina</p>
         </div>
         <div style="flex: 1 1 auto; min-height: 0; overflow-y: auto; padding: 14px 18px; display: flex; flex-direction: column; gap: 10px;">
-          <div onClick="{{ selectText }}" style="padding: 16px; border-radius: 12px; border: 1px solid #E6EAF2; background: #FFFFFF; cursor: pointer;" style-hover="border-color: #2563EB; background: #F8FAFE;">
+          <div onClick="{{ addTextoTitulo }}" style="padding: 16px; border-radius: 12px; border: 1px solid #E6EAF2; background: #FFFFFF; cursor: pointer;" style-hover="border-color: #2563EB; background: #F8FAFE;">
             <p style="margin: 0; font-size: 22px; font-weight: 800; letter-spacing: -.8px; line-height: 1.1;">Título</p>
             <p style="margin: 6px 0 0; font-size: 11.5px; color: #9AA7BC;">48 pt, peso forte</p>
           </div>
-          <div onClick="{{ selectText }}" style="padding: 16px; border-radius: 12px; border: 1px solid #E6EAF2; background: #FFFFFF; cursor: pointer;" style-hover="border-color: #2563EB; background: #F8FAFE;">
+          <div onClick="{{ addTextoSubtitulo }}" style="padding: 16px; border-radius: 12px; border: 1px solid #E6EAF2; background: #FFFFFF; cursor: pointer;" style-hover="border-color: #2563EB; background: #F8FAFE;">
             <p style="margin: 0; font-size: 16px; font-weight: 500; color: #46536A;">Subtítulo</p>
             <p style="margin: 6px 0 0; font-size: 11.5px; color: #9AA7BC;">Médio, discreto</p>
           </div>
-          <div onClick="{{ selectText }}" style="padding: 16px; border-radius: 12px; border: 1px solid #E6EAF2; background: #FFFFFF; cursor: pointer;" style-hover="border-color: #2563EB; background: #F8FAFE;">
+          <div onClick="{{ addTextoLegenda }}" style="padding: 16px; border-radius: 12px; border: 1px solid #E6EAF2; background: #FFFFFF; cursor: pointer;" style-hover="border-color: #2563EB; background: #F8FAFE;">
             <p style="margin: 0; font-size: 12px; font-weight: 700; letter-spacing: 1.6px; text-transform: uppercase; color: #46536A;">Legenda</p>
             <p style="margin: 6px 0 0; font-size: 11.5px; color: #9AA7BC;">Pequena, em caixa alta</p>
           </div>
-          <div onClick="{{ selectText }}" style="padding: 16px; border-radius: 12px; border: 1px solid #E6EAF2; background: #FFFFFF; cursor: pointer;" style-hover="border-color: #2563EB; background: #F8FAFE;">
+          <div onClick="{{ addTextoData }}" style="padding: 16px; border-radius: 12px; border: 1px solid #E6EAF2; background: #FFFFFF; cursor: pointer;" style-hover="border-color: #2563EB; background: #F8FAFE;">
             <p style="margin: 0; font-size: 14px; font-weight: 600; color: #46536A;">12 · dezembro · 2026</p>
             <p style="margin: 6px 0 0; font-size: 11.5px; color: #9AA7BC;">Data — para marcar o momento</p>
           </div>
@@ -412,6 +412,9 @@
                 <sc-for list="{{ guias }}" as="g" hint-placeholder-count="0">
                   <span style="{{ g.style }}"></span>
                 </sc-for>
+                <sc-for list="{{ pageTextos }}" as="tx" hint-placeholder-count="1">
+                  <div onClick="{{ tx.pick }}" onpointerdown="{{ tx.down }}" onDoubleClick="{{ tx.editar }}" style="{{ tx.style }}">{{ tx.texto }}</div>
+                </sc-for>
                 <sc-for list="{{ pageElementos }}" as="el" hint-placeholder-count="1">
                   <div onClick="{{ el.pick }}" onpointerdown="{{ el.down }}" style="{{ el.style }}" title="{{ el.title }}">
                     <svg viewBox="0 0 48 48" width="100%" height="100%" preserveAspectRatio="none" fill="none" stroke="currentColor" stroke-width="{{ el.sw }}" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke">
@@ -454,6 +457,9 @@
                 <span style="{{ areaCorte }}"></span>
                 <sc-for list="{{ guiasDireita }}" as="g" hint-placeholder-count="0">
                   <span style="{{ g.style }}"></span>
+                </sc-for>
+                <sc-for list="{{ rightTextos }}" as="tx" hint-placeholder-count="1">
+                  <div onClick="{{ tx.pick }}" onpointerdown="{{ tx.down }}" onDoubleClick="{{ tx.editar }}" style="{{ tx.style }}">{{ tx.texto }}</div>
                 </sc-for>
                 <sc-for list="{{ rightElementos }}" as="el" hint-placeholder-count="1">
                   <div onClick="{{ el.pick }}" onpointerdown="{{ el.down }}" style="{{ el.style }}" title="{{ el.title }}">

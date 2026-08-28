@@ -334,7 +334,7 @@ export default function EditorDesign({ v }: { v: any }) {
                 </p>
               </div>
               <div style={{ flex: '1 1 auto', minHeight: '0', overflowY: 'auto', padding: '14px 18px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                <div onClick={v.selectText} style={{ padding: '16px', borderRadius: '12px', border: '1px solid #E6EAF2', background: '#FFFFFF', cursor: 'pointer' }} className="dc14">
+                <div onClick={v.addTextoTitulo} style={{ padding: '16px', borderRadius: '12px', border: '1px solid #E6EAF2', background: '#FFFFFF', cursor: 'pointer' }} className="dc14">
                   <p style={{ margin: '0', fontSize: '22px', fontWeight: '800', letterSpacing: '-.8px', lineHeight: '1.1' }}>
                     Título
                   </p>
@@ -342,7 +342,7 @@ export default function EditorDesign({ v }: { v: any }) {
                     48 pt, peso forte
                   </p>
                 </div>
-                <div onClick={v.selectText} style={{ padding: '16px', borderRadius: '12px', border: '1px solid #E6EAF2', background: '#FFFFFF', cursor: 'pointer' }} className="dc15">
+                <div onClick={v.addTextoSubtitulo} style={{ padding: '16px', borderRadius: '12px', border: '1px solid #E6EAF2', background: '#FFFFFF', cursor: 'pointer' }} className="dc15">
                   <p style={{ margin: '0', fontSize: '16px', fontWeight: '500', color: '#46536A' }}>
                     Subtítulo
                   </p>
@@ -350,7 +350,7 @@ export default function EditorDesign({ v }: { v: any }) {
                     Médio, discreto
                   </p>
                 </div>
-                <div onClick={v.selectText} style={{ padding: '16px', borderRadius: '12px', border: '1px solid #E6EAF2', background: '#FFFFFF', cursor: 'pointer' }} className="dc16">
+                <div onClick={v.addTextoLegenda} style={{ padding: '16px', borderRadius: '12px', border: '1px solid #E6EAF2', background: '#FFFFFF', cursor: 'pointer' }} className="dc16">
                   <p style={{ margin: '0', fontSize: '12px', fontWeight: '700', letterSpacing: '1.6px', textTransform: 'uppercase', color: '#46536A' }}>
                     Legenda
                   </p>
@@ -358,7 +358,7 @@ export default function EditorDesign({ v }: { v: any }) {
                     Pequena, em caixa alta
                   </p>
                 </div>
-                <div onClick={v.selectText} style={{ padding: '16px', borderRadius: '12px', border: '1px solid #E6EAF2', background: '#FFFFFF', cursor: 'pointer' }} className="dc17">
+                <div onClick={v.addTextoData} style={{ padding: '16px', borderRadius: '12px', border: '1px solid #E6EAF2', background: '#FFFFFF', cursor: 'pointer' }} className="dc17">
                   <p style={{ margin: '0', fontSize: '14px', fontWeight: '600', color: '#46536A' }}>
                     12 · dezembro · 2026
                   </p>
@@ -712,6 +712,11 @@ export default function EditorDesign({ v }: { v: any }) {
                         <span key={i9} style={css(g.style)}>
                         </span>
                       ))}
+                      {v.pageTextos.map((tx: any, i9: number) => (
+                        <div key={i9} onClick={tx.pick} onPointerDown={tx.down} onDoubleClick={tx.editar} style={css(tx.style)}>
+                          {tx.texto}
+                        </div>
+                      ))}
                       {v.pageElementos.map((el: any, i9: number) => (
                         <div key={i9} onClick={el.pick} onPointerDown={el.down} style={css(el.style)} title={el.title}>
                           <svg viewBox="0 0 48 48" width="100%" height="100%" preserveAspectRatio="none" fill="none" stroke="currentColor" strokeWidth={el.sw} strokeLinecap="round" strokeLinejoin="round" vectorEffect="non-scaling-stroke">
@@ -780,6 +785,11 @@ export default function EditorDesign({ v }: { v: any }) {
                       {v.guiasDireita.map((g: any, i9: number) => (
                         <span key={i9} style={css(g.style)}>
                         </span>
+                      ))}
+                      {v.rightTextos.map((tx: any, i9: number) => (
+                        <div key={i9} onClick={tx.pick} onPointerDown={tx.down} onDoubleClick={tx.editar} style={css(tx.style)}>
+                          {tx.texto}
+                        </div>
                       ))}
                       {v.rightElementos.map((el: any, i9: number) => (
                         <div key={i9} onClick={el.pick} onPointerDown={el.down} style={css(el.style)} title={el.title}>

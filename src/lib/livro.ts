@@ -123,6 +123,9 @@ export function estiloPagina(lado: 'esquerda' | 'direita'): string {
   return [
     'position:relative',
     'overflow:hidden',
+    // `container-type` faz `cqw` medir contra a PÁGINA. É o que permite o texto
+    // ter o mesmo tamanho relativo na tela a 64% e no papel a 300 dpi.
+    'container-type:inline-size',
     `border-radius:${esq ? '14px 2px 5px 10px' : '2px 14px 10px 5px'}`,
     'background:radial-gradient(circle at 50% 45%, rgba(0,0,0,.018), transparent 50%),' +
       `linear-gradient(${esq ? '90deg' : '270deg'},#FFFFFF,#FFFEFB)`,

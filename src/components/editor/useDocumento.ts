@@ -10,6 +10,7 @@ import {
   migrarLaminas,
   novaLamina,
   novoQuadroElemento,
+  novoQuadroTexto,
   novoQuadroFoto,
   type Ajustes,
   type Enq,
@@ -18,6 +19,8 @@ import {
   type Quadro,
   type QuadroElemento,
   type QuadroFoto,
+  type QuadroTexto,
+  type PresetTexto,
 } from '@/lib/album';
 import type { Ret } from '@/lib/layouts';
 import { LAYOUT_PADRAO, layout, espacoEmPorcento } from '@/lib/layouts';
@@ -333,6 +336,29 @@ export function useDocumento({
     [selecaoAtiva, mudarLivre],
   );
 
+  /** Insere um texto na página do lado selecionado (ou na esquerda). */
+  const adicionarTexto = useCallback(
+    (preset: PresetTexto = 'titulo') => {
+      const lado: Lado = selecao?.lado ?? 'esquerda';
+      const novo = novoQuadroTexto(preset);
+      mudarLamina(atual, (l) => ({
+        ...l,
+        [lado]: { ...l[lado], quadros: [...l[lado].quadros, novo] },
+      }));
+      setSelecao({ lamina: atual, lado, quadro: novo.id });
+    },
+    [atual, selecao, mudarLamina],
+  );
+
+  /** Conteúdo, cor e preset do texto selecionado. */
+  const mudarTexto = useCallback(
+    (mudanca: Partial<Omit<QuadroTexto, 'id' | 'tipo' | 'ret'>>) => {
+      if (!selecaoAtiva) return;
+      mudarLivre(selecaoAtiva, (q) => (q.tipo === 'texto' ? (mudanca as Partial<Quadro>) : {}));
+    },
+    [selecaoAtiva, mudarLivre],
+  );
+
   /** Insere um elemento na página do lado selecionado (ou na esquerda). */
   const adicionarElemento = useCallback(
     (forma: string, cor?: string, svg?: string) => {
@@ -549,6 +575,8 @@ export function useDocumento({
     mudarAjustes,
     mudarRet,
     mudarElemento,
+    adicionarTexto,
+    mudarTexto,
     adicionarElemento,
     removerQuadro,
     trocarLayout,
