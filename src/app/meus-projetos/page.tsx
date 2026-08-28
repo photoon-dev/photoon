@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation';
-import { currentTenantSlug } from '@/lib/tenant';
+import { currentTenantSlug, ROOT_DOMAIN } from '@/lib/tenant';
 import {
   getLojista,
   garantirCliente,
@@ -42,6 +42,20 @@ export default async function MeusProjetosPage() {
       notificacoes={notificacoes}
       totalFotos={totalFotos}
       eventos={galerias.length}
+      cliente={cliente}
+      nomeLoja={lojista.nome}
+      enderecoLoja={`${lojista.slug}.${ROOT_DOMAIN}`}
+      emailLoja={lojista.email_suporte ?? ''}
+      telefoneLoja={lojista.telefone_suporte ?? ''}
+      nomeGaleria={galerias[0]?.nome ?? 'Nenhuma galeria liberada'}
+      galeriaAtualizada={
+        galerias[0]
+          ? new Date(galerias[0].atualizada_em).toLocaleDateString('pt-BR', {
+              day: '2-digit',
+              month: 'short',
+            })
+          : '—'
+      }
       capas={fotos.map((f) => f.url)}
     />
   );

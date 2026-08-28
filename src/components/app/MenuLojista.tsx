@@ -23,7 +23,6 @@ const PRINCIPAIS: ItemMenu[] = [
   { rotulo: 'Início', href: '/', icone: <IconGrade size={30} /> },
   { rotulo: 'Clientes', href: '/clientes', icone: <IconUsuario size={30} /> },
   { rotulo: 'Modelos', href: '/templates', icone: <IconGaleria size={30} /> },
-  { rotulo: 'Ajustes', href: '/configuracoes', icone: <IconRelogio size={30} /> },
 ];
 
 const ACAO: AcaoCentral = {
@@ -33,6 +32,7 @@ const ACAO: AcaoCentral = {
 };
 
 const EXTRAS: ItemMenu[] = [
+  { rotulo: 'Ajustes', href: '/configuracoes', icone: <IconRelogio size={26} /> },
   { rotulo: 'Pedidos', icone: <IconCompartilhar size={26} /> },
   { rotulo: 'Produção', icone: <IconRelogio size={26} /> },
   { rotulo: 'Expedição', icone: <IconOlho size={26} /> },

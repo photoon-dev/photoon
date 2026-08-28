@@ -45,12 +45,27 @@ export function useMeusProjetosDesign({
   totalFotos,
   capas,
   eventos = 1,
+  cliente,
+  nomeLoja,
+  enderecoLoja,
+  emailLoja,
+  telefoneLoja,
+  nomeGaleria,
+  galeriaAtualizada,
 }: {
   projetos: Projeto[];
   notificacoes: Notificacao[];
   totalFotos: number;
   capas: string[];
   eventos?: number;
+  cliente: { nome: string | null; email: string };
+  /** Marca da loja: é ela que o cliente final vê, não a da plataforma. */
+  nomeLoja: string;
+  enderecoLoja: string;
+  emailLoja: string;
+  telefoneLoja: string;
+  nomeGaleria: string;
+  galeriaAtualizada: string;
 }) {
   const [menu, setMenu] = useState(false);
   const [rail, setRail] = useState(false);
@@ -97,7 +112,59 @@ export function useMeusProjetosDesign({
     const detail = sel === null ? null : list[sel];
     const unread = notificacoes.length - read.length;
 
+    const primeiroNome = (cliente.nome ?? cliente.email.split('@')[0]).split(' ')[0];
+    const prontos = projetos.filter((p) => p.status === 'pronto').length;
+
+    // Progresso do pedido = média do quanto cada álbum já foi montado.
+    const progresso = projetos.length
+      ? Math.round(projetos.reduce((t, p) => t + p.progresso, 0) / projetos.length)
+      : 0;
+
+    const indicador = (n: number, rotulo: string) => (
+      <div key={rotulo} style={{ minWidth: 0 }}>
+        <p style={{ margin: 0, fontSize: '24px', fontWeight: 800, letterSpacing: '-.8px', color: '#FFFFFF' }}>
+          {n}
+        </p>
+        <p style={{ margin: '3px 0 0', fontSize: '12px', color: 'rgba(255,255,255,.66)', lineHeight: 1.3 }}>
+          {rotulo}
+        </p>
+      </div>
+    );
+
     return {
+      // --- textos que o design trazia escritos à mão ---
+      nomeCliente: cliente.nome ?? cliente.email.split('@')[0],
+      emailCliente: cliente.email,
+      iniciais: (cliente.nome ?? cliente.email)
+        .split(/[\s@.]+/)
+        .slice(0, 2)
+        .map((p) => p[0])
+        .join('')
+        .toUpperCase(),
+      nomeLoja,
+      enderecoLoja,
+      emailLoja,
+      telefoneLoja,
+      nomeGaleria,
+      galeriaAtualizada,
+      progressoTexto: `${progresso}%`,
+      progressoLargura: `${progresso}%`,
+      indicadores: [
+        indicador(projetos.length, projetos.length === 1 ? 'projeto' : 'projetos'),
+        indicador(totalFotos, 'fotos liberadas'),
+        indicador(prontos, prontos === 1 ? 'pronto' : 'prontos'),
+      ],
+      saudacao:
+        prontos > 0
+          ? `Olá, ${primeiroNome}. Falta pouco para o seu álbum.`
+          : `Olá, ${primeiroNome}. Vamos montar seu álbum?`,
+      resumo:
+        ` liberou ${totalFotos} foto${totalFotos === 1 ? '' : 's'} e ${projetos.length} ` +
+        `projeto${projetos.length === 1 ? '' : 's'}.` +
+        (prontos > 0
+          ? ` ${prontos} já ${prontos === 1 ? 'está pronto' : 'estão prontos'} para finalizar.`
+          : ''),
+
       // --- notificações ---
       notifOpen: notif && !detail,
       toggleNotif: () => {
@@ -202,5 +269,9 @@ export function useMeusProjetosDesign({
         );
       }),
     };
-  }, [notificacoes, read, sel, notif, filters, menu, rail, projetos, totalFotos, capas, eventos, escolher]);
+  }, [
+    notificacoes, read, sel, notif, filters, menu, rail, projetos, totalFotos,
+    capas, eventos, cliente, nomeLoja, enderecoLoja, emailLoja, telefoneLoja,
+    nomeGaleria, galeriaAtualizada, escolher,
+  ]);
 }

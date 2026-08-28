@@ -124,20 +124,21 @@ body {
     min-width: 0 !important;
   }
   .om-app main > header [style*="max-width:460px"] {
-    flex: 1 1 auto !important;
+    flex: 1 1 0 !important;
+    min-width: 0 !important;
     max-width: none !important;
     height: 44px !important;
+  }
+  /* o input tem largura intrínseca e não encolhe sozinho */
+  .om-app main > header input {
+    min-width: 0 !important;
+    width: 100% !important;
   }
   .om-app .ph-atalho {
     display: none !important; /* ⌘K não existe no celular */
   }
+  /* a ação principal vive no botão central da barra inferior */
   .om-app .ph-acao {
-    padding: 0 !important;
-    width: 44px !important;
-    justify-content: center !important;
-    flex: 0 0 auto !important;
-  }
-  .om-app .ph-acao-texto {
     display: none !important;
   }
   /* o nome e o cargo no avatar comem a largura toda */
@@ -200,7 +201,7 @@ body {
 
   /* --- conteúdo, com respiro para a barra inferior --- */
   .om-app main > div {
-    padding: 14px 14px calc(124px + env(safe-area-inset-bottom)) !important;
+    padding: 14px 14px calc(150px + env(safe-area-inset-bottom)) !important;
   }
 
   /* --- larguras fixas do design que estouram a viewport --- */

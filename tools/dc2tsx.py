@@ -325,13 +325,21 @@ def aplicar_trocas(saida, trocas):
     """
     for t in trocas:
         alvo, novo = t['de'], t['para']
-        achou = False
+        # `ocorrencia` escolhe qual das aparições trocar; `primeira: false`
+        # troca todas. Sem isso, um termo comum como "Photoon" pegaria a
+        # marca do cabeçalho em vez do nome da loja no texto.
+        alvo_idx = t.get('ocorrencia')
+        vistos, achou = 0, False
         for i, linha in enumerate(saida):
-            if alvo in linha:
-                saida[i] = linha.replace(alvo, novo)
-                achou = True
-                if t.get('primeira', True):
-                    break
+            if alvo not in linha:
+                continue
+            if alvo_idx is not None and vistos != alvo_idx:
+                vistos += 1
+                continue
+            saida[i] = linha.replace(alvo, novo)
+            achou = True
+            if alvo_idx is not None or t.get('primeira', True):
+                break
         if not achou:
             print(f"// troca nao encontrada: {alvo!r}", file=sys.stderr)
     return saida

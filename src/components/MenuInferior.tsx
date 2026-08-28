@@ -106,10 +106,13 @@ export default function MenuInferior({
     );
   };
 
-  // Com ação central, os itens ficam dois de cada lado dela.
-  const metade = acao ? Math.ceil(principais.length / 2) : principais.length;
-  const esquerda = principais.slice(0, metade);
-  const direita = principais.slice(metade, 4);
+  // Com ação central e o botão "Mais", a simetria exige dois slots de cada
+  // lado: [item][item] (ação) [item][Mais]. Passar mais itens desalinha o
+  // botão central, que foi o que aconteceu na primeira versão.
+  const temMais = extras.length > 0;
+  const nEsquerda = acao ? 2 : principais.length;
+  const esquerda = principais.slice(0, nEsquerda);
+  const direita = principais.slice(nEsquerda, nEsquerda + (temMais ? 1 : 2));
 
   return (
     <>

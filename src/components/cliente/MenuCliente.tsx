@@ -22,10 +22,10 @@ const PRINCIPAIS: ItemMenu[] = [
   { rotulo: 'Projetos', href: '/meus-projetos', icone: <IconGrade size={30} /> },
   { rotulo: 'Galeria', icone: <IconGaleria size={30} /> },
   { rotulo: 'Criar', icone: <IconSparkle size={30} /> },
-  { rotulo: 'Revisão', icone: <IconCheck size={30} /> },
 ];
 
 const EXTRAS: ItemMenu[] = [
+  { rotulo: 'Revisão', icone: <IconCheck size={26} /> },
   { rotulo: 'Editor', icone: <IconLapis size={26} /> },
   { rotulo: 'Compartilhar', icone: <IconCompartilhar size={26} /> },
   { rotulo: 'Ajuda', icone: <IconInfo size={26} /> },

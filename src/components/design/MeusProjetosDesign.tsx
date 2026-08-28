@@ -111,10 +111,10 @@ export default function MeusProjetosDesign({ v }: { v: any }) {
             </span>
             <div style={{ minWidth: '0' }}>
               <p style={{ margin: '0', fontSize: '15px', fontWeight: '800', letterSpacing: '-.2px', whiteSpace: 'nowrap' }}>
-                Photoon
+                {v.nomeLoja}
               </p>
               <p style={{ margin: '1px 0 0', fontSize: '11.5px', color: '#9AA7BC', whiteSpace: 'nowrap' }}>
-                photoon.com.br
+                {v.enderecoLoja}
               </p>
             </div>
           </div>
@@ -150,11 +150,11 @@ export default function MeusProjetosDesign({ v }: { v: any }) {
             <div style={{ position: 'relative' }}>
               <div onClick={v.toggleMenu} style={css(v.avatarBtn)}>
                 <span style={{ width: '34px', height: '34px', borderRadius: '11px', background: '#0B1220', color: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12.5px', fontWeight: '700', flex: '0 0 auto' }}>
-                  JM
+                  {v.iniciais}
                 </span>
                 <div style={{ display: 'flex', flexDirection: 'column', lineHeight: '1.25', textAlign: 'left' }}>
                   <span style={{ fontSize: '13.5px', fontWeight: '700', whiteSpace: 'nowrap' }}>
-                    Julia Martins
+                    {v.nomeCliente}
                   </span>
                   <span style={{ fontSize: '11.5px', color: '#6B7A90', whiteSpace: 'nowrap' }}>
                     Formatura 2026
@@ -169,10 +169,10 @@ export default function MeusProjetosDesign({ v }: { v: any }) {
               <div style={css(v.menuStyle)}>
                 <div style={{ padding: '14px 16px', borderBottom: '1px solid #F0F3F9' }}>
                   <p style={{ margin: '0', fontSize: '13.5px', fontWeight: '700' }}>
-                    Julia Martins
+                    {v.nomeCliente}
                   </p>
                   <p style={{ margin: '3px 0 0', fontSize: '12.5px', color: '#6B7A90' }}>
-                    julia.martins@email.com
+                    {v.emailCliente}
                   </p>
                 </div>
                 <div style={{ padding: '8px' }}>
@@ -323,17 +323,17 @@ export default function MeusProjetosDesign({ v }: { v: any }) {
                       <circle cx="9" cy="11" r="1.6" />
                       <path d="m4 18 5-4.4 3.4 3 3-2.6L20 18" />
                     </svg>
-                    Formatura 2026 · sessão Julia
+                    {v.nomeGaleria}
                   </span>
                   <h1 style={{ margin: '0 0 10px', fontSize: '32px', lineHeight: '1.12', fontWeight: '800', letterSpacing: '-1.2px', color: '#FFFFFF', width: '333px', height: '71px' }}>
-                    Olá, Julia. Falta pouco para o seu álbum.
+                    {v.saudacao}
                   </h1>
                   <p style={{ margin: '0 0 20px', fontSize: '14.5px', lineHeight: '1.6', color: 'rgba(255,255,255,.74)' }}>
                     A
                     <strong style={{ color: '#FFFFFF' }}>
-                      Photoon
+                      {v.nomeLoja}
                     </strong>
-                    liberou 120 fotos e 3 projetos. 1 já está pronto para finalizar.
+                    {v.resumo}
                   </p>
                   <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', width: '624px' }}>
                     <a href={v.hrefFinalizar} style={{ whiteSpace: 'nowrap', height: '46px', padding: '0 20px', display: 'flex', alignItems: 'center', gap: '9px', borderRadius: '12px', background: '#FFFFFF', color: '#0B1220', fontSize: '14.5px', fontWeight: '700' }} className="dc19">
@@ -366,38 +366,15 @@ export default function MeusProjetosDesign({ v }: { v: any }) {
                       Progresso do pedido
                     </span>
                     <span style={{ fontSize: '13px', fontWeight: '800', color: '#FFFFFF' }}>
-                      33%
+                      {v.progressoTexto}
                     </span>
                   </div>
                   <div style={{ height: '8px', borderRadius: '999px', background: 'rgba(255,255,255,.16)', marginBottom: '18px' }}>
-                    <div style={{ width: '33%', height: '100%', borderRadius: '999px', background: 'linear-gradient(90deg,#A78BFA,#E9E5FF)' }}>
+                    <div style={{ width: v.progressoLargura, height: '100%', borderRadius: '999px', background: 'linear-gradient(90deg,#A78BFA,#E9E5FF)' }}>
                     </div>
                   </div>
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: '14px' }}>
-                    <div style={{ minWidth: '0' }}>
-                      <p style={{ margin: '0', fontSize: '24px', fontWeight: '800', letterSpacing: '-.8px', color: '#FFFFFF' }}>
-                        3
-                      </p>
-                      <p style={{ margin: '3px 0 0', fontSize: '12px', color: 'rgba(255,255,255,.66)', whiteSpace: 'nowrap' }}>
-                        projetos
-                      </p>
-                    </div>
-                    <div style={{ minWidth: '0' }}>
-                      <p style={{ margin: '0', fontSize: '24px', fontWeight: '800', letterSpacing: '-.8px', color: '#FFFFFF' }}>
-                        120
-                      </p>
-                      <p style={{ margin: '3px 0 0', fontSize: '12px', color: 'rgba(255,255,255,.66)', whiteSpace: 'nowrap' }}>
-                        fotos liberadas
-                      </p>
-                    </div>
-                    <div style={{ minWidth: '0' }}>
-                      <p style={{ margin: '0', fontSize: '24px', fontWeight: '800', letterSpacing: '-.8px', color: '#FFFFFF' }}>
-                        1
-                      </p>
-                      <p style={{ margin: '3px 0 0', fontSize: '12px', color: 'rgba(255,255,255,.66)', whiteSpace: 'nowrap' }}>
-                        pronto
-                      </p>
-                    </div>
+                    {v.indicadores}
                   </div>
                 </div>
               </div>
@@ -418,7 +395,7 @@ export default function MeusProjetosDesign({ v }: { v: any }) {
                       Galeria liberada
                     </p>
                     <p style={{ margin: '2px 0 0', fontSize: '12.5px', color: '#6B7A90' }}>
-                      Formatura 2026 · sessão Julia
+                      {v.nomeGaleria}
                     </p>
                   </div>
                 </div>
@@ -444,7 +421,7 @@ export default function MeusProjetosDesign({ v }: { v: any }) {
                       Atualizada
                     </span>
                     <span style={{ fontSize: '12.5px', fontWeight: '600', color: '#46536A' }}>
-                      há 2 dias
+                      {v.galeriaAtualizada}
                     </span>
                   </div>
                 </div>
@@ -754,13 +731,13 @@ export default function MeusProjetosDesign({ v }: { v: any }) {
           <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '20px', flexWrap: 'wrap' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '18px', flexWrap: 'wrap' }}>
               <span style={{ fontSize: '13px', color: '#46536A', fontWeight: '600' }}>
-                Photoon
+                {v.nomeLoja}
               </span>
               <span style={{ fontSize: '13px', color: '#6B7A90' }}>
-                contato@photoon.com.br
+                {v.emailLoja}
               </span>
               <span style={{ fontSize: '13px', color: '#6B7A90' }}>
-                (11) 98844-2210
+                {v.telefoneLoja}
               </span>
               <a href="#" style={{ fontSize: '13px' }}>
                 Política de privacidade

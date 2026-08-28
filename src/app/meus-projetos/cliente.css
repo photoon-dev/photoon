@@ -71,7 +71,7 @@
 
   /* Respiro para a barra inferior. */
   .om-cliente .om-main {
-    padding: 18px 16px calc(124px + env(safe-area-inset-bottom)) !important;
+    padding: 18px 16px calc(150px + env(safe-area-inset-bottom)) !important;
   }
   .om-cliente header {
     padding: 10px 16px !important;
@@ -88,5 +88,34 @@
   .om-cliente button,
   .om-cliente a[style*="border-radius"] {
     min-height: 44px;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Cabeçalho do cliente no celular.
+
+   O design empilha marca, navegação e conta em três faixas — quase metade da
+   tela antes do conteúdo. Aqui vira uma só: marca à esquerda, sino e avatar à
+   direita. A navegação está na barra inferior, e o botão de ajuda também.
+   --------------------------------------------------------------------------- */
+@media (max-width: 860px) {
+  .om-cliente header {
+    min-height: 60px !important;
+    flex-wrap: nowrap !important;
+    gap: 10px !important;
+    padding: 8px 14px !important;
+  }
+  /* navegação e ajuda vivem na barra inferior */
+  .om-cliente header nav,
+  .om-cliente header a[href^="http"] {
+    display: none !important;
+  }
+  /* o endereço da loja sob o nome não cabe */
+  .om-cliente header [style*="font-size:11.5px"] {
+    display: none !important;
+  }
+  /* o nome e o evento ao lado do avatar */
+  .om-cliente header [style*="line-height:1.25"] {
+    display: none !important;
   }
 }

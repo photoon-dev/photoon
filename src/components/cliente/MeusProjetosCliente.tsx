@@ -1,6 +1,6 @@
 'use client';
 
-import type { Notificacao, Projeto } from '@/lib/data';
+import type { Cliente, Notificacao, Projeto } from '@/lib/data';
 import MeusProjetosDesign, { CSS_PSEUDO } from '@/components/design/MeusProjetosDesign';
 import { useMeusProjetosDesign } from '@/components/cliente/useMeusProjetosDesign';
 import MenuCliente from '@/components/cliente/MenuCliente';
@@ -12,6 +12,13 @@ export default function MeusProjetosCliente({
   totalFotos,
   capas,
   eventos,
+  cliente,
+  nomeLoja,
+  enderecoLoja,
+  emailLoja,
+  telefoneLoja,
+  nomeGaleria,
+  galeriaAtualizada,
 }: {
   projetos: Projeto[];
   notificacoes: Notificacao[];
@@ -19,8 +26,28 @@ export default function MeusProjetosCliente({
   capas: string[];
   /** Quantas galerias (eventos) a loja liberou para este cliente. */
   eventos: number;
+  cliente: Cliente;
+  nomeLoja: string;
+  enderecoLoja: string;
+  emailLoja: string;
+  telefoneLoja: string;
+  nomeGaleria: string;
+  galeriaAtualizada: string;
 }) {
-  const v = useMeusProjetosDesign({ projetos, notificacoes, totalFotos, capas, eventos });
+  const v = useMeusProjetosDesign({
+    projetos,
+    notificacoes,
+    totalFotos,
+    capas,
+    eventos,
+    cliente,
+    nomeLoja,
+    enderecoLoja,
+    emailLoja,
+    telefoneLoja,
+    nomeGaleria,
+    galeriaAtualizada,
+  });
 
   return (
     <div className="om-cliente">
