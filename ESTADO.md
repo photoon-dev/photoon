@@ -8,15 +8,27 @@
 > |---|---|
 > | 7.1 inspetor | **feito** (mais o `<img>`: Girar e Espelhar aparecem) |
 > | 7.2 arrastar / redimensionar | **feito** |
-> | 7.3 roda do mouse dá zoom | **FALTA** |
+> | 7.3 roda do mouse dá zoom | **feito** (`onWheel` no palco) |
 > | 7.4 filtros de foto | **feito**, com largura/altura no banco |
-> | 7.5 espaçamento entre fotos em mm | **FALTA** |
+> | 7.5 espaçamento entre fotos em mm | **feito** — painel na barra de layouts, escopo álbum/lâmina |
 > | 7.6 fundos e elementos | **feito** (`src/lib/elementos.ts`) |
-> | 7.7 rostos | **em andamento** — `src/lib/rostos.ts` tem DBSCAN, `corrigirEnq`, `diagnosticar`; falta ligar à interface e à aba "Pessoas" |
+> | 7.7 rostos | **feito e verificado**: 22 rostos → 13 pessoas em 24 fotos, bolinhas no editor |
+> | 7.12 cabeçalho do lojista | **feito** — nome e e-mail reais; "Sair" funciona |
 > | 7.9 galeria de fotos (U04) | FALTA |
 > | 7.10 IA | FALTA |
 > | 7.11 impressão / PDF | FALTA |
-> | 7.12 cabeçalhos padronizados | FALTA |
+> | 7.12 cabeçalhos de admin e planos | FALTA (só o do lojista foi unificado) |
+>
+> **Rostos — como reprocessar.** A detecção roda no navegador do lojista, no
+> envio. Para as fotos já enviadas há o botão **"Detectar rostos nas fotos
+> antigas"** em `/clientes` → Gerenciar. Se der zero rostos, confira que
+> `https://app.photoon.com.br/modelos-rosto/tiny_face_detector_model.bin`
+> responde **200**: o middleware reescreve `app.*` → `/app/*` e já escondeu os
+> modelos uma vez.
+>
+> **Pendência conhecida dos rostos:** o limiar de 0,35 traz falso positivo
+> (numa galeria de teste, uma bolinha era cabelo). Falta o lojista poder
+> **excluir e juntar** pessoas — é a mitigação que o próprio Google Fotos usa.
 >
 > **Modelos de rosto:** ficam em `public/modelos-rosto/`, copiados do pacote npm
 > por `tools/copiar-modelos.mjs` na build — não estão no Git. Se derem **404**,
