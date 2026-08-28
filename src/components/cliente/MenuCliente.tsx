@@ -14,10 +14,10 @@ import {
 
 /** Navegação de celular da área do cliente final. */
 const PRINCIPAIS: ItemMenu[] = [
-  { rotulo: 'Projetos', href: '/meus-projetos', icone: <IconGrade size={28} /> },
-  { rotulo: 'Galeria', icone: <IconGaleria size={28} /> },
-  { rotulo: 'Criar', icone: <IconSparkle size={28} /> },
-  { rotulo: 'Revisão', icone: <IconCheck size={28} /> },
+  { rotulo: 'Projetos', href: '/meus-projetos', icone: <IconGrade size={30} /> },
+  { rotulo: 'Galeria', icone: <IconGaleria size={30} /> },
+  { rotulo: 'Criar', icone: <IconSparkle size={30} /> },
+  { rotulo: 'Revisão', icone: <IconCheck size={30} /> },
 ];
 
 const EXTRAS: ItemMenu[] = [

@@ -11,8 +11,13 @@ import { useEffect, useState } from 'react';
  * reconhecível, e sobra espaço para alvos maiores. O item ativo ganha uma
  * pílula azul-clara — o mesmo recurso do Material 3.
  *
- * Alvo de toque de 60px e ícone de 28px. A folha "Mais" sobe por cima,
- * travando o rolar do fundo.
+ * Medidas, contra as referências:
+ *   barra 68px      — M3 usa 80dp com rótulo; sem rótulo pode encolher
+ *   ícone 30px      — iOS HIG usa ~28pt; M3, 24dp
+ *   indicador 64×36 — M3 especifica 64×32
+ *   alvo 68px       — acima dos 44pt mínimos do iOS e dos 48dp do Android
+ *
+ * A folha "Mais" sobe por cima, travando o rolar do fundo.
  */
 
 export type ItemMenu = {
@@ -54,14 +59,14 @@ export default function MenuInferior({
     const on = ativo(it.href);
     const conteudo = (
       <span
-        className={`flex h-[38px] w-[60px] items-center justify-center rounded-full transition-colors ${
+        className={`flex h-9 w-16 items-center justify-center rounded-full transition-colors ${
           on ? 'bg-blue-surface text-blue' : it.href ? 'text-[#7C8AA3]' : 'text-[#C3CCDA]'
         }`}
       >
         {it.icone}
       </span>
     );
-    const classe = 'flex h-[60px] flex-1 items-center justify-center active:opacity-70';
+    const classe = 'flex h-[68px] flex-1 items-center justify-center active:opacity-70';
 
     return it.href ? (
       <Link
@@ -172,17 +177,17 @@ export default function MenuInferior({
             onClick={() => setFolha((f) => !f)}
             aria-expanded={folha}
             aria-label="Mais"
-            className="flex h-[60px] flex-1 items-center justify-center active:opacity-70"
+            className="flex h-[68px] flex-1 items-center justify-center active:opacity-70"
           >
             <span
-              className={`flex h-[38px] w-[60px] items-center justify-center rounded-full transition-colors ${
+              className={`flex h-9 w-16 items-center justify-center rounded-full transition-colors ${
                 folha ? 'bg-blue-surface text-blue' : 'text-[#7C8AA3]'
               }`}
             >
               <svg
                 viewBox="0 0 24 24"
-                width={28}
-                height={28}
+                width={30}
+                height={30}
                 fill="none"
                 stroke="currentColor"
                 strokeWidth={2}

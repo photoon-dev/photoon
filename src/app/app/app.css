@@ -75,16 +75,20 @@ body {
    Celular
    ===========================================================================
 
-   O padrão que Stripe, Shopify e Linear usam para tabela em tela estreita é
-   o mesmo: a tabela deixa de ser tabela. O cabeçalho some, e cada linha vira
-   um cartão — o identificador em cima, em destaque, e os demais campos
-   embaixo, um do lado do outro. Nada de rolagem lateral, nada de fonte
-   miúda, e o dedo tem onde tocar.
+   Referências de medida:
+     Material 3 navigation bar — barra 80dp, ícone 24dp, indicador 64×32dp
+     iOS HIG tab bar          — alvo mínimo 44pt, ícone ~28pt
 
-   Nunca esconder colunas com `overflow: hidden`: o dado some sem aviso.
+   Sem rótulo (pedido do produto), o ícone sobe para 28px e o indicador para
+   64×36 — a área de toque continua acima do mínimo das duas plataformas.
+
+   Tabela em tela estreita segue o que Stripe, Shopify e Linear fazem: ela
+   deixa de ser tabela. O cabeçalho some e cada linha vira cartão, com o
+   identificador em cima e os campos abaixo. Nada de coluna escondida:
+   dado que some sem aviso é pior que rolagem.
    =========================================================================== */
 @media (max-width: 860px) {
-  /* --- a página inteira nunca rola de lado --- */
+  /* --- a página nunca rola de lado --- */
   html,
   body {
     overflow-x: hidden;
@@ -95,7 +99,7 @@ body {
     font-size: 15px;
   }
 
-  /* --- o menu lateral sai; a navegação vira a barra inferior --- */
+  /* --- o menu lateral sai; navega pela barra inferior --- */
   .om-app aside {
     display: none !important;
   }
@@ -104,12 +108,69 @@ body {
     width: 100% !important;
   }
 
+  /* -------------------------------------------------------------------------
+     Cabeçalho: uma faixa só, como app bar.
+
+     O design empilhava busca, ação, sino e avatar em duas linhas. Aqui vira
+     uma: busca ocupa o resto, "Novo pedido" fica só com o ícone.
+     ------------------------------------------------------------------------- */
+  .om-app main > header {
+    min-height: 60px !important;
+    flex-wrap: nowrap !important;
+    gap: 8px !important;
+    padding: 8px 12px !important;
+  }
+  .om-app main > header > * {
+    min-width: 0 !important;
+  }
+  .om-app main > header [style*="max-width:460px"] {
+    flex: 1 1 auto !important;
+    max-width: none !important;
+    height: 44px !important;
+  }
+  .om-app .ph-atalho {
+    display: none !important; /* ⌘K não existe no celular */
+  }
+  .om-app .ph-acao {
+    padding: 0 !important;
+    width: 44px !important;
+    justify-content: center !important;
+    flex: 0 0 auto !important;
+  }
+  .om-app .ph-acao-texto {
+    display: none !important;
+  }
+  /* o nome e o cargo no avatar comem a largura toda */
+  .om-app main > header [style*="line-height:1.2"] {
+    display: none !important;
+  }
+
+  /* -------------------------------------------------------------------------
+     Banner: a coluna de texto toma a linha inteira e os indicadores caem
+     abaixo. Sem isso o texto encolhe para uma palavra por linha e os cards
+     ficam por cima — o container já tem flex-wrap, só faltava dar 100%.
+     ------------------------------------------------------------------------- */
+  .om-app [style*="min-width:320px"] {
+    flex: 1 0 100% !important;
+    min-width: 0 !important;
+  }
+  .om-app [style*="font-size:32px"] {
+    font-size: 26px !important;
+    line-height: 1.2 !important;
+  }
+  /* os brilhos decorativos não podem gerar rolagem */
+  .om-app [style*="border-radius:999px"][style*="position:absolute"] {
+    pointer-events: none;
+  }
+
   /* --- qualquer arranjo de colunas empilha --- */
   .om-app .ph-2col {
     grid-template-columns: 1fr !important;
   }
 
-  /* --- tabela vira lista de cartões --- */
+  /* -------------------------------------------------------------------------
+     Tabela vira lista de cartões
+     ------------------------------------------------------------------------- */
   .om-app .ph-tab-cab {
     display: none !important;
   }
@@ -117,52 +178,35 @@ body {
     display: flex !important;
     flex-wrap: wrap;
     align-items: center !important;
-    gap: 8px 14px !important;
+    gap: 10px !important;
     padding: 14px 16px !important;
   }
-  /* o identificador ocupa a linha toda e vira o título do cartão */
+  /* linha 1: identificador, sozinho e em destaque */
   .om-app [data-ph-linha] > *:first-child {
     flex: 1 0 100%;
     min-width: 0;
   }
-  /* os demais campos fluem lado a lado */
-  .om-app [data-ph-linha] > * {
+  /* linha 2: os demais campos, separados nas pontas */
+  .om-app [data-ph-linha] > *:not(:first-child) {
     min-width: 0;
   }
-
-  /* --- cabeçalho da tela --- */
-  .om-app main > header {
-    min-height: auto !important;
-    flex-wrap: wrap !important;
-    gap: 10px !important;
-    padding: 10px 16px !important;
+  .om-app [data-ph-linha] > *:nth-child(2) {
+    flex: 1 1 auto;
+    color: #6b7a90;
   }
-  .om-app main > header > * {
-    max-width: 100% !important;
-    min-width: 0 !important;
-  }
-  /* a busca ocupa a linha inteira */
-  .om-app main > header [style*="max-width:460px"] {
-    flex: 1 0 100% !important;
-    max-width: 100% !important;
-  }
-  /* o atalho de teclado não existe no celular */
-  .om-app .ph-atalho {
-    display: none !important;
+  .om-app [data-ph-linha] > *:last-child {
+    margin-left: auto;
   }
 
   /* --- conteúdo, com respiro para a barra inferior --- */
   .om-app main > div {
-    padding: 16px 16px calc(104px + env(safe-area-inset-bottom)) !important;
+    padding: 14px 14px calc(104px + env(safe-area-inset-bottom)) !important;
   }
 
   /* --- larguras fixas do design que estouram a viewport --- */
   .om-app [style*="width:260px"],
-  .om-app [style*="width:240px"],
-  .om-app [style*="min-width:320px"],
-  .om-app [style*="min-width:132px"] {
+  .om-app [style*="width:240px"] {
     width: auto !important;
-    min-width: 0 !important;
   }
 
   /* --- toque e leitura --- */
@@ -170,13 +214,12 @@ body {
   .om-app select,
   .om-app textarea {
     font-size: 16px !important; /* abaixo de 16px o iOS dá zoom ao focar */
-    min-height: 46px;
+    min-height: 44px;
   }
   .om-app button,
   .om-app a[class*="rounded"] {
     min-height: 44px;
   }
-  /* o design usa 11–12.5px em rótulos; pequeno demais no toque */
   .om-app [style*="font-size:11.5px"],
   .om-app [style*="font-size:11px"],
   .om-app [style*="font-size:12px"] {

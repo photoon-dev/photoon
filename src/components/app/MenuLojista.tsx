@@ -19,10 +19,10 @@ import {
  * do design na folha, esmaecidos enquanto não houver tela.
  */
 const PRINCIPAIS: ItemMenu[] = [
-  { rotulo: 'Início', href: '/', icone: <IconGrade size={28} /> },
-  { rotulo: 'Clientes', href: '/clientes', icone: <IconUsuario size={28} /> },
-  { rotulo: 'Modelos', href: '/templates', icone: <IconGaleria size={28} /> },
-  { rotulo: 'Ajustes', href: '/configuracoes', icone: <IconRelogio size={28} /> },
+  { rotulo: 'Início', href: '/', icone: <IconGrade size={30} /> },
+  { rotulo: 'Clientes', href: '/clientes', icone: <IconUsuario size={30} /> },
+  { rotulo: 'Modelos', href: '/templates', icone: <IconGaleria size={30} /> },
+  { rotulo: 'Ajustes', href: '/configuracoes', icone: <IconRelogio size={30} /> },
 ];
 
 const EXTRAS: ItemMenu[] = [
