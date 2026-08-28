@@ -297,7 +297,7 @@ export default function ShellLojistaDesign({ v }: { v: any }) {
                 <path d="m16 16 4.5 4.5" />
               </svg>
               <input placeholder="Buscar pedido, cliente, OS ou produto" style={{ flex: '1', border: '0', background: 'transparent', fontFamily: 'inherit', fontSize: '14px', color: '#0B1220' }} />
-              <span style={{ padding: '4px 9px', borderRadius: '8px', background: '#F1F5FD', fontSize: '11px', fontWeight: '600', color: '#6B7A90' }}>
+              <span className="ph-atalho" style={{ padding: '4px 9px', borderRadius: '8px', background: '#F1F5FD', fontSize: '11px', fontWeight: '600', color: '#6B7A90' }}>
                 ⌘K
               </span>
             </div>

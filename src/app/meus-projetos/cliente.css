@@ -26,6 +26,18 @@
    que é como o React serializa `style` no HTML. Com espaço não casa nada.
    --------------------------------------------------------------------------- */
 @media (max-width: 860px) {
+  /* A página nunca rola de lado. */
+  .om-cliente {
+    max-width: 100vw;
+    overflow-x: hidden;
+  }
+
+  /* Qualquer arranjo de colunas empilha. */
+  .om-cliente [style*="grid-template-columns:repeat(auto-fit"],
+  .om-cliente [style*="grid-template-columns: repeat(auto-fit"] {
+    grid-template-columns: 1fr !important;
+  }
+
   /* Larguras fixas do design que estouram uma tela de 390px. */
   .om-cliente [style*="width:624px"],
   .om-cliente [style*="width:410px"],

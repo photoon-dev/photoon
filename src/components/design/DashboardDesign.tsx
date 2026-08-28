@@ -315,7 +315,7 @@ export default function DashboardDesign({ v }: { v: any }) {
                 <path d="m16 16 4.5 4.5" />
               </svg>
               <input placeholder="Buscar pedido, cliente, OS ou produto" style={{ flex: '1', border: '0', background: 'transparent', fontFamily: 'inherit', fontSize: '14px', color: '#0B1220' }} />
-              <span style={{ padding: '4px 9px', borderRadius: '8px', background: '#F1F5FD', fontSize: '11px', fontWeight: '600', color: '#6B7A90' }}>
+              <span className="ph-atalho" style={{ padding: '4px 9px', borderRadius: '8px', background: '#F1F5FD', fontSize: '11px', fontWeight: '600', color: '#6B7A90' }}>
                 ⌘K
               </span>
             </div>
@@ -533,7 +533,7 @@ export default function DashboardDesign({ v }: { v: any }) {
                 </div>
               </div>
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1.75fr 1fr', gap: '20px', alignItems: 'start' }}>
+            <div className="ph-2col" style={{ display: 'grid', gridTemplateColumns: '1.75fr 1fr', gap: '20px', alignItems: 'start' }}>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                 <div style={{ background: '#FFFFFF', border: '1px solid #E6EAF2', borderRadius: '24px', padding: '24px 26px' }}>
                   <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '20px', flexWrap: 'wrap', marginBottom: '18px' }}>
@@ -622,7 +622,7 @@ export default function DashboardDesign({ v }: { v: any }) {
                       Ver todos
                     </a>
                   </div>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr .8fr .9fr auto', gap: '16px', padding: '10px 26px', background: '#F8FAFE', borderTop: '1px solid #EEF1F7', borderBottom: '1px solid #EEF1F7', fontSize: '11.5px', letterSpacing: '.6px', textTransform: 'uppercase', color: '#9AA7BC', fontWeight: '600' }}>
+                  <div className="ph-tab-cab" style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr .8fr .9fr auto', gap: '16px', padding: '10px 26px', background: '#F8FAFE', borderTop: '1px solid #EEF1F7', borderBottom: '1px solid #EEF1F7', fontSize: '11.5px', letterSpacing: '.6px', textTransform: 'uppercase', color: '#9AA7BC', fontWeight: '600' }}>
                     <span>
                       Cliente
                     </span>
@@ -639,7 +639,7 @@ export default function DashboardDesign({ v }: { v: any }) {
                       Prazo
                     </span>
                   </div>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr .8fr .9fr auto', gap: '16px', alignItems: 'center', padding: '14px 26px', borderBottom: '1px solid #F4F6FB', cursor: 'pointer' }} className="dc14">
+                  <div data-ph-linha style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr .8fr .9fr auto', gap: '16px', alignItems: 'center', padding: '14px 26px', borderBottom: '1px solid #F4F6FB', cursor: 'pointer' }} className="dc14">
                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px', minWidth: '0' }}>
                       <span style={{ width: '36px', height: '36px', borderRadius: '12px', background: '#EAF0FF', color: '#2563EB', fontSize: '12.5px', fontWeight: '700', display: 'flex', alignItems: 'center', justifyContent: 'center', flex: '0 0 auto' }}>
                         SF
@@ -666,7 +666,7 @@ export default function DashboardDesign({ v }: { v: any }) {
                       27 ago
                     </span>
                   </div>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr .8fr .9fr auto', gap: '16px', alignItems: 'center', padding: '14px 26px', borderBottom: '1px solid #F4F6FB', cursor: 'pointer' }} className="dc15">
+                  <div data-ph-linha style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr .8fr .9fr auto', gap: '16px', alignItems: 'center', padding: '14px 26px', borderBottom: '1px solid #F4F6FB', cursor: 'pointer' }} className="dc15">
                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px', minWidth: '0' }}>
                       <span style={{ width: '36px', height: '36px', borderRadius: '12px', background: '#E6F8F1', color: '#059669', fontSize: '12.5px', fontWeight: '700', display: 'flex', alignItems: 'center', justifyContent: 'center', flex: '0 0 auto' }}>
                         CF
@@ -693,7 +693,7 @@ export default function DashboardDesign({ v }: { v: any }) {
                       28 ago
                     </span>
                   </div>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr .8fr .9fr auto', gap: '16px', alignItems: 'center', padding: '14px 26px', borderBottom: '1px solid #F4F6FB', cursor: 'pointer' }} className="dc16">
+                  <div data-ph-linha style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr .8fr .9fr auto', gap: '16px', alignItems: 'center', padding: '14px 26px', borderBottom: '1px solid #F4F6FB', cursor: 'pointer' }} className="dc16">
                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px', minWidth: '0' }}>
                       <span style={{ width: '36px', height: '36px', borderRadius: '12px', background: '#FEF3E2', color: '#B45309', fontSize: '12.5px', fontWeight: '700', display: 'flex', alignItems: 'center', justifyContent: 'center', flex: '0 0 auto' }}>
                         RN
@@ -720,7 +720,7 @@ export default function DashboardDesign({ v }: { v: any }) {
                       Hoje
                     </span>
                   </div>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr .8fr .9fr auto', gap: '16px', alignItems: 'center', padding: '14px 26px', cursor: 'pointer' }} className="dc17">
+                  <div data-ph-linha style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr .8fr .9fr auto', gap: '16px', alignItems: 'center', padding: '14px 26px', cursor: 'pointer' }} className="dc17">
                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px', minWidth: '0' }}>
                       <span style={{ width: '36px', height: '36px', borderRadius: '12px', background: '#EDEBFE', color: '#6366F1', fontSize: '12.5px', fontWeight: '700', display: 'flex', alignItems: 'center', justifyContent: 'center', flex: '0 0 auto' }}>
                         MB

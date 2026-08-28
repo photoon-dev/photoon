@@ -14,17 +14,17 @@ import {
 
 /** Navegação de celular da área do cliente final. */
 const PRINCIPAIS: ItemMenu[] = [
-  { rotulo: 'Projetos', href: '/meus-projetos', icone: <IconGrade size={26} /> },
-  { rotulo: 'Galeria', icone: <IconGaleria size={26} /> },
-  { rotulo: 'Criar', icone: <IconSparkle size={26} /> },
-  { rotulo: 'Revisão', icone: <IconCheck size={26} /> },
+  { rotulo: 'Projetos', href: '/meus-projetos', icone: <IconGrade size={28} /> },
+  { rotulo: 'Galeria', icone: <IconGaleria size={28} /> },
+  { rotulo: 'Criar', icone: <IconSparkle size={28} /> },
+  { rotulo: 'Revisão', icone: <IconCheck size={28} /> },
 ];
 
 const EXTRAS: ItemMenu[] = [
-  { rotulo: 'Editor', icone: <IconLapis size={24} /> },
-  { rotulo: 'Compartilhar', icone: <IconCompartilhar size={24} /> },
-  { rotulo: 'Ajuda', icone: <IconInfo size={24} /> },
-  { rotulo: 'Minha conta', icone: <IconUsuario size={24} /> },
+  { rotulo: 'Editor', icone: <IconLapis size={26} /> },
+  { rotulo: 'Compartilhar', icone: <IconCompartilhar size={26} /> },
+  { rotulo: 'Ajuda', icone: <IconInfo size={26} /> },
+  { rotulo: 'Minha conta', icone: <IconUsuario size={26} /> },
 ];
 
 export default function MenuCliente() {
