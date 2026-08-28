@@ -777,7 +777,7 @@ export default function EditorDesign({ v }: { v: any }) {
                 </p>
               </div>
               <div style={css(v.inspBody)}>
-                <div style={{ padding: '16px 18px', borderBottom: '1px solid #F0F3F9' }}>
+                <div style={css(v.blocoRosto)}>
                   <div style={{ display: 'flex', alignItems: 'flex-start', gap: '11px', padding: '13px 14px', borderRadius: '12px', background: '#FEF3E2', border: '1px solid #FCE9CE', marginBottom: '12px' }}>
                     <span style={{ color: '#B45309', flex: '0 0 auto', marginTop: '1px' }}>
                       <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
@@ -790,15 +790,15 @@ export default function EditorDesign({ v }: { v: any }) {
                         Rosto perto do corte
                       </p>
                       <p style={{ margin: '3px 0 0', fontSize: '11.5px', lineHeight: '1.5', color: '#8A6520' }}>
-                        O rosto está a 4 mm da margem. Podemos reenquadrar mantendo o rosto inteiro.
+                        {v.textoRosto}
                       </p>
                     </div>
                   </div>
                   <div style={{ display: 'flex', gap: '8px' }}>
-                    <span style={{ flex: '1', height: '38px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '7px', borderRadius: '10px', background: 'linear-gradient(135deg,#2563EB,#06B6D4)', color: '#FFFFFF', fontSize: '12.5px', fontWeight: '700', cursor: 'pointer' }} className="dc34">
+                    <span style={{ flex: '1', height: '38px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '7px', borderRadius: '10px', background: 'linear-gradient(135deg,#2563EB,#06B6D4)', color: '#FFFFFF', fontSize: '12.5px', fontWeight: '700', cursor: 'pointer' }} onClick={v.corrigirRosto} className="dc34">
                       Corrigir
                     </span>
-                    <span style={{ flex: '1', height: '38px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '10px', border: '1px solid #E6EAF2', fontSize: '12.5px', fontWeight: '600', color: '#46536A', cursor: 'pointer' }} className="dc35">
+                    <span style={{ flex: '1', height: '38px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '10px', border: '1px solid #E6EAF2', fontSize: '12.5px', fontWeight: '600', color: '#46536A', cursor: 'pointer' }} onClick={v.manterRosto} className="dc35">
                       Manter
                     </span>
                   </div>
@@ -808,16 +808,16 @@ export default function EditorDesign({ v }: { v: any }) {
                     Enquadramento
                   </p>
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: '8px', marginBottom: '12px' }}>
-                    <span style={{ height: '38px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '7px', border: '1px solid #E6EAF2', borderRadius: '10px', background: '#FFFFFF', color: '#46536A', fontSize: '12px', fontWeight: '600', cursor: 'pointer' }} className="dc36">
+                    <span onClick={v.enqPreencher.pick} style={css(v.enqPreencher.style)} className="dc36">
                       Preencher
                     </span>
-                    <span style={{ height: '38px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '7px', border: '1px solid #E6EAF2', borderRadius: '10px', background: '#FFFFFF', color: '#46536A', fontSize: '12px', fontWeight: '600', cursor: 'pointer' }} className="dc37">
+                    <span onClick={v.enqEncaixar.pick} style={css(v.enqEncaixar.style)} className="dc37">
                       Encaixar
                     </span>
-                    <span style={{ height: '38px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '7px', border: '1px solid #E6EAF2', borderRadius: '10px', background: '#FFFFFF', color: '#46536A', fontSize: '12px', fontWeight: '600', cursor: 'pointer' }} className="dc38">
+                    <span onClick={v.enqGirar.pick} style={css(v.enqGirar.style)} className="dc38">
                       Girar
                     </span>
-                    <span style={{ height: '38px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '7px', border: '1px solid #E6EAF2', borderRadius: '10px', background: '#FFFFFF', color: '#46536A', fontSize: '12px', fontWeight: '600', cursor: 'pointer' }} className="dc39">
+                    <span onClick={v.enqEspelhar.pick} style={css(v.enqEspelhar.style)} className="dc39">
                       Espelhar
                     </span>
                   </div>
@@ -827,7 +827,7 @@ export default function EditorDesign({ v }: { v: any }) {
                         Zoom
                       </label>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '6px', minWidth: '0', height: '38px', padding: '0 11px', border: '1px solid #E6EAF2', borderRadius: '10px', background: '#FFFFFF' }}>
-                        <input value="118" style={{ flex: '1', width: '100%', minWidth: '0', border: '0', background: 'transparent', fontFamily: 'inherit', fontSize: '13px', fontWeight: '600', color: '#0B1220' }} />
+                        <input type="number" value={v.zoomFoto} onChange={v.setZoomFoto} style={{ flex: '1', width: '100%', minWidth: '0', border: '0', background: 'transparent', fontFamily: 'inherit', fontSize: '13px', fontWeight: '600', color: '#0B1220' }} />
                         <span style={{ fontSize: '11px', color: '#9AA7BC', flex: '0 0 auto' }}>
                           %
                         </span>
@@ -838,7 +838,7 @@ export default function EditorDesign({ v }: { v: any }) {
                         Rotação
                       </label>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '6px', minWidth: '0', height: '38px', padding: '0 11px', border: '1px solid #E6EAF2', borderRadius: '10px', background: '#FFFFFF' }}>
-                        <input value="0" style={{ flex: '1', width: '100%', minWidth: '0', border: '0', background: 'transparent', fontFamily: 'inherit', fontSize: '13px', fontWeight: '600', color: '#0B1220' }} />
+                        <input type="number" value={v.rotFoto} onChange={v.setRotFoto} style={{ flex: '1', width: '100%', minWidth: '0', border: '0', background: 'transparent', fontFamily: 'inherit', fontSize: '13px', fontWeight: '600', color: '#0B1220' }} />
                         <span style={{ fontSize: '11px', color: '#9AA7BC', flex: '0 0 auto' }}>
                           °
                         </span>
@@ -866,6 +866,7 @@ export default function EditorDesign({ v }: { v: any }) {
                           </div>
                           <span style={css(s.knob)}>
                           </span>
+                          <input type="range" min={s.min} max={s.max} value={s.raw} onChange={s.set} style={{ position: 'absolute', inset: '-9px 0', width: '100%', height: '24px', opacity: '0', cursor: 'pointer', margin: '0' }} />
                         </div>
                       </div>
                     ))}

@@ -178,33 +178,33 @@ cliente não pode virar tela branca por um campo faltando.
 
 ---
 
-## 6. TRABALHO EM ANDAMENTO — estado exato
+## 6. Inspetor — CONCLUÍDO em parte
 
-**⚠ O repositório está com uma alteração pela metade. Resolva isto primeiro.**
+O estado meio-quebrado descrito antes foi resolvido: o `.dc.html` e o hook estão
+em sincronia, `./tools/gerar.sh editor` roda limpo e a compilação passa.
 
-`design/extraido/Cliente Editor.dc.html` **já recebeu** as ligações do inspetor
-(commit ainda não feito), mas `useEditorDesign.tsx` **ainda não fornece** os
-valores correspondentes. Se rodar `./tools/gerar.sh editor` agora, o TSX vai
-referenciar campos que não existem e o TypeScript acusa.
+**Funciona e foi verificado no navegador:**
+- os três sliders (Brilho, Contraste, Saturação) — arrasto real, via um
+  `input[type=range]` invisível sobre a trilha do design;
+- Preencher / Encaixar / Girar / Espelhar;
+- os campos numéricos de Zoom e Rotação;
+- o botão Preto e branco (antes animava sem que `s.bw` fosse lido por ninguém);
+- `src/lib/imagem.ts` novo: `filtroCss()` e `enquadramentoCss()`, as fórmulas
+  isoladas para valerem igual na impressão.
 
-Ligações já escritas no `.dc.html` que **faltam** no hook:
+**O aviso "Rosto perto do corte" está ESCONDIDO de propósito** (`blocoRosto:
+'display:none'`). Era um retângulo fixo em 16%/20%/36%/40% que mentia em toda
+foto. Volta a aparecer quando a Fase 5 (rostos) existir — os bindings
+`textoRosto`, `corrigirRosto` e `manterRosto` já estão no lugar, vazios.
 
-| Binding | O que deve fazer |
-|---|---|
-| `blocoRosto` | estilo do bloco de aviso; `display:none` enquanto não houver análise de rosto (não minta) |
-| `textoRosto` | texto do aviso |
-| `corrigirRosto` / `manterRosto` | ação de reenquadrar / dispensar |
-| `enqPreencher` / `enqEncaixar` / `enqGirar` / `enqEspelhar` | cada um `{ style, pick }`; `pick` chama `doc.mudarEnq(...)`; `style` marca o ativo |
-| `zoomFoto` / `setZoomFoto` | valor e `onChange` → `doc.mudarEnq({ escala })` |
-| `rotFoto` / `setRotFoto` | valor e `onChange` → `doc.mudarEnq({ rot })` |
-| `sliders[].min/.max/.raw/.set` | `set` chama `doc.mudarAjustes({ brilho\|contraste\|saturacao })` |
-
-O objeto `sliders` **já existe** no hook mas com valores literais (+4, 0, −6) e
-sem `min`/`max`/`raw`/`set`.
-
-**Para desfazer e recomeçar limpo:** `git checkout design/extraido/`.
-
----
+**O que falta neste bloco:**
+1. **Girar não aparece no render.** `background-image` não gira. Precisa trocar
+   o quadro por `<img>` dentro de `overflow:hidden` — isso também é o que faz a
+   conta bater com o `sharp` na impressão. Espelhar já funciona
+   (`transform:scaleX(-1)`).
+2. O painel abre ao selecionar, mas um teste automatizado não achou o texto
+   "Enquadramento" — conferir se `insp: true` realmente expande o painel ou se
+   há um segundo estado controlando a largura.
 
 ## 7. O QUE FALTA — lista do usuário, em ordem de prioridade
 

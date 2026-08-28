@@ -94,6 +94,7 @@ import { LAYOUTS as CATALOGO, contagens, layout as layoutPorId } from '@/lib/lay
 import { curvaturaPagina, luzPagina, estiloPalco, estiloLivro, limitarZoom, ZOOM_PASSO, ZOOM_PADRAO } from '@/lib/livro';
 import type { Documento, Lado } from '@/components/editor/useDocumento';
 import type { Pagina, QuadroFoto } from '@/lib/album';
+import { enquadramentoCss, filtroCss } from '@/lib/imagem';
 
 /** Serializa um objeto de estilo para a string que o markup do design espera. */
 function estilo(o: React.CSSProperties): string {
@@ -235,7 +236,7 @@ export function useEditorDesign({
         ret(r) +
         `;border-radius:2px;overflow:hidden;cursor:pointer;` +
         (f
-          ? `background-image:url('${f.url}');background-size:cover;background-position:center;`
+          ? `background-image:url('${f.url}');` + enquadramentoCss(q.enq) + filtroCss(q.ajustes)
           : // Quadro vazio agora é vazio de verdade. Antes, `fotos[n % fotos.length]`
             // preenchia tudo com fotos que não estavam no documento.
             `background:#F8FAFE;border:1.5px dashed #CBD5E6;display:flex;align-items:center;` +
@@ -256,6 +257,13 @@ export function useEditorDesign({
           onClick: () => doc.setSelecao({ lamina: doc.atual, lado, quadro: q.id }),
         };
       });
+
+    /** Botão do enquadramento: mesma caixa do design, marcada quando ativo. */
+    const botaoEnq = (ativo: boolean) =>
+      `height:38px;display:flex;align-items:center;justify-content:center;gap:7px;` +
+      `border:1px solid ${ativo ? '#2563EB' : '#E6EAF2'};border-radius:10px;` +
+      `background:${ativo ? '#F1F5FD' : '#FFFFFF'};color:${ativo ? '#2563EB' : '#46536A'};` +
+      `font-size:12px;font-weight:${ativo ? 700 : 600};cursor:pointer`;
 
     const framesEsq = framesDe(lamina.esquerda, 'esquerda');
     const framesDir = framesDe(lamina.direita, 'direita');
@@ -371,11 +379,26 @@ export function useEditorDesign({
       })),
       elements: EL,
 
-      sliders: [
-        { label: 'Brilho', value: '+4', pct: 56, active: true },
-        { label: 'Contraste', value: '0', pct: 50, active: false },
-        { label: 'Saturação', value: '-6', pct: 44, active: false },
-      ].map((x) => ({
+      // Eram três valores literais (+4, 0, −6) sem nenhum manipulador: o
+      // slider desenhava, não ajustava nada.
+      sliders: ([
+        { label: 'Brilho', campo: 'brilho' as const },
+        { label: 'Contraste', campo: 'contraste' as const },
+        { label: 'Saturação', campo: 'saturacao' as const },
+      ]).map((c) => {
+        const bruto = qSel?.ajustes[c.campo] ?? 0;
+        const x = {
+          label: c.label,
+          value: (bruto > 0 ? '+' : '') + bruto,
+          pct: (bruto + 100) / 2,   // −100..100 → 0..100
+          active: bruto !== 0,
+        };
+        return {
+        min: -100,
+        max: 100,
+        raw: bruto,
+        set: (e: React.ChangeEvent<HTMLInputElement>) =>
+          doc.mudarAjustes({ [c.campo]: Number(e.target.value) }),
         label: x.label,
         value: x.value,
         fill: `width:${x.pct}%;height:100%;border-radius:999px;` +
@@ -383,7 +406,47 @@ export function useEditorDesign({
         knob: `position:absolute;left:${x.pct}%;top:50%;transform:translate(-50%,-50%);width:15px;` +
           `height:15px;border-radius:999px;background:#FFFFFF;border:2px solid #2563EB;` +
           `box-shadow:0 2px 5px rgba(11,18,32,.18)`,
-      })),
+        };
+      }),
+
+      /* ------------------------ inspetor: enquadramento ------------------ */
+
+      // O aviso de rosto era um retângulo fixo em 16%/20%/36%/40%: mentia em
+      // toda foto. Sem análise de rosto (Fase 5) o bloco fica ESCONDIDO, que é
+      // melhor que informar o que não se sabe.
+      blocoRosto: 'display:none',
+      textoRosto: '',
+      corrigirRosto: () => {},
+      manterRosto: () => {},
+
+      enqPreencher: {
+        style: botaoEnq(qSel?.enq.modo === 'preencher'),
+        pick: () => doc.mudarEnq({ modo: 'preencher' }),
+      },
+      enqEncaixar: {
+        style: botaoEnq(qSel?.enq.modo === 'encaixar'),
+        pick: () => doc.mudarEnq({ modo: 'encaixar' }),
+      },
+      enqGirar: {
+        style: botaoEnq(!!qSel && qSel.enq.rot % 360 !== 0),
+        // Gira de 90 em 90, que é o que se espera de um botão sem campo.
+        pick: () => doc.mudarEnq({ rot: ((qSel?.enq.rot ?? 0) + 90) % 360 }),
+      },
+      enqEspelhar: {
+        style: botaoEnq(!!qSel?.enq.espelho),
+        pick: () => doc.mudarEnq({ espelho: !qSel?.enq.espelho }),
+      },
+
+      zoomFoto: Math.round((qSel?.enq.escala ?? 1) * 100),
+      setZoomFoto: (e: React.ChangeEvent<HTMLInputElement>) => {
+        const n = Number(e.target.value);
+        if (Number.isFinite(n)) doc.mudarEnq({ escala: Math.min(20, Math.max(0.05, n / 100)) });
+      },
+      rotFoto: Math.round(qSel?.enq.rot ?? 0),
+      setRotFoto: (e: React.ChangeEvent<HTMLInputElement>) => {
+        const n = Number(e.target.value);
+        if (Number.isFinite(n)) doc.mudarEnq({ rot: Math.min(360, Math.max(-360, n)) });
+      },
 
       // O storyboard vinha de dez rótulos fixos; agora sai do documento.
       spreads: doc.laminas.map((l, i) => {
@@ -528,9 +591,10 @@ export function useEditorDesign({
       floatBar: `display:${selTipo ? 'flex' : 'none'};position:absolute;left:50%;bottom:50px;` +
         `transform:translateX(-50%);z-index:30;align-items:center;gap:3px;padding:5px;border-radius:12px;` +
         `background:#FFFFFF;border:1px solid #E6EAF2;box-shadow:0 10px 24px rgba(11,18,32,.14);white-space:nowrap`,
-      bwTrack: `width:40px;height:24px;border-radius:999px;background:${s.bw ? '#2563EB' : '#E6EAF2'};` +
-        `padding:3px;display:flex;justify-content:${s.bw ? 'flex-end' : 'flex-start'};cursor:pointer;flex:0 0 auto`,
-      toggleBw: () => set({ bw: !s.bw }),
+      bwTrack: `width:40px;height:24px;border-radius:999px;background:${qSel?.ajustes.pb ? '#2563EB' : '#E6EAF2'};` +
+        `padding:3px;display:flex;justify-content:${qSel?.ajustes.pb ? 'flex-end' : 'flex-start'};cursor:pointer;flex:0 0 auto`,
+      // O botão animava, mas `s.bw` não era lido por ninguém.
+      toggleBw: () => doc.mudarAjustes({ pb: !qSel?.ajustes.pb }),
 
       goNext: () => irPara(laminaAtual + 1),
       goPrev: () => irPara(laminaAtual - 1),
