@@ -56,13 +56,39 @@ export async function middleware(request: NextRequest) {
   }
 
   // -------------------------------------------------------------------------
-  // admin.photoon.com.br — painel do super admin, ainda não construído.
+  // admin.photoon.com.br — painel do super admin.
+  //
+  // As telas vivem em src/app/admin/**. Quem autoriza de verdade é a RLS
+  // (policy `lojistas_super_admin`); aqui só exigimos sessão e reescrevemos.
+  // O login é o mesmo do painel do lojista, em /entrar.
   // -------------------------------------------------------------------------
   if (alvo.tipo === 'admin') {
-    return new NextResponse('Painel do super admin ainda não disponível.', {
-      status: 503,
-      headers: { 'content-type': 'text/plain; charset=utf-8' },
-    });
+    const base = NextResponse.next();
+    const { response, user } = await updateSession(request, base);
+
+    if (pathname.startsWith('/auth')) return response;
+
+    if (pathname === '/entrar') {
+      if (!user) {
+        const destino = request.nextUrl.clone();
+        destino.pathname = '/app/entrar';
+        return comSessao(NextResponse.rewrite(destino), response);
+      }
+      return comSessao(NextResponse.redirect(urlDoHost(request, '/')), response);
+    }
+
+    if (!user) {
+      return comSessao(
+        NextResponse.redirect(
+          urlDoHost(request, '/entrar', `?next=${encodeURIComponent(pathname + search)}`),
+        ),
+        response,
+      );
+    }
+
+    const destino = request.nextUrl.clone();
+    destino.pathname = `/admin${pathname === '/' ? '' : pathname}`;
+    return comSessao(NextResponse.rewrite(destino), response);
   }
 
   // -------------------------------------------------------------------------

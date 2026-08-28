@@ -117,3 +117,59 @@ export async function getLojistaPorId(id: string) {
     .maybeSingle();
   return data;
 }
+
+// ---------------------------------------------------------------------------
+// Super admin
+// ---------------------------------------------------------------------------
+
+export type LojaResumo = {
+  id: string;
+  slug: string;
+  nome: string;
+  ativo: boolean;
+  criado_em: string;
+  logo_url: string | null;
+  clientes: { count: number }[];
+  projetos: { count: number }[];
+  lojista_membros: { count: number }[];
+};
+
+/**
+ * Todas as lojas da plataforma. Só o super admin enxerga — a policy
+ * `lojistas_super_admin` é o que permite; para os demais isto volta apenas
+ * o que eles já podiam ver.
+ */
+export async function listarTodasAsLojas(): Promise<LojaResumo[]> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from('lojistas')
+    .select(
+      'id, slug, nome, ativo, criado_em, logo_url, ' +
+        'clientes(count), projetos(count), lojista_membros(count)',
+    )
+    .order('criado_em', { ascending: false });
+
+  return (data ?? []) as unknown as LojaResumo[];
+}
+
+export type NumerosDaPlataforma = {
+  lojas: number;
+  clientes: number;
+  projetos: number;
+  fotos: number;
+};
+
+export async function numerosDaPlataforma(): Promise<NumerosDaPlataforma> {
+  const supabase = await createClient();
+  const conta = async (tabela: string) => {
+    const { count } = await supabase.from(tabela).select('id', { count: 'exact', head: true });
+    return count ?? 0;
+  };
+  const [lojas, clientes, projetos, fotos] = await Promise.all([
+    conta('lojistas'),
+    conta('clientes'),
+    conta('projetos'),
+    conta('galeria_fotos'),
+  ]);
+  return { lojas, clientes, projetos, fotos };
+}
