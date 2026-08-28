@@ -880,7 +880,10 @@ export default function EditorDesign({ v }: { v: any }) {
               </div>
               <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', overflowX: 'auto', paddingBottom: '4px' }}>
                 {v.spreads.map((s: any, i6: number) => (
-                  <div key={i6} onClick={s.pick} style={{ display: 'flex', flexDirection: 'column', gap: '5px', flex: '0 0 auto', cursor: 'pointer' }}>
+                  <div key={i6} onClick={s.pick} draggable={s.arrastavel} onDragStart={s.dragStart} onDragOver={s.dragOver} onDrop={s.drop} onDragEnd={s.dragEnd} style={css(s.wrap)}>
+                    <span style={css(s.numero)}>
+                      {s.ordem}
+                    </span>
                     <div className="{{ s.cls }}" style={css(s.style)}>
                       <div style={css(s.grid)}>
                         {s.cells.map((cell: any, i10: number) => (

@@ -16,6 +16,7 @@ export type EstadoEditor = {
   hover: number | null;
   espacoAberto: boolean;
   paginarAberto: boolean;
+  arrastandoLamina: number | null;
   escopoPaginar: 'vazias' | 'recomecar';
   escopoEspaco: 'album' | 'lamina';
   turning: 'next' | 'prev' | null;
@@ -167,7 +168,7 @@ export function useEditorDesign({
   onTitulo?: (t: string) => void;
 }) {
   const [s, setS] = useState<EstadoEditor>({
-    hover: null, turning: null, espacoAberto: false, escopoEspaco: 'album', paginarAberto: false, escopoPaginar: 'vazias',
+    hover: null, turning: null, espacoAberto: false, escopoEspaco: 'album', paginarAberto: false, escopoPaginar: 'vazias', arrastandoLamina: null,
     tool: 0, panel: true, insp: false, modal: null, zoom: ZOOM_PADRAO,
     count: 0, lay: 2, photoTab: 0, bgTab: 0, bgCat: 0, elCat: 0, bw: false,
     bgHue: 220, elCor: '#2563EB', rostoIgnorado: [], pessoaAtiva: null,
@@ -1221,7 +1222,51 @@ export function useEditorDesign({
               cheias.has(l.direita.quadros[k]?.id) ? (on ? '#5C8FF6' : '#AFC6F7') : '#E8EDF7'}`,
           })),
         ];
+        const arrastando = s.arrastandoLamina;
         return {
+          /**
+           * Reordenar arrastando.
+           *
+           * A capa (índice 0) não é arrastável: mover a capa faria o álbum
+           * começar pelo miolo. As demais trocam de lugar livremente.
+           */
+          arrastavel: i > 0,
+          ordem: i === 0 ? '' : String(i),
+          numero:
+            i === 0
+              ? 'display:none'
+              : 'position:absolute;top:-6px;left:-6px;z-index:2;min-width:18px;height:18px;' +
+                'padding:0 5px;display:flex;align-items:center;justify-content:center;' +
+                `border-radius:999px;font-size:10.5px;font-weight:700;` +
+                `background:${on ? '#2563EB' : '#FFFFFF'};color:${on ? '#FFFFFF' : '#6B7A90'};` +
+                'border:1px solid #E6EAF2;box-shadow:0 1px 3px rgba(11,18,32,.14)',
+          wrap:
+            'position:relative;display:flex;flex-direction:column;gap:5px;flex:0 0 auto;cursor:pointer;' +
+            (arrastando === i ? 'opacity:.4;' : '') +
+            // A borda à esquerda marca onde a lâmina vai cair.
+            (arrastando !== null && arrastando !== i && i > 0
+              ? 'box-shadow:-3px 0 0 -1px #2563EB;'
+              : ''),
+          dragStart: (e: React.DragEvent) => {
+            if (i === 0) return;
+            e.dataTransfer.effectAllowed = 'move';
+            // O Firefox exige carga no dataTransfer, senão não inicia o arrasto.
+            e.dataTransfer.setData('text/plain', String(i));
+            set({ arrastandoLamina: i });
+          },
+          dragOver: (e: React.DragEvent) => {
+            if (arrastando === null || i === 0) return;
+            // Sem `preventDefault` o navegador recusa a soltura.
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+          },
+          drop: (e: React.DragEvent) => {
+            e.preventDefault();
+            const de = arrastando ?? Number(e.dataTransfer.getData('text/plain'));
+            if (Number.isFinite(de)) doc.moverLamina(de, i);
+            set({ arrastandoLamina: null });
+          },
+          dragEnd: () => set({ arrastandoLamina: null }),
           label: rotuloLamina(i),
           grid: 'position:relative;flex:1;background:#FFFFFF',
           cells,

@@ -463,6 +463,28 @@ export function useDocumento({
     setSelecao(null);
   }, [aplicar, atual]);
 
+  /**
+   * Move uma lâmina de lugar.
+   *
+   * A capa é a lâmina 0 e não entra na dança: trocá-la de posição faria o
+   * álbum começar pelo miolo, e não há caso em que isso seja o desejado.
+   */
+  const moverLamina = useCallback(
+    (de: number, para: number) => {
+      if (de === para || de <= 0 || para <= 0) return;
+      aplicar((ls) => {
+        if (de >= ls.length || para >= ls.length) return ls;
+        const nova = ls.slice();
+        const [movida] = nova.splice(de, 1);
+        nova.splice(para, 0, movida);
+        return nova;
+      });
+      setAtual(para);
+      setSelecao(null);
+    },
+    [aplicar],
+  );
+
   const removerLamina = useCallback(
     (i: number) => {
       aplicar((ls) => (ls.length <= 1 ? ls : ls.filter((_, k) => k !== i)));
@@ -536,6 +558,7 @@ export function useDocumento({
     paginarAutomatico,
     quadrosVazios,
     adicionarLamina,
+    moverLamina,
     removerLamina,
     desfazer,
     refazer,

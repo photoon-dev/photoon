@@ -515,7 +515,8 @@
         </div>
         <div style="display: flex; align-items: flex-start; gap: 10px; overflow-x: auto; padding-bottom: 4px;">
           <sc-for list="{{ spreads }}" as="s" hint-placeholder-count="8">
-            <div onClick="{{ s.pick }}" style="display: flex; flex-direction: column; gap: 5px; flex: 0 0 auto; cursor: pointer;">
+            <div onClick="{{ s.pick }}" draggable="{{ s.arrastavel }}" onDragStart="{{ s.dragStart }}" onDragOver="{{ s.dragOver }}" onDrop="{{ s.drop }}" onDragEnd="{{ s.dragEnd }}" style="{{ s.wrap }}">
+              <span style="{{ s.numero }}">{{ s.ordem }}</span>
               <div class="{{ s.cls }}" style="{{ s.style }}">
                 <div style="{{ s.grid }}">
                   <sc-for list="{{ s.cells }}" as="cell" hint-placeholder-count="3">
