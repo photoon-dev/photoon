@@ -19,16 +19,13 @@ export const CSS_PSEUDO = `
 .dc12:hover { background: #FFFFFF; color: #2563EB; }
 .dc13:hover { background: #FFFFFF; color: #2563EB; }
 .dc14:hover { background: #F8FAFE; }
-.dc15:hover { background: #F8FAFE; }
-.dc16:hover { background: #F8FAFE; }
-.dc17:hover { background: #F8FAFE; }
-.dc18:hover { background: #FFE4E9; }
-.dc19:hover { background: #FCE9CE; }
-.dc20:hover { background: #E7EEFB; }
-.dc21:hover { background: #EAF0FF; border-color: #D6E2FC; }
-.dc22:hover { background: #E4F8FC; border-color: #CBEEF6; }
-.dc23:hover { background: #E6F8F1; border-color: #CDEEDF; }
-.dc24:hover { background: #EDEBFE; border-color: #DDD9FB; }
+.dc15:hover { background: #FFE4E9; }
+.dc16:hover { background: #FCE9CE; }
+.dc17:hover { background: #E7EEFB; }
+.dc18:hover { background: #EAF0FF; border-color: #D6E2FC; }
+.dc19:hover { background: #E4F8FC; border-color: #CBEEF6; }
+.dc20:hover { background: #E6F8F1; border-color: #CDEEDF; }
+.dc21:hover { background: #EDEBFE; border-color: #DDD9FB; }
 `;
 
 export default function ShellLojistaDesign({ v }: { v: any }) {
@@ -60,7 +57,7 @@ export default function ShellLojistaDesign({ v }: { v: any }) {
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', lineHeight: '1.25', minWidth: '0' }}>
               <span style={{ fontSize: '13.5px', fontWeight: '700', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                Lab Cores
+                {v.lojaNome}
               </span>
               <span style={{ fontSize: '11.5px', color: '#6B7A90' }}>
                 {v.lojaSub}
@@ -94,7 +91,7 @@ export default function ShellLojistaDesign({ v }: { v: any }) {
                 Pedidos
               </span>
               <span style={css(v.badgeStyle)}>
-                14
+                {v.selo1}
               </span>
             </div>
             <div onClick={v.pick2} style={css(v.nav2)}>
@@ -320,14 +317,14 @@ export default function ShellLojistaDesign({ v }: { v: any }) {
               <div style={{ position: 'relative' }}>
                 <div onClick={v.toggleMenu} style={css(v.avatarBtn)}>
                   <div style={{ width: '34px', height: '34px', borderRadius: '11px', background: 'linear-gradient(135deg,#0B1220,#2E3E5C)', color: '#FFF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12.5px', fontWeight: '700' }}>
-                    MR
+                    {v.usuarioIniciais}
                   </div>
                   <div style={{ display: 'flex', flexDirection: 'column', lineHeight: '1.25', textAlign: 'left' }}>
                     <span style={{ fontSize: '13.5px', fontWeight: '700' }}>
                       {v.usuarioNome}
                     </span>
                     <span style={{ fontSize: '11.5px', color: '#6B7A90' }}>
-                      Administradora
+                      {v.usuarioCargo}
                     </span>
                   </div>
                   <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#9AA7BC" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={css(v.menuChev)}>

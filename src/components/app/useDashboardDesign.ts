@@ -1,6 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
+import type { NumerosDaLoja } from '@/lib/lojista';
 
 /**
  * Porte de `Component extends DCLogic` de Dashboard.dc.html.
@@ -17,13 +18,24 @@ export const MODULOS = [
   'Relatorios', 'Automacoes', 'Integracoes', 'Auditoria', 'Suporte', 'Configuracoes',
 ] as const;
 
+export type PainelDaLoja = {
+  lojaNome: string;
+  usuarioNome: string;
+  usuarioCargo: string;
+  numeros: NumerosDaLoja;
+  plano: { nome: string; limite: number | null } | null;
+};
+
 export function useDashboardDesign({
   ativo = 0,
   rotas = {},
+  painel,
 }: {
   ativo?: number;
   /** índice do módulo -> rota real, quando ela existir */
   rotas?: Record<number, string>;
+  /** Dados reais da loja. Ausente = telas que só usam a moldura. */
+  painel?: PainelDaLoja;
 } = {}) {
   const [collapsed, setCollapsed] = useState(false);
   const [menu, setMenu] = useState(false);
@@ -106,6 +118,111 @@ export function useDashboardDesign({
       v['setP' + i] = () => setPeriod(i);
     }
 
+
+    /* ---------------------------- números reais ----------------------------
+     * O design vinha com GMV, ticket médio e conversão preenchidos à mão —
+     * R$ 184.320 de faturamento que não é de ninguém, e "Bom dia, Marta" para
+     * todo lojista. Não há pedido nem pagamento no sistema, então esses três
+     * não podem ser calculados: em vez de trocar um número inventado por
+     * outro, o painel mostra o que a plataforma mede.
+     * --------------------------------------------------------------------- */
+    const n = painel?.numeros;
+    const hora = new Date().getHours();
+    const primeiroNome = (painel?.usuarioNome ?? '').split(' ')[0] || 'por aqui';
+    const num = (x: number) => x.toLocaleString('pt-BR');
+
+    const SELO: Record<string, [string, string, string]> = {
+      pronto: ['Pronto', '#E6F8F1', '#059669'],
+      com_pendencias: ['Com pendência', '#FEF3E2', '#B45309'],
+      em_edicao: ['Em edição', '#EAF0FF', '#2563EB'],
+      nao_iniciado: ['Não iniciado', '#EEF1F7', '#6B7A90'],
+    };
+    const limite = painel?.plano?.limite ?? null;
+    const pct = limite ? Math.min(100, Math.round(((n?.projetos ?? 0) / limite) * 100)) : null;
+
+    v.lojaNome = painel?.lojaNome ?? 'Photoon';
+    v.usuarioIniciais = (painel?.usuarioNome ?? '?')
+      .split(' ')
+      .filter(Boolean)
+      .slice(0, 2)
+      .map((x) => x[0]?.toUpperCase() ?? '')
+      .join('') || '?';
+    // O design dizia "Armazenamento" com 1,44 TB fixos. Não medimos disco; o
+    // que de fato limita a loja é a cota de álbuns do plano.
+    v.usoTitulo = 'Álbuns no plano';
+    // Selo do menu: álbuns que pedem atenção. Era "14" fixo.
+    v.selo1 = String((n?.comPendencia ?? 0) + (n?.emEdicao ?? 0));
+    v.usuarioCargo = painel?.usuarioCargo ?? '';
+    v.agora = new Date().toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' });
+    v.saudacao =
+      `${hora < 12 ? 'Bom dia' : hora < 18 ? 'Boa tarde' : 'Boa noite'}, ${primeiroNome}.` +
+      (n && n.projetos ? '' : ' Vamos começar?');
+    v.resumoHero = !n
+      ? ''
+      : n.projetos === 0
+        ? 'Nenhum álbum ainda. Cadastre um cliente, libere as fotos e o álbum aparece aqui.'
+        : `${n.projetos} ${n.projetos === 1 ? 'álbum' : 'álbuns'} na loja · ${n.emEdicao} em edição · ` +
+          `${n.prontos} ${n.prontos === 1 ? 'pronto' : 'prontos'}` +
+          (n.comPendencia ? ` · ${n.comPendencia} com pendência` : '');
+    v.kpiHeroA = { rotulo: 'Andamento médio', valor: `${n?.progressoMedio ?? 0}%` };
+    v.kpiHeroB = { rotulo: 'Prontos para produção', valor: String(n?.prontos ?? 0) };
+    v.kpi1 = { rotulo: 'Clientes', valor: num(n?.clientes ?? 0), nota: n?.clientes ? 'cadastrados na loja' : 'nenhum ainda' };
+    v.kpi2 = { rotulo: 'Álbuns', valor: num(n?.projetos ?? 0), nota: `${n?.emEdicao ?? 0} em edição` };
+    v.kpi3 = { rotulo: 'Fotos liberadas', valor: num(n?.fotos ?? 0), nota: 'na galeria' };
+    v.kpi4 = { rotulo: 'Prontos', valor: num(n?.prontos ?? 0), nota: n?.comPendencia ? `${n.comPendencia} com pendência` : 'sem pendências' };
+
+    // O design mostrava "1,44 TB de 2 TB": não medimos armazenamento. Vale o
+    // limite de álbuns do plano, que é o que de fato restringe a loja.
+    v.usoPct = pct === null ? '—' : `${pct}%`;
+    v.usoBarra = `width:${pct ?? 6}%;height:100%;border-radius:999px;background:linear-gradient(90deg,#2563EB,#06B6D4)`;
+    v.usoTexto = !painel?.plano
+      ? 'Esta loja não está em nenhum plano'
+      : limite
+        ? `${n?.projetos ?? 0} de ${limite} álbuns · plano ${painel.plano.nome}`
+        : `Plano ${painel.plano.nome} · sem limite de álbuns`;
+
+    /* ------------------------------ o gráfico ------------------------------
+     * A curva do design era desenhada: doze pontos escritos à mão que subiam
+     * bonito e não vinham de lugar nenhum. Aqui ela é a série real de álbuns
+     * criados e concluídos por dia. Sem dado, o bloco some — melhor um espaço
+     * vazio que uma linha inventada.
+     * --------------------------------------------------------------------- */
+    const caminho = (vals: number[], alturaMax: number, base: number) => {
+      if (!vals.length) return '';
+      const teto = Math.max(1, ...vals);
+      const passo = 700 / Math.max(1, vals.length - 1);
+      return vals
+        .map((val, i) => `${i === 0 ? 'M' : ''}${Math.round(i * passo)} ${Math.round(base - (val / teto) * alturaMax)}`)
+        .join(' ');
+    };
+
+    v.graficoTitulo = 'Álbuns ao longo do mês';
+    v.serieA = 'Criados';
+    v.serieB = 'Concluídos';
+    v.linhaA = caminho(n?.serieCriados ?? [], 120, 180);
+    v.linhaB = caminho(n?.serieProntos ?? [], 90, 190);
+
+    // Estado vazio explícito: tabela sem linha nenhuma e sem explicação parece
+    // defeito. Aqui ela diz o que fazer para ter a primeira.
+    v.recentesVazio = (n?.recentes?.length ?? 0)
+      ? 'display:none'
+      : 'padding:26px;text-align:center;font-size:13px;color:#9AA7BC';
+
+    v.recentes = (n?.recentes ?? []).map((p) => {
+      const [rot, bg, cor] = SELO[p.status] ?? SELO.nao_iniciado;
+      return {
+        titulo: p.titulo,
+        cliente: p.cliente ?? 'sem cliente vinculado',
+        iniciais: (p.titulo || '?').slice(0, 2).toUpperCase(),
+        progresso: `${p.progresso}%`,
+        laminas: String(p.laminas),
+        estado: rot,
+        selo: `padding:6px 11px;border-radius:999px;background:${bg};color:${cor};font-size:12px;font-weight:600;width:max-content`,
+        quando: new Date(p.atualizado_em).toLocaleDateString('pt-BR', { day: 'numeric', month: 'short' }),
+        abrir: () => { window.location.href = '/clientes'; },
+      };
+    });
+
     return v;
-  }, [collapsed, menu, active, period, rotas]);
+  }, [collapsed, menu, active, period, rotas, painel]);
 }

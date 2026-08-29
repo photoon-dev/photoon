@@ -277,3 +277,98 @@ export async function identidadeLojista(): Promise<IdentidadeLojista> {
     planoResumo: plano ? `Plano ${plano.nome}` : 'Sem plano',
   };
 }
+
+export type NumerosDaLoja = {
+  clientes: number;
+  projetos: number;
+  emEdicao: number;
+  prontos: number;
+  comPendencia: number;
+  fotos: number;
+  laminas: number;
+  progressoMedio: number;
+  /** Álbuns criados e concluídos por dia, últimos 30 dias. */
+  serieCriados: number[];
+  serieProntos: number[];
+  recentes: {
+    id: string;
+    titulo: string;
+    cliente: string | null;
+    progresso: number;
+    laminas: number;
+    status: string;
+    atualizado_em: string;
+  }[];
+};
+
+/**
+ * Números reais da loja, para o painel.
+ *
+ * O dashboard do design vinha com GMV, ticket médio e conversão preenchidos à
+ * mão — R$ 184.320 de faturamento que não é de ninguém. Não há pedido nem
+ * pagamento no sistema ainda, então esses três não podem ser calculados: em vez
+ * de trocar um número inventado por outro, o painel passa a mostrar o que a
+ * plataforma mede de verdade — clientes, álbuns, fotos e o andamento deles.
+ */
+export async function numerosDaLoja(lojistaId: string): Promise<NumerosDaLoja> {
+  const supabase = await createClient();
+
+  const [clientes, projetos, fotos] = await Promise.all([
+    supabase.from('clientes').select('id', { count: 'exact', head: true }).eq('lojista_id', lojistaId),
+    supabase
+      .from('projetos')
+      .select('id, titulo, progresso, status, atualizado_em, total_paginas, clientes(nome)')
+      .eq('lojista_id', lojistaId)
+      .order('atualizado_em', { ascending: false })
+      .limit(200),
+    supabase.from('galeria_fotos').select('id', { count: 'exact', head: true }),
+  ]);
+
+  const lista = (projetos.data ?? []) as unknown as {
+    id: string;
+    titulo: string;
+    progresso: number | null;
+    status: string | null;
+    atualizado_em: string;
+    total_paginas: number | null;
+    clientes: { nome: string | null } | null;
+  }[];
+
+  const conta = (s: string) => lista.filter((p) => p.status === s).length;
+  const soma = lista.reduce((t, p) => t + (p.progresso ?? 0), 0);
+
+  return {
+    clientes: clientes.count ?? 0,
+    projetos: lista.length,
+    emEdicao: conta('em_edicao') + conta('nao_iniciado'),
+    prontos: conta('pronto'),
+    comPendencia: conta('com_pendencias'),
+    fotos: fotos.count ?? 0,
+    laminas: 0,
+    progressoMedio: lista.length ? Math.round(soma / lista.length) : 0,
+    ...(() => {
+      // 30 baldes de um dia. Um álbum entra no dia em que foi mexido pela
+      // última vez — é a informação que temos sem uma tabela de eventos.
+      const dia = 24 * 60 * 60 * 1000;
+      const hoje = Date.now();
+      const criados = new Array(30).fill(0);
+      const prontos = new Array(30).fill(0);
+      for (const p of lista) {
+        const i = 29 - Math.floor((hoje - new Date(p.atualizado_em).getTime()) / dia);
+        if (i < 0 || i > 29) continue;
+        criados[i] += 1;
+        if (p.status === 'pronto') prontos[i] += 1;
+      }
+      return { serieCriados: criados, serieProntos: prontos };
+    })(),
+    recentes: lista.slice(0, 6).map((p) => ({
+      id: p.id,
+      titulo: p.titulo,
+      cliente: p.clientes?.nome ?? null,
+      progresso: p.progresso ?? 0,
+      laminas: Math.round((p.total_paginas ?? 0) / 2),
+      status: p.status ?? 'nao_iniciado',
+      atualizado_em: p.atualizado_em,
+    })),
+  };
+}

@@ -44,7 +44,7 @@
     <div style="{{ tenantStyle }}">
       <div style="width: 34px; height: 34px; border-radius: 11px; background: linear-gradient(135deg,#2563EB,#06B6D4); color: #FFF; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; flex: 0 0 auto;">LC</div>
       <div style="display: flex; flex-direction: column; line-height: 1.25; min-width: 0;">
-        <span style="font-size: 13.5px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Lab Cores</span>
+        <span style="font-size: 13.5px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ lojaNome }}</span>
         <span style="font-size: 11.5px; color: #6B7A90;">{{ lojaSub }}</span>
       </div>
       <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#9AA7BC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left: auto; flex: 0 0 auto;"><path d="m8 9 4-4 4 4M8 15l4 4 4-4"/></svg>
@@ -59,7 +59,7 @@
       <div onClick="{{ pick1 }}" style="{{ nav1 }}">
         <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="flex:0 0 auto"><path d="M4 8h16l-1.2 11.2a2 2 0 0 1-2 1.8H7.2a2 2 0 0 1-2-1.8z"/><path d="M9 8V6.5a3 3 0 0 1 6 0V8"/></svg>
         <span style="{{ labelStyle }}">Pedidos</span>
-        <span style="{{ badgeStyle }}">14</span>
+        <span style="{{ badgeStyle }}">{{ selo1 }}</span>
       </div>
       <div onClick="{{ pick2 }}" style="{{ nav2 }}">
         <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="flex:0 0 auto"><path d="M7 9V4h10v5"/><rect x="4" y="9" width="16" height="7" rx="2.5"/><path d="M7 14h10v6H7z"/></svg>
@@ -143,11 +143,11 @@
       <div style="{{ storageCard }}">
         <div style="display: flex; align-items: center; gap: 9px; margin-bottom: 10px;">
           <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#2563EB" stroke-width="1.9" stroke-linecap="round"><ellipse cx="12" cy="6" rx="7.5" ry="3"/><path d="M4.5 6v12c0 1.7 3.4 3 7.5 3s7.5-1.3 7.5-3V6M4.5 12c0 1.7 3.4 3 7.5 3s7.5-1.3 7.5-3"/></svg>
-          <span style="font-size: 13px; font-weight: 700;">Armazenamento</span>
-          <span style="margin-left: auto; font-size: 11.5px; color: #6B7A90;">72%</span>
+          <span style="font-size: 13px; font-weight: 700;">{{ usoTitulo }}</span>
+          <span style="margin-left: auto; font-size: 11.5px; color: #6B7A90;">{{ usoPct }}</span>
         </div>
-        <div style="height: 7px; border-radius: 999px; background: #E3E9F5; overflow: hidden;"><div style="width: 72%; height: 100%; border-radius: 999px; background: linear-gradient(90deg,#2563EB,#06B6D4);"></div></div>
-        <p style="margin: 10px 0 0; font-size: 11.5px; color: #6B7A90;">1,44 TB de 2 TB · originais e produção</p>
+        <div style="height: 7px; border-radius: 999px; background: #E3E9F5; overflow: hidden;"><div style="{{ usoBarra }}"></div></div>
+        <p style="margin: 10px 0 0; font-size: 11.5px; color: #6B7A90;">{{ usoTexto }}</p>
       </div>
       <div onClick="{{ toggleSide }}" style="{{ collapseBtn }}">
         <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="{{ chevStyle }}"><path d="m14 6-6 6 6 6"/></svg>
@@ -175,10 +175,10 @@
         </button>
         <div style="position: relative;">
           <div onClick="{{ toggleMenu }}" style="{{ avatarBtn }}">
-            <div style="width: 34px; height: 34px; border-radius: 11px; background: linear-gradient(135deg,#0B1220,#2E3E5C); color: #FFF; display: flex; align-items: center; justify-content: center; font-size: 12.5px; font-weight: 700;">MR</div>
+            <div style="width: 34px; height: 34px; border-radius: 11px; background: linear-gradient(135deg,#0B1220,#2E3E5C); color: #FFF; display: flex; align-items: center; justify-content: center; font-size: 12.5px; font-weight: 700;">{{ usuarioIniciais }}</div>
             <div style="display: flex; flex-direction: column; line-height: 1.25; text-align: left;">
               <span style="font-size: 13.5px; font-weight: 700;">{{ usuarioNome }}</span>
-              <span style="font-size: 11.5px; color: #6B7A90;">Administradora</span>
+              <span style="font-size: 11.5px; color: #6B7A90;">{{ usuarioCargo }}</span>
             </div>
             <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#9AA7BC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="{{ menuChev }}"><path d="m6 9 6 6 6-6"/></svg>
           </div>
@@ -219,18 +219,18 @@
         <div style="position: absolute; right: -60px; top: -70px; width: 260px; height: 260px; border-radius: 999px; background: radial-gradient(circle at 30% 30%, rgba(6,182,212,.55), rgba(6,182,212,0) 70%);"></div>
         <div style="position: absolute; right: 130px; bottom: -110px; width: 240px; height: 240px; border-radius: 999px; background: radial-gradient(circle at 50% 50%, rgba(37,99,235,.45), rgba(37,99,235,0) 70%);"></div>
         <div style="position: relative; flex: 1; min-width: 320px;">
-          <p style="margin: 0 0 8px; font-size: 12px; letter-spacing: 1.8px; text-transform: uppercase; color: rgba(255,255,255,.6);">Terça, 25 de agosto · 09:12</p>
-          <h1 style="margin: 0 0 10px; font-size: 32px; line-height: 1.15; font-weight: 800; letter-spacing: -.8px;">Bom dia, Marta. O laboratório está indo bem.</h1>
-          <p style="margin: 0; font-size: 15px; line-height: 1.6; color: rgba(255,255,255,.78); max-width: 620px;">14 pedidos entraram desde ontem, 3 lotes saem hoje e nenhum job de render falhou nas últimas 24 h.</p>
+          <p style="margin: 0 0 8px; font-size: 12px; letter-spacing: 1.8px; text-transform: uppercase; color: rgba(255,255,255,.6);">{{ agora }}</p>
+          <h1 style="margin: 0 0 10px; font-size: 32px; line-height: 1.15; font-weight: 800; letter-spacing: -.8px;">{{ saudacao }}</h1>
+          <p style="margin: 0; font-size: 15px; line-height: 1.6; color: rgba(255,255,255,.78); max-width: 620px;">{{ resumoHero }}</p>
         </div>
         <div style="position: relative; display: flex; gap: 12px; flex-wrap: wrap;">
           <div style="min-width: 132px; padding: 16px 18px; border-radius: 18px; background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.18); backdrop-filter: blur(6px);">
-            <p style="margin: 0 0 6px; font-size: 12px; color: rgba(255,255,255,.7);">SLA no prazo</p>
-            <p style="margin: 0; font-size: 26px; font-weight: 800;">96%</p>
+            <p style="margin: 0 0 6px; font-size: 12px; color: rgba(255,255,255,.7);">{{ kpiHeroA.rotulo }}</p>
+            <p style="margin: 0; font-size: 26px; font-weight: 800;">{{ kpiHeroA.valor }}</p>
           </div>
           <div style="min-width: 132px; padding: 16px 18px; border-radius: 18px; background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.18); backdrop-filter: blur(6px);">
-            <p style="margin: 0 0 6px; font-size: 12px; color: rgba(255,255,255,.7);">Na fila de render</p>
-            <p style="margin: 0; font-size: 26px; font-weight: 800; display: flex; align-items: center; gap: 8px;">27 <span style="width: 8px; height: 8px; border-radius: 999px; background: #22D3EE; animation: pulseDot 1.8s ease-in-out infinite;"></span></p>
+            <p style="margin: 0 0 6px; font-size: 12px; color: rgba(255,255,255,.7);">{{ kpiHeroB.rotulo }}</p>
+            <p style="margin: 0; font-size: 26px; font-weight: 800; display: flex; align-items: center; gap: 8px;">{{ kpiHeroB.valor }} <span style="width: 8px; height: 8px; border-radius: 999px; background: #22D3EE; animation: pulseDot 1.8s ease-in-out infinite;"></span></p>
           </div>
         </div>
       </div>
@@ -238,56 +238,56 @@
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 16px;">
         <div style="background: #FFFFFF; border: 1px solid #E6EAF2; border-radius: 22px; padding: 20px 22px; display: flex; flex-direction: column; gap: 12px; transition: box-shadow .18s, transform .18s;" style-hover="box-shadow: 0 14px 30px rgba(11,18,32,.09); transform: translateY(-2px);">
           <div style="display: flex; align-items: center; justify-content: space-between;">
-            <span style="font-size: 13px; color: #6B7A90; font-weight: 500;">GMV do mês</span>
+            <span style="font-size: 13px; color: #6B7A90; font-weight: 500;">{{ kpi1.rotulo }}</span>
             <span style="width: 36px; height: 36px; border-radius: 12px; background: #EAF0FF; color: #2563EB; display: flex; align-items: center; justify-content: center;">
               <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 17.5 9.5 12l3.5 3.2L20 7"/><path d="M15.5 7H20v4.5"/></svg>
             </span>
           </div>
-          <span style="font-size: 29px; font-weight: 800; letter-spacing: -1px;">R$ 184.320</span>
+          <span style="font-size: 29px; font-weight: 800; letter-spacing: -1px;">{{ kpi1.valor }}</span>
           <div style="display: flex; align-items: center; gap: 10px;">
-            <span style="padding: 4px 9px; border-radius: 999px; background: #E6F8F1; color: #059669; font-size: 11.5px; font-weight: 700;">+12,4%</span>
+            <span style="padding: 4px 9px; border-radius: 999px; background: #E6F8F1; color: #059669; font-size: 11.5px; font-weight: 700;">{{ kpi1.nota }}</span>
             <svg viewBox="0 0 80 26" width="80" height="26" fill="none" style="flex: 0 0 auto;"><path d="M0 21 12 17 24 19 36 11 48 14 60 6 72 3 80 5" stroke="#2563EB" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </div>
         </div>
 
         <div style="background: #FFFFFF; border: 1px solid #E6EAF2; border-radius: 22px; padding: 20px 22px; display: flex; flex-direction: column; gap: 12px; transition: box-shadow .18s, transform .18s;" style-hover="box-shadow: 0 14px 30px rgba(11,18,32,.09); transform: translateY(-2px);">
           <div style="display: flex; align-items: center; justify-content: space-between;">
-            <span style="font-size: 13px; color: #6B7A90; font-weight: 500;">Pedidos</span>
+            <span style="font-size: 13px; color: #6B7A90; font-weight: 500;">{{ kpi2.rotulo }}</span>
             <span style="width: 36px; height: 36px; border-radius: 12px; background: #E4F8FC; color: #0891B2; display: flex; align-items: center; justify-content: center;">
               <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h16l-1.2 11.2a2 2 0 0 1-2 1.8H7.2a2 2 0 0 1-2-1.8z"/><path d="M9 8V6.5a3 3 0 0 1 6 0V8"/></svg>
             </span>
           </div>
-          <span style="font-size: 29px; font-weight: 800; letter-spacing: -1px;">1 248</span>
+          <span style="font-size: 29px; font-weight: 800; letter-spacing: -1px;">{{ kpi2.valor }}</span>
           <div style="display: flex; align-items: center; gap: 10px;">
-            <span style="padding: 4px 9px; border-radius: 999px; background: #E6F8F1; color: #059669; font-size: 11.5px; font-weight: 700;">+8,1%</span>
+            <span style="padding: 4px 9px; border-radius: 999px; background: #E6F8F1; color: #059669; font-size: 11.5px; font-weight: 700;">{{ kpi2.nota }}</span>
             <svg viewBox="0 0 80 26" width="80" height="26" fill="none" style="flex: 0 0 auto;"><path d="M0 18 12 20 24 13 36 15 48 9 60 12 72 5 80 7" stroke="#06B6D4" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </div>
         </div>
 
         <div style="background: #FFFFFF; border: 1px solid #E6EAF2; border-radius: 22px; padding: 20px 22px; display: flex; flex-direction: column; gap: 12px; transition: box-shadow .18s, transform .18s;" style-hover="box-shadow: 0 14px 30px rgba(11,18,32,.09); transform: translateY(-2px);">
           <div style="display: flex; align-items: center; justify-content: space-between;">
-            <span style="font-size: 13px; color: #6B7A90; font-weight: 500;">Ticket médio</span>
+            <span style="font-size: 13px; color: #6B7A90; font-weight: 500;">{{ kpi3.rotulo }}</span>
             <span style="width: 36px; height: 36px; border-radius: 12px; background: #EDEBFE; color: #6366F1; display: flex; align-items: center; justify-content: center;">
               <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v16M8.5 8.2c0-1.6 1.6-2.4 3.5-2.4s3.5.9 3.5 2.6c0 3.6-7 2.2-7 5.6 0 1.8 1.7 2.7 3.5 2.7s3.5-.8 3.5-2.4"/></svg>
             </span>
           </div>
-          <span style="font-size: 29px; font-weight: 800; letter-spacing: -1px;">R$ 147,70</span>
+          <span style="font-size: 29px; font-weight: 800; letter-spacing: -1px;">{{ kpi3.valor }}</span>
           <div style="display: flex; align-items: center; gap: 10px;">
-            <span style="padding: 4px 9px; border-radius: 999px; background: #FEF3E2; color: #B45309; font-size: 11.5px; font-weight: 700;">-1,9%</span>
+            <span style="padding: 4px 9px; border-radius: 999px; background: #FEF3E2; color: #B45309; font-size: 11.5px; font-weight: 700;">{{ kpi3.nota }}</span>
             <svg viewBox="0 0 80 26" width="80" height="26" fill="none" style="flex: 0 0 auto;"><path d="M0 8 12 6 24 11 36 9 48 14 60 12 72 17 80 16" stroke="#F59E0B" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </div>
         </div>
 
         <div style="background: #FFFFFF; border: 1px solid #E6EAF2; border-radius: 22px; padding: 20px 22px; display: flex; flex-direction: column; gap: 12px; transition: box-shadow .18s, transform .18s;" style-hover="box-shadow: 0 14px 30px rgba(11,18,32,.09); transform: translateY(-2px);">
           <div style="display: flex; align-items: center; justify-content: space-between;">
-            <span style="font-size: 13px; color: #6B7A90; font-weight: 500;">Conversão da loja</span>
+            <span style="font-size: 13px; color: #6B7A90; font-weight: 500;">{{ kpi4.rotulo }}</span>
             <span style="width: 36px; height: 36px; border-radius: 12px; background: #E6F8F1; color: #059669; display: flex; align-items: center; justify-content: center;">
               <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5v5l3 2"/></svg>
             </span>
           </div>
-          <span style="font-size: 29px; font-weight: 800; letter-spacing: -1px;">3,8%</span>
+          <span style="font-size: 29px; font-weight: 800; letter-spacing: -1px;">{{ kpi4.valor }}</span>
           <div style="display: flex; align-items: center; gap: 10px;">
-            <span style="padding: 4px 9px; border-radius: 999px; background: #E6F8F1; color: #059669; font-size: 11.5px; font-weight: 700;">+0,4 pp</span>
+            <span style="padding: 4px 9px; border-radius: 999px; background: #E6F8F1; color: #059669; font-size: 11.5px; font-weight: 700;">{{ kpi4.nota }}</span>
             <svg viewBox="0 0 80 26" width="80" height="26" fill="none" style="flex: 0 0 auto;"><path d="M0 20 12 16 24 18 36 12 48 13 60 8 72 6 80 4" stroke="#10B981" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </div>
         </div>
@@ -299,9 +299,9 @@
           <div style="background: #FFFFFF; border: 1px solid #E6EAF2; border-radius: 24px; padding: 24px 26px;">
             <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; flex-wrap: wrap; margin-bottom: 18px;">
               <div>
-                <h2 style="margin: 0 0 6px; font-size: 18px; font-weight: 700;">Vendas e pedidos</h2>
+                <h2 style="margin: 0 0 6px; font-size: 18px; font-weight: 700;">{{ graficoTitulo }}</h2>
                 <div style="display: flex; align-items: center; gap: 18px;">
-                  <span style="display: flex; align-items: center; gap: 7px; font-size: 12.5px; color: #6B7A90;"><span style="width: 9px; height: 9px; border-radius: 3px; background: #2563EB;"></span>Faturamento</span>
+                  <span style="display: flex; align-items: center; gap: 7px; font-size: 12.5px; color: #6B7A90;"><span style="width: 9px; height: 9px; border-radius: 3px; background: #2563EB;"></span>{{ serieA }}</span>
                   <span style="display: flex; align-items: center; gap: 7px; font-size: 12.5px; color: #6B7A90;"><span style="width: 9px; height: 9px; border-radius: 3px; background: #06B6D4;"></span>Pedidos</span>
                 </div>
               </div>
@@ -320,9 +320,9 @@
                 <path d="M0 40h700"/><path d="M0 88h700"/><path d="M0 136h700"/><path d="M0 184h700"/>
               </g>
               <path d="M0 150 58 132 116 140 175 104 233 116 291 78 350 88 408 60 466 72 525 44 583 56 641 28 700 36 V210 H0 Z" fill="url(#fillA)"/>
-              <path d="M0 150 58 132 116 140 175 104 233 116 291 78 350 88 408 60 466 72 525 44 583 56 641 28 700 36" fill="none" stroke="#2563EB" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="1600" style="animation: drawLine 1.4s ease-out both;"/>
+              <path d="{{ linhaA }}" fill="none" stroke="#2563EB" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="1600" style="animation: drawLine 1.4s ease-out both;"/>
               <path d="M0 182 58 172 116 176 175 152 233 162 291 138 350 146 408 126 466 136 525 112 583 122 641 100 700 106 V210 H0 Z" fill="url(#fillB)"/>
-              <path d="M0 182 58 172 116 176 175 152 233 162 291 138 350 146 408 126 466 136 525 112 583 122 641 100 700 106" fill="none" stroke="#06B6D4" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="1600" style="animation: drawLine 1.6s .1s ease-out both;"/>
+              <path d="{{ linhaB }}" fill="none" stroke="#06B6D4" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="1600" style="animation: drawLine 1.6s .1s ease-out both;"/>
               <circle cx="641" cy="28" r="6" fill="#FFFFFF" stroke="#2563EB" stroke-width="3.4"/>
             </svg>
             <div style="display: flex; justify-content: space-between; margin-top: 8px; font-size: 11.5px; color: #9AA7BC;">
@@ -335,49 +335,26 @@
               <h2 style="margin: 0; font-size: 18px; font-weight: 700;">Pedidos recentes</h2>
               <a href="#" style="font-size: 13px; font-weight: 600;">Ver todos</a>
             </div>
-            <div style="display: grid; grid-template-columns: 1.5fr 1fr .8fr .9fr auto; gap: 16px; padding: 10px 26px; background: #F8FAFE; border-top: 1px solid #EEF1F7; border-bottom: 1px solid #EEF1F7; font-size: 11.5px; letter-spacing: .6px; text-transform: uppercase; color: #9AA7BC; font-weight: 600;">
-              <span>Cliente</span><span>Produto</span><span>Valor</span><span>Estado</span><span>Prazo</span>
+            <div style="display: grid; grid-template-columns: 1.5fr 1fr .8fr .9fr auto; gap: 16px; align-items: center; padding: 10px 26px; border-bottom: 1px solid #EEF1F7; background: #FBFCFE;">
+              <span style="font-size: 11px; letter-spacing: 1.2px; text-transform: uppercase; color: #9AA7BC; font-weight: 700;">Álbum</span>
+              <span style="font-size: 11px; letter-spacing: 1.2px; text-transform: uppercase; color: #9AA7BC; font-weight: 700;">Andamento</span>
+              <span style="font-size: 11px; letter-spacing: 1.2px; text-transform: uppercase; color: #9AA7BC; font-weight: 700;">Lâminas</span>
+              <span style="font-size: 11px; letter-spacing: 1.2px; text-transform: uppercase; color: #9AA7BC; font-weight: 700;">Estado</span>
+              <span style="font-size: 11px; letter-spacing: 1.2px; text-transform: uppercase; color: #9AA7BC; font-weight: 700;">Atualizado</span>
             </div>
-            <div style="display: grid; grid-template-columns: 1.5fr 1fr .8fr .9fr auto; gap: 16px; align-items: center; padding: 14px 26px; border-bottom: 1px solid #F4F6FB; cursor: pointer;" style-hover="background: #F8FAFE;">
-              <div style="display: flex; align-items: center; gap: 12px; min-width: 0;">
-                <span style="width: 36px; height: 36px; border-radius: 12px; background: #EAF0FF; color: #2563EB; font-size: 12.5px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex: 0 0 auto;">SF</span>
-                <div style="min-width: 0;"><p style="margin: 0; font-size: 14px; font-weight: 600;">Studio Fotográfico Lume</p><p style="margin: 2px 0 0; font-size: 12px; color: #9AA7BC;">#PT-10482 · B2B</p></div>
+            <div style="{{ recentesVazio }}">Nenhum álbum ainda. Cadastre um cliente e libere as fotos para o primeiro aparecer aqui.</div>
+            <sc-for list="{{ recentes }}" as="rc" hint-placeholder-count="4">
+              <div onClick="{{ rc.abrir }}" style="display: grid; grid-template-columns: 1.5fr 1fr .8fr .9fr auto; gap: 16px; align-items: center; padding: 14px 26px; border-bottom: 1px solid #F4F6FB; cursor: pointer;" style-hover="background: #F8FAFE;">
+                <div style="display: flex; align-items: center; gap: 12px; min-width: 0;">
+                  <span style="width: 36px; height: 36px; border-radius: 12px; background: #EAF0FF; color: #2563EB; font-size: 12.5px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex: 0 0 auto;">{{ rc.iniciais }}</span>
+                  <div style="min-width: 0;"><p style="margin: 0; font-size: 14px; font-weight: 600;">{{ rc.titulo }}</p><p style="margin: 2px 0 0; font-size: 12px; color: #9AA7BC;">{{ rc.cliente }}</p></div>
+                </div>
+                <span style="font-size: 13.5px; color: #34405A;">{{ rc.progresso }}</span>
+                <span style="font-size: 13.5px; font-weight: 700;">{{ rc.laminas }}</span>
+                <span style="{{ rc.selo }}">{{ rc.estado }}</span>
+                <span style="font-size: 12.5px; color: #6B7A90;">{{ rc.quando }}</span>
               </div>
-              <span style="font-size: 13.5px; color: #34405A;">Fotolivro 30×30</span>
-              <span style="font-size: 13.5px; font-weight: 700;">R$ 1.240</span>
-              <span style="padding: 6px 11px; border-radius: 999px; background: #EAF0FF; color: #2563EB; font-size: 12px; font-weight: 600; width: max-content;">Em produção</span>
-              <span style="font-size: 12.5px; color: #6B7A90;">27 ago</span>
-            </div>
-            <div style="display: grid; grid-template-columns: 1.5fr 1fr .8fr .9fr auto; gap: 16px; align-items: center; padding: 14px 26px; border-bottom: 1px solid #F4F6FB; cursor: pointer;" style-hover="background: #F8FAFE;">
-              <div style="display: flex; align-items: center; gap: 12px; min-width: 0;">
-                <span style="width: 36px; height: 36px; border-radius: 12px; background: #E6F8F1; color: #059669; font-size: 12.5px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex: 0 0 auto;">CF</span>
-                <div style="min-width: 0;"><p style="margin: 0; font-size: 14px; font-weight: 600;">Colégio Farol · Formatura</p><p style="margin: 2px 0 0; font-size: 12px; color: #9AA7BC;">#PT-10481 · Evento</p></div>
-              </div>
-              <span style="font-size: 13.5px; color: #34405A;">Revelação 15×21</span>
-              <span style="font-size: 13.5px; font-weight: 700;">R$ 3.980</span>
-              <span style="padding: 6px 11px; border-radius: 999px; background: #E6F8F1; color: #059669; font-size: 12px; font-weight: 600; width: max-content;">Pago</span>
-              <span style="font-size: 12.5px; color: #6B7A90;">28 ago</span>
-            </div>
-            <div style="display: grid; grid-template-columns: 1.5fr 1fr .8fr .9fr auto; gap: 16px; align-items: center; padding: 14px 26px; border-bottom: 1px solid #F4F6FB; cursor: pointer;" style-hover="background: #F8FAFE;">
-              <div style="display: flex; align-items: center; gap: 12px; min-width: 0;">
-                <span style="width: 36px; height: 36px; border-radius: 12px; background: #FEF3E2; color: #B45309; font-size: 12.5px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex: 0 0 auto;">RN</span>
-                <div style="min-width: 0;"><p style="margin: 0; font-size: 14px; font-weight: 600;">Rita Nunes</p><p style="margin: 2px 0 0; font-size: 12px; color: #9AA7BC;">#PT-10480 · B2C</p></div>
-              </div>
-              <span style="font-size: 13.5px; color: #34405A;">Quadro canvas 40×60</span>
-              <span style="font-size: 13.5px; font-weight: 700;">R$ 289</span>
-              <span style="padding: 6px 11px; border-radius: 999px; background: #FEF3E2; color: #B45309; font-size: 12px; font-weight: 600; width: max-content;">Aguarda arte</span>
-              <span style="font-size: 12.5px; color: #B45309; font-weight: 600;">Hoje</span>
-            </div>
-            <div style="display: grid; grid-template-columns: 1.5fr 1fr .8fr .9fr auto; gap: 16px; align-items: center; padding: 14px 26px; cursor: pointer;" style-hover="background: #F8FAFE;">
-              <div style="display: flex; align-items: center; gap: 12px; min-width: 0;">
-                <span style="width: 36px; height: 36px; border-radius: 12px; background: #EDEBFE; color: #6366F1; font-size: 12.5px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex: 0 0 auto;">MB</span>
-                <div style="min-width: 0;"><p style="margin: 0; font-size: 14px; font-weight: 600;">Memória Books</p><p style="margin: 2px 0 0; font-size: 12px; color: #9AA7BC;">#PT-10479 · B2B</p></div>
-              </div>
-              <span style="font-size: 13.5px; color: #34405A;">Álbum + estojo</span>
-              <span style="font-size: 13.5px; font-weight: 700;">R$ 2.410</span>
-              <span style="padding: 6px 11px; border-radius: 999px; background: #F1F5FD; color: #46536A; font-size: 12px; font-weight: 600; width: max-content;">Expedido</span>
-              <span style="font-size: 12.5px; color: #6B7A90;">24 ago</span>
-            </div>
+            </sc-for>
           </div>
         </div>
 

@@ -1,4 +1,4 @@
-import { identidadeLojista } from '@/lib/lojista';
+import { identidadeLojista, lojaAtual, numerosDaLoja, planoDaLoja } from '@/lib/lojista';
 import { minhasLojas, souSuperAdmin } from '@/lib/data';
 import DashboardLojista from '@/components/app/DashboardLojista';
 import './app.css';
@@ -31,5 +31,26 @@ export default async function PainelLojistaPage() {
     );
   }
 
-  return <DashboardLojista identidade={await identidadeLojista()} />;
+  const [ident, loja] = await Promise.all([identidadeLojista(), lojaAtual()]);
+  if (!loja) return <DashboardLojista identidade={ident} painel={{
+    lojaNome: 'Photoon', usuarioNome: ident.nome, usuarioCargo: ident.email,
+    numeros: { clientes: 0, projetos: 0, emEdicao: 0, prontos: 0, comPendencia: 0,
+      fotos: 0, laminas: 0, progressoMedio: 0, serieCriados: [], serieProntos: [], recentes: [] },
+    plano: null,
+  }} />;
+
+  const [numeros, plano] = await Promise.all([numerosDaLoja(loja.id), planoDaLoja(loja.id)]);
+
+  return (
+    <DashboardLojista
+      identidade={ident}
+      painel={{
+        lojaNome: loja.nome,
+        usuarioNome: ident.nome,
+        usuarioCargo: ident.email,
+        numeros,
+        plano: plano ? { nome: plano.nome, limite: plano.limite_projetos } : null,
+      }}
+    />
+  );
 }

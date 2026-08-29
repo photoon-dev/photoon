@@ -1,7 +1,7 @@
 'use client';
 
 import DashboardDesign, { CSS_PSEUDO } from '@/components/design/DashboardDesign';
-import { useDashboardDesign } from '@/components/app/useDashboardDesign';
+import { useDashboardDesign, type PainelDaLoja } from '@/components/app/useDashboardDesign';
 import { ROTAS_LOJISTA } from '@/lib/rotas-lojista';
 import MenuLojista from '@/components/app/MenuLojista';
 import type { IdentidadeLojista } from '@/lib/lojista';
@@ -12,8 +12,14 @@ import type { IdentidadeLojista } from '@/lib/lojista';
  * Usa a tela inteira do design (menu + cabeçalho + conteúdo), porque os cards
  * de KPI fazem parte dela. As outras telas montam sobre ShellLojista.
  */
-export default function DashboardLojista({ identidade }: { identidade: IdentidadeLojista }) {
-  const v = useDashboardDesign({ ativo: 0, rotas: ROTAS_LOJISTA });
+export default function DashboardLojista({
+  identidade,
+  painel,
+}: {
+  identidade: IdentidadeLojista;
+  painel: PainelDaLoja;
+}) {
+  const v = useDashboardDesign({ ativo: 0, rotas: ROTAS_LOJISTA, painel });
 
   return (
     <div className="om-app">

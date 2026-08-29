@@ -19,16 +19,13 @@ export const CSS_PSEUDO = `
 .dc12:hover { background: #FFFFFF; color: #2563EB; }
 .dc13:hover { background: #FFFFFF; color: #2563EB; }
 .dc14:hover { background: #F8FAFE; }
-.dc15:hover { background: #F8FAFE; }
-.dc16:hover { background: #F8FAFE; }
-.dc17:hover { background: #F8FAFE; }
-.dc18:hover { background: #FFE4E9; }
-.dc19:hover { background: #FCE9CE; }
-.dc20:hover { background: #E7EEFB; }
-.dc21:hover { background: #EAF0FF; border-color: #D6E2FC; }
-.dc22:hover { background: #E4F8FC; border-color: #CBEEF6; }
-.dc23:hover { background: #E6F8F1; border-color: #CDEEDF; }
-.dc24:hover { background: #EDEBFE; border-color: #DDD9FB; }
+.dc15:hover { background: #FFE4E9; }
+.dc16:hover { background: #FCE9CE; }
+.dc17:hover { background: #E7EEFB; }
+.dc18:hover { background: #EAF0FF; border-color: #D6E2FC; }
+.dc19:hover { background: #E4F8FC; border-color: #CBEEF6; }
+.dc20:hover { background: #E6F8F1; border-color: #CDEEDF; }
+.dc21:hover { background: #EDEBFE; border-color: #DDD9FB; }
 `;
 
 export default function DashboardDesign({ v }: { v: any }) {
@@ -60,7 +57,7 @@ export default function DashboardDesign({ v }: { v: any }) {
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', lineHeight: '1.25', minWidth: '0' }}>
               <span style={{ fontSize: '13.5px', fontWeight: '700', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                Lab Cores
+                {v.lojaNome}
               </span>
               <span style={{ fontSize: '11.5px', color: '#6B7A90' }}>
                 {v.lojaSub}
@@ -94,7 +91,7 @@ export default function DashboardDesign({ v }: { v: any }) {
                 Pedidos
               </span>
               <span style={css(v.badgeStyle)}>
-                14
+                {v.selo1}
               </span>
             </div>
             <div onClick={v.pick2} style={css(v.nav2)}>
@@ -283,18 +280,18 @@ export default function DashboardDesign({ v }: { v: any }) {
                   <path d="M4.5 6v12c0 1.7 3.4 3 7.5 3s7.5-1.3 7.5-3V6M4.5 12c0 1.7 3.4 3 7.5 3s7.5-1.3 7.5-3" />
                 </svg>
                 <span style={{ fontSize: '13px', fontWeight: '700' }}>
-                  Armazenamento
+                  {v.usoTitulo}
                 </span>
                 <span style={{ marginLeft: 'auto', fontSize: '11.5px', color: '#6B7A90' }}>
-                  72%
+                  {v.usoPct}
                 </span>
               </div>
               <div style={{ height: '7px', borderRadius: '999px', background: '#E3E9F5', overflow: 'hidden' }}>
-                <div style={{ width: '72%', height: '100%', borderRadius: '999px', background: 'linear-gradient(90deg,#2563EB,#06B6D4)' }}>
+                <div style={css(v.usoBarra)}>
                 </div>
               </div>
               <p style={{ margin: '10px 0 0', fontSize: '11.5px', color: '#6B7A90' }}>
-                1,44 TB de 2 TB · originais e produção
+                {v.usoTexto}
               </p>
             </div>
             <div onClick={v.toggleSide} style={css(v.collapseBtn)}>
@@ -338,14 +335,14 @@ export default function DashboardDesign({ v }: { v: any }) {
               <div style={{ position: 'relative' }}>
                 <div onClick={v.toggleMenu} style={css(v.avatarBtn)}>
                   <div style={{ width: '34px', height: '34px', borderRadius: '11px', background: 'linear-gradient(135deg,#0B1220,#2E3E5C)', color: '#FFF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12.5px', fontWeight: '700' }}>
-                    MR
+                    {v.usuarioIniciais}
                   </div>
                   <div style={{ display: 'flex', flexDirection: 'column', lineHeight: '1.25', textAlign: 'left' }}>
                     <span style={{ fontSize: '13.5px', fontWeight: '700' }}>
                       {v.usuarioNome}
                     </span>
                     <span style={{ fontSize: '11.5px', color: '#6B7A90' }}>
-                      Administradora
+                      {v.usuarioCargo}
                     </span>
                   </div>
                   <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#9AA7BC" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={css(v.menuChev)}>
@@ -406,30 +403,30 @@ export default function DashboardDesign({ v }: { v: any }) {
               </div>
               <div style={{ position: 'relative', flex: '1', minWidth: '320px' }}>
                 <p style={{ margin: '0 0 8px', fontSize: '12px', letterSpacing: '1.8px', textTransform: 'uppercase', color: 'rgba(255,255,255,.6)' }}>
-                  Terça, 25 de agosto · 09:12
+                  {v.agora}
                 </p>
                 <h1 style={{ margin: '0 0 10px', fontSize: '32px', lineHeight: '1.15', fontWeight: '800', letterSpacing: '-.8px' }}>
-                  Bom dia, Marta. O laboratório está indo bem.
+                  {v.saudacao}
                 </h1>
                 <p style={{ margin: '0', fontSize: '15px', lineHeight: '1.6', color: 'rgba(255,255,255,.78)', maxWidth: '620px' }}>
-                  14 pedidos entraram desde ontem, 3 lotes saem hoje e nenhum job de render falhou nas últimas 24 h.
+                  {v.resumoHero}
                 </p>
               </div>
               <div style={{ position: 'relative', display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
                 <div style={{ minWidth: '132px', padding: '16px 18px', borderRadius: '18px', background: 'rgba(255,255,255,.12)', border: '1px solid rgba(255,255,255,.18)', backdropFilter: 'blur(6px)' }}>
                   <p style={{ margin: '0 0 6px', fontSize: '12px', color: 'rgba(255,255,255,.7)' }}>
-                    SLA no prazo
+                    {v.kpiHeroA.rotulo}
                   </p>
                   <p style={{ margin: '0', fontSize: '26px', fontWeight: '800' }}>
-                    96%
+                    {v.kpiHeroA.valor}
                   </p>
                 </div>
                 <div style={{ minWidth: '132px', padding: '16px 18px', borderRadius: '18px', background: 'rgba(255,255,255,.12)', border: '1px solid rgba(255,255,255,.18)', backdropFilter: 'blur(6px)' }}>
                   <p style={{ margin: '0 0 6px', fontSize: '12px', color: 'rgba(255,255,255,.7)' }}>
-                    Na fila de render
+                    {v.kpiHeroB.rotulo}
                   </p>
                   <p style={{ margin: '0', fontSize: '26px', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    27
+                    {v.kpiHeroB.valor}
                     <span style={{ width: '8px', height: '8px', borderRadius: '999px', background: '#22D3EE', animation: 'pulseDot 1.8s ease-in-out infinite' }}>
                     </span>
                   </p>
@@ -440,7 +437,7 @@ export default function DashboardDesign({ v }: { v: any }) {
               <div style={{ background: '#FFFFFF', border: '1px solid #E6EAF2', borderRadius: '22px', padding: '20px 22px', display: 'flex', flexDirection: 'column', gap: '12px', transition: 'box-shadow .18s, transform .18s' }} className="dc7">
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                   <span style={{ fontSize: '13px', color: '#6B7A90', fontWeight: '500' }}>
-                    GMV do mês
+                    {v.kpi1.rotulo}
                   </span>
                   <span style={{ width: '36px', height: '36px', borderRadius: '12px', background: '#EAF0FF', color: '#2563EB', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
@@ -450,11 +447,11 @@ export default function DashboardDesign({ v }: { v: any }) {
                   </span>
                 </div>
                 <span style={{ fontSize: '29px', fontWeight: '800', letterSpacing: '-1px' }}>
-                  R$ 184.320
+                  {v.kpi1.valor}
                 </span>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                   <span style={{ padding: '4px 9px', borderRadius: '999px', background: '#E6F8F1', color: '#059669', fontSize: '11.5px', fontWeight: '700' }}>
-                    +12,4%
+                    {v.kpi1.nota}
                   </span>
                   <svg viewBox="0 0 80 26" width="80" height="26" fill="none" style={{ flex: '0 0 auto' }}>
                     <path d="M0 21 12 17 24 19 36 11 48 14 60 6 72 3 80 5" stroke="#2563EB" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
@@ -464,7 +461,7 @@ export default function DashboardDesign({ v }: { v: any }) {
               <div style={{ background: '#FFFFFF', border: '1px solid #E6EAF2', borderRadius: '22px', padding: '20px 22px', display: 'flex', flexDirection: 'column', gap: '12px', transition: 'box-shadow .18s, transform .18s' }} className="dc8">
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                   <span style={{ fontSize: '13px', color: '#6B7A90', fontWeight: '500' }}>
-                    Pedidos
+                    {v.kpi2.rotulo}
                   </span>
                   <span style={{ width: '36px', height: '36px', borderRadius: '12px', background: '#E4F8FC', color: '#0891B2', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
@@ -474,11 +471,11 @@ export default function DashboardDesign({ v }: { v: any }) {
                   </span>
                 </div>
                 <span style={{ fontSize: '29px', fontWeight: '800', letterSpacing: '-1px' }}>
-                  1 248
+                  {v.kpi2.valor}
                 </span>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                   <span style={{ padding: '4px 9px', borderRadius: '999px', background: '#E6F8F1', color: '#059669', fontSize: '11.5px', fontWeight: '700' }}>
-                    +8,1%
+                    {v.kpi2.nota}
                   </span>
                   <svg viewBox="0 0 80 26" width="80" height="26" fill="none" style={{ flex: '0 0 auto' }}>
                     <path d="M0 18 12 20 24 13 36 15 48 9 60 12 72 5 80 7" stroke="#06B6D4" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
@@ -488,7 +485,7 @@ export default function DashboardDesign({ v }: { v: any }) {
               <div style={{ background: '#FFFFFF', border: '1px solid #E6EAF2', borderRadius: '22px', padding: '20px 22px', display: 'flex', flexDirection: 'column', gap: '12px', transition: 'box-shadow .18s, transform .18s' }} className="dc9">
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                   <span style={{ fontSize: '13px', color: '#6B7A90', fontWeight: '500' }}>
-                    Ticket médio
+                    {v.kpi3.rotulo}
                   </span>
                   <span style={{ width: '36px', height: '36px', borderRadius: '12px', background: '#EDEBFE', color: '#6366F1', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
@@ -497,11 +494,11 @@ export default function DashboardDesign({ v }: { v: any }) {
                   </span>
                 </div>
                 <span style={{ fontSize: '29px', fontWeight: '800', letterSpacing: '-1px' }}>
-                  R$ 147,70
+                  {v.kpi3.valor}
                 </span>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                   <span style={{ padding: '4px 9px', borderRadius: '999px', background: '#FEF3E2', color: '#B45309', fontSize: '11.5px', fontWeight: '700' }}>
-                    -1,9%
+                    {v.kpi3.nota}
                   </span>
                   <svg viewBox="0 0 80 26" width="80" height="26" fill="none" style={{ flex: '0 0 auto' }}>
                     <path d="M0 8 12 6 24 11 36 9 48 14 60 12 72 17 80 16" stroke="#F59E0B" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
@@ -511,7 +508,7 @@ export default function DashboardDesign({ v }: { v: any }) {
               <div style={{ background: '#FFFFFF', border: '1px solid #E6EAF2', borderRadius: '22px', padding: '20px 22px', display: 'flex', flexDirection: 'column', gap: '12px', transition: 'box-shadow .18s, transform .18s' }} className="dc10">
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                   <span style={{ fontSize: '13px', color: '#6B7A90', fontWeight: '500' }}>
-                    Conversão da loja
+                    {v.kpi4.rotulo}
                   </span>
                   <span style={{ width: '36px', height: '36px', borderRadius: '12px', background: '#E6F8F1', color: '#059669', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
@@ -521,11 +518,11 @@ export default function DashboardDesign({ v }: { v: any }) {
                   </span>
                 </div>
                 <span style={{ fontSize: '29px', fontWeight: '800', letterSpacing: '-1px' }}>
-                  3,8%
+                  {v.kpi4.valor}
                 </span>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                   <span style={{ padding: '4px 9px', borderRadius: '999px', background: '#E6F8F1', color: '#059669', fontSize: '11.5px', fontWeight: '700' }}>
-                    +0,4 pp
+                    {v.kpi4.nota}
                   </span>
                   <svg viewBox="0 0 80 26" width="80" height="26" fill="none" style={{ flex: '0 0 auto' }}>
                     <path d="M0 20 12 16 24 18 36 12 48 13 60 8 72 6 80 4" stroke="#10B981" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
@@ -539,13 +536,13 @@ export default function DashboardDesign({ v }: { v: any }) {
                   <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '20px', flexWrap: 'wrap', marginBottom: '18px' }}>
                     <div>
                       <h2 style={{ margin: '0 0 6px', fontSize: '18px', fontWeight: '700' }}>
-                        Vendas e pedidos
+                        {v.graficoTitulo}
                       </h2>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '18px' }}>
                         <span style={{ display: 'flex', alignItems: 'center', gap: '7px', fontSize: '12.5px', color: '#6B7A90' }}>
                           <span style={{ width: '9px', height: '9px', borderRadius: '3px', background: '#2563EB' }}>
                           </span>
-                          Faturamento
+                          {v.serieA}
                         </span>
                         <span style={{ display: 'flex', alignItems: 'center', gap: '7px', fontSize: '12.5px', color: '#6B7A90' }}>
                           <span style={{ width: '9px', height: '9px', borderRadius: '3px', background: '#06B6D4' }}>
@@ -584,9 +581,9 @@ export default function DashboardDesign({ v }: { v: any }) {
                       <path d="M0 184h700" />
                     </g>
                     <path d="M0 150 58 132 116 140 175 104 233 116 291 78 350 88 408 60 466 72 525 44 583 56 641 28 700 36 V210 H0 Z" fill="url(#fillA)" />
-                    <path d="M0 150 58 132 116 140 175 104 233 116 291 78 350 88 408 60 466 72 525 44 583 56 641 28 700 36" fill="none" stroke="#2563EB" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" strokeDasharray="1600" style={{ animation: 'drawLine 1.4s ease-out both' }} />
+                    <path d={v.linhaA} fill="none" stroke="#2563EB" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" strokeDasharray="1600" style={{ animation: 'drawLine 1.4s ease-out both' }} />
                     <path d="M0 182 58 172 116 176 175 152 233 162 291 138 350 146 408 126 466 136 525 112 583 122 641 100 700 106 V210 H0 Z" fill="url(#fillB)" />
-                    <path d="M0 182 58 172 116 176 175 152 233 162 291 138 350 146 408 126 466 136 525 112 583 122 641 100 700 106" fill="none" stroke="#06B6D4" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" strokeDasharray="1600" style={{ animation: 'drawLine 1.6s .1s ease-out both' }} />
+                    <path d={v.linhaB} fill="none" stroke="#06B6D4" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" strokeDasharray="1600" style={{ animation: 'drawLine 1.6s .1s ease-out both' }} />
                     <circle cx="641" cy="28" r="6" fill="#FFFFFF" stroke="#2563EB" strokeWidth="3.4" />
                   </svg>
                   <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '8px', fontSize: '11.5px', color: '#9AA7BC' }}>
@@ -622,131 +619,55 @@ export default function DashboardDesign({ v }: { v: any }) {
                       Ver todos
                     </a>
                   </div>
-                  <div className="ph-tab-cab" style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr .8fr .9fr auto', gap: '16px', padding: '10px 26px', background: '#F8FAFE', borderTop: '1px solid #EEF1F7', borderBottom: '1px solid #EEF1F7', fontSize: '11.5px', letterSpacing: '.6px', textTransform: 'uppercase', color: '#9AA7BC', fontWeight: '600' }}>
-                    <span>
-                      Cliente
+                  <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr .8fr .9fr auto', gap: '16px', alignItems: 'center', padding: '10px 26px', borderBottom: '1px solid #EEF1F7', background: '#FBFCFE' }}>
+                    <span style={{ fontSize: '11px', letterSpacing: '1.2px', textTransform: 'uppercase', color: '#9AA7BC', fontWeight: '700' }}>
+                      Álbum
                     </span>
-                    <span>
-                      Produto
+                    <span style={{ fontSize: '11px', letterSpacing: '1.2px', textTransform: 'uppercase', color: '#9AA7BC', fontWeight: '700' }}>
+                      Andamento
                     </span>
-                    <span>
-                      Valor
+                    <span style={{ fontSize: '11px', letterSpacing: '1.2px', textTransform: 'uppercase', color: '#9AA7BC', fontWeight: '700' }}>
+                      Lâminas
                     </span>
-                    <span>
+                    <span style={{ fontSize: '11px', letterSpacing: '1.2px', textTransform: 'uppercase', color: '#9AA7BC', fontWeight: '700' }}>
                       Estado
                     </span>
-                    <span>
-                      Prazo
+                    <span style={{ fontSize: '11px', letterSpacing: '1.2px', textTransform: 'uppercase', color: '#9AA7BC', fontWeight: '700' }}>
+                      Atualizado
                     </span>
                   </div>
-                  <div data-ph-linha style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr .8fr .9fr auto', gap: '16px', alignItems: 'center', padding: '14px 26px', borderBottom: '1px solid #F4F6FB', cursor: 'pointer' }} className="dc14">
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', minWidth: '0' }}>
-                      <span style={{ width: '36px', height: '36px', borderRadius: '12px', background: '#EAF0FF', color: '#2563EB', fontSize: '12.5px', fontWeight: '700', display: 'flex', alignItems: 'center', justifyContent: 'center', flex: '0 0 auto' }}>
-                        SF
-                      </span>
-                      <div style={{ minWidth: '0' }}>
-                        <p style={{ margin: '0', fontSize: '14px', fontWeight: '600' }}>
-                          Studio Fotográfico Lume
-                        </p>
-                        <p style={{ margin: '2px 0 0', fontSize: '12px', color: '#9AA7BC' }}>
-                          #PT-10482 · B2B
-                        </p>
+                  <div style={css(v.recentesVazio)}>
+                    Nenhum álbum ainda. Cadastre um cliente e libere as fotos para o primeiro aparecer aqui.
+                  </div>
+                  {v.recentes.map((rc: any, i7: number) => (
+                    <div key={i7} onClick={rc.abrir} data-ph-linha style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr .8fr .9fr auto', gap: '16px', alignItems: 'center', padding: '14px 26px', borderBottom: '1px solid #F4F6FB', cursor: 'pointer' }} className="dc14">
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', minWidth: '0' }}>
+                        <span style={{ width: '36px', height: '36px', borderRadius: '12px', background: '#EAF0FF', color: '#2563EB', fontSize: '12.5px', fontWeight: '700', display: 'flex', alignItems: 'center', justifyContent: 'center', flex: '0 0 auto' }}>
+                          {rc.iniciais}
+                        </span>
+                        <div style={{ minWidth: '0' }}>
+                          <p style={{ margin: '0', fontSize: '14px', fontWeight: '600' }}>
+                            {rc.titulo}
+                          </p>
+                          <p style={{ margin: '2px 0 0', fontSize: '12px', color: '#9AA7BC' }}>
+                            {rc.cliente}
+                          </p>
+                        </div>
                       </div>
-                    </div>
-                    <span style={{ fontSize: '13.5px', color: '#34405A' }}>
-                      Fotolivro 30×30
-                    </span>
-                    <span style={{ fontSize: '13.5px', fontWeight: '700' }}>
-                      R$ 1.240
-                    </span>
-                    <span style={{ padding: '6px 11px', borderRadius: '999px', background: '#EAF0FF', color: '#2563EB', fontSize: '12px', fontWeight: '600', width: 'max-content' }}>
-                      Em produção
-                    </span>
-                    <span style={{ fontSize: '12.5px', color: '#6B7A90' }}>
-                      27 ago
-                    </span>
-                  </div>
-                  <div data-ph-linha style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr .8fr .9fr auto', gap: '16px', alignItems: 'center', padding: '14px 26px', borderBottom: '1px solid #F4F6FB', cursor: 'pointer' }} className="dc15">
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', minWidth: '0' }}>
-                      <span style={{ width: '36px', height: '36px', borderRadius: '12px', background: '#E6F8F1', color: '#059669', fontSize: '12.5px', fontWeight: '700', display: 'flex', alignItems: 'center', justifyContent: 'center', flex: '0 0 auto' }}>
-                        CF
+                      <span style={{ fontSize: '13.5px', color: '#34405A' }}>
+                        {rc.progresso}
                       </span>
-                      <div style={{ minWidth: '0' }}>
-                        <p style={{ margin: '0', fontSize: '14px', fontWeight: '600' }}>
-                          Colégio Farol · Formatura
-                        </p>
-                        <p style={{ margin: '2px 0 0', fontSize: '12px', color: '#9AA7BC' }}>
-                          #PT-10481 · Evento
-                        </p>
-                      </div>
-                    </div>
-                    <span style={{ fontSize: '13.5px', color: '#34405A' }}>
-                      Revelação 15×21
-                    </span>
-                    <span style={{ fontSize: '13.5px', fontWeight: '700' }}>
-                      R$ 3.980
-                    </span>
-                    <span style={{ padding: '6px 11px', borderRadius: '999px', background: '#E6F8F1', color: '#059669', fontSize: '12px', fontWeight: '600', width: 'max-content' }}>
-                      Pago
-                    </span>
-                    <span style={{ fontSize: '12.5px', color: '#6B7A90' }}>
-                      28 ago
-                    </span>
-                  </div>
-                  <div data-ph-linha style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr .8fr .9fr auto', gap: '16px', alignItems: 'center', padding: '14px 26px', borderBottom: '1px solid #F4F6FB', cursor: 'pointer' }} className="dc16">
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', minWidth: '0' }}>
-                      <span style={{ width: '36px', height: '36px', borderRadius: '12px', background: '#FEF3E2', color: '#B45309', fontSize: '12.5px', fontWeight: '700', display: 'flex', alignItems: 'center', justifyContent: 'center', flex: '0 0 auto' }}>
-                        RN
+                      <span style={{ fontSize: '13.5px', fontWeight: '700' }}>
+                        {rc.laminas}
                       </span>
-                      <div style={{ minWidth: '0' }}>
-                        <p style={{ margin: '0', fontSize: '14px', fontWeight: '600' }}>
-                          Rita Nunes
-                        </p>
-                        <p style={{ margin: '2px 0 0', fontSize: '12px', color: '#9AA7BC' }}>
-                          #PT-10480 · B2C
-                        </p>
-                      </div>
-                    </div>
-                    <span style={{ fontSize: '13.5px', color: '#34405A' }}>
-                      Quadro canvas 40×60
-                    </span>
-                    <span style={{ fontSize: '13.5px', fontWeight: '700' }}>
-                      R$ 289
-                    </span>
-                    <span style={{ padding: '6px 11px', borderRadius: '999px', background: '#FEF3E2', color: '#B45309', fontSize: '12px', fontWeight: '600', width: 'max-content' }}>
-                      Aguarda arte
-                    </span>
-                    <span style={{ fontSize: '12.5px', color: '#B45309', fontWeight: '600' }}>
-                      Hoje
-                    </span>
-                  </div>
-                  <div data-ph-linha style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr .8fr .9fr auto', gap: '16px', alignItems: 'center', padding: '14px 26px', cursor: 'pointer' }} className="dc17">
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', minWidth: '0' }}>
-                      <span style={{ width: '36px', height: '36px', borderRadius: '12px', background: '#EDEBFE', color: '#6366F1', fontSize: '12.5px', fontWeight: '700', display: 'flex', alignItems: 'center', justifyContent: 'center', flex: '0 0 auto' }}>
-                        MB
+                      <span style={css(rc.selo)}>
+                        {rc.estado}
                       </span>
-                      <div style={{ minWidth: '0' }}>
-                        <p style={{ margin: '0', fontSize: '14px', fontWeight: '600' }}>
-                          Memória Books
-                        </p>
-                        <p style={{ margin: '2px 0 0', fontSize: '12px', color: '#9AA7BC' }}>
-                          #PT-10479 · B2B
-                        </p>
-                      </div>
+                      <span style={{ fontSize: '12.5px', color: '#6B7A90' }}>
+                        {rc.quando}
+                      </span>
                     </div>
-                    <span style={{ fontSize: '13.5px', color: '#34405A' }}>
-                      Álbum + estojo
-                    </span>
-                    <span style={{ fontSize: '13.5px', fontWeight: '700' }}>
-                      R$ 2.410
-                    </span>
-                    <span style={{ padding: '6px 11px', borderRadius: '999px', background: '#F1F5FD', color: '#46536A', fontSize: '12px', fontWeight: '600', width: 'max-content' }}>
-                      Expedido
-                    </span>
-                    <span style={{ fontSize: '12.5px', color: '#6B7A90' }}>
-                      24 ago
-                    </span>
-                  </div>
+                  ))}
                 </div>
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
@@ -823,7 +744,7 @@ export default function DashboardDesign({ v }: { v: any }) {
                     Precisa de você
                   </h2>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                    <div style={{ display: 'flex', gap: '12px', alignItems: 'center', padding: '12px', borderRadius: '16px', background: '#FFF1F3', cursor: 'pointer' }} className="dc18">
+                    <div style={{ display: 'flex', gap: '12px', alignItems: 'center', padding: '12px', borderRadius: '16px', background: '#FFF1F3', cursor: 'pointer' }} className="dc15">
                       <span style={{ width: '34px', height: '34px', borderRadius: '11px', background: '#FFFFFF', color: '#E11D48', display: 'flex', alignItems: 'center', justifyContent: 'center', flex: '0 0 auto' }}>
                         <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round">
                           <path d="M12 8v5M12 16.5h.01" />
@@ -839,7 +760,7 @@ export default function DashboardDesign({ v }: { v: any }) {
                         </p>
                       </div>
                     </div>
-                    <div style={{ display: 'flex', gap: '12px', alignItems: 'center', padding: '12px', borderRadius: '16px', background: '#FEF3E2', cursor: 'pointer' }} className="dc19">
+                    <div style={{ display: 'flex', gap: '12px', alignItems: 'center', padding: '12px', borderRadius: '16px', background: '#FEF3E2', cursor: 'pointer' }} className="dc16">
                       <span style={{ width: '34px', height: '34px', borderRadius: '11px', background: '#FFFFFF', color: '#B45309', display: 'flex', alignItems: 'center', justifyContent: 'center', flex: '0 0 auto' }}>
                         <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
                           <rect x="3" y="4" width="18" height="16" rx="4" />
@@ -855,7 +776,7 @@ export default function DashboardDesign({ v }: { v: any }) {
                         </p>
                       </div>
                     </div>
-                    <div style={{ display: 'flex', gap: '12px', alignItems: 'center', padding: '12px', borderRadius: '16px', background: '#F1F5FD', cursor: 'pointer' }} className="dc20">
+                    <div style={{ display: 'flex', gap: '12px', alignItems: 'center', padding: '12px', borderRadius: '16px', background: '#F1F5FD', cursor: 'pointer' }} className="dc17">
                       <span style={{ width: '34px', height: '34px', borderRadius: '11px', background: '#FFFFFF', color: '#2563EB', display: 'flex', alignItems: 'center', justifyContent: 'center', flex: '0 0 auto' }}>
                         <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
                           <path d="M4 6h16M4 12h16M4 18h10" />
@@ -877,7 +798,7 @@ export default function DashboardDesign({ v }: { v: any }) {
                     Atalhos
                   </h2>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '9px', padding: '14px', borderRadius: '16px', background: '#F8FAFE', border: '1px solid #EEF1F7', cursor: 'pointer' }} className="dc21">
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '9px', padding: '14px', borderRadius: '16px', background: '#F8FAFE', border: '1px solid #EEF1F7', cursor: 'pointer' }} className="dc18">
                       <span style={{ width: '32px', height: '32px', borderRadius: '10px', background: '#EAF0FF', color: '#2563EB', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                         <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
                           <path d="M12 5v14M5 12h14" />
@@ -887,7 +808,7 @@ export default function DashboardDesign({ v }: { v: any }) {
                         Novo produto
                       </span>
                     </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '9px', padding: '14px', borderRadius: '16px', background: '#F8FAFE', border: '1px solid #EEF1F7', cursor: 'pointer' }} className="dc22">
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '9px', padding: '14px', borderRadius: '16px', background: '#F8FAFE', border: '1px solid #EEF1F7', cursor: 'pointer' }} className="dc19">
                       <span style={{ width: '32px', height: '32px', borderRadius: '10px', background: '#E4F8FC', color: '#0891B2', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                         <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
                           <path d="M12 16V4M8 8l4-4 4 4" />
@@ -898,7 +819,7 @@ export default function DashboardDesign({ v }: { v: any }) {
                         Importar clientes
                       </span>
                     </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '9px', padding: '14px', borderRadius: '16px', background: '#F8FAFE', border: '1px solid #EEF1F7', cursor: 'pointer' }} className="dc23">
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '9px', padding: '14px', borderRadius: '16px', background: '#F8FAFE', border: '1px solid #EEF1F7', cursor: 'pointer' }} className="dc20">
                       <span style={{ width: '32px', height: '32px', borderRadius: '10px', background: '#E6F8F1', color: '#059669', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                         <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
                           <rect x="3" y="5" width="18" height="14" rx="3.5" />
@@ -909,7 +830,7 @@ export default function DashboardDesign({ v }: { v: any }) {
                         Tabela de preços
                       </span>
                     </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '9px', padding: '14px', borderRadius: '16px', background: '#F8FAFE', border: '1px solid #EEF1F7', cursor: 'pointer' }} className="dc24">
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '9px', padding: '14px', borderRadius: '16px', background: '#F8FAFE', border: '1px solid #EEF1F7', cursor: 'pointer' }} className="dc21">
                       <span style={{ width: '32px', height: '32px', borderRadius: '10px', background: '#EDEBFE', color: '#6366F1', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                         <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
                           <circle cx="12" cy="12" r="8.5" />
