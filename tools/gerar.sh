@@ -33,6 +33,27 @@ if [ "$alvo" = tudo ] || [ "$alvo" = cliente ]; then
   gerar 'Cliente Meus projetos.dc.html' MeusProjetosDesign meus-projetos.json
 fi
 
+# Telas do painel do lojista que vêm inteiras do design (menu + cabeçalho +
+# conteúdo). Todas usam os mesmos bindings de moldura do Dashboard.
+if [ "$alvo" = tudo ] || [ "$alvo" = telas ]; then
+  gerar 'Pedidos.dc.html'     PedidosDesign     ''
+  gerar 'Pedido.dc.html'      PedidoDesign      ''
+  gerar 'Producao.dc.html'    ProducaoDesign    ''
+  gerar 'Expedicao.dc.html'   ExpedicaoDesign   ''
+  gerar 'Catalogo.dc.html'    CatalogoDesign    ''
+  gerar 'Precos.dc.html'      PrecosDesign      ''
+  gerar 'Loja.dc.html'        LojaDesign        ''
+  gerar 'CRM.dc.html'         CRMDesign         ''
+  gerar 'Vendedores.dc.html'  VendedoresDesign  ''
+  gerar 'Marketing.dc.html'   MarketingDesign   ''
+  gerar 'Financeiro.dc.html'  FinanceiroDesign  ''
+  gerar 'Carteira.dc.html'    CarteiraDesign    ''
+  gerar 'Relatorios.dc.html'  RelatoriosDesign  ''
+  gerar 'Integracoes.dc.html' IntegracoesDesign ''
+  gerar 'Auditoria.dc.html'   AuditoriaDesign   ''
+  gerar 'Suporte.dc.html'     SuporteDesign     ''
+fi
+
 if [ "$alvo" = tudo ] || [ "$alvo" = lojista ]; then
   gerar 'Dashboard.dc.html' DashboardDesign dashboard.json
   gerar 'Dashboard.dc.html' ShellLojistaDesign shell-lojista.json

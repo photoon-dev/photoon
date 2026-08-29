@@ -1,32 +1,21 @@
 import { redirect } from 'next/navigation';
-import { lojaAtual, planoDaLoja, usoAtual } from '@/lib/lojista';
-import { listarProdutos, listarModelos } from '@/lib/comercial';
-import ShellLojista from '@/components/app/ShellLojista';
-import CardPlano from '@/components/app/CardPlano';
-import PainelCatalogo from '@/components/app/PainelCatalogo';
+import { molduraDaLoja } from '@/lib/painel-loja';
+import CatalogoDesign, { CSS_PSEUDO } from '@/components/design/CatalogoDesign';
+import TelaDoDesign from '@/components/app/TelaDoDesign';
 import '../app.css';
 
 export const dynamic = 'force-dynamic';
 
-export default async function Pagina({
-  searchParams,
-}: {
-  searchParams: Promise<Record<string, string | undefined>>;
-}) {
-  const atual = await lojaAtual();
-  if (!atual) redirect('/');
-  const q = await searchParams;
-
-  const [produtos, modelos, plano, uso] = await Promise.all([
-    listarProdutos(atual.id),
-    listarModelos(atual.id),
-    planoDaLoja(atual.id),
-    usoAtual(atual.id),
-  ]);
+export default async function Pagina() {
+  const m = await molduraDaLoja();
+  if (!m) redirect('/');
 
   return (
-    <ShellLojista ativo={5} cartaoPlano={<CardPlano plano={plano} uso={uso} compacto />}>
-      <PainelCatalogo produtos={produtos} modelos={modelos} />
-    </ShellLojista>
+    <TelaDoDesign
+      Design={CatalogoDesign}
+      cssPseudo={CSS_PSEUDO}
+      ativo={5}
+      painel={m.painel}
+    />
   );
 }

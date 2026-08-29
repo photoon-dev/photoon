@@ -142,6 +142,20 @@ class Conversor(HTMLParser):
 
     # ---------- tags ----------
     def handle_starttag(self, tag, attrs):
+        # `<image-slot>` é o marcador de imagem do Claude Design: um elemento
+        # próprio que existe só no protótipo, para mostrar um retângulo cinza.
+        # No produto o lugar é preenchido por foto de verdade, então ele vira um
+        # `<span>` com o rótulo — que o binding depois substitui.
+        if tag == 'image-slot':
+            rotulo = dict(attrs).get('placeholder', '')
+            self.emitir(
+                '<span style={{ display: "flex", alignItems: "center", '
+                'justifyContent: "center", width: "100%", height: "100%", '
+                'fontSize: "12px", color: "#9AA7BC" }}>'
+                f'{rotulo}</span>'
+            )
+            return
+
         tag = TAGS_SVG.get(tag, tag)
         d = dict(attrs)
 
@@ -253,6 +267,29 @@ class Conversor(HTMLParser):
             return
         if tag in VAZIAS:
             return
+
+        # O fechamento não bate com o topo da pilha.
+        #
+        # Dois arquivos exportados do design (Pedido e Pedidos) têm um `<div>`
+        # sem par no meio do documento. O HTML tolera — o navegador fecha
+        # sozinho ao encontrar o pai. O JSX não: o TypeScript recusa a tela
+        # inteira com "no corresponding closing tag".
+        #
+        # Fechar aqui, no lugar certo do aninhamento, é o que o navegador faria.
+        # Corrigir os .dc.html à mão não serve: a próxima exportação do design
+        # traria o defeito de volta.
+        if topo != tag:
+            profundidade = next(
+                (i for i, (t, _) in enumerate(reversed(self.pilha)) if t == tag), None
+            )
+            # A tag nem está aberta: fechamento órfão, ignora.
+            if profundidade is None:
+                return
+            for _ in range(profundidade):
+                aberta, _item = self.pilha.pop()
+                self.nivel -= 1
+                self.emitir(f'</{aberta}>')
+
         self.pilha.pop()
         self.nivel -= 1
         self.emitir(f'</{tag}>')
@@ -363,6 +400,7 @@ def main():
 
     c = Conversor()
     c.feed(corpo)
+
     c.saida = aplicar_slots(c.saida, slots)
     c.saida = aplicar_trocas(c.saida, trocas)
 

@@ -1,26 +1,21 @@
 import { redirect } from 'next/navigation';
-import { lojaAtual, planoDaLoja, usoAtual } from '@/lib/lojista';
-import { dadosVendedores } from '@/lib/comercial';
-import ShellLojista from '@/components/app/ShellLojista';
-import CardPlano from '@/components/app/CardPlano';
-import PainelVendedores from '@/components/app/PainelVendedores';
+import { molduraDaLoja } from '@/lib/painel-loja';
+import VendedoresDesign, { CSS_PSEUDO } from '@/components/design/VendedoresDesign';
+import TelaDoDesign from '@/components/app/TelaDoDesign';
 import '../app.css';
 
 export const dynamic = 'force-dynamic';
 
 export default async function Pagina() {
-  const atual = await lojaAtual();
-  if (!atual) redirect('/');
-
-  const [dados, plano, uso] = await Promise.all([
-    dadosVendedores(atual.id),
-    planoDaLoja(atual.id),
-    usoAtual(atual.id),
-  ]);
+  const m = await molduraDaLoja();
+  if (!m) redirect('/');
 
   return (
-    <ShellLojista ativo={10} cartaoPlano={<CardPlano plano={plano} uso={uso} compacto />}>
-      <PainelVendedores dados={dados} />
-    </ShellLojista>
+    <TelaDoDesign
+      Design={VendedoresDesign}
+      cssPseudo={CSS_PSEUDO}
+      ativo={10}
+      painel={m.painel}
+    />
   );
 }

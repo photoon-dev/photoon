@@ -1,38 +1,35 @@
 import { redirect } from 'next/navigation';
-import { lojaAtual, planoDaLoja, usoAtual } from '@/lib/lojista';
-import { listarEnvios, pedidosSemEnvio } from '@/lib/pedidos';
-import ShellLojista from '@/components/app/ShellLojista';
-import CardPlano from '@/components/app/CardPlano';
-import PainelExpedicao from '@/components/app/PainelExpedicao';
+import { molduraDaLoja } from '@/lib/painel-loja';
+import { listarEnvios } from '@/lib/pedidos';
+import ExpedicaoDesign, { CSS_PSEUDO } from '@/components/design/ExpedicaoDesign';
+import TelaDoDesign from '@/components/app/TelaDoDesign';
 import '../app.css';
 
 export const dynamic = 'force-dynamic';
 
-export default async function Pagina({
-  searchParams,
-}: {
-  searchParams: Promise<Record<string, string | undefined>>;
-}) {
-  const atual = await lojaAtual();
-  if (!atual) redirect('/');
-  const q = await searchParams;
+export default async function Pagina() {
+  const m = await molduraDaLoja();
+  if (!m) redirect('/');
 
-  const estado = q.estado ?? "";
-  const [envios, semEnvio, plano, uso] = await Promise.all([
-    listarEnvios(atual.id, estado),
-    pedidosSemEnvio(atual.id),
-    planoDaLoja(atual.id),
-    usoAtual(atual.id),
-  ]);
+  const { envios } = await listarEnvios(m.loja.id, '');
+
+  /*
+   * O design traz seis linhas de exemplo com nomes fictícios. Aqui elas
+   * recebem os nomes reais desta tela; quando não há tantos registros, a
+   * linha fica em branco em vez de mostrar um cliente que não existe.
+   */
+  const nomes = envios.map((e) => e.pedidos?.clientes?.nome ?? `#${e.pedidos?.numero ?? ''}`);
+  const linhas = Object.fromEntries(
+    Array.from({ length: 6 }, (_, i) => [`linha${i}`, { nome: nomes[i] ?? '' }]),
+  );
 
   return (
-    <ShellLojista ativo={3} cartaoPlano={<CardPlano plano={plano} uso={uso} compacto />}>
-      <PainelExpedicao
-        envios={envios.envios}
-        porEstado={envios.porEstado}
-        semEnvio={semEnvio}
-        estado={estado}
-      />
-    </ShellLojista>
+    <TelaDoDesign
+      Design={ExpedicaoDesign}
+      cssPseudo={CSS_PSEUDO}
+      ativo={3}
+      painel={m.painel}
+      dados={linhas}
+    />
   );
 }

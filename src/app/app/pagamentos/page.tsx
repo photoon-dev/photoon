@@ -1,32 +1,35 @@
 import { redirect } from 'next/navigation';
-import { lojaAtual, planoDaLoja, usoAtual } from '@/lib/lojista';
+import { molduraDaLoja } from '@/lib/painel-loja';
 import { listarPagamentos } from '@/lib/pedidos';
-import ShellLojista from '@/components/app/ShellLojista';
-import CardPlano from '@/components/app/CardPlano';
-import PainelPagamentos from '@/components/app/PainelPagamentos';
+import FinanceiroDesign, { CSS_PSEUDO } from '@/components/design/FinanceiroDesign';
+import TelaDoDesign from '@/components/app/TelaDoDesign';
 import '../app.css';
 
 export const dynamic = 'force-dynamic';
 
-export default async function Pagina({
-  searchParams,
-}: {
-  searchParams: Promise<Record<string, string | undefined>>;
-}) {
-  const atual = await lojaAtual();
-  if (!atual) redirect('/');
-  const q = await searchParams;
+export default async function Pagina() {
+  const m = await molduraDaLoja();
+  if (!m) redirect('/');
 
-  const filtros = { estado: q.estado ?? "", metodo: q.metodo ?? "", de: q.de ?? "", ate: q.ate ?? "" };
-  const [dados, plano, uso] = await Promise.all([
-    listarPagamentos(atual.id, filtros),
-    planoDaLoja(atual.id),
-    usoAtual(atual.id),
-  ]);
+  const dados = await listarPagamentos(m.loja.id, {});
+
+  /*
+   * O design traz seis linhas de exemplo com nomes fictícios. Aqui elas
+   * recebem os nomes reais desta tela; quando não há tantos registros, a
+   * linha fica em branco em vez de mostrar um cliente que não existe.
+   */
+  const nomes = dados.pagamentos.map((p) => p.pedidos?.clientes?.nome ?? `#${p.pedidos?.numero ?? ''}`);
+  const linhas = Object.fromEntries(
+    Array.from({ length: 6 }, (_, i) => [`linha${i}`, { nome: nomes[i] ?? '' }]),
+  );
 
   return (
-    <ShellLojista ativo={12} cartaoPlano={<CardPlano plano={plano} uso={uso} compacto />}>
-      <PainelPagamentos dados={dados} filtros={filtros} />
-    </ShellLojista>
+    <TelaDoDesign
+      Design={FinanceiroDesign}
+      cssPseudo={CSS_PSEUDO}
+      ativo={12}
+      painel={m.painel}
+      dados={linhas}
+    />
   );
 }

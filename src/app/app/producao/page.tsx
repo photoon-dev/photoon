@@ -1,32 +1,39 @@
 import { redirect } from 'next/navigation';
-import { lojaAtual, planoDaLoja, usoAtual } from '@/lib/lojista';
-import { filaDeProducao, pedidosForaDaFila } from '@/lib/pedidos';
-import ShellLojista from '@/components/app/ShellLojista';
-import CardPlano from '@/components/app/CardPlano';
-import PainelProducao from '@/components/app/PainelProducao';
+import { molduraDaLoja } from '@/lib/painel-loja';
+import { filaDeProducao } from '@/lib/pedidos';
+import ProducaoDesign, { CSS_PSEUDO } from '@/components/design/ProducaoDesign';
+import TelaDoDesign from '@/components/app/TelaDoDesign';
 import '../app.css';
 
 export const dynamic = 'force-dynamic';
 
-export default async function Pagina({
-  searchParams,
-}: {
-  searchParams: Promise<Record<string, string | undefined>>;
-}) {
-  const atual = await lojaAtual();
-  if (!atual) redirect('/');
-  const q = await searchParams;
+export default async function Pagina() {
+  const m = await molduraDaLoja();
+  if (!m) redirect('/');
 
-  const [fila, foraDaFila, plano, uso] = await Promise.all([
-    filaDeProducao(atual.id),
-    pedidosForaDaFila(atual.id),
-    planoDaLoja(atual.id),
-    usoAtual(atual.id),
-  ]);
+  const fila = await filaDeProducao(m.loja.id);
+
+  /*
+   * O design traz seis linhas de exemplo com nomes fictícios. Aqui elas
+   * recebem os nomes reais desta tela; quando não há tantos registros, a
+   * linha fica em branco em vez de mostrar um cliente que não existe.
+   */
+  // `filaDeProducao` devolve um mapa etapa -> itens; achatar dá a ordem em que
+  // as peças aparecem no quadro.
+  const nomes = Object.values(fila)
+    .flat()
+    .map((i) => i.pedidos?.clientes?.nome ?? `#${i.pedidos?.numero ?? ''}`);
+  const linhas = Object.fromEntries(
+    Array.from({ length: 6 }, (_, i) => [`linha${i}`, { nome: nomes[i] ?? '' }]),
+  );
 
   return (
-    <ShellLojista ativo={2} cartaoPlano={<CardPlano plano={plano} uso={uso} compacto />}>
-      <PainelProducao fila={fila} foraDaFila={foraDaFila} />
-    </ShellLojista>
+    <TelaDoDesign
+      Design={ProducaoDesign}
+      cssPseudo={CSS_PSEUDO}
+      ativo={2}
+      painel={m.painel}
+      dados={linhas}
+    />
   );
 }

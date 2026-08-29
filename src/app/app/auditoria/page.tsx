@@ -1,44 +1,51 @@
 import { redirect } from 'next/navigation';
-import { lojaAtual, planoDaLoja, usoAtual } from '@/lib/lojista';
-import { AUDITORIA_POR_PAGINA, auditoriaDaLoja, resolverPeriodo } from '@/lib/financeiro';
-import ShellLojista from '@/components/app/ShellLojista';
-import CardPlano from '@/components/app/CardPlano';
-import PainelAuditoria from '@/components/app/PainelAuditoria';
+import { molduraDaLoja } from '@/lib/painel-loja';
+import { auditoriaDaLoja, resolverPeriodo } from '@/lib/financeiro';
+import AuditoriaDesign, { CSS_PSEUDO } from '@/components/design/AuditoriaDesign';
+import TelaDoDesign from '@/components/app/TelaDoDesign';
 import '../app.css';
 
 export const dynamic = 'force-dynamic';
 
-export default async function AuditoriaPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ dias?: string; de?: string; ate?: string; acao?: string; p?: string }>;
-}) {
-  const loja = await lojaAtual();
-  if (!loja) redirect('/');
+/** Nome legível para cada ação registrada; a chave crua não diz nada ao lojista. */
+const ROTULO: Record<string, string> = {
+  'pedido.criado': 'Pedido criado',
+  'pedido.cancelado': 'Pedido cancelado',
+  'pagamento.aprovado': 'Pagamento aprovado',
+  'producao.iniciada': 'Produção iniciada',
+  'produto.criado': 'Produto cadastrado',
+};
 
-  const params = await searchParams;
-  const periodo = resolverPeriodo(params);
-  const acao = params.acao ?? '';
-  const pagina = Math.max(0, Number(params.p) || 0);
+export default async function Pagina() {
+  const m = await molduraDaLoja();
+  if (!m) redirect('/');
 
-  const [registro, plano, uso] = await Promise.all([
-    auditoriaDaLoja(loja.id, periodo, { acao, pagina }),
-    planoDaLoja(loja.id),
-    usoAtual(loja.id),
-  ]);
+  // 90 dias: auditoria serve para achar o que aconteceu semanas atrás, não só
+  // hoje. O filtro por período fica para quando a tela tiver o seletor.
+  const { linhas } = await auditoriaDaLoja(m.loja.id, resolverPeriodo({ dias: '90' }));
 
   return (
-    <ShellLojista ativo={17} cartaoPlano={<CardPlano plano={plano} uso={uso} compacto />}>
-      <PainelAuditoria
-        linhas={registro.linhas}
-        acoes={registro.acoes}
-        total={registro.total}
-        temAlgumRegistro={registro.temAlgumRegistro}
-        pagina={pagina}
-        porPagina={AUDITORIA_POR_PAGINA}
-        acao={acao}
-        periodo={periodo}
-      />
-    </ShellLojista>
+    <TelaDoDesign
+      Design={AuditoriaDesign}
+      cssPseudo={CSS_PSEUDO}
+      ativo={17}
+      painel={m.painel}
+      dados={{
+        eventos: linhas.map((l) => ({
+          acao: ROTULO[l.acao] ?? l.acao,
+          // O detalhe é jsonb: mostrar a chave e o valor é mais útil que o JSON.
+          detalhe: [l.entidade, l.detalhe ? Object.entries(l.detalhe as Record<string, unknown>).map(([k, v]) => `${k}: ${v}`).join(' · ') : '']
+            .filter(Boolean)
+            .join(' · '),
+          quando: new Date(l.criadoEm).toLocaleString('pt-BR', {
+            day: 'numeric',
+            month: 'short',
+            hour: '2-digit',
+            minute: '2-digit',
+          }),
+        })),
+        semEventos: linhas.length ? 'display:none' : 'padding:34px;text-align:center;font-size:13px;color:#9AA7BC',
+      }}
+    />
   );
 }

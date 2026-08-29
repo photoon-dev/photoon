@@ -42,10 +42,10 @@
     </div>
 
     <div style="{{ tenantStyle }}">
-      <div style="width: 34px; height: 34px; border-radius: 11px; background: linear-gradient(135deg,#2563EB,#06B6D4); color: #FFF; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; flex: 0 0 auto;">LC</div>
+      <div style="width: 34px; height: 34px; border-radius: 11px; background: linear-gradient(135deg,#2563EB,#06B6D4); color: #FFF; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; flex: 0 0 auto;">{{ lojaIniciais }}</div>
       <div style="display: flex; flex-direction: column; line-height: 1.25; min-width: 0;">
-        <span style="font-size: 13.5px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Lab Cores</span>
-        <span style="font-size: 11.5px; color: #6B7A90;">Filial Centro · Plano Pro</span>
+        <span style="font-size: 13.5px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ lojaNome }}</span>
+        <span style="font-size: 11.5px; color: #6B7A90;">{{ lojaSub }}</span>
       </div>
       <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#9AA7BC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left: auto; flex: 0 0 auto;"><path d="m8 9 4-4 4 4M8 15l4 4 4-4"/></svg>
     </div>
@@ -59,7 +59,7 @@
       <div onClick="{{ pick1 }}" style="{{ nav1 }}">
         <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="flex:0 0 auto"><path d="M4 8h16l-1.2 11.2a2 2 0 0 1-2 1.8H7.2a2 2 0 0 1-2-1.8z"/><path d="M9 8V6.5a3 3 0 0 1 6 0V8"/></svg>
         <span style="{{ labelStyle }}">Pedidos</span>
-        <span style="{{ badgeStyle }}">14</span>
+        <span style="{{ badgeStyle }}">{{ selo1 }}</span>
       </div>
       <div onClick="{{ pick2 }}" style="{{ nav2 }}">
         <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="flex:0 0 auto"><path d="M7 9V4h10v5"/><rect x="4" y="9" width="16" height="7" rx="2.5"/><path d="M7 14h10v6H7z"/></svg>
@@ -143,11 +143,11 @@
       <div style="{{ storageCard }}">
         <div style="display: flex; align-items: center; gap: 9px; margin-bottom: 10px;">
           <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#2563EB" stroke-width="1.9" stroke-linecap="round"><ellipse cx="12" cy="6" rx="7.5" ry="3"/><path d="M4.5 6v12c0 1.7 3.4 3 7.5 3s7.5-1.3 7.5-3V6M4.5 12c0 1.7 3.4 3 7.5 3s7.5-1.3 7.5-3"/></svg>
-          <span style="font-size: 13px; font-weight: 700;">Armazenamento</span>
-          <span style="margin-left: auto; font-size: 11.5px; color: #6B7A90;">72%</span>
+          <span style="font-size: 13px; font-weight: 700;">{{ usoTitulo }}</span>
+          <span style="margin-left: auto; font-size: 11.5px; color: #6B7A90;">{{ usoPct }}</span>
         </div>
-        <div style="height: 7px; border-radius: 999px; background: #E3E9F5; overflow: hidden;"><div style="width: 72%; height: 100%; border-radius: 999px; background: linear-gradient(90deg,#2563EB,#06B6D4);"></div></div>
-        <p style="margin: 10px 0 0; font-size: 11.5px; color: #6B7A90;">1,44 TB de 2 TB · originais e produção</p>
+        <div style="height: 7px; border-radius: 999px; background: #E3E9F5; overflow: hidden;"><div style="{{ usoBarra }}"></div></div>
+        <p style="margin: 10px 0 0; font-size: 11.5px; color: #6B7A90;">{{ usoTexto }}</p>
       </div>
       <div onClick="{{ toggleSide }}" style="{{ collapseBtn }}">
         <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="{{ chevStyle }}"><path d="m14 6-6 6 6 6"/></svg>
@@ -175,18 +175,18 @@
         </button>
         <div style="position: relative;">
           <div onClick="{{ toggleMenu }}" style="{{ avatarBtn }}">
-            <div style="width: 34px; height: 34px; border-radius: 11px; background: linear-gradient(135deg,#0B1220,#2E3E5C); color: #FFF; display: flex; align-items: center; justify-content: center; font-size: 12.5px; font-weight: 700;">MR</div>
+            <div style="width: 34px; height: 34px; border-radius: 11px; background: linear-gradient(135deg,#0B1220,#2E3E5C); color: #FFF; display: flex; align-items: center; justify-content: center; font-size: 12.5px; font-weight: 700;">{{ usuarioIniciais }}</div>
             <div style="display: flex; flex-direction: column; line-height: 1.25; text-align: left;">
-              <span style="font-size: 13.5px; font-weight: 700;">Marta Reis</span>
-              <span style="font-size: 11.5px; color: #6B7A90;">Administradora</span>
+              <span style="font-size: 13.5px; font-weight: 700;">{{ usuarioNome }}</span>
+              <span style="font-size: 11.5px; color: #6B7A90;">{{ usuarioCargo }}</span>
             </div>
             <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#9AA7BC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="{{ menuChev }}"><path d="m6 9 6 6 6-6"/></svg>
           </div>
           <div style="{{ menuStyle }}">
             <div style="padding: 16px; background: linear-gradient(135deg,#EEF3FF,#E4F8FC);">
-              <p style="margin: 0; font-size: 14px; font-weight: 700;">Marta Reis</p>
-              <p style="margin: 3px 0 0; font-size: 12.5px; color: #6B7A90;">marta@labcores.com.br</p>
-              <span style="display: inline-block; margin-top: 10px; padding: 4px 10px; border-radius: 999px; background: #FFFFFF; font-size: 11px; font-weight: 600; color: #2563EB;">Plano Pro · 8 usuários</span>
+              <p style="margin: 0; font-size: 14px; font-weight: 700;">{{ usuarioNome }}</p>
+              <p style="margin: 3px 0 0; font-size: 12.5px; color: #6B7A90;">{{ usuarioEmail }}</p>
+              <span style="display: inline-block; margin-top: 10px; padding: 4px 10px; border-radius: 999px; background: #FFFFFF; font-size: 11px; font-weight: 600; color: #2563EB;">{{ planoResumo }}</span>
             </div>
             <div style="padding: 8px;">
               <div style="display: flex; align-items: center; gap: 11px; padding: 10px 12px; border-radius: 12px; font-size: 13.5px; color: #34405A; cursor: pointer;" style-hover="background: #F1F5FD; color: #2563EB;">
@@ -220,7 +220,7 @@
         <div>
           <p style="margin: 0 0 8px; font-size: 12px; letter-spacing: 1.6px; text-transform: uppercase; color: #9AA7BC; font-weight: 700;">Operação · Pedidos</p>
           <h1 style="margin: 0 0 8px; font-size: 30px; font-weight: 800; letter-spacing: -1px;">Pedidos</h1>
-          <p style="margin: 0; font-size: 14.5px; color: #6B7A90;">1 248 pedidos neste mês · 14 entraram nas últimas 24 h</p>
+          <p style="margin: 0; font-size: 14.5px; color: #6B7A90;">{{ resumo }}</p>
         </div>
         <div style="display: flex; gap: 10px; flex-wrap: wrap;"><button style="white-space: nowrap; height: 44px; padding: 0 18px; display: flex; align-items: center; gap: 9px; border: 1px solid #E6EAF2; border-radius: 14px; background: #FFFFFF; color: #0B1220; font-family: inherit; font-size: 14px; font-weight: 600; cursor: pointer;" style-hover="background: #F1F5FD; border-color: #D6E2FC; color: #2563EB;"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M8 11l4 4 4-4"/><path d="M4 19h16"/></svg>Exportar CSV</button><button style="white-space: nowrap; height: 44px; padding: 0 18px; display: flex; align-items: center; gap: 9px; border: 0; border-radius: 14px; background: linear-gradient(135deg,#2563EB,#06B6D4); color: #FFFFFF; font-family: inherit; font-size: 14px; font-weight: 700; cursor: pointer; box-shadow: 0 8px 20px rgba(37,99,235,.28);" style-hover="filter: brightness(1.06);"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>Novo pedido</button></div>
       </div>
@@ -228,66 +228,66 @@
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 16px;">
         <div style="background: #FFFFFF; border: 1px solid #E6EAF2; border-radius: 22px; padding: 20px 22px; display: flex; flex-direction: column; gap: 12px; transition: box-shadow .18s, transform .18s;" style-hover="box-shadow: 0 14px 30px rgba(11,18,32,.09); transform: translateY(-2px);">
           <div style="display: flex; align-items: center; justify-content: space-between;">
-            <span style="font-size: 13px; color: #6B7A90; font-weight: 500;">Novos hoje</span>
+            <span style="font-size: 13px; color: #6B7A90; font-weight: 500;">{{ kpi1.rotulo }}</span>
             <span style="width: 36px; height: 36px; border-radius: 12px; background: #EAF0FF; color: #2563EB; display: flex; align-items: center; justify-content: center;">
               <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h16l-1.2 11.2a2 2 0 0 1-2 1.8H7.2a2 2 0 0 1-2-1.8z"/><path d="M9 8V6.5a3 3 0 0 1 6 0V8"/></svg>
             </span>
           </div>
-          <span style="font-size: 29px; font-weight: 800; letter-spacing: -1px;">14</span>
+          <span style="font-size: 29px; font-weight: 800; letter-spacing: -1px;">{{ kpi1.valor }}</span>
           <div style="display: flex; align-items: center; gap: 10px;">
-            <span style="padding: 4px 9px; border-radius: 999px; background: #EAF0FF; color: #2563EB; font-size: 11.5px; font-weight: 700;">+3 vs ontem</span>
+            <span style="padding: 4px 9px; border-radius: 999px; background: #EAF0FF; color: #2563EB; font-size: 11.5px; font-weight: 700;">{{ kpi1.nota }}</span>
             <svg viewBox="0 0 80 26" width="80" height="26" fill="none" style="flex: 0 0 auto;"><path d="M0 21 12 17 24 19 36 11 48 14 60 6 72 3 80 5" stroke="#2563EB" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </div>
         </div>
         <div style="background: #FFFFFF; border: 1px solid #E6EAF2; border-radius: 22px; padding: 20px 22px; display: flex; flex-direction: column; gap: 12px; transition: box-shadow .18s, transform .18s;" style-hover="box-shadow: 0 14px 30px rgba(11,18,32,.09); transform: translateY(-2px);">
           <div style="display: flex; align-items: center; justify-content: space-between;">
-            <span style="font-size: 13px; color: #6B7A90; font-weight: 500;">Em produção</span>
+            <span style="font-size: 13px; color: #6B7A90; font-weight: 500;">{{ kpi2.rotulo }}</span>
             <span style="width: 36px; height: 36px; border-radius: 12px; background: #E4F8FC; color: #0891B2; display: flex; align-items: center; justify-content: center;">
               <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M7 9V4h10v5"/><rect x="4" y="9" width="16" height="7" rx="2.5"/><path d="M7 14h10v6H7z"/></svg>
             </span>
           </div>
-          <span style="font-size: 29px; font-weight: 800; letter-spacing: -1px;">86</span>
+          <span style="font-size: 29px; font-weight: 800; letter-spacing: -1px;">{{ kpi2.valor }}</span>
           <div style="display: flex; align-items: center; gap: 10px;">
-            <span style="padding: 4px 9px; border-radius: 999px; background: #E4F8FC; color: #0891B2; font-size: 11.5px; font-weight: 700;">27 na fila de render</span>
+            <span style="padding: 4px 9px; border-radius: 999px; background: #E4F8FC; color: #0891B2; font-size: 11.5px; font-weight: 700;">{{ kpi2.nota }}</span>
             <svg viewBox="0 0 80 26" width="80" height="26" fill="none" style="flex: 0 0 auto;"><path d="M0 18 12 20 24 13 36 15 48 9 60 12 72 5 80 7" stroke="#06B6D4" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </div>
         </div>
         <div style="background: #FFFFFF; border: 1px solid #E6EAF2; border-radius: 22px; padding: 20px 22px; display: flex; flex-direction: column; gap: 12px; transition: box-shadow .18s, transform .18s;" style-hover="box-shadow: 0 14px 30px rgba(11,18,32,.09); transform: translateY(-2px);">
           <div style="display: flex; align-items: center; justify-content: space-between;">
-            <span style="font-size: 13px; color: #6B7A90; font-weight: 500;">Aguardam pagamento</span>
+            <span style="font-size: 13px; color: #6B7A90; font-weight: 500;">{{ kpi3.rotulo }}</span>
             <span style="width: 36px; height: 36px; border-radius: 12px; background: #FEF3E2; color: #B45309; display: flex; align-items: center; justify-content: center;">
               <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5v5l3 2"/></svg>
             </span>
           </div>
-          <span style="font-size: 29px; font-weight: 800; letter-spacing: -1px;">19</span>
+          <span style="font-size: 29px; font-weight: 800; letter-spacing: -1px;">{{ kpi3.valor }}</span>
           <div style="display: flex; align-items: center; gap: 10px;">
-            <span style="padding: 4px 9px; border-radius: 999px; background: #FEF3E2; color: #B45309; font-size: 11.5px; font-weight: 700;">R$ 12.480 em aberto</span>
+            <span style="padding: 4px 9px; border-radius: 999px; background: #FEF3E2; color: #B45309; font-size: 11.5px; font-weight: 700;">{{ kpi3.nota }}</span>
             <svg viewBox="0 0 80 26" width="80" height="26" fill="none" style="flex: 0 0 auto;"><path d="M0 8 12 6 24 11 36 9 48 14 60 12 72 17 80 16" stroke="#F59E0B" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </div>
         </div>
         <div style="background: #FFFFFF; border: 1px solid #E6EAF2; border-radius: 22px; padding: 20px 22px; display: flex; flex-direction: column; gap: 12px; transition: box-shadow .18s, transform .18s;" style-hover="box-shadow: 0 14px 30px rgba(11,18,32,.09); transform: translateY(-2px);">
           <div style="display: flex; align-items: center; justify-content: space-between;">
-            <span style="font-size: 13px; color: #6B7A90; font-weight: 500;">Atrasados</span>
+            <span style="font-size: 13px; color: #6B7A90; font-weight: 500;">{{ kpi4.rotulo }}</span>
             <span style="width: 36px; height: 36px; border-radius: 12px; background: #FFF1F3; color: #E11D48; display: flex; align-items: center; justify-content: center;">
               <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v5M12 16.5h.01"/><circle cx="12" cy="12" r="8.5"/></svg>
             </span>
           </div>
-          <span style="font-size: 29px; font-weight: 800; letter-spacing: -1px;">4</span>
+          <span style="font-size: 29px; font-weight: 800; letter-spacing: -1px;">{{ kpi4.valor }}</span>
           <div style="display: flex; align-items: center; gap: 10px;">
-            <span style="padding: 4px 9px; border-radius: 999px; background: #FFF1F3; color: #E11D48; font-size: 11.5px; font-weight: 700;">SLA excedido</span>
+            <span style="padding: 4px 9px; border-radius: 999px; background: #FFF1F3; color: #E11D48; font-size: 11.5px; font-weight: 700;">{{ kpi4.nota }}</span>
             <svg viewBox="0 0 80 26" width="80" height="26" fill="none" style="flex: 0 0 auto;"><path d="M0 20 12 16 24 18 36 12 48 13 60 8 72 6 80 4" stroke="#F43F5E" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </div>
         </div>
         <div style="background: #FFFFFF; border: 1px solid #E6EAF2; border-radius: 22px; padding: 20px 22px; display: flex; flex-direction: column; gap: 12px; transition: box-shadow .18s, transform .18s;" style-hover="box-shadow: 0 14px 30px rgba(11,18,32,.09); transform: translateY(-2px);">
           <div style="display: flex; align-items: center; justify-content: space-between;">
-            <span style="font-size: 13px; color: #6B7A90; font-weight: 500;">Expedidos na semana</span>
+            <span style="font-size: 13px; color: #6B7A90; font-weight: 500;">{{ kpi5.rotulo }}</span>
             <span style="width: 36px; height: 36px; border-radius: 12px; background: #E6F8F1; color: #059669; display: flex; align-items: center; justify-content: center;">
               <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h11v10H3z"/><path d="M14 10h4l3 3v4h-7z"/><circle cx="7" cy="18.5" r="1.6"/><circle cx="17" cy="18.5" r="1.6"/></svg>
             </span>
           </div>
-          <span style="font-size: 29px; font-weight: 800; letter-spacing: -1px;">212</span>
+          <span style="font-size: 29px; font-weight: 800; letter-spacing: -1px;">{{ kpi5.valor }}</span>
           <div style="display: flex; align-items: center; gap: 10px;">
-            <span style="padding: 4px 9px; border-radius: 999px; background: #E6F8F1; color: #059669; font-size: 11.5px; font-weight: 700;">98,7% no prazo</span>
+            <span style="padding: 4px 9px; border-radius: 999px; background: #E6F8F1; color: #059669; font-size: 11.5px; font-weight: 700;">{{ kpi5.nota }}</span>
             <svg viewBox="0 0 80 26" width="80" height="26" fill="none" style="flex: 0 0 auto;"><path d="M0 14 12 12 24 16 36 10 48 12 60 7 72 9 80 6" stroke="#10B981" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </div>
         </div>
@@ -312,97 +312,22 @@
         <div style="display: grid; grid-template-columns: 34px minmax(220px,1.6fr) minmax(150px,1.1fr) minmax(90px,.8fr) minmax(90px,.8fr) minmax(120px,1fr) minmax(120px,1fr) minmax(70px,.7fr); gap: 14px; padding: 10px 24px; background: #F8FAFE; border-top: 1px solid #EEF1F7; border-bottom: 1px solid #EEF1F7; font-size: 11.5px; letter-spacing: .6px; text-transform: uppercase; color: #9AA7BC; font-weight: 700;">
           <span></span><span>Cliente</span><span>Produto</span><span>Canal</span><span>Valor</span><span>Pagamento</span><span>Estado</span><span>Prazo</span>
         </div>
-            <div style="display: grid; grid-template-columns: 34px minmax(220px,1.6fr) minmax(150px,1.1fr) minmax(90px,.8fr) minmax(90px,.8fr) minmax(120px,1fr) minmax(120px,1fr) minmax(70px,.7fr); gap: 14px; align-items: center; padding: 14px 24px; border-bottom: 1px solid #F4F6FB; cursor: pointer;" style-hover="background: #F8FAFE;">
+            <sc-for list="{{ pedidos }}" as="pd" hint-placeholder-count="7">
+            <div onClick="{{ pd.abrir }}" style="display: grid; grid-template-columns: 34px minmax(220px,1.6fr) minmax(150px,1.1fr) minmax(90px,.8fr) minmax(90px,.8fr) minmax(120px,1fr) minmax(120px,1fr) minmax(70px,.7fr); gap: 14px; align-items: center; padding: 14px 24px; border-bottom: 1px solid #F4F6FB; cursor: pointer;" style-hover="background: #F8FAFE;">
               <span style="width: 18px; height: 18px; border-radius: 6px; border: 1.5px solid #CBD5E6;"></span>
               <div style="display: flex; align-items: center; gap: 12px; min-width: 0;">
-                <span style="width: 36px; height: 36px; border-radius: 12px; background: #EAF0FF; color: #2563EB; font-size: 12.5px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex: 0 0 auto;">SF</span>
-                <div style="min-width: 0;"><p style="margin: 0; font-size: 14px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Studio Fotográfico Lume</p><p style="margin: 2px 0 0; font-size: 12px;"><a href="./Pedido.dc.html" style="color: #9AA7BC;" style-hover="color: #2563EB;">#PT-10482 · B2B</a></p></div>
+                <span style="width: 36px; height: 36px; border-radius: 12px; background: #EAF0FF; color: #2563EB; font-size: 12.5px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex: 0 0 auto;">{{ pd.iniciais }}</span>
+                <div style="min-width: 0;"><p style="margin: 0; font-size: 14px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ pd.cliente }}</p><p style="margin: 2px 0 0; font-size: 12px;"><a href="{{ pd.href }}" style="color: #9AA7BC;" style-hover="color: #2563EB;">{{ pd.numero }}</a></p></div>
               </div>
-              <span style="font-size: 13.5px; color: #34405A;">Fotolivro 30×30</span>
-              <span style="font-size: 13px; color: #6B7A90;">Loja B2B</span>
-              <span style="font-size: 13.5px; font-weight: 700;">R$ 1.240</span>
-              <span style="padding: 6px 11px; border-radius: 999px; background: #E6F8F1; color: #059669; font-size: 12px; font-weight: 600; width: max-content;">Pago</span>
-              <span style="padding: 6px 11px; border-radius: 999px; background: #EAF0FF; color: #2563EB; font-size: 12px; font-weight: 600; width: max-content;">Em produção</span>
-              <span style="font-size: 12.5px; color: #6B7A90;">27 ago</span>
+              <span style="font-size: 13.5px; color: #34405A;">{{ pd.produto }}</span>
+              <span style="font-size: 13px; color: #6B7A90;">{{ pd.canal }}</span>
+              <span style="font-size: 13.5px; font-weight: 700;">{{ pd.valor }}</span>
+              <span style="{{ pd.seloPag }}">{{ pd.pagamento }}</span>
+              <span style="{{ pd.seloEstado }}">{{ pd.estado }}</span>
+              <span style="font-size: 12.5px; color: #6B7A90;">{{ pd.prazo }}</span>
             </div>
-            <div style="display: grid; grid-template-columns: 34px minmax(220px,1.6fr) minmax(150px,1.1fr) minmax(90px,.8fr) minmax(90px,.8fr) minmax(120px,1fr) minmax(120px,1fr) minmax(70px,.7fr); gap: 14px; align-items: center; padding: 14px 24px; border-bottom: 1px solid #F4F6FB; cursor: pointer;" style-hover="background: #F8FAFE;">
-              <span style="width: 18px; height: 18px; border-radius: 6px; border: 1.5px solid #CBD5E6;"></span>
-              <div style="display: flex; align-items: center; gap: 12px; min-width: 0;">
-                <span style="width: 36px; height: 36px; border-radius: 12px; background: #E6F8F1; color: #059669; font-size: 12.5px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex: 0 0 auto;">CF</span>
-                <div style="min-width: 0;"><p style="margin: 0; font-size: 14px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Colégio Farol · Formatura</p><p style="margin: 2px 0 0; font-size: 12px;"><a href="./Pedido.dc.html" style="color: #9AA7BC;" style-hover="color: #2563EB;">#PT-10481 · Evento</a></p></div>
-              </div>
-              <span style="font-size: 13.5px; color: #34405A;">Revelação 15×21</span>
-              <span style="font-size: 13px; color: #6B7A90;">Evento</span>
-              <span style="font-size: 13.5px; font-weight: 700;">R$ 3.980</span>
-              <span style="padding: 6px 11px; border-radius: 999px; background: #E6F8F1; color: #059669; font-size: 12px; font-weight: 600; width: max-content;">Pago</span>
-              <span style="padding: 6px 11px; border-radius: 999px; background: #E4F8FC; color: #0891B2; font-size: 12px; font-weight: 600; width: max-content;">Pré-flight</span>
-              <span style="font-size: 12.5px; color: #6B7A90;">28 ago</span>
-            </div>
-            <div style="display: grid; grid-template-columns: 34px minmax(220px,1.6fr) minmax(150px,1.1fr) minmax(90px,.8fr) minmax(90px,.8fr) minmax(120px,1fr) minmax(120px,1fr) minmax(70px,.7fr); gap: 14px; align-items: center; padding: 14px 24px; border-bottom: 1px solid #F4F6FB; cursor: pointer;" style-hover="background: #F8FAFE;">
-              <span style="width: 18px; height: 18px; border-radius: 6px; border: 1.5px solid #CBD5E6;"></span>
-              <div style="display: flex; align-items: center; gap: 12px; min-width: 0;">
-                <span style="width: 36px; height: 36px; border-radius: 12px; background: #FEF3E2; color: #B45309; font-size: 12.5px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex: 0 0 auto;">RN</span>
-                <div style="min-width: 0;"><p style="margin: 0; font-size: 14px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Rita Nunes</p><p style="margin: 2px 0 0; font-size: 12px;"><a href="./Pedido.dc.html" style="color: #9AA7BC;" style-hover="color: #2563EB;">#PT-10480 · B2C</a></p></div>
-              </div>
-              <span style="font-size: 13.5px; color: #34405A;">Quadro canvas 40×60</span>
-              <span style="font-size: 13px; color: #6B7A90;">Loja B2C</span>
-              <span style="font-size: 13.5px; font-weight: 700;">R$ 289</span>
-              <span style="padding: 6px 11px; border-radius: 999px; background: #FEF3E2; color: #B45309; font-size: 12px; font-weight: 600; width: max-content;">PIX pendente</span>
-              <span style="padding: 6px 11px; border-radius: 999px; background: #FEF3E2; color: #B45309; font-size: 12px; font-weight: 600; width: max-content;">Aguarda arte</span>
-              <span style="font-size: 12.5px; color: #E11D48; font-weight: 700;">Hoje</span>
-            </div>
-            <div style="display: grid; grid-template-columns: 34px minmax(220px,1.6fr) minmax(150px,1.1fr) minmax(90px,.8fr) minmax(90px,.8fr) minmax(120px,1fr) minmax(120px,1fr) minmax(70px,.7fr); gap: 14px; align-items: center; padding: 14px 24px; border-bottom: 1px solid #F4F6FB; cursor: pointer;" style-hover="background: #F8FAFE;">
-              <span style="width: 18px; height: 18px; border-radius: 6px; border: 1.5px solid #CBD5E6;"></span>
-              <div style="display: flex; align-items: center; gap: 12px; min-width: 0;">
-                <span style="width: 36px; height: 36px; border-radius: 12px; background: #EDEBFE; color: #6366F1; font-size: 12.5px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex: 0 0 auto;">MB</span>
-                <div style="min-width: 0;"><p style="margin: 0; font-size: 14px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Memória Books</p><p style="margin: 2px 0 0; font-size: 12px;"><a href="./Pedido.dc.html" style="color: #9AA7BC;" style-hover="color: #2563EB;">#PT-10479 · B2B</a></p></div>
-              </div>
-              <span style="font-size: 13.5px; color: #34405A;">Álbum + estojo</span>
-              <span style="font-size: 13px; color: #6B7A90;">Loja B2B</span>
-              <span style="font-size: 13.5px; font-weight: 700;">R$ 2.410</span>
-              <span style="padding: 6px 11px; border-radius: 999px; background: #E6F8F1; color: #059669; font-size: 12px; font-weight: 600; width: max-content;">Pago</span>
-              <span style="padding: 6px 11px; border-radius: 999px; background: #F1F5FD; color: #46536A; font-size: 12px; font-weight: 600; width: max-content;">Expedido</span>
-              <span style="font-size: 12.5px; color: #6B7A90;">24 ago</span>
-            </div>
-            <div style="display: grid; grid-template-columns: 34px minmax(220px,1.6fr) minmax(150px,1.1fr) minmax(90px,.8fr) minmax(90px,.8fr) minmax(120px,1fr) minmax(120px,1fr) minmax(70px,.7fr); gap: 14px; align-items: center; padding: 14px 24px; border-bottom: 1px solid #F4F6FB; cursor: pointer;" style-hover="background: #F8FAFE;">
-              <span style="width: 18px; height: 18px; border-radius: 6px; border: 1.5px solid #CBD5E6;"></span>
-              <div style="display: flex; align-items: center; gap: 12px; min-width: 0;">
-                <span style="width: 36px; height: 36px; border-radius: 12px; background: #E4F8FC; color: #0891B2; font-size: 12.5px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex: 0 0 auto;">AP</span>
-                <div style="min-width: 0;"><p style="margin: 0; font-size: 14px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Ana Paula Moreira</p><p style="margin: 2px 0 0; font-size: 12px;"><a href="./Pedido.dc.html" style="color: #9AA7BC;" style-hover="color: #2563EB;">#PT-10478 · B2C</a></p></div>
-              </div>
-              <span style="font-size: 13.5px; color: #34405A;">Caneca personalizada</span>
-              <span style="font-size: 13px; color: #6B7A90;">Loja B2C</span>
-              <span style="font-size: 13.5px; font-weight: 700;">R$ 79</span>
-              <span style="padding: 6px 11px; border-radius: 999px; background: #E6F8F1; color: #059669; font-size: 12px; font-weight: 600; width: max-content;">Pago</span>
-              <span style="padding: 6px 11px; border-radius: 999px; background: #EAF0FF; color: #2563EB; font-size: 12px; font-weight: 600; width: max-content;">Impressão</span>
-              <span style="font-size: 12.5px; color: #6B7A90;">26 ago</span>
-            </div>
-            <div style="display: grid; grid-template-columns: 34px minmax(220px,1.6fr) minmax(150px,1.1fr) minmax(90px,.8fr) minmax(90px,.8fr) minmax(120px,1fr) minmax(120px,1fr) minmax(70px,.7fr); gap: 14px; align-items: center; padding: 14px 24px; border-bottom: 1px solid #F4F6FB; cursor: pointer;" style-hover="background: #F8FAFE;">
-              <span style="width: 18px; height: 18px; border-radius: 6px; border: 1.5px solid #CBD5E6;"></span>
-              <div style="display: flex; align-items: center; gap: 12px; min-width: 0;">
-                <span style="width: 36px; height: 36px; border-radius: 12px; background: #FFF1F3; color: #E11D48; font-size: 12.5px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex: 0 0 auto;">FT</span>
-                <div style="min-width: 0;"><p style="margin: 0; font-size: 14px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Foto Trindade</p><p style="margin: 2px 0 0; font-size: 12px;"><a href="./Pedido.dc.html" style="color: #9AA7BC;" style-hover="color: #2563EB;">#PT-10477 · B2B</a></p></div>
-              </div>
-              <span style="font-size: 13.5px; color: #34405A;">Revelação 10×15 · 800un</span>
-              <span style="font-size: 13px; color: #6B7A90;">Balcão</span>
-              <span style="font-size: 13.5px; font-weight: 700;">R$ 640</span>
-              <span style="padding: 6px 11px; border-radius: 999px; background: #FFF1F3; color: #E11D48; font-size: 12px; font-weight: 600; width: max-content;">Boleto vencido</span>
-              <span style="padding: 6px 11px; border-radius: 999px; background: #FFF1F3; color: #E11D48; font-size: 12px; font-weight: 600; width: max-content;">Atrasado</span>
-              <span style="font-size: 12.5px; color: #E11D48; font-weight: 700;">22 ago</span>
-            </div>
-            <div style="display: grid; grid-template-columns: 34px minmax(220px,1.6fr) minmax(150px,1.1fr) minmax(90px,.8fr) minmax(90px,.8fr) minmax(120px,1fr) minmax(120px,1fr) minmax(70px,.7fr); gap: 14px; align-items: center; padding: 14px 24px; border-bottom: 1px solid #F4F6FB; cursor: pointer;" style-hover="background: #F8FAFE;">
-              <span style="width: 18px; height: 18px; border-radius: 6px; border: 1.5px solid #CBD5E6;"></span>
-              <div style="display: flex; align-items: center; gap: 12px; min-width: 0;">
-                <span style="width: 36px; height: 36px; border-radius: 12px; background: #EAF0FF; color: #2563EB; font-size: 12.5px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex: 0 0 auto;">LV</span>
-                <div style="min-width: 0;"><p style="margin: 0; font-size: 14px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Luz Viva Estúdio</p><p style="margin: 2px 0 0; font-size: 12px;"><a href="./Pedido.dc.html" style="color: #9AA7BC;" style-hover="color: #2563EB;">#PT-10476 · B2B</a></p></div>
-              </div>
-              <span style="font-size: 13.5px; color: #34405A;">Fotolivro 20×20</span>
-              <span style="font-size: 13px; color: #6B7A90;">API</span>
-              <span style="font-size: 13.5px; font-weight: 700;">R$ 890</span>
-              <span style="padding: 6px 11px; border-radius: 999px; background: #E6F8F1; color: #059669; font-size: 12px; font-weight: 600; width: max-content;">Pago</span>
-              <span style="padding: 6px 11px; border-radius: 999px; background: #EDEBFE; color: #6366F1; font-size: 12px; font-weight: 600; width: max-content;">Acabamento</span>
-              <span style="font-size: 12.5px; color: #6B7A90;">29 ago</span>
-            </div>
+            </sc-for>
+            <div style="{{ vazio }}">Nenhum pedido com estes filtros.</div>
         </div>
         <div style="display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 16px 24px; background: #F8FAFE;">
           <span style="font-size: 13px; color: #6B7A90;">Mostrando 7 de 1 248 pedidos</span>

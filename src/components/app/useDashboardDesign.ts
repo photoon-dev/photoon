@@ -141,6 +141,13 @@ export function useDashboardDesign({
     const pct = limite ? Math.min(100, Math.round(((n?.projetos ?? 0) / limite) * 100)) : null;
 
     v.lojaNome = painel?.lojaNome ?? 'Photoon';
+    v.lojaIniciais = (painel?.lojaNome ?? 'Photoon')
+      .split(' ')
+      .filter(Boolean)
+      .slice(0, 2)
+      .map((x) => x[0]?.toUpperCase() ?? '')
+      .join('') || 'PH';
+    v.usuarioEmail = painel?.usuarioCargo ?? '';
     v.usuarioIniciais = (painel?.usuarioNome ?? '?')
       .split(' ')
       .filter(Boolean)

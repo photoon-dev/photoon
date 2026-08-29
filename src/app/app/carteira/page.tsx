@@ -1,31 +1,35 @@
 import { redirect } from 'next/navigation';
-import { lojaAtual, planoDaLoja, usoAtual } from '@/lib/lojista';
+import { molduraDaLoja } from '@/lib/painel-loja';
 import { carteiraDaLoja, resolverPeriodo } from '@/lib/financeiro';
-import ShellLojista from '@/components/app/ShellLojista';
-import CardPlano from '@/components/app/CardPlano';
-import PainelCarteira from '@/components/app/PainelCarteira';
+import CarteiraDesign, { CSS_PSEUDO } from '@/components/design/CarteiraDesign';
+import TelaDoDesign from '@/components/app/TelaDoDesign';
 import '../app.css';
 
 export const dynamic = 'force-dynamic';
 
-export default async function CarteiraPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ dias?: string; de?: string; ate?: string }>;
-}) {
-  const loja = await lojaAtual();
-  if (!loja) redirect('/');
+export default async function Pagina() {
+  const m = await molduraDaLoja();
+  if (!m) redirect('/');
 
-  const periodo = resolverPeriodo(await searchParams);
-  const [carteira, plano, uso] = await Promise.all([
-    carteiraDaLoja(loja.id, periodo),
-    planoDaLoja(loja.id),
-    usoAtual(loja.id),
-  ]);
+  const carteira = await carteiraDaLoja(m.loja.id, resolverPeriodo({ dias: '90' }));
+
+  /*
+   * O design traz seis linhas de exemplo com nomes fictícios. Aqui elas
+   * recebem os nomes reais desta tela; quando não há tantos registros, a
+   * linha fica em branco em vez de mostrar um cliente que não existe.
+   */
+  const nomes = (carteira.extrato ?? []).map((l) => l.cliente ?? '—');
+  const linhas = Object.fromEntries(
+    Array.from({ length: 6 }, (_, i) => [`linha${i}`, { nome: nomes[i] ?? '' }]),
+  );
 
   return (
-    <ShellLojista ativo={13} cartaoPlano={<CardPlano plano={plano} uso={uso} compacto />}>
-      <PainelCarteira carteira={carteira} periodo={periodo} />
-    </ShellLojista>
+    <TelaDoDesign
+      Design={CarteiraDesign}
+      cssPseudo={CSS_PSEUDO}
+      ativo={13}
+      painel={m.painel}
+      dados={linhas}
+    />
   );
 }
