@@ -240,6 +240,11 @@ export function useMeusProjetosDesign({
         `transition:opacity .18s ease,transform .22s cubic-bezier(.2,.8,.2,1);pointer-events:none`,
 
       // --- álbuns reais no lugar dos três cards fixos do design ---
+      // O cabeçalho do design já oferecia Ajuda e Minha conta; nenhum dos dois
+      // tinha destino, e o link ia para `undefined`. Agora existem as telas.
+      hrefAjuda: '/ajuda',
+      hrefConta: '/minha-conta',
+      hrefGaleria: '/galeria',
       cardsProjetos: projetos.map((p, i) => {
         const s = STATUS[p.status];
         const chip = CHIP_STATUS[p.status] ?? CHIP_STATUS.nao_iniciado;
