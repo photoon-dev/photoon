@@ -55,7 +55,13 @@ export type Galeria = {
   total_fotos: number;
 };
 
-export type Cliente = { id: string; nome: string | null; email: string };
+export type Cliente = {
+  id: string;
+  nome: string | null;
+  email: string;
+  /** Foto de perfil nesta loja; nula quando não há. */
+  avatarUrl?: string | null;
+};
 
 export type Foto = {
   id: string;
@@ -129,12 +135,15 @@ export async function garantirCliente(lojistaId: string): Promise<Cliente | null
   // 1. já vinculado?
   const { data: existente } = await supabase
     .from('clientes')
-    .select('id, nome')
+    .select('id, nome, avatar_url')
     .eq('user_id', user.id)
     .eq('lojista_id', lojistaId)
     .maybeSingle();
 
-  if (existente) return { ...existente, email };
+  if (existente) {
+    const { avatar_url, ...resto } = existente as { id: string; nome: string | null; avatar_url?: string | null };
+    return { ...resto, email, avatarUrl: avatar_url ?? null };
+  }
 
   // 2. o lojista deixou um convite com este e-mail?
   //

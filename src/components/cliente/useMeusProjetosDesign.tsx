@@ -58,7 +58,7 @@ export function useMeusProjetosDesign({
   totalFotos: number;
   capas: string[];
   eventos?: number;
-  cliente: { nome: string | null; email: string };
+  cliente: { nome: string | null; email: string; avatarUrl?: string | null };
   /** Marca da loja: é ela que o cliente final vê, não a da plataforma. */
   nomeLoja: string;
   enderecoLoja: string;
@@ -135,6 +135,19 @@ export function useMeusProjetosDesign({
       // --- textos que o design trazia escritos à mão ---
       nomeCliente: cliente.nome ?? cliente.email.split('@')[0],
       emailCliente: cliente.email,
+      /**
+       * Avatar do cabeçalho: a foto do cliente quando existe, as iniciais
+       * quando não. O design só previa iniciais, e a foto do perfil ficava
+       * invisível fora da tela de conta.
+       */
+      avatarFoto:
+        'width:34px;height:34px;border-radius:11px;display:flex;align-items:center;' +
+        'justify-content:center;font-size:12.5px;font-weight:700;flex:0 0 auto;overflow:hidden;' +
+        (cliente.avatarUrl
+          ? `background-image:url('${cliente.avatarUrl}');background-size:cover;background-position:center;color:transparent`
+          : 'background:#0B1220;color:#FFFFFF'),
+      // O design dizia "Formatura 2026" fixo abaixo do nome.
+      subNome: 'Minha conta',
       iniciais: (cliente.nome ?? cliente.email)
         .split(/[\s@.]+/)
         .slice(0, 2)
@@ -146,6 +159,9 @@ export function useMeusProjetosDesign({
       emailLoja,
       telefoneLoja,
       nomeGaleria,
+      // O design trazia "Formatura 2026 · sessão Julia" escrito à mão em três
+      // lugares: no selo do banner, no cartão da galeria e na notificação.
+      galeriaNome: nomeGaleria,
       galeriaAtualizada,
       progressoTexto: `${progresso}%`,
       progressoLargura: `${progresso}%`,

@@ -149,7 +149,7 @@ export default function MeusProjetosDesign({ v }: { v: any }) {
             </button>
             <div style={{ position: 'relative' }}>
               <div onClick={v.toggleMenu} style={css(v.avatarBtn)}>
-                <span style={{ width: '34px', height: '34px', borderRadius: '11px', background: '#0B1220', color: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12.5px', fontWeight: '700', flex: '0 0 auto' }}>
+                <span style={css(v.avatarFoto)}>
                   {v.iniciais}
                 </span>
                 <div style={{ display: 'flex', flexDirection: 'column', lineHeight: '1.25', textAlign: 'left' }}>
@@ -157,7 +157,7 @@ export default function MeusProjetosDesign({ v }: { v: any }) {
                     {v.nomeCliente}
                   </span>
                   <span style={{ fontSize: '11.5px', color: '#6B7A90', whiteSpace: 'nowrap' }}>
-                    Formatura 2026
+                    {v.subNome}
                   </span>
                 </div>
                 <span style={{ color: '#9AA7BC', flex: '0 0 auto' }}>
@@ -323,7 +323,7 @@ export default function MeusProjetosDesign({ v }: { v: any }) {
                       <circle cx="9" cy="11" r="1.6" />
                       <path d="m4 18 5-4.4 3.4 3 3-2.6L20 18" />
                     </svg>
-                    {v.nomeGaleria}
+                    {v.galeriaNome}
                   </span>
                   <h1 style={{ margin: '0 0 10px', fontSize: '32px', lineHeight: '1.12', fontWeight: '800', letterSpacing: '-1.2px', color: '#FFFFFF', width: '333px', height: '71px' }}>
                     {v.saudacao}
@@ -395,7 +395,7 @@ export default function MeusProjetosDesign({ v }: { v: any }) {
                       Galeria liberada
                     </p>
                     <p style={{ margin: '2px 0 0', fontSize: '12.5px', color: '#6B7A90' }}>
-                      {v.nomeGaleria}
+                      {v.galeriaNome}
                     </p>
                   </div>
                 </div>

@@ -54,10 +54,10 @@
       </button>
       <div style="position: relative;">
         <div onClick="{{ toggleMenu }}" style="{{ avatarBtn }}">
-          <span style="width: 34px; height: 34px; border-radius: 11px; background: #0B1220; color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-size: 12.5px; font-weight: 700; flex: 0 0 auto;">JM</span>
+          <span style="{{ avatarFoto }}">{{ iniciais }}</span>
           <div style="display: flex; flex-direction: column; line-height: 1.25; text-align: left;">
             <span style="font-size: 13.5px; font-weight: 700; white-space: nowrap;">Julia Martins</span>
-            <span style="font-size: 11.5px; color: #6B7A90; white-space: nowrap;">Formatura 2026</span>
+            <span style="font-size: 11.5px; color: #6B7A90; white-space: nowrap;">{{ subNome }}</span>
           </div>
           <span style="color: #9AA7BC; flex: 0 0 auto;"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"></path></svg></span>
         </div>
@@ -130,7 +130,7 @@
 
         <div style="position: relative; display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 28px; align-items: center;">
           <div style="min-width: 0;">
-            <span style="display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px; border-radius: 999px; background: rgba(255,255,255,.12); backdrop-filter: blur(14px); border: 1px solid rgba(255,255,255,.22); color: #EDE9FE; font-size: 11.5px; font-weight: 700; margin-bottom: 14px;"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="3.5"></rect><path d="M7 5V3M17 5V3"></path><circle cx="9" cy="11" r="1.6"></circle><path d="m4 18 5-4.4 3.4 3 3-2.6L20 18"></path></svg>Formatura 2026 · sessão Julia</span>
+            <span style="display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px; border-radius: 999px; background: rgba(255,255,255,.12); backdrop-filter: blur(14px); border: 1px solid rgba(255,255,255,.22); color: #EDE9FE; font-size: 11.5px; font-weight: 700; margin-bottom: 14px;"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="3.5"></rect><path d="M7 5V3M17 5V3"></path><circle cx="9" cy="11" r="1.6"></circle><path d="m4 18 5-4.4 3.4 3 3-2.6L20 18"></path></svg>{{ galeriaNome }}</span>
             <h1 style="margin: 0 0 10px; font-size: 32px; line-height: 1.12; font-weight: 800; letter-spacing: -1.2px; color: #FFFFFF; width: 333px; height: 71px">Olá, Julia. Falta pouco para o seu álbum.</h1>
             
             <p style="margin: 0 0 20px; font-size: 14.5px; line-height: 1.6; color: rgba(255,255,255,.74);">A <strong style="color: #FFFFFF;">Photoon</strong> liberou 120 fotos e 3 projetos. 1 já está pronto para finalizar.</p><div style="display: flex; gap: 10px; flex-wrap: wrap; width: 624px">
@@ -177,7 +177,7 @@
             <span style="width: 38px; height: 38px; border-radius: 12px; background: #F1EBFE; color: #7C3AED; display: flex; align-items: center; justify-content: center; flex: 0 0 auto;"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="3.5"></rect><path d="M7 5V3M17 5V3"></path><circle cx="9" cy="11" r="1.6"></circle><path d="m4 18 5-4.4 3.4 3 3-2.6L20 18"></path></svg></span>
             <div style="min-width: 0;">
               <p style="margin: 0; font-size: 14.5px; font-weight: 700;">Galeria liberada</p>
-              <p style="margin: 2px 0 0; font-size: 12.5px; color: #6B7A90;">Formatura 2026 · sessão Julia</p>
+              <p style="margin: 2px 0 0; font-size: 12.5px; color: #6B7A90;">{{ galeriaNome }}</p>
             </div>
           </div>
           <div style="display: flex; flex-direction: column; gap: 9px; margin-bottom: 16px;">
@@ -422,7 +422,7 @@ class Component extends DCLogic {
   state = { menu: false, rail: false, filters: false, notif: false, sel: null, read: [] };
   notifs = [
     { id: 'n1', tag: 'Galeria', tone: '#2563EB', bg: '#F1F5FD', title: '120 fotos foram liberadas para você', time: 'há 2 dias · Photoon',
-      body: ['A Photoon liberou a galeria Formatura 2026 · sessão Julia com 120 fotos tratadas. Todas já estão disponíveis dentro do editor, na aba Fotos.',
+      body: ['A Photoon liberou a galeria {{ galeriaNome }} com 120 fotos tratadas. Todas já estão disponíveis dentro do editor, na aba Fotos.',
              'As imagens ficam guardadas pela empresa e não podem ser excluídas por aqui. Você pode usar a mesma foto em mais de um projeto, quantas vezes quiser.',
              'Se faltar alguma imagem do ensaio, fale com o estúdio antes de finalizar os projetos.'] },
     { id: 'n2', tag: 'Pendência', tone: '#B45309', bg: '#FEF3E2', title: '4 lâminas do fotolivro estão sem foto', time: 'ontem, 18:20 · Revisão automática',
