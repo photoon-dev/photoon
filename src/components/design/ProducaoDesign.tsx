@@ -12,29 +12,18 @@ export const CSS_PSEUDO = `
 .dc5:hover { background: #F1F5FD; color: #2563EB; }
 .dc6:hover { background: #FFF1F3; color: #E11D48; }
 .dc7:hover { background: #F1F5FD; border-color: #D6E2FC; color: #2563EB; }
-.dc8:hover { background: #F1F5FD; border-color: #D6E2FC; color: #2563EB; }
-.dc9:hover { filter: brightness(1.06); }
+.dc8:hover { box-shadow: 0 14px 30px rgba(11,18,32,.09); transform: translateY(-2px); }
+.dc9:hover { box-shadow: 0 14px 30px rgba(11,18,32,.09); transform: translateY(-2px); }
 .dc10:hover { box-shadow: 0 14px 30px rgba(11,18,32,.09); transform: translateY(-2px); }
 .dc11:hover { box-shadow: 0 14px 30px rgba(11,18,32,.09); transform: translateY(-2px); }
 .dc12:hover { box-shadow: 0 14px 30px rgba(11,18,32,.09); transform: translateY(-2px); }
-.dc13:hover { box-shadow: 0 14px 30px rgba(11,18,32,.09); transform: translateY(-2px); }
-.dc14:hover { box-shadow: 0 14px 30px rgba(11,18,32,.09); transform: translateY(-2px); }
+.dc13:hover { background: #FFFFFF; color: #2563EB; }
+.dc14:hover { background: #FFFFFF; color: #2563EB; }
 .dc15:hover { background: #FFFFFF; color: #2563EB; }
-.dc16:hover { background: #FFFFFF; color: #2563EB; }
-.dc17:hover { background: #FFFFFF; color: #2563EB; }
-.dc18:hover { background: #FFFFFF; color: #2563EB; }
-.dc19:hover { background: #FFFFFF; color: #2563EB; }
-.dc20:hover { box-shadow: 0 10px 22px rgba(11,18,32,.09); transform: translateY(-2px); border-color: #D6E2FC; }
-.dc21:hover { box-shadow: 0 10px 22px rgba(11,18,32,.09); transform: translateY(-2px); border-color: #D6E2FC; }
-.dc22:hover { box-shadow: 0 10px 22px rgba(11,18,32,.09); transform: translateY(-2px); border-color: #D6E2FC; }
-.dc23:hover { box-shadow: 0 10px 22px rgba(11,18,32,.09); transform: translateY(-2px); border-color: #D6E2FC; }
-.dc24:hover { box-shadow: 0 10px 22px rgba(11,18,32,.09); transform: translateY(-2px); border-color: #D6E2FC; }
-.dc25:hover { box-shadow: 0 10px 22px rgba(11,18,32,.09); transform: translateY(-2px); border-color: #D6E2FC; }
-.dc26:hover { box-shadow: 0 10px 22px rgba(11,18,32,.09); transform: translateY(-2px); border-color: #D6E2FC; }
-.dc27:hover { box-shadow: 0 10px 22px rgba(11,18,32,.09); transform: translateY(-2px); border-color: #D6E2FC; }
-.dc28:hover { box-shadow: 0 10px 22px rgba(11,18,32,.09); transform: translateY(-2px); border-color: #D6E2FC; }
-.dc29:hover { box-shadow: 0 10px 22px rgba(11,18,32,.09); transform: translateY(-2px); border-color: #D6E2FC; }
-.dc30:hover { box-shadow: 0 10px 22px rgba(11,18,32,.09); transform: translateY(-2px); border-color: #D6E2FC; }
+.dc16:hover { box-shadow: 0 10px 22px rgba(11,18,32,.09); transform: translateY(-2px); border-color: #D6E2FC; }
+.dc17:hover { background: #F1F5FD; color: #2563EB; border-color: #D6E2FC; }
+.dc18:hover { background: #F1F5FD; color: #2563EB; border-color: #D6E2FC; }
+.dc19:hover { border-color: #D6E2FC; }
 `;
 
 export default function ProducaoDesign({ v }: { v: any }) {
@@ -414,37 +403,30 @@ export default function ProducaoDesign({ v }: { v: any }) {
                   Produção
                 </h1>
                 <p style={{ margin: '0', fontSize: '14.5px', color: '#6B7A90' }}>
-                  121 jobs ativos · 3 lotes saem hoje · turno da manhã com 4 operadores
+                  {v.resumo}
                 </p>
               </div>
               <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-                <button style={{ whiteSpace: 'nowrap', height: '44px', padding: '0 18px', display: 'flex', alignItems: 'center', gap: '9px', border: '1px solid #E6EAF2', borderRadius: '14px', background: '#FFFFFF', color: '#0B1220', fontFamily: 'inherit', fontSize: '14px', fontWeight: '600', cursor: 'pointer' }} className="dc7">
+                <a href="/pedidos" style={{ textDecoration: 'none', whiteSpace: 'nowrap', height: '44px', padding: '0 18px', display: 'flex', alignItems: 'center', gap: '9px', border: '1px solid #E6EAF2', borderRadius: '14px', background: '#FFFFFF', color: '#0B1220', fontFamily: 'inherit', fontSize: '14px', fontWeight: '600', cursor: 'pointer' }} className="dc7">
                   <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M4 6h16M7 12h10M10 18h4" />
+                    <path d="M4 8h16l-1.2 11.2a2 2 0 0 1-2 1.8H7.2a2 2 0 0 1-2-1.8z" />
+                    <path d="M9 8V6.5a3 3 0 0 1 6 0V8" />
                   </svg>
-                  Filtros
-                </button>
-                <button style={{ whiteSpace: 'nowrap', height: '44px', padding: '0 18px', display: 'flex', alignItems: 'center', gap: '9px', border: '1px solid #E6EAF2', borderRadius: '14px', background: '#FFFFFF', color: '#0B1220', fontFamily: 'inherit', fontSize: '14px', fontWeight: '600', cursor: 'pointer' }} className="dc8">
-                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M7 9V4h10v5" />
-                    <rect x="4" y="9" width="16" height="7" rx="2.5" />
-                    <path d="M7 14h10v6H7z" />
-                  </svg>
-                  Imprimir OS do lote
-                </button>
-                <button style={{ whiteSpace: 'nowrap', height: '44px', padding: '0 18px', display: 'flex', alignItems: 'center', gap: '9px', border: '0', borderRadius: '14px', background: 'linear-gradient(135deg,#2563EB,#06B6D4)', color: '#FFFFFF', fontFamily: 'inherit', fontSize: '14px', fontWeight: '700', cursor: 'pointer', boxShadow: '0 8px 20px rgba(37,99,235,.28)' }} className="dc9">
+                  Ver pedidos
+                </a>
+                <button onClick={v.enfileirarTodos} style={css(v.btnFila)}>
                   <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
                     <path d="M12 5v14M5 12h14" />
                   </svg>
-                  Novo lote
+                  {v.rotuloFila}
                 </button>
               </div>
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))', gap: '16px' }}>
-              <div style={{ background: '#FFFFFF', border: '1px solid #E6EAF2', borderRadius: '22px', padding: '20px 22px', display: 'flex', flexDirection: 'column', gap: '12px', transition: 'box-shadow .18s, transform .18s' }} className="dc10">
+              <div style={{ background: '#FFFFFF', border: '1px solid #E6EAF2', borderRadius: '22px', padding: '20px 22px', display: 'flex', flexDirection: 'column', gap: '12px', transition: 'box-shadow .18s, transform .18s' }} className="dc8">
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                   <span style={{ fontSize: '13px', color: '#6B7A90', fontWeight: '500' }}>
-                    Jobs ativos
+                    {v.kpi1.rotulo}
                   </span>
                   <span style={{ width: '36px', height: '36px', borderRadius: '12px', background: '#EAF0FF', color: '#2563EB', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
@@ -454,21 +436,18 @@ export default function ProducaoDesign({ v }: { v: any }) {
                   </span>
                 </div>
                 <span style={{ fontSize: '29px', fontWeight: '800', letterSpacing: '-1px' }}>
-                  121
+                  {v.kpi1.valor}
                 </span>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                   <span style={{ padding: '4px 9px', borderRadius: '999px', background: '#EAF0FF', color: '#2563EB', fontSize: '11.5px', fontWeight: '700' }}>
-                    +14 vs ontem
+                    {v.kpi1.nota}
                   </span>
-                  <svg viewBox="0 0 80 26" width="80" height="26" fill="none" style={{ flex: '0 0 auto' }}>
-                    <path d="M0 21 12 17 24 19 36 11 48 14 60 6 72 3 80 5" stroke="#2563EB" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
                 </div>
               </div>
-              <div style={{ background: '#FFFFFF', border: '1px solid #E6EAF2', borderRadius: '22px', padding: '20px 22px', display: 'flex', flexDirection: 'column', gap: '12px', transition: 'box-shadow .18s, transform .18s' }} className="dc11">
+              <div style={{ background: '#FFFFFF', border: '1px solid #E6EAF2', borderRadius: '22px', padding: '20px 22px', display: 'flex', flexDirection: 'column', gap: '12px', transition: 'box-shadow .18s, transform .18s' }} className="dc9">
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                   <span style={{ fontSize: '13px', color: '#6B7A90', fontWeight: '500' }}>
-                    Fila de render
+                    {v.kpi2.rotulo}
                   </span>
                   <span style={{ width: '36px', height: '36px', borderRadius: '12px', background: '#E4F8FC', color: '#0891B2', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
@@ -478,21 +457,18 @@ export default function ProducaoDesign({ v }: { v: any }) {
                   </span>
                 </div>
                 <span style={{ fontSize: '29px', fontWeight: '800', letterSpacing: '-1px' }}>
-                  27
+                  {v.kpi2.valor}
                 </span>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                   <span style={{ padding: '4px 9px', borderRadius: '999px', background: '#E4F8FC', color: '#0891B2', fontSize: '11.5px', fontWeight: '700' }}>
-                    2 workers livres
+                    {v.kpi2.nota}
                   </span>
-                  <svg viewBox="0 0 80 26" width="80" height="26" fill="none" style={{ flex: '0 0 auto' }}>
-                    <path d="M0 18 12 20 24 13 36 15 48 9 60 12 72 5 80 7" stroke="#06B6D4" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
                 </div>
               </div>
-              <div style={{ background: '#FFFFFF', border: '1px solid #E6EAF2', borderRadius: '22px', padding: '20px 22px', display: 'flex', flexDirection: 'column', gap: '12px', transition: 'box-shadow .18s, transform .18s' }} className="dc12">
+              <div style={{ background: '#FFFFFF', border: '1px solid #E6EAF2', borderRadius: '22px', padding: '20px 22px', display: 'flex', flexDirection: 'column', gap: '12px', transition: 'box-shadow .18s, transform .18s' }} className="dc10">
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                   <span style={{ fontSize: '13px', color: '#6B7A90', fontWeight: '500' }}>
-                    SLA no prazo
+                    {v.kpi3.rotulo}
                   </span>
                   <span style={{ width: '36px', height: '36px', borderRadius: '12px', background: '#E6F8F1', color: '#059669', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
@@ -502,21 +478,18 @@ export default function ProducaoDesign({ v }: { v: any }) {
                   </span>
                 </div>
                 <span style={{ fontSize: '29px', fontWeight: '800', letterSpacing: '-1px' }}>
-                  96%
+                  {v.kpi3.valor}
                 </span>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                   <span style={{ padding: '4px 9px', borderRadius: '999px', background: '#E6F8F1', color: '#059669', fontSize: '11.5px', fontWeight: '700' }}>
-                    meta 95%
+                    {v.kpi3.nota}
                   </span>
-                  <svg viewBox="0 0 80 26" width="80" height="26" fill="none" style={{ flex: '0 0 auto' }}>
-                    <path d="M0 20 12 16 24 18 36 12 48 13 60 8 72 6 80 4" stroke="#10B981" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
                 </div>
               </div>
-              <div style={{ background: '#FFFFFF', border: '1px solid #E6EAF2', borderRadius: '22px', padding: '20px 22px', display: 'flex', flexDirection: 'column', gap: '12px', transition: 'box-shadow .18s, transform .18s' }} className="dc13">
+              <div style={{ background: '#FFFFFF', border: '1px solid #E6EAF2', borderRadius: '22px', padding: '20px 22px', display: 'flex', flexDirection: 'column', gap: '12px', transition: 'box-shadow .18s, transform .18s' }} className="dc11">
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                   <span style={{ fontSize: '13px', color: '#6B7A90', fontWeight: '500' }}>
-                    Atrasados
+                    {v.kpi4.rotulo}
                   </span>
                   <span style={{ width: '36px', height: '36px', borderRadius: '12px', background: '#FFF1F3', color: '#E11D48', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
@@ -526,21 +499,18 @@ export default function ProducaoDesign({ v }: { v: any }) {
                   </span>
                 </div>
                 <span style={{ fontSize: '29px', fontWeight: '800', letterSpacing: '-1px' }}>
-                  4
+                  {v.kpi4.valor}
                 </span>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <span style={{ padding: '4px 9px', borderRadius: '999px', background: '#FFF1F3', color: '#E11D48', fontSize: '11.5px', fontWeight: '700' }}>
-                    1 job com erro
+                  <span style={css(v.kpi4.selo)}>
+                    {v.kpi4.nota}
                   </span>
-                  <svg viewBox="0 0 80 26" width="80" height="26" fill="none" style={{ flex: '0 0 auto' }}>
-                    <path d="M0 8 12 6 24 11 36 9 48 14 60 12 72 17 80 16" stroke="#F43F5E" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
                 </div>
               </div>
-              <div style={{ background: '#FFFFFF', border: '1px solid #E6EAF2', borderRadius: '22px', padding: '20px 22px', display: 'flex', flexDirection: 'column', gap: '12px', transition: 'box-shadow .18s, transform .18s' }} className="dc14">
+              <div style={{ background: '#FFFFFF', border: '1px solid #E6EAF2', borderRadius: '22px', padding: '20px 22px', display: 'flex', flexDirection: 'column', gap: '12px', transition: 'box-shadow .18s, transform .18s' }} className="dc12">
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                   <span style={{ fontSize: '13px', color: '#6B7A90', fontWeight: '500' }}>
-                    Lotes a expedir hoje
+                    {v.kpi5.rotulo}
                   </span>
                   <span style={{ width: '36px', height: '36px', borderRadius: '12px', background: '#EDEBFE', color: '#6366F1', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
@@ -552,44 +522,35 @@ export default function ProducaoDesign({ v }: { v: any }) {
                   </span>
                 </div>
                 <span style={{ fontSize: '29px', fontWeight: '800', letterSpacing: '-1px' }}>
-                  3
+                  {v.kpi5.valor}
                 </span>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                   <span style={{ padding: '4px 9px', borderRadius: '999px', background: '#EDEBFE', color: '#6366F1', fontSize: '11.5px', fontWeight: '700' }}>
-                    68 volumes
+                    {v.kpi5.nota}
                   </span>
-                  <svg viewBox="0 0 80 26" width="80" height="26" fill="none" style={{ flex: '0 0 auto' }}>
-                    <path d="M0 14 12 12 24 16 36 10 48 12 60 7 72 9 80 6" stroke="#6366F1" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
                 </div>
               </div>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px', flexWrap: 'wrap' }}>
               <div style={{ display: 'flex', gap: '4px', padding: '5px', background: '#F4F7FC', border: '1px solid #E6EAF2', borderRadius: '999px', flexWrap: 'wrap' }}>
-                <span onClick={v.setP0} style={css(v.per0)} className="dc15">
-                  Kanban
+                <span onClick={v.setP0} style={css(v.per0)} className="dc13">
+                  {v.rot0}
                 </span>
-                <span onClick={v.setP1} style={css(v.per1)} className="dc16">
-                  Lotes
+                <span onClick={v.setP1} style={css(v.per1)} className="dc14">
+                  {v.rot1}
                 </span>
-                <span onClick={v.setP2} style={css(v.per2)} className="dc17">
-                  Fila de render
-                </span>
-                <span onClick={v.setP3} style={css(v.per3)} className="dc18">
-                  Qualidade
-                </span>
-                <span onClick={v.setP4} style={css(v.per4)} className="dc19">
-                  Equipamentos
+                <span onClick={v.setP2} style={css(v.per2)} className="dc15">
+                  {v.rot2}
                 </span>
               </div>
               <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
                 <span style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '9px 14px', borderRadius: '999px', background: '#FFFFFF', border: '1px solid #E6EAF2', fontSize: '12.5px', fontWeight: '600', color: '#46536A' }}>
                   <span style={{ width: '8px', height: '8px', borderRadius: '999px', background: '#10B981' }}>
                   </span>
-                  4 equipamentos online
+                  {v.chipEquipe}
                 </span>
-                <span style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '9px 14px', borderRadius: '999px', background: '#FFF1F3', fontSize: '12.5px', fontWeight: '600', color: '#E11D48' }}>
-                  1 job com erro
+                <span style={css(v.chipAtrasoEstilo)}>
+                  {v.chipAtraso}
                 </span>
               </div>
             </div>
@@ -603,440 +564,64 @@ export default function ProducaoDesign({ v }: { v: any }) {
                 </span>
               </div>
               <div style={{ overflowX: 'auto', paddingBottom: '6px' }}>
-                <div style={{ display: 'flex', gap: '14px', minWidth: '1290px' }}>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', width: '250px', flex: '0 0 250px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '9px', padding: '0 2px 4px' }}>
-                      <span style={{ width: '8px', height: '8px', borderRadius: '999px', background: '#06B6D4' }}>
-                      </span>
-                      <span style={{ fontSize: '13.5px', fontWeight: '700' }}>
-                        Pré-flight
-                      </span>
-                      <span style={{ marginLeft: 'auto', padding: '2px 9px', borderRadius: '999px', background: '#E4F8FC', color: '#0891B2', fontSize: '11.5px', fontWeight: '700' }}>
-                        12
-                      </span>
-                    </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                      <div style={{ background: '#FFFFFF', border: '1px solid #E6EAF2', borderRadius: '16px', padding: '14px', display: 'flex', flexDirection: 'column', gap: '11px', cursor: 'pointer', transition: 'box-shadow .16s, transform .16s, border-color .16s' }} className="dc20">
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px' }}>
-                          <span style={{ fontSize: '11.5px', fontWeight: '700', color: '#9AA7BC', letterSpacing: '.4px' }}>
-                            #PT-10481
-                          </span>
-                          <span style={{ flex: '0 0 auto', whiteSpace: 'nowrap', padding: '4px 10px', borderRadius: '999px', background: '#E4F8FC', color: '#0891B2', fontSize: '11.5px', fontWeight: '700' }}>
-                            6 h
-                          </span>
-                        </div>
-                        <p style={{ margin: '0', fontSize: '14px', fontWeight: '700', lineHeight: '1.3', textWrap: 'pretty' }}>
-                          Colégio Farol · revelação 15×21
-                        </p>
-                        <p style={{ margin: '0', fontSize: '12px', color: '#6B7A90', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                          620 fotos · Ana Lopes
-                        </p>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                          <div style={{ flex: '1', height: '6px', borderRadius: '999px', background: '#EEF1F7' }}>
-                            <div style={{ width: '40%', height: '100%', borderRadius: '999px', background: '#06B6D4' }}>
-                            </div>
-                          </div>
-                          <span style={{ flex: '0 0 auto', fontSize: '11.5px', fontWeight: '600', color: '#6B7A90' }}>
-                            40%
-                          </span>
-                        </div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', paddingTop: '2px', borderTop: '1px solid #F4F6FB' }}>
-                          <span style={{ width: '24px', height: '24px', borderRadius: '8px', background: '#F1F5FD', color: '#46536A', fontSize: '10.5px', fontWeight: '700', display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: '9px' }}>
-                            AL
-                          </span>
-                          <span style={{ fontSize: '11.5px', color: '#9AA7BC', marginTop: '9px' }}>
-                            Lote 214
-                          </span>
-                        </div>
+                <div style={{ display: 'flex', gap: '14px', minWidth: '1320px' }}>
+                  {v.colunas.map((col: any, i7: number) => (
+                    <div key={i7} onDragOver={col.sobre} onDrop={col.soltar} style={css(col.estilo)}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '9px', padding: '0 2px 4px' }}>
+                        <span style={css(col.ponto)}>
+                        </span>
+                        <span style={{ fontSize: '13.5px', fontWeight: '700' }}>
+                          {col.nome}
+                        </span>
+                        <span style={css(col.selo)}>
+                          {col.quantidade}
+                        </span>
                       </div>
-                      <div style={{ background: '#FFFFFF', border: '1px solid #E6EAF2', borderRadius: '16px', padding: '14px', display: 'flex', flexDirection: 'column', gap: '11px', cursor: 'pointer', transition: 'box-shadow .16s, transform .16s, border-color .16s' }} className="dc21">
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px' }}>
-                          <span style={{ fontSize: '11.5px', fontWeight: '700', color: '#9AA7BC', letterSpacing: '.4px' }}>
-                            #PT-10480
-                          </span>
-                          <span style={{ flex: '0 0 auto', whiteSpace: 'nowrap', padding: '4px 10px', borderRadius: '999px', background: '#FEF3E2', color: '#B45309', fontSize: '11.5px', fontWeight: '700' }}>
-                            2 h
-                          </span>
-                        </div>
-                        <p style={{ margin: '0', fontSize: '14px', fontWeight: '700', lineHeight: '1.3', textWrap: 'pretty' }}>
-                          Rita Nunes · canvas 40×60
-                        </p>
-                        <p style={{ margin: '0', fontSize: '12px', color: '#6B7A90', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                          1 arte · João Pinto
-                        </p>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                          <div style={{ flex: '1', height: '6px', borderRadius: '999px', background: '#EEF1F7' }}>
-                            <div style={{ width: '15%', height: '100%', borderRadius: '999px', background: '#F59E0B' }}>
+                      <div style={css(col.lista)}>
+                        {col.cards.map((c: any, i10: number) => (
+                          <div key={i10} draggable="true" onDragStart={c.arrastar} onDragEnd={c.soltarCard} onClick={c.abrir} style={css(c.estilo)} className="dc16">
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px' }}>
+                              <span style={{ fontSize: '11.5px', fontWeight: '700', color: '#9AA7BC', letterSpacing: '.4px' }}>
+                                {c.numero}
+                              </span>
+                              <span style={css(c.seloPrazo)}>
+                                {c.prazo}
+                              </span>
+                            </div>
+                            <p style={{ margin: '0', fontSize: '14px', fontWeight: '700', lineHeight: '1.3', textWrap: 'pretty' }}>
+                              {c.cliente}
+                            </p>
+                            <p style={{ margin: '0', fontSize: '12px', color: '#6B7A90', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                              {c.detalhe}
+                            </p>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                              <div style={{ flex: '1', height: '6px', borderRadius: '999px', background: '#EEF1F7' }}>
+                                <div style={css(c.barra)}>
+                                </div>
+                              </div>
+                              <span style={{ flex: '0 0 auto', fontSize: '11.5px', fontWeight: '600', color: '#6B7A90' }}>
+                                {c.pct}
+                              </span>
+                            </div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', paddingTop: '2px', borderTop: '1px solid #F4F6FB' }}>
+                              <span style={{ width: '24px', height: '24px', borderRadius: '8px', background: '#F1F5FD', color: '#46536A', fontSize: '10.5px', fontWeight: '700', display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: '9px' }}>
+                                {c.iniciais}
+                              </span>
+                              <span style={{ fontSize: '11.5px', color: '#9AA7BC', marginTop: '9px' }}>
+                                {c.responsavel}
+                              </span>
+                              <button onClick={c.avancar} style={css(c.btnAvancar)} className="dc17">
+                                {c.rotuloAvancar}
+                              </button>
                             </div>
                           </div>
-                          <span style={{ flex: '0 0 auto', fontSize: '11.5px', fontWeight: '600', color: '#6B7A90' }}>
-                            15%
-                          </span>
-                        </div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', paddingTop: '2px', borderTop: '1px solid #F4F6FB' }}>
-                          <span style={{ width: '24px', height: '24px', borderRadius: '8px', background: '#F1F5FD', color: '#46536A', fontSize: '10.5px', fontWeight: '700', display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: '9px' }}>
-                            JP
-                          </span>
-                          <span style={{ fontSize: '11.5px', color: '#9AA7BC', marginTop: '9px' }}>
-                            Lote 214
-                          </span>
-                        </div>
+                        ))}
+                        <p style={css(col.vazio)}>
+                          {col.textoVazio}
+                        </p>
                       </div>
                     </div>
-                  </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', width: '250px', flex: '0 0 250px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '9px', padding: '0 2px 4px' }}>
-                      <span style={{ width: '8px', height: '8px', borderRadius: '999px', background: '#2563EB' }}>
-                      </span>
-                      <span style={{ fontSize: '13.5px', fontWeight: '700' }}>
-                        Renderização
-                      </span>
-                      <span style={{ marginLeft: 'auto', padding: '2px 9px', borderRadius: '999px', background: '#EAF0FF', color: '#2563EB', fontSize: '11.5px', fontWeight: '700' }}>
-                        27
-                      </span>
-                    </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                      <div style={{ background: '#FFFFFF', border: '1px solid #E6EAF2', borderRadius: '16px', padding: '14px', display: 'flex', flexDirection: 'column', gap: '11px', cursor: 'pointer', transition: 'box-shadow .16s, transform .16s, border-color .16s' }} className="dc22">
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px' }}>
-                          <span style={{ fontSize: '11.5px', fontWeight: '700', color: '#9AA7BC', letterSpacing: '.4px' }}>
-                            #PT-10482
-                          </span>
-                          <span style={{ flex: '0 0 auto', whiteSpace: 'nowrap', padding: '4px 10px', borderRadius: '999px', background: '#EAF0FF', color: '#2563EB', fontSize: '11.5px', fontWeight: '700' }}>
-                            18 h
-                          </span>
-                        </div>
-                        <p style={{ margin: '0', fontSize: '14px', fontWeight: '700', lineHeight: '1.3', textWrap: 'pretty' }}>
-                          Studio Lume · fotolivro 30×30
-                        </p>
-                        <p style={{ margin: '0', fontSize: '12px', color: '#6B7A90', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                          48 páginas · worker-03
-                        </p>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                          <div style={{ flex: '1', height: '6px', borderRadius: '999px', background: '#EEF1F7' }}>
-                            <div style={{ width: '62%', height: '100%', borderRadius: '999px', background: '#2563EB' }}>
-                            </div>
-                          </div>
-                          <span style={{ flex: '0 0 auto', fontSize: '11.5px', fontWeight: '600', color: '#6B7A90' }}>
-                            62%
-                          </span>
-                        </div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', paddingTop: '2px', borderTop: '1px solid #F4F6FB' }}>
-                          <span style={{ width: '24px', height: '24px', borderRadius: '8px', background: '#F1F5FD', color: '#46536A', fontSize: '10.5px', fontWeight: '700', display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: '9px' }}>
-                            JP
-                          </span>
-                          <span style={{ fontSize: '11.5px', color: '#9AA7BC', marginTop: '9px' }}>
-                            Lote 214
-                          </span>
-                        </div>
-                      </div>
-                      <div style={{ background: '#FFFFFF', border: '1px solid #E6EAF2', borderRadius: '16px', padding: '14px', display: 'flex', flexDirection: 'column', gap: '11px', cursor: 'pointer', transition: 'box-shadow .16s, transform .16s, border-color .16s' }} className="dc23">
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px' }}>
-                          <span style={{ fontSize: '11.5px', fontWeight: '700', color: '#9AA7BC', letterSpacing: '.4px' }}>
-                            #PT-10476
-                          </span>
-                          <span style={{ flex: '0 0 auto', whiteSpace: 'nowrap', padding: '4px 10px', borderRadius: '999px', background: '#EAF0FF', color: '#2563EB', fontSize: '11.5px', fontWeight: '700' }}>
-                            1 d
-                          </span>
-                        </div>
-                        <p style={{ margin: '0', fontSize: '14px', fontWeight: '700', lineHeight: '1.3', textWrap: 'pretty' }}>
-                          Luz Viva · fotolivro 20×20
-                        </p>
-                        <p style={{ margin: '0', fontSize: '12px', color: '#6B7A90', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                          32 páginas · na fila
-                        </p>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                          <div style={{ flex: '1', height: '6px', borderRadius: '999px', background: '#EEF1F7' }}>
-                            <div style={{ width: '8%', height: '100%', borderRadius: '999px', background: '#2563EB' }}>
-                            </div>
-                          </div>
-                          <span style={{ flex: '0 0 auto', fontSize: '11.5px', fontWeight: '600', color: '#6B7A90' }}>
-                            8%
-                          </span>
-                        </div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', paddingTop: '2px', borderTop: '1px solid #F4F6FB' }}>
-                          <span style={{ width: '24px', height: '24px', borderRadius: '8px', background: '#F1F5FD', color: '#46536A', fontSize: '10.5px', fontWeight: '700', display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: '9px' }}>
-                            AL
-                          </span>
-                          <span style={{ fontSize: '11.5px', color: '#9AA7BC', marginTop: '9px' }}>
-                            Lote 214
-                          </span>
-                        </div>
-                      </div>
-                      <div style={{ background: '#FFFFFF', border: '1px solid #E6EAF2', borderRadius: '16px', padding: '14px', display: 'flex', flexDirection: 'column', gap: '11px', cursor: 'pointer', transition: 'box-shadow .16s, transform .16s, border-color .16s' }} className="dc24">
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px' }}>
-                          <span style={{ fontSize: '11.5px', fontWeight: '700', color: '#9AA7BC', letterSpacing: '.4px' }}>
-                            #PT-10475
-                          </span>
-                          <span style={{ flex: '0 0 auto', whiteSpace: 'nowrap', padding: '4px 10px', borderRadius: '999px', background: '#FFF1F3', color: '#E11D48', fontSize: '11.5px', fontWeight: '700' }}>
-                            erro
-                          </span>
-                        </div>
-                        <p style={{ margin: '0', fontSize: '14px', fontWeight: '700', lineHeight: '1.3', textWrap: 'pretty' }}>
-                          Memória Books · álbum
-                        </p>
-                        <p style={{ margin: '0', fontSize: '12px', color: '#6B7A90', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                          fonte ausente · reprocessar
-                        </p>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                          <div style={{ flex: '1', height: '6px', borderRadius: '999px', background: '#EEF1F7' }}>
-                            <div style={{ width: '22%', height: '100%', borderRadius: '999px', background: '#F43F5E' }}>
-                            </div>
-                          </div>
-                          <span style={{ flex: '0 0 auto', fontSize: '11.5px', fontWeight: '600', color: '#6B7A90' }}>
-                            22%
-                          </span>
-                        </div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', paddingTop: '2px', borderTop: '1px solid #F4F6FB' }}>
-                          <span style={{ width: '24px', height: '24px', borderRadius: '8px', background: '#F1F5FD', color: '#46536A', fontSize: '10.5px', fontWeight: '700', display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: '9px' }}>
-                            CM
-                          </span>
-                          <span style={{ fontSize: '11.5px', color: '#9AA7BC', marginTop: '9px' }}>
-                            Lote 214
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', width: '250px', flex: '0 0 250px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '9px', padding: '0 2px 4px' }}>
-                      <span style={{ width: '8px', height: '8px', borderRadius: '999px', background: '#06B6D4' }}>
-                      </span>
-                      <span style={{ fontSize: '13.5px', fontWeight: '700' }}>
-                        Impressão
-                      </span>
-                      <span style={{ marginLeft: 'auto', padding: '2px 9px', borderRadius: '999px', background: '#E4F8FC', color: '#0891B2', fontSize: '11.5px', fontWeight: '700' }}>
-                        32
-                      </span>
-                    </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                      <div style={{ background: '#FFFFFF', border: '1px solid #E6EAF2', borderRadius: '16px', padding: '14px', display: 'flex', flexDirection: 'column', gap: '11px', cursor: 'pointer', transition: 'box-shadow .16s, transform .16s, border-color .16s' }} className="dc25">
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px' }}>
-                          <span style={{ fontSize: '11.5px', fontWeight: '700', color: '#9AA7BC', letterSpacing: '.4px' }}>
-                            #PT-10478
-                          </span>
-                          <span style={{ flex: '0 0 auto', whiteSpace: 'nowrap', padding: '4px 10px', borderRadius: '999px', background: '#E6F8F1', color: '#059669', fontSize: '11.5px', fontWeight: '700' }}>
-                            2 d
-                          </span>
-                        </div>
-                        <p style={{ margin: '0', fontSize: '14px', fontWeight: '700', lineHeight: '1.3', textWrap: 'pretty' }}>
-                          Ana Paula · caneca
-                        </p>
-                        <p style={{ margin: '0', fontSize: '12px', color: '#6B7A90', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                          1 un · Noritsu D1005
-                        </p>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                          <div style={{ flex: '1', height: '6px', borderRadius: '999px', background: '#EEF1F7' }}>
-                            <div style={{ width: '55%', height: '100%', borderRadius: '999px', background: '#10B981' }}>
-                            </div>
-                          </div>
-                          <span style={{ flex: '0 0 auto', fontSize: '11.5px', fontWeight: '600', color: '#6B7A90' }}>
-                            55%
-                          </span>
-                        </div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', paddingTop: '2px', borderTop: '1px solid #F4F6FB' }}>
-                          <span style={{ width: '24px', height: '24px', borderRadius: '8px', background: '#F1F5FD', color: '#46536A', fontSize: '10.5px', fontWeight: '700', display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: '9px' }}>
-                            CM
-                          </span>
-                          <span style={{ fontSize: '11.5px', color: '#9AA7BC', marginTop: '9px' }}>
-                            Lote 214
-                          </span>
-                        </div>
-                      </div>
-                      <div style={{ background: '#FFFFFF', border: '1px solid #E6EAF2', borderRadius: '16px', padding: '14px', display: 'flex', flexDirection: 'column', gap: '11px', cursor: 'pointer', transition: 'box-shadow .16s, transform .16s, border-color .16s' }} className="dc26">
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px' }}>
-                          <span style={{ fontSize: '11.5px', fontWeight: '700', color: '#9AA7BC', letterSpacing: '.4px' }}>
-                            #PT-10477
-                          </span>
-                          <span style={{ flex: '0 0 auto', whiteSpace: 'nowrap', padding: '4px 10px', borderRadius: '999px', background: '#FEF3E2', color: '#B45309', fontSize: '11.5px', fontWeight: '700' }}>
-                            4 h
-                          </span>
-                        </div>
-                        <p style={{ margin: '0', fontSize: '14px', fontWeight: '700', lineHeight: '1.3', textWrap: 'pretty' }}>
-                          Foto Trindade · 10×15
-                        </p>
-                        <p style={{ margin: '0', fontSize: '12px', color: '#6B7A90', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                          800 un · Noritsu D1005
-                        </p>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                          <div style={{ flex: '1', height: '6px', borderRadius: '999px', background: '#EEF1F7' }}>
-                            <div style={{ width: '74%', height: '100%', borderRadius: '999px', background: '#F59E0B' }}>
-                            </div>
-                          </div>
-                          <span style={{ flex: '0 0 auto', fontSize: '11.5px', fontWeight: '600', color: '#6B7A90' }}>
-                            74%
-                          </span>
-                        </div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', paddingTop: '2px', borderTop: '1px solid #F4F6FB' }}>
-                          <span style={{ width: '24px', height: '24px', borderRadius: '8px', background: '#F1F5FD', color: '#46536A', fontSize: '10.5px', fontWeight: '700', display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: '9px' }}>
-                            JP
-                          </span>
-                          <span style={{ fontSize: '11.5px', color: '#9AA7BC', marginTop: '9px' }}>
-                            Lote 214
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', width: '250px', flex: '0 0 250px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '9px', padding: '0 2px 4px' }}>
-                      <span style={{ width: '8px', height: '8px', borderRadius: '999px', background: '#6366F1' }}>
-                      </span>
-                      <span style={{ fontSize: '13.5px', fontWeight: '700' }}>
-                        Acabamento
-                      </span>
-                      <span style={{ marginLeft: 'auto', padding: '2px 9px', borderRadius: '999px', background: '#EDEBFE', color: '#6366F1', fontSize: '11.5px', fontWeight: '700' }}>
-                        25
-                      </span>
-                    </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                      <div style={{ background: '#FFFFFF', border: '1px solid #E6EAF2', borderRadius: '16px', padding: '14px', display: 'flex', flexDirection: 'column', gap: '11px', cursor: 'pointer', transition: 'box-shadow .16s, transform .16s, border-color .16s' }} className="dc27">
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px' }}>
-                          <span style={{ fontSize: '11.5px', fontWeight: '700', color: '#9AA7BC', letterSpacing: '.4px' }}>
-                            #PT-10482
-                          </span>
-                          <span style={{ flex: '0 0 auto', whiteSpace: 'nowrap', padding: '4px 10px', borderRadius: '999px', background: '#EDEBFE', color: '#6366F1', fontSize: '11.5px', fontWeight: '700' }}>
-                            1 d
-                          </span>
-                        </div>
-                        <p style={{ margin: '0', fontSize: '14px', fontWeight: '700', lineHeight: '1.3', textWrap: 'pretty' }}>
-                          Estojo linho · Studio Lume
-                        </p>
-                        <p style={{ margin: '0', fontSize: '12px', color: '#6B7A90', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                          gravação a quente
-                        </p>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                          <div style={{ flex: '1', height: '6px', borderRadius: '999px', background: '#EEF1F7' }}>
-                            <div style={{ width: '30%', height: '100%', borderRadius: '999px', background: '#6366F1' }}>
-                            </div>
-                          </div>
-                          <span style={{ flex: '0 0 auto', fontSize: '11.5px', fontWeight: '600', color: '#6B7A90' }}>
-                            30%
-                          </span>
-                        </div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', paddingTop: '2px', borderTop: '1px solid #F4F6FB' }}>
-                          <span style={{ width: '24px', height: '24px', borderRadius: '8px', background: '#F1F5FD', color: '#46536A', fontSize: '10.5px', fontWeight: '700', display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: '9px' }}>
-                            CM
-                          </span>
-                          <span style={{ fontSize: '11.5px', color: '#9AA7BC', marginTop: '9px' }}>
-                            Lote 214
-                          </span>
-                        </div>
-                      </div>
-                      <div style={{ background: '#FFFFFF', border: '1px solid #E6EAF2', borderRadius: '16px', padding: '14px', display: 'flex', flexDirection: 'column', gap: '11px', cursor: 'pointer', transition: 'box-shadow .16s, transform .16s, border-color .16s' }} className="dc28">
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px' }}>
-                          <span style={{ fontSize: '11.5px', fontWeight: '700', color: '#9AA7BC', letterSpacing: '.4px' }}>
-                            #PT-10474
-                          </span>
-                          <span style={{ flex: '0 0 auto', whiteSpace: 'nowrap', padding: '4px 10px', borderRadius: '999px', background: '#E6F8F1', color: '#059669', fontSize: '11.5px', fontWeight: '700' }}>
-                            2 d
-                          </span>
-                        </div>
-                        <p style={{ margin: '0', fontSize: '14px', fontWeight: '700', lineHeight: '1.3', textWrap: 'pretty' }}>
-                          Laminação fosca
-                        </p>
-                        <p style={{ margin: '0', fontSize: '12px', color: '#6B7A90', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                          24 páginas · Polar
-                        </p>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                          <div style={{ flex: '1', height: '6px', borderRadius: '999px', background: '#EEF1F7' }}>
-                            <div style={{ width: '80%', height: '100%', borderRadius: '999px', background: '#10B981' }}>
-                            </div>
-                          </div>
-                          <span style={{ flex: '0 0 auto', fontSize: '11.5px', fontWeight: '600', color: '#6B7A90' }}>
-                            80%
-                          </span>
-                        </div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', paddingTop: '2px', borderTop: '1px solid #F4F6FB' }}>
-                          <span style={{ width: '24px', height: '24px', borderRadius: '8px', background: '#F1F5FD', color: '#46536A', fontSize: '10.5px', fontWeight: '700', display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: '9px' }}>
-                            AL
-                          </span>
-                          <span style={{ fontSize: '11.5px', color: '#9AA7BC', marginTop: '9px' }}>
-                            Lote 214
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', width: '250px', flex: '0 0 250px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '9px', padding: '0 2px 4px' }}>
-                      <span style={{ width: '8px', height: '8px', borderRadius: '999px', background: '#10B981' }}>
-                      </span>
-                      <span style={{ fontSize: '13.5px', fontWeight: '700' }}>
-                        Expedição
-                      </span>
-                      <span style={{ marginLeft: 'auto', padding: '2px 9px', borderRadius: '999px', background: '#E6F8F1', color: '#059669', fontSize: '11.5px', fontWeight: '700' }}>
-                        24
-                      </span>
-                    </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                      <div style={{ background: '#FFFFFF', border: '1px solid #E6EAF2', borderRadius: '16px', padding: '14px', display: 'flex', flexDirection: 'column', gap: '11px', cursor: 'pointer', transition: 'box-shadow .16s, transform .16s, border-color .16s' }} className="dc29">
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px' }}>
-                          <span style={{ fontSize: '11.5px', fontWeight: '700', color: '#9AA7BC', letterSpacing: '.4px' }}>
-                            #PT-10479
-                          </span>
-                          <span style={{ flex: '0 0 auto', whiteSpace: 'nowrap', padding: '4px 10px', borderRadius: '999px', background: '#E6F8F1', color: '#059669', fontSize: '11.5px', fontWeight: '700' }}>
-                            hoje
-                          </span>
-                        </div>
-                        <p style={{ margin: '0', fontSize: '14px', fontWeight: '700', lineHeight: '1.3', textWrap: 'pretty' }}>
-                          {v.linha3.nome}
-                        </p>
-                        <p style={{ margin: '0', fontSize: '12px', color: '#6B7A90', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                          retirada no balcão
-                        </p>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                          <div style={{ flex: '1', height: '6px', borderRadius: '999px', background: '#EEF1F7' }}>
-                            <div style={{ width: '92%', height: '100%', borderRadius: '999px', background: '#10B981' }}>
-                            </div>
-                          </div>
-                          <span style={{ flex: '0 0 auto', fontSize: '11.5px', fontWeight: '600', color: '#6B7A90' }}>
-                            92%
-                          </span>
-                        </div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', paddingTop: '2px', borderTop: '1px solid #F4F6FB' }}>
-                          <span style={{ width: '24px', height: '24px', borderRadius: '8px', background: '#F1F5FD', color: '#46536A', fontSize: '10.5px', fontWeight: '700', display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: '9px' }}>
-                            CM
-                          </span>
-                          <span style={{ fontSize: '11.5px', color: '#9AA7BC', marginTop: '9px' }}>
-                            Lote 214
-                          </span>
-                        </div>
-                      </div>
-                      <div style={{ background: '#FFFFFF', border: '1px solid #E6EAF2', borderRadius: '16px', padding: '14px', display: 'flex', flexDirection: 'column', gap: '11px', cursor: 'pointer', transition: 'box-shadow .16s, transform .16s, border-color .16s' }} className="dc30">
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px' }}>
-                          <span style={{ fontSize: '11.5px', fontWeight: '700', color: '#9AA7BC', letterSpacing: '.4px' }}>
-                            #PT-10471
-                          </span>
-                          <span style={{ flex: '0 0 auto', whiteSpace: 'nowrap', padding: '4px 10px', borderRadius: '999px', background: '#E6F8F1', color: '#059669', fontSize: '11.5px', fontWeight: '700' }}>
-                            hoje
-                          </span>
-                        </div>
-                        <p style={{ margin: '0', fontSize: '14px', fontWeight: '700', lineHeight: '1.3', textWrap: 'pretty' }}>
-                          {v.linha2.nome}
-                        </p>
-                        <p style={{ margin: '0', fontSize: '12px', color: '#6B7A90', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                          Correios PAC · 12 volumes
-                        </p>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                          <div style={{ flex: '1', height: '6px', borderRadius: '999px', background: '#EEF1F7' }}>
-                            <div style={{ width: '88%', height: '100%', borderRadius: '999px', background: '#10B981' }}>
-                            </div>
-                          </div>
-                          <span style={{ flex: '0 0 auto', fontSize: '11.5px', fontWeight: '600', color: '#6B7A90' }}>
-                            88%
-                          </span>
-                        </div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', paddingTop: '2px', borderTop: '1px solid #F4F6FB' }}>
-                          <span style={{ width: '24px', height: '24px', borderRadius: '8px', background: '#F1F5FD', color: '#46536A', fontSize: '10.5px', fontWeight: '700', display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: '9px' }}>
-                            AL
-                          </span>
-                          <span style={{ fontSize: '11.5px', color: '#9AA7BC', marginTop: '9px' }}>
-                            Lote 214
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                  ))}
                 </div>
               </div>
             </div>
@@ -1044,190 +629,93 @@ export default function ProducaoDesign({ v }: { v: any }) {
               <div style={{ background: '#FFFFFF', border: '1px solid #E6EAF2', borderRadius: '24px', padding: '22px 26px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px', marginBottom: '16px' }}>
                   <h2 style={{ margin: '0', fontSize: '18px', fontWeight: '700' }}>
-                    Fila de renderização
+                    Aguardando entrar na fila
                   </h2>
-                  <a href="#" style={{ fontSize: '13px', fontWeight: '700' }}>
-                    Ver todos os jobs
+                  <a href="/pedidos?estado=pago" style={{ fontSize: '13px', fontWeight: '700' }}>
+                    Ver pedidos pagos
                   </a>
                 </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                  <div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '13.5px', marginBottom: '8px' }}>
-                      <span style={{ fontWeight: '600' }}>
-                        job-90412 · Studio Lume · fotolivro 30×30
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                  {v.pendentes.map((p: any, i7: number) => (
+                    <div key={i7} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px', borderRadius: '16px', background: '#F8FAFE', border: '1px solid #EEF1F7' }}>
+                      <span style={{ width: '34px', height: '34px', borderRadius: '11px', background: '#EAF0FF', color: '#2563EB', fontSize: '11.5px', fontWeight: '700', display: 'flex', alignItems: 'center', justifyContent: 'center', flex: '0 0 auto' }}>
+                        {p.iniciais}
                       </span>
-                      <span style={{ color: '#6B7A90' }}>
-                        62% · worker-03
-                      </span>
-                    </div>
-                    <div style={{ height: '8px', borderRadius: '999px', background: '#EEF1F7' }}>
-                      <div style={{ width: '62%', height: '100%', borderRadius: '999px', background: 'linear-gradient(90deg,#2563EB,#06B6D4)' }}>
+                      <div style={{ flex: '1', minWidth: '0' }}>
+                        <p style={{ margin: '0', fontSize: '13.5px', fontWeight: '600' }}>
+                          {p.cliente}
+                        </p>
+                        <p style={{ margin: '2px 0 0', fontSize: '12px', color: '#6B7A90' }}>
+                          {p.detalhe}
+                        </p>
                       </div>
+                      <button onClick={p.enfileirar} style={{ whiteSpace: 'nowrap', height: '36px', padding: '0 14px', border: '1px solid #E6EAF2', borderRadius: '12px', background: '#FFFFFF', color: '#46536A', fontFamily: 'inherit', fontSize: '12.5px', fontWeight: '600', cursor: 'pointer' }} className="dc18">
+                        Colocar na fila
+                      </button>
                     </div>
-                  </div>
-                  <div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '13.5px', marginBottom: '8px' }}>
-                      <span style={{ fontWeight: '600' }}>
-                        job-90411 · Colégio Farol · 620 fotos
-                      </span>
-                      <span style={{ color: '#6B7A90' }}>
-                        38% · worker-01
-                      </span>
-                    </div>
-                    <div style={{ height: '8px', borderRadius: '999px', background: '#EEF1F7' }}>
-                      <div style={{ width: '38%', height: '100%', borderRadius: '999px', background: '#06B6D4' }}>
-                      </div>
-                    </div>
-                  </div>
-                  <div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '13.5px', marginBottom: '8px' }}>
-                      <span style={{ fontWeight: '600' }}>
-                        job-90409 · Memória Books · álbum 60 pág.
-                      </span>
-                      <span style={{ color: '#E11D48', fontWeight: '700' }}>
-                        erro · fonte ausente
-                      </span>
-                    </div>
-                    <div style={{ height: '8px', borderRadius: '999px', background: '#FFE4E9' }}>
-                      <div style={{ width: '22%', height: '100%', borderRadius: '999px', background: '#F43F5E' }}>
-                      </div>
-                    </div>
-                  </div>
-                  <div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '13.5px', marginBottom: '8px' }}>
-                      <span style={{ fontWeight: '600' }}>
-                        job-90408 · Luz Viva · fotolivro 20×20
-                      </span>
-                      <span style={{ color: '#6B7A90' }}>
-                        em fila · posição 4
-                      </span>
-                    </div>
-                    <div style={{ height: '8px', borderRadius: '999px', background: '#EEF1F7' }}>
-                      <div style={{ width: '6%', height: '100%', borderRadius: '999px', background: '#CBD5E6' }}>
-                      </div>
-                    </div>
-                  </div>
+                  ))}
+                  <p style={css(v.pendentesVazio)}>
+                    Nenhum pedido pago esperando ficha de produção.
+                  </p>
                 </div>
               </div>
               <div style={{ background: '#FFFFFF', border: '1px solid #E6EAF2', borderRadius: '24px', padding: '22px 26px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px', marginBottom: '16px' }}>
                   <h2 style={{ margin: '0', fontSize: '18px', fontWeight: '700' }}>
-                    Equipamentos e turnos
+                    Responsáveis
                   </h2>
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px', borderRadius: '16px', background: '#F8FAFE', border: '1px solid #EEF1F7' }}>
-                    <span style={{ width: '34px', height: '34px', borderRadius: '11px', background: '#E6F8F1', color: '#059669', display: 'flex', alignItems: 'center', justifyContent: 'center', flex: '0 0 auto' }}>
-                      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M7 9V4h10v5" />
-                        <rect x="4" y="9" width="16" height="7" rx="2.5" />
-                        <path d="M7 14h10v6H7z" />
-                      </svg>
-                    </span>
-                    <div style={{ flex: '1', minWidth: '0' }}>
-                      <p style={{ margin: '0', fontSize: '13.5px', fontWeight: '600' }}>
-                        Epson P9000
-                      </p>
-                      <p style={{ margin: '2px 0 0', fontSize: '12px', color: '#6B7A90' }}>
-                        imprimindo · 62% · João Pinto
-                      </p>
+                  {v.responsaveis.map((r: any, i7: number) => (
+                    <div key={i7} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px', borderRadius: '16px', background: '#F8FAFE', border: '1px solid #EEF1F7' }}>
+                      <span style={{ width: '34px', height: '34px', borderRadius: '11px', background: '#EAF0FF', color: '#2563EB', display: 'flex', alignItems: 'center', justifyContent: 'center', flex: '0 0 auto', fontSize: '11.5px', fontWeight: '700' }}>
+                        {r.iniciais}
+                      </span>
+                      <div style={{ flex: '1', minWidth: '0' }}>
+                        <p style={{ margin: '0', fontSize: '13.5px', fontWeight: '600' }}>
+                          {r.nome}
+                        </p>
+                        <p style={{ margin: '2px 0 0', fontSize: '12px', color: '#6B7A90' }}>
+                          {r.detalhe}
+                        </p>
+                      </div>
+                      <span style={css(r.selo)}>
+                        {r.quantidade}
+                      </span>
                     </div>
-                    <span style={{ padding: '6px 11px', borderRadius: '999px', background: '#E6F8F1', color: '#059669', fontSize: '12px', fontWeight: '600', width: 'max-content' }}>
-                      online
-                    </span>
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px', borderRadius: '16px', background: '#F8FAFE', border: '1px solid #EEF1F7' }}>
-                    <span style={{ width: '34px', height: '34px', borderRadius: '11px', background: '#EAF0FF', color: '#2563EB', display: 'flex', alignItems: 'center', justifyContent: 'center', flex: '0 0 auto' }}>
-                      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
-                        <rect x="3" y="4" width="18" height="16" rx="4" />
-                        <path d="M8 4v16" />
-                      </svg>
-                    </span>
-                    <div style={{ flex: '1', minWidth: '0' }}>
-                      <p style={{ margin: '0', fontSize: '13.5px', fontWeight: '600' }}>
-                        Noritsu D1005
-                      </p>
-                      <p style={{ margin: '2px 0 0', fontSize: '12px', color: '#6B7A90' }}>
-                        fila 800 un · Carla M.
-                      </p>
-                    </div>
-                    <span style={{ padding: '6px 11px', borderRadius: '999px', background: '#E6F8F1', color: '#059669', fontSize: '12px', fontWeight: '600', width: 'max-content' }}>
-                      online
-                    </span>
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px', borderRadius: '16px', background: '#FEF3E2', border: '1px solid #FCE9CE' }}>
-                    <span style={{ width: '34px', height: '34px', borderRadius: '11px', background: '#FFFFFF', color: '#B45309', display: 'flex', alignItems: 'center', justifyContent: 'center', flex: '0 0 auto' }}>
-                      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round">
-                        <path d="M12 8v5M12 16.5h.01" />
-                        <circle cx="12" cy="12" r="8.5" />
-                      </svg>
-                    </span>
-                    <div style={{ flex: '1', minWidth: '0' }}>
-                      <p style={{ margin: '0', fontSize: '13.5px', fontWeight: '600' }}>
-                        Guilhotina Polar
-                      </p>
-                      <p style={{ margin: '2px 0 0', fontSize: '12px', color: '#6B7A90' }}>
-                        manutenção às 15h
-                      </p>
-                    </div>
-                    <span style={{ padding: '6px 11px', borderRadius: '999px', background: '#FEF3E2', color: '#B45309', fontSize: '12px', fontWeight: '600', width: 'max-content' }}>
-                      pausa
-                    </span>
-                  </div>
+                  ))}
+                  <p style={css(v.responsaveisVazio)}>
+                    Nenhuma ficha tem responsável. O nome entra ao mover a etapa.
+                  </p>
                 </div>
               </div>
               <div style={{ background: '#FFFFFF', border: '1px solid #E6EAF2', borderRadius: '24px', padding: '22px 26px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px', marginBottom: '16px' }}>
                   <h2 style={{ margin: '0', fontSize: '18px', fontWeight: '700' }}>
-                    Controle de qualidade
+                    Em revisão
                   </h2>
-                  <span style={{ padding: '6px 11px', borderRadius: '999px', background: '#FFF1F3', color: '#E11D48', fontSize: '12px', fontWeight: '600', width: 'max-content' }}>
-                    2 reimpressões
+                  <span style={css(v.revisaoSelo)}>
+                    {v.revisaoResumo}
                   </span>
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px', borderRadius: '16px', background: '#F8FAFE', border: '1px solid #EEF1F7' }}>
-                    <span style={{ width: '20px', height: '20px', borderRadius: '7px', background: '#10B981', display: 'flex', alignItems: 'center', justifyContent: 'center', flex: '0 0 auto' }}>
-                      <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="#FFFFFF" strokeWidth="3.4" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M20 6 9 17l-5-5" />
-                      </svg>
-                    </span>
-                    <div style={{ flex: '1', minWidth: '0' }}>
-                      <p style={{ margin: '0', fontSize: '13.5px', fontWeight: '600' }}>
-                        Cor conferida · lote 214
-                      </p>
-                      <p style={{ margin: '2px 0 0', fontSize: '12px', color: '#6B7A90' }}>
-                        perfil FOGRA51 · Carla M.
-                      </p>
+                  {v.revisao.map((rv: any, i7: number) => (
+                    <div key={i7} onClick={rv.abrir} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px', borderRadius: '16px', background: '#F8FAFE', border: '1px solid #EEF1F7', cursor: 'pointer' }} className="dc19">
+                      <span style={{ width: '20px', height: '20px', borderRadius: '7px', border: '1.5px solid #CBD5E6', flex: '0 0 auto' }}>
+                      </span>
+                      <div style={{ flex: '1', minWidth: '0' }}>
+                        <p style={{ margin: '0', fontSize: '13.5px', fontWeight: '600' }}>
+                          {rv.titulo}
+                        </p>
+                        <p style={{ margin: '2px 0 0', fontSize: '12px', color: '#6B7A90' }}>
+                          {rv.detalhe}
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px', borderRadius: '16px', background: '#F8FAFE', border: '1px solid #EEF1F7' }}>
-                    <span style={{ width: '20px', height: '20px', borderRadius: '7px', border: '1.5px solid #CBD5E6', flex: '0 0 auto' }}>
-                    </span>
-                    <div style={{ flex: '1', minWidth: '0' }}>
-                      <p style={{ margin: '0', fontSize: '13.5px', fontWeight: '600' }}>
-                        Corte e sangria · lote 214
-                      </p>
-                      <p style={{ margin: '2px 0 0', fontSize: '12px', color: '#6B7A90' }}>
-                        pendente · turno da tarde
-                      </p>
-                    </div>
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px', borderRadius: '16px', background: '#FFF1F3', border: '1px solid #FFE4E9' }}>
-                    <span style={{ width: '20px', height: '20px', borderRadius: '7px', background: '#F43F5E', display: 'flex', alignItems: 'center', justifyContent: 'center', flex: '0 0 auto' }}>
-                      <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="#FFFFFF" strokeWidth="3.4" strokeLinecap="round">
-                        <path d="M18 6 6 18M6 6l12 12" />
-                      </svg>
-                    </span>
-                    <div style={{ flex: '1', minWidth: '0' }}>
-                      <p style={{ margin: '0', fontSize: '13.5px', fontWeight: '600' }}>
-                        Defeito · risco na capa
-                      </p>
-                      <p style={{ margin: '2px 0 0', fontSize: '12px', color: '#6B7A90' }}>
-                        #PT-10474 · reimpressão aberta
-                      </p>
-                    </div>
-                  </div>
+                  ))}
+                  <p style={css(v.revisaoVazio)}>
+                    Nada em revisão agora.
+                  </p>
                 </div>
               </div>
             </div>

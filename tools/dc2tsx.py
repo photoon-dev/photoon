@@ -41,6 +41,10 @@ RENOMEAR = {
     'vector-effect': 'vectorEffect',
     'backface-visibility': 'backfaceVisibility',
     # o HTMLParser rebaixa os nomes de atributo; devolve o camelCase do React
+    'onsubmit': 'onSubmit', 'onreset': 'onReset', 'inputmode': 'inputMode',
+    # formulário não controlado: o valor inicial vem do banco e o React só lê no envio
+    'defaultvalue': 'defaultValue', 'defaultchecked': 'defaultChecked',
+    'autocomplete': 'autoComplete', 'autofocus': 'autoFocus', 'novalidate': 'noValidate',
     'onclick': 'onClick', 'onmouseenter': 'onMouseEnter', 'onmouseleave': 'onMouseLeave',
     'onmousedown': 'onMouseDown', 'onmouseup': 'onMouseUp', 'onchange': 'onChange',
     'onfocus': 'onFocus', 'onblur': 'onBlur', 'oninput': 'onInput', 'onkeydown': 'onKeyDown',
@@ -85,7 +89,10 @@ BIND_INLINE = re.compile(r'\{\{\s*([^}]+?)\s*\}\}')
 
 def css_para_objeto(texto: str) -> str:
     """'color:red;font-size:12px' -> "{ color: 'red', fontSize: '12px' }" """
-    pares = []
+    # Declaração repetida no mesmo style: em CSS a última vence, num objeto JS
+    # o TypeScript recusa ("multiple properties with the same name"). O design
+    # traz isso quando um card herda o padding do cartão e o sobrescreve.
+    pares = {}
     for decl in re.split(r';(?![^(]*\))', texto):
         decl = decl.strip()
         if not decl or ':' not in decl:
@@ -101,8 +108,8 @@ def css_para_objeto(texto: str) -> str:
             camel = partes[0] + ''.join(p.capitalize() for p in partes[1:])
             chave = camel if re.match(r'^[A-Za-z_$][A-Za-z0-9_$]*$', camel) else f"'{prop}'"
         val = val.replace('\\', '\\\\').replace("'", "\\'")
-        pares.append(f"{chave}: '{val}'")
-    return '{ ' + ', '.join(pares) + ' }'
+        pares[chave] = f"{chave}: '{val}'"
+    return '{ ' + ', '.join(pares.values()) + ' }'
 
 
 def expr(valor: str) -> str:

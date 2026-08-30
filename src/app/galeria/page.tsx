@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation';
-import { currentTenantSlug } from '@/lib/tenant';
+import { currentTenantSlug, ROOT_DOMAIN } from '@/lib/tenant';
 import {
   getLojista,
   garantirCliente,
@@ -7,10 +7,10 @@ import {
   listarFotosGaleria,
   listarRostosGaleria,
   listarPessoasGaleria,
+  listarNotificacoes,
 } from '@/lib/data';
 import { perfilDoCliente } from '@/lib/cliente';
-import PainelGaleria from '@/components/cliente/PainelGaleria';
-import MolduraCliente from '@/components/cliente/MolduraCliente';
+import GaleriaDoDesign from '@/components/cliente/GaleriaDoDesign';
 import '../meus-projetos/cliente.css';
 
 export const dynamic = 'force-dynamic';
@@ -23,9 +23,10 @@ export default async function GaleriaPage() {
   const cliente = await garantirCliente(lojista.id);
   if (!cliente) notFound();
 
-  const [perfil, galerias] = await Promise.all([
+  const [perfil, galerias, notificacoes] = await Promise.all([
     perfilDoCliente(lojista.id),
     listarGalerias(cliente.id),
+    listarNotificacoes(cliente.id),
   ]);
 
   // Uma galeria por evento; a mais recente é a que o cliente quer ver.
@@ -39,18 +40,24 @@ export default async function GaleriaPage() {
     : [[], [], []];
 
   return (
-    <MolduraCliente
-      ativo="galeria"
-      loja={lojista.nome}
-      avatar={perfil?.avatar_url}
-      nome={perfil?.nome ?? perfil?.email ?? 'Você'}
-    >
-      <PainelGaleria
-        fotos={fotos}
-        rostos={rostos}
-        pessoas={pessoas}
-        galeriaNome={galeria?.nome ?? 'Sem galeria'}
-      />
-    </MolduraCliente>
+    <GaleriaDoDesign
+      dono={{
+        nome: perfil?.nome ?? perfil?.email ?? 'Você',
+        email: perfil?.email ?? '',
+        sub: galeria?.nome ?? lojista.nome,
+      }}
+      loja={{
+        nome: lojista.nome,
+        endereco: `${lojista.slug}.${ROOT_DOMAIN}`,
+        email: lojista.email_suporte,
+        telefone: lojista.telefone_suporte,
+        politica: lojista.url_politica,
+      }}
+      notificacoes={notificacoes}
+      fotos={fotos}
+      rostos={rostos}
+      pessoas={pessoas}
+      galeriaNome={galeria?.nome ?? 'Sem galeria'}
+    />
   );
 }

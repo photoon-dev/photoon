@@ -64,10 +64,16 @@ O projeto já teve quatro modelos de layout incompatíveis e três estados
 duplicados. Cada um virou bug visível. **O documento (`useDocumento`) manda**;
 `useEditorDesign` só guarda estado de interface.
 
-### 3.4. CSS de atributo: o React serializa sem espaço
+### 3.4. Tela do lojista não importa de `src/lib/pedidos.ts`
+Esse módulo puxa `next/headers` pelo client do Supabase, e um componente de
+navegador que importe qualquer valor de lá **quebra a compilação**. Rótulos,
+cores e formatos moram em `src/lib/pedidos-termos.ts` (reexportado por
+`pedidos.ts`). Tipo puro pode vir de `pedidos.ts` com `import type`.
+
+### 3.5. CSS de atributo: o React serializa sem espaço
 `[style*="left: 662px"]` não casa — o React gera `left:662px`.
 
-### 3.5. Outras
+### 3.6. Outras
 - `next start` não funciona com `output: standalone`; use o Docker.
 - `NEXT_PUBLIC_*` são embutidas no build. Mudou `.env`? Reconstrua.
 - O `.env` **não** está no Git. Se recriar a máquina, restaure-o.
@@ -92,6 +98,8 @@ duplicados. Cada um virou bug visível. **O documento (`useDocumento`) manda**;
 |---|---|
 | Dashboard | dado real (era todo inventado; corrigido) |
 | **Pedidos** | **completa** — KPIs calculados, abas filtrando pela URL, selo de não vistos, tabela real |
+| **Produção** | **completa** — quadro das 5 etapas reais, arrastar entre etapas, avançar no card, fila de espera, carga por responsável |
+| **Expedição** | **completa** — envio em foco com itens do pedido, transportadora/rastreio graváveis, etiqueta com o endereço do banco, abas por estado |
 | Clientes, Configurações, Templates | dado real |
 
 ### Super admin
@@ -107,15 +115,14 @@ desfazer/refazer, arrastar/redimensionar/girar.
 
 ## 5. O QUE FALTA
 
-### 5.1. As 14 telas com conteúdo ainda do protótipo
+### 5.1. As 12 telas com conteúdo ainda do protótipo
 Layout do design e moldura real, mas **o conteúdo não tem ação ligada**.
 Sinal objetivo: têm **32 controles ativos** (só menu + cabeçalho); Pedidos tem 54.
 
-Produção · Expedição · Loja · Catálogo · Preços · CRM · Vendedores ·
-Marketing · Pagamentos · Carteira · Relatórios · Integrações · Auditoria ·
-Suporte
+Loja · Catálogo · Preços · CRM · Vendedores · Marketing · Pagamentos ·
+Carteira · Relatórios · Integrações · Auditoria · Suporte
 
-**Seis ainda mostram nomes fictícios**: Produção, CRM, Pagamentos, Carteira,
+**Cinco ainda mostram nomes fictícios**: CRM, Pagamentos, Carteira,
 Relatórios, Suporte ("Rita Nunes", "Colégio Farol", "R$ 184.320").
 
 **O trabalho é ligar, não desenhar.** As bibliotecas já existem e as consultas
@@ -128,7 +135,8 @@ estão escritas:
   auditoriaDaLoja, chamadosDaLoja, resolverPeriodo
 
 **Receita, tela a tela** (siga `src/app/app/pedidos/page.tsx` +
-`src/components/app/PedidosDoDesign.tsx`, que é o padrão pronto):
+`src/components/app/PedidosDoDesign.tsx`, o padrão pronto; `ProducaoDoDesign.tsx`
+mostra o mesmo com quadro, arrastar e ação de servidor):
 1. abrir `design/extraido/<Tela>.dc.html` e trocar os valores fixos por
    `{{ binding }}`; listas fixas viram `<sc-for>`
 2. `./tools/gerar.sh telas`
@@ -136,13 +144,17 @@ estão escritas:
 4. a página usa `molduraDaLoja()` e passa `dados`
 
 Também existem componentes Tailwind escritos pelos agentes
-(`PainelProducao.tsx`, `PainelCRM.tsx`, …) — **não são usados**. Servem de
+(`PainelCRM.tsx`, `PainelCatalogo.tsx`, …) — **não são usados**. Servem de
 referência da lógica; podem ser apagados quando a tela do design estiver ligada.
+(`PainelProducao.tsx` e `PainelExpedicao.tsx` já foram, com as telas ligadas.)
 
 ### 5.2. Ações de servidor sem tela ligada
-`src/app/app/actions-pedidos.ts`, `actions-comercial.ts`, `actions-sistema.ts`
-existem e não estão ligados a nada. Avançar estado, cancelar com motivo, mover
-etapa de produção, postar envio, criar produto, conectar gateway.
+`src/app/app/actions-comercial.ts` e `actions-sistema.ts` existem e não estão
+ligados a nada: criar produto, conectar gateway.
+
+`actions-pedidos.ts` está **inteiro ligado** — avançar estado e cancelar em
+Pedidos, mover etapa e colocar na fila em Produção, abrir envio, gravar
+rastreio e mudar estado em Expedição.
 
 ### 5.3. Não existe ainda
 | O quê | Por que importa |
@@ -186,8 +198,7 @@ O seed está em `supabase/SEED-PEDIDOS.sql` e pode rodar de novo sem duplicar.
 
 ## 7. Ordem sugerida
 
-1. **Produção e Expedição** — continuam o fluxo de Pedidos e usam as ações que
-   já existem
+1. ~~Produção e Expedição~~ — **feito**
 2. **Catálogo e Preços** — o lojista precisa cadastrar o que vende
 3. **Pagamentos, Carteira, Relatórios** — o dinheiro
 4. **Checkout + webhook** — fecha a venda ponta a ponta

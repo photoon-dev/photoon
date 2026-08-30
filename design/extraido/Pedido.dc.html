@@ -212,52 +212,35 @@
         </div>
       </div>
     </header>
-
-    <div style="padding: 26px 30px 60px; display: flex; flex-direction: column; gap: 20px; animation: riseIn .5s cubic-bezier(.2,.8,.2,1) both;">
     <div style="padding: 26px 30px 60px; display: flex; flex-direction: column; gap: 20px; animation: riseIn .5s cubic-bezier(.2,.8,.2,1) both;">
       <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 24px; flex-wrap: wrap;">
         <div>
           <p style="margin: 0 0 8px; font-size: 12px; letter-spacing: 1.6px; text-transform: uppercase; color: #9AA7BC; font-weight: 700;">Pedidos · Detalhe</p>
-          <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
-            <h1 style="margin: 0; font-size: 30px; font-weight: 800; letter-spacing: -1px;">#PT-10482</h1>
-            <span style="padding: 6px 11px; border-radius: 999px; background: #EAF0FF; color: #2563EB; font-size: 12px; font-weight: 600; width: max-content;">Em produção</span>
-            <span style="padding: 6px 11px; border-radius: 999px; background: #E6F8F1; color: #059669; font-size: 12px; font-weight: 600; width: max-content;">Pago</span>
+          <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px; flex-wrap: wrap;">
+            <h1 style="margin: 0; font-size: 30px; font-weight: 800; letter-spacing: -1px;">{{ titulo }}</h1>
+            <span style="{{ seloEstado }}">{{ estado }}</span>
+            <span style="{{ seloPagamento }}">{{ pagamento }}</span>
+            <span style="{{ seloNovo }}">Não visto</span>
           </div>
-          <p style="margin: 0; font-size: 14.5px; color: #6B7A90;">Studio Fotográfico Lume · criado a 24 ago, 16:42 · prazo 27 ago</p>
+          <p style="margin: 0; font-size: 14.5px; color: #6B7A90;">{{ subtitulo }}</p>
         </div>
         <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-          <button style="white-space: nowrap; height: 44px; padding: 0 18px; display: flex; align-items: center; gap: 9px; border: 1px solid #E6EAF2; border-radius: 14px; background: #FFFFFF; color: #0B1220; font-family: inherit; font-size: 14px; font-weight: 600; cursor: pointer;" style-hover="background: #F1F5FD; border-color: #D6E2FC; color: #2563EB;"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M7 9V4h10v5"/><rect x="4" y="9" width="16" height="7" rx="2.5"/><path d="M7 14h10v6H7z"/></svg>Imprimir OS</button>
-          <button style="white-space: nowrap; height: 44px; padding: 0 18px; display: flex; align-items: center; gap: 9px; border: 1px solid #E6EAF2; border-radius: 14px; background: #FFFFFF; color: #0B1220; font-family: inherit; font-size: 14px; font-weight: 600; cursor: pointer;" style-hover="background: #F1F5FD; border-color: #D6E2FC; color: #2563EB;"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 5v6h-6"/></svg>Reimprimir item</button>
-          <button style="white-space: nowrap; height: 44px; padding: 0 18px; display: flex; align-items: center; gap: 9px; border: 0; border-radius: 14px; background: linear-gradient(135deg,#2563EB,#06B6D4); color: #FFFFFF; font-family: inherit; font-size: 14px; font-weight: 700; cursor: pointer; box-shadow: 0 8px 20px rgba(37,99,235,.28);" style-hover="filter: brightness(1.06);"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M12 5l7 7-7 7"/></svg>Avançar etapa</button>
+          <a href="/pedidos" style="text-decoration: none; white-space: nowrap; height: 44px; padding: 0 18px; display: flex; align-items: center; gap: 9px; border: 1px solid #E6EAF2; border-radius: 14px; background: #FFFFFF; color: #0B1220; font-family: inherit; font-size: 14px; font-weight: 600; cursor: pointer;" style-hover="background: #F1F5FD; border-color: #D6E2FC; color: #2563EB;"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H6M12 5l-7 7 7 7"/></svg>Todos os pedidos</a>
+          <button onClick="{{ marcarVisto }}" style="{{ btnVisto }}"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 12S6 6 12 6s9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6z"/><circle cx="12" cy="12" r="2.8"/></svg>Marcar visto</button>
+          <button onClick="{{ avancar }}" style="{{ btnAvancar }}"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M12 5l7 7-7 7"/></svg>{{ rotuloAvancar }}</button>
         </div>
       </div>
 
+      <p style="{{ avisoEstilo }}">{{ aviso }}</p>
+
       <div style="background: #FFFFFF; border: 1px solid #E6EAF2; border-radius: 24px; padding: 22px 26px;">
-        <div style="display: flex; gap: 14px;">
-          <div style="flex: 1; display: flex; flex-direction: column; gap: 10px;">
-              <div style="height: 6px; border-radius: 999px; background: #10B981;"></div>
-              <div><p style="margin: 0; font-size: 13.5px; font-weight: 700; color: #059669;">Pagamento</p><p style="margin: 3px 0 0; font-size: 12px; color: #9AA7BC;">PIX · 24 ago 16:45</p></div>
+        <div style="display: flex; gap: 14px; flex-wrap: wrap;">
+          <sc-for list="{{ etapas }}" as="etapa" hint-placeholder-count="7">
+            <div style="flex: 1; min-width: 118px; display: flex; flex-direction: column; gap: 10px;">
+              <div style="{{ etapa.barra }}"></div>
+              <div><p style="{{ etapa.tituloEstilo }}">{{ etapa.titulo }}</p><p style="margin: 3px 0 0; font-size: 12px; color: #9AA7BC;">{{ etapa.nota }}</p></div>
             </div>
-          <div style="flex: 1; display: flex; flex-direction: column; gap: 10px;">
-              <div style="height: 6px; border-radius: 999px; background: #10B981;"></div>
-              <div><p style="margin: 0; font-size: 13.5px; font-weight: 700; color: #059669;">Pré-flight</p><p style="margin: 3px 0 0; font-size: 12px; color: #9AA7BC;">0 alertas · 25 ago</p></div>
-            </div>
-          <div style="flex: 1; display: flex; flex-direction: column; gap: 10px;">
-              <div style="height: 6px; border-radius: 999px; background: #10B981;"></div>
-              <div><p style="margin: 0; font-size: 13.5px; font-weight: 700; color: #059669;">Renderização</p><p style="margin: 3px 0 0; font-size: 12px; color: #9AA7BC;">48 páginas · 25 ago</p></div>
-            </div>
-          <div style="flex: 1; display: flex; flex-direction: column; gap: 10px;">
-              <div style="height: 6px; border-radius: 999px; background: linear-gradient(90deg,#2563EB,#06B6D4);"></div>
-              <div><p style="margin: 0; font-size: 13.5px; font-weight: 700; color: #2563EB;">Impressão</p><p style="margin: 3px 0 0; font-size: 12px; color: #9AA7BC;">Epson P9000 · 62%</p></div>
-            </div>
-          <div style="flex: 1; display: flex; flex-direction: column; gap: 10px;">
-              <div style="height: 6px; border-radius: 999px; background: #EEF1F7;"></div>
-              <div><p style="margin: 0; font-size: 13.5px; font-weight: 500; color: #9AA7BC;">Acabamento</p><p style="margin: 3px 0 0; font-size: 12px; color: #9AA7BC;">previsto 26 ago</p></div>
-            </div>
-          <div style="flex: 1; display: flex; flex-direction: column; gap: 10px;">
-              <div style="height: 6px; border-radius: 999px; background: #EEF1F7;"></div>
-              <div><p style="margin: 0; font-size: 13.5px; font-weight: 500; color: #9AA7BC;">Expedição</p><p style="margin: 3px 0 0; font-size: 12px; color: #9AA7BC;">previsto 27 ago</p></div>
-            </div>
+          </sc-for>
         </div>
       </div>
 
@@ -266,70 +249,62 @@
           <div style="background: #FFFFFF; border: 1px solid #E6EAF2; border-radius: 24px; overflow: hidden;">
             <div style="display: flex; align-items: center; justify-content: space-between; padding: 20px 26px 16px;">
               <h2 style="margin: 0; font-size: 18px; font-weight: 700;">Itens do pedido</h2>
-              <span style="font-size: 13px; color: #6B7A90;">3 itens · 52 páginas</span>
+              <span style="font-size: 13px; color: #6B7A90;">{{ itensResumo }}</span>
             </div>
             <div style="display: flex; flex-direction: column;">
-              <div style="display: grid; grid-template-columns: 64px 1fr auto auto; gap: 16px; align-items: center; padding: 16px 26px; border-top: 1px solid #F4F6FB;">
-                <div style="width: 64px; height: 64px; border-radius: 16px; overflow: hidden; background: #F1F5FD;"><image-slot id="ord-item-1" shape="rect" placeholder="Arte"></image-slot></div>
-                <div><p style="margin: 0; font-size: 14.5px; font-weight: 600;">Fotolivro 30×30 · capa dura</p><p style="margin: 3px 0 0; font-size: 12.5px; color: #6B7A90;">Papel fine art 210g · laminação fosca · 48 páginas</p></div>
-                <span style="font-size: 13px; color: #6B7A90;">1 un</span>
-                <span style="font-size: 14.5px; font-weight: 700;">R$ 980</span>
-              </div>
-              <div style="display: grid; grid-template-columns: 64px 1fr auto auto; gap: 16px; align-items: center; padding: 16px 26px; border-top: 1px solid #F4F6FB;">
-                <div style="width: 64px; height: 64px; border-radius: 16px; overflow: hidden; background: #F1F5FD;"><image-slot id="ord-item-2" shape="rect" placeholder="Arte"></image-slot></div>
-                <div><p style="margin: 0; font-size: 14.5px; font-weight: 600;">Estojo rígido personalizado</p><p style="margin: 3px 0 0; font-size: 12.5px; color: #6B7A90;">Linho azul · gravação a quente</p></div>
-                <span style="font-size: 13px; color: #6B7A90;">1 un</span>
-                <span style="font-size: 14.5px; font-weight: 700;">R$ 180</span>
-              </div>
-              <div style="display: grid; grid-template-columns: 64px 1fr auto auto; gap: 16px; align-items: center; padding: 16px 26px; border-top: 1px solid #F4F6FB;">
-                <div style="width: 64px; height: 64px; border-radius: 16px; overflow: hidden; background: #F1F5FD;"><image-slot id="ord-item-3" shape="rect" placeholder="Arte"></image-slot></div>
-                <div><p style="margin: 0; font-size: 14.5px; font-weight: 600;">Revelação 15×21 · 40 un</p><p style="margin: 3px 0 0; font-size: 12.5px; color: #6B7A90;">Brilho · borda branca 3 mm</p></div>
-                <span style="font-size: 13px; color: #6B7A90;">40 un</span>
-                <span style="font-size: 14.5px; font-weight: 700;">R$ 80</span>
-              </div>
-              <div style="display: flex; justify-content: flex-end; gap: 40px; padding: 18px 26px; background: #F8FAFE; border-top: 1px solid #EEF1F7;">
-                <div style="text-align: right;"><p style="margin: 0; font-size: 12.5px; color: #6B7A90;">Subtotal</p><p style="margin: 4px 0 0; font-size: 15px; font-weight: 600;">R$ 1.240</p></div>
-                <div style="text-align: right;"><p style="margin: 0; font-size: 12.5px; color: #6B7A90;">Frete</p><p style="margin: 4px 0 0; font-size: 15px; font-weight: 600;">R$ 0 · retirada</p></div>
-                <div style="text-align: right;"><p style="margin: 0; font-size: 12.5px; color: #6B7A90;">Total</p><p style="margin: 4px 0 0; font-size: 20px; font-weight: 800; letter-spacing: -.6px;">R$ 1.240</p></div>
+              <sc-for list="{{ itens }}" as="item" hint-placeholder-count="3">
+                <div style="display: grid; grid-template-columns: 64px 1fr auto auto; gap: 16px; align-items: center; padding: 16px 26px; border-top: 1px solid #F4F6FB;">
+                  <span style="width: 64px; height: 64px; border-radius: 16px; background: #F1F5FD; color: #2563EB; display: flex; align-items: center; justify-content: center; flex: 0 0 auto;"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 5.5A1.5 1.5 0 0 1 6.5 4H12v16H6.5A1.5 1.5 0 0 1 5 18.5z"/><path d="M19 5.5A1.5 1.5 0 0 0 17.5 4H12v16h5.5a1.5 1.5 0 0 0 1.5-1.5z"/></svg></span>
+                  <div style="min-width: 0;"><p style="margin: 0; font-size: 14.5px; font-weight: 600;">{{ item.descricao }}</p><p style="margin: 3px 0 0; font-size: 12.5px; color: #6B7A90;">{{ item.detalhe }}</p></div>
+                  <span style="font-size: 13px; color: #6B7A90; white-space: nowrap;">{{ item.quantidade }}</span>
+                  <span style="font-size: 14.5px; font-weight: 700; white-space: nowrap;">{{ item.total }}</span>
+                </div>
+              </sc-for>
+              <p style="{{ itensVazio }}">Este pedido não tem item gravado. Nada é somado por conta própria.</p>
+              <div style="display: flex; justify-content: flex-end; gap: 40px; padding: 18px 26px; background: #F8FAFE; border-top: 1px solid #EEF1F7; flex-wrap: wrap;">
+                <div style="text-align: right;"><p style="margin: 0; font-size: 12.5px; color: #6B7A90;">Subtotal</p><p style="margin: 4px 0 0; font-size: 15px; font-weight: 600;">{{ subtotal }}</p></div>
+                <div style="{{ descontoEstilo }}"><p style="margin: 0; font-size: 12.5px; color: #6B7A90;">Desconto</p><p style="margin: 4px 0 0; font-size: 15px; font-weight: 600; color: #059669;">{{ desconto }}</p></div>
+                <div style="text-align: right;"><p style="margin: 0; font-size: 12.5px; color: #6B7A90;">Frete</p><p style="margin: 4px 0 0; font-size: 15px; font-weight: 600;">{{ frete }}</p></div>
+                <div style="text-align: right;"><p style="margin: 0; font-size: 12.5px; color: #6B7A90;">Total</p><p style="margin: 4px 0 0; font-size: 20px; font-weight: 800; letter-spacing: -.6px;">{{ total }}</p></div>
               </div>
             </div>
+            <p style="{{ observacaoEstilo }}">{{ observacao }}</p>
           </div>
 
           <div style="background: #FFFFFF; border: 1px solid #E6EAF2; border-radius: 24px; padding: 22px 26px;">
-            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
-              <h2 style="margin: 0; font-size: 18px; font-weight: 700;">Arquivos e preflight</h2>
-              <span style="padding: 6px 11px; border-radius: 999px; background: #E6F8F1; color: #059669; font-size: 12px; font-weight: 600; width: max-content;">0 bloqueios</span>
+            <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 16px; flex-wrap: wrap;">
+              <h2 style="margin: 0; font-size: 18px; font-weight: 700;">Produção</h2>
+              <span style="{{ producaoSelo }}">{{ producaoEtapa }}</span>
             </div>
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 12px;">
+            <div style="{{ producaoTiles }}">
               <div style="display: flex; align-items: center; gap: 12px; padding: 14px; border-radius: 16px; background: #F8FAFE; border: 1px solid #EEF1F7;">
-                <span style="width: 34px; height: 34px; border-radius: 11px; background: #E6F8F1; color: #059669; display: flex; align-items: center; justify-content: center;"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5 10 17.5 19 7"/></svg></span>
-                <div><p style="margin: 0; font-size: 13.5px; font-weight: 600;">DPI efetivo</p><p style="margin: 2px 0 0; font-size: 12px; color: #6B7A90;">mín. 312 dpi</p></div>
+                <span style="width: 34px; height: 34px; border-radius: 11px; background: #EAF0FF; color: #2563EB; display: flex; align-items: center; justify-content: center; flex: 0 0 auto;"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5v5l3 2"/></svg></span>
+                <div style="min-width: 0;"><p style="margin: 0; font-size: 13.5px; font-weight: 600;">Atualizado</p><p style="margin: 2px 0 0; font-size: 12px; color: #6B7A90;">{{ producaoQuando }}</p></div>
               </div>
               <div style="display: flex; align-items: center; gap: 12px; padding: 14px; border-radius: 16px; background: #F8FAFE; border: 1px solid #EEF1F7;">
-                <span style="width: 34px; height: 34px; border-radius: 11px; background: #E6F8F1; color: #059669; display: flex; align-items: center; justify-content: center;"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5 10 17.5 19 7"/></svg></span>
-                <div><p style="margin: 0; font-size: 13.5px; font-weight: 600;">Sangria</p><p style="margin: 2px 0 0; font-size: 12px; color: #6B7A90;">3 mm em 48 páginas</p></div>
+                <span style="width: 34px; height: 34px; border-radius: 11px; background: #E4F8FC; color: #0891B2; display: flex; align-items: center; justify-content: center; flex: 0 0 auto;"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.4"/><path d="M5 20c.8-3.6 3.6-5.6 7-5.6s6.2 2 7 5.6"/></svg></span>
+                <div style="min-width: 0;"><p style="margin: 0; font-size: 13.5px; font-weight: 600;">Responsável</p><p style="margin: 2px 0 0; font-size: 12px; color: #6B7A90;">{{ producaoResponsavel }}</p></div>
               </div>
-              <div style="display: flex; align-items: center; gap: 12px; padding: 14px; border-radius: 16px; background: #FEF3E2; border: 1px solid #FCE9CE;">
-                <span style="width: 34px; height: 34px; border-radius: 11px; background: #FFFFFF; color: #B45309; display: flex; align-items: center; justify-content: center;"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 8v5M12 16.5h.01"/><circle cx="12" cy="12" r="8.5"/></svg></span>
-                <div><p style="margin: 0; font-size: 13.5px; font-weight: 600;">Corte de rosto</p><p style="margin: 2px 0 0; font-size: 12px; color: #6B7A90;">2 avisos · pág. 12 e 31</p></div>
+              <div style="display: flex; align-items: center; gap: 12px; padding: 14px; border-radius: 16px; background: #F8FAFE; border: 1px solid #EEF1F7;">
+                <span style="width: 34px; height: 34px; border-radius: 11px; background: #E6F8F1; color: #059669; display: flex; align-items: center; justify-content: center; flex: 0 0 auto;"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5" width="16" height="15" rx="3"/><path d="M8 3v4M16 3v4M4 10h16"/></svg></span>
+                <div style="min-width: 0;"><p style="margin: 0; font-size: 13.5px; font-weight: 600;">Prazo</p><p style="margin: 2px 0 0; font-size: 12px; color: #6B7A90;">{{ prazo }}</p></div>
               </div>
             </div>
-            <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 16px; padding: 14px 16px; border-radius: 16px; background: #F1F5FD;">
-              <div style="display: flex; align-items: center; gap: 12px;">
-                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#2563EB" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3v5h5"/><path d="M6 3h8l5 5v13H6z"/></svg>
-                <div><p style="margin: 0; font-size: 13.5px; font-weight: 600;">producao_PT-10482.pdf</p><p style="margin: 2px 0 0; font-size: 12px; color: #6B7A90;">1,8 GB · perfil FOGRA51 · gerado 25 ago 08:14</p></div>
-              </div>
-              <a href="#" style="font-size: 13px; font-weight: 700;">Baixar</a>
+            <p style="{{ producaoForaEstilo }}">Este pedido ainda não entrou na produção.</p>
+            <div style="display: flex; align-items: center; gap: 10px; margin-top: 16px; flex-wrap: wrap;">
+              <button onClick="{{ colocarNaFila }}" style="{{ btnFila }}"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>Colocar na fila</button>
+              <sc-for list="{{ etapasDisponiveis }}" as="mover" hint-placeholder-count="4">
+                <button onClick="{{ mover.ir }}" style="{{ mover.estilo }}">{{ mover.rotulo }}</button>
+              </sc-for>
             </div>
           </div>
 
           <div style="background: #FFFFFF; border: 1px solid #E6EAF2; border-radius: 24px; padding: 22px 26px;">
             <h2 style="margin: 0 0 18px; font-size: 18px; font-weight: 700;">Histórico</h2>
             <div style="display: flex; flex-direction: column; gap: 16px;">
-              <div style="display: flex; gap: 14px;"><span style="width: 10px; height: 10px; border-radius: 999px; background: #2563EB; margin-top: 5px; flex: 0 0 auto;"></span><div><p style="margin: 0; font-size: 13.5px; font-weight: 600;">Entrou em impressão · Epson P9000</p><p style="margin: 2px 0 0; font-size: 12.5px; color: #9AA7BC;">Hoje, 08:32 · João Pinto</p></div></div>
-              <div style="display: flex; gap: 14px;"><span style="width: 10px; height: 10px; border-radius: 999px; background: #06B6D4; margin-top: 5px; flex: 0 0 auto;"></span><div><p style="margin: 0; font-size: 13.5px; font-weight: 600;">Render concluído · 48 páginas</p><p style="margin: 2px 0 0; font-size: 12.5px; color: #9AA7BC;">25 ago, 08:14 · worker-03</p></div></div>
-              <div style="display: flex; gap: 14px;"><span style="width: 10px; height: 10px; border-radius: 999px; background: #10B981; margin-top: 5px; flex: 0 0 auto;"></span><div><p style="margin: 0; font-size: 13.5px; font-weight: 600;">Pagamento confirmado · PIX</p><p style="margin: 2px 0 0; font-size: 12.5px; color: #9AA7BC;">24 ago, 16:45 · gateway</p></div></div>
-              <div style="display: flex; gap: 14px;"><span style="width: 10px; height: 10px; border-radius: 999px; background: #CBD5E6; margin-top: 5px; flex: 0 0 auto;"></span><div><p style="margin: 0; font-size: 13.5px; font-weight: 600;">Pedido criado na loja B2B</p><p style="margin: 2px 0 0; font-size: 12.5px; color: #9AA7BC;">24 ago, 16:42 · cliente</p></div></div>
+              <sc-for list="{{ historico }}" as="linha" hint-placeholder-count="4">
+                <div style="display: flex; gap: 14px;"><span style="{{ linha.ponto }}"></span><div><p style="margin: 0; font-size: 13.5px; font-weight: 600;">{{ linha.titulo }}</p><p style="margin: 2px 0 0; font-size: 12.5px; color: #9AA7BC;">{{ linha.quando }}</p></div></div>
+              </sc-for>
             </div>
           </div>
         </div>
@@ -338,51 +313,71 @@
           <div style="background: #FFFFFF; border: 1px solid #E6EAF2; border-radius: 24px; padding: 22px 24px;">
             <h2 style="margin: 0 0 16px; font-size: 17px; font-weight: 700;">Cliente</h2>
             <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
-              <span style="width: 36px; height: 36px; border-radius: 12px; background: #EAF0FF; color: #2563EB; font-size: 12.5px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex: 0 0 auto;">SF</span>
-              <div><p style="margin: 0; font-size: 14px; font-weight: 700;">Studio Fotográfico Lume</p><p style="margin: 2px 0 0; font-size: 12.5px; color: #6B7A90;">Tabela B2B Ouro · 62 pedidos</p></div>
+              <span style="width: 36px; height: 36px; border-radius: 12px; background: #EAF0FF; color: #2563EB; font-size: 12.5px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex: 0 0 auto;">{{ clienteIniciais }}</span>
+              <div style="min-width: 0;"><p style="margin: 0; font-size: 14px; font-weight: 700;">{{ clienteNome }}</p><p style="margin: 2px 0 0; font-size: 12.5px; color: #6B7A90;">{{ clienteNota }}</p></div>
             </div>
             <div style="display: flex; flex-direction: column; gap: 10px; font-size: 13.5px; color: #46536A;">
-              <div style="display: flex; justify-content: space-between;"><span style="color: #9AA7BC;">Contato</span><span>lume@studio.com</span></div>
-              <div style="display: flex; justify-content: space-between;"><span style="color: #9AA7BC;">Vendedor</span><span>Ana Lopes</span></div>
-              <div style="display: flex; justify-content: space-between;"><span style="color: #9AA7BC;">Saldo em carteira</span><span style="font-weight: 700;">R$ 340</span></div>
+              <div style="display: flex; justify-content: space-between; gap: 12px;"><span style="color: #9AA7BC;">Contato</span><span style="text-align: right; min-width: 0;">{{ clienteEmail }}</span></div>
+              <div style="display: flex; justify-content: space-between; gap: 12px;"><span style="color: #9AA7BC;">Vendedor</span><span style="text-align: right;">{{ vendedor }}</span></div>
+              <div style="display: flex; justify-content: space-between; gap: 12px;"><span style="color: #9AA7BC;">Prazo</span><span style="text-align: right; font-weight: 700;">{{ prazo }}</span></div>
             </div>
           </div>
 
           <div style="background: #FFFFFF; border: 1px solid #E6EAF2; border-radius: 24px; padding: 22px 24px;">
             <h2 style="margin: 0 0 16px; font-size: 17px; font-weight: 700;">Pagamento</h2>
             <div style="padding: 16px; border-radius: 18px; background: linear-gradient(150deg,#F1F5FD,#E4F8FC); margin-bottom: 14px;">
-              <p style="margin: 0 0 6px; font-size: 12.5px; color: #6B7A90;">Total pago via PIX</p>
-              <p style="margin: 0; font-size: 24px; font-weight: 800; letter-spacing: -.8px;">R$ 1.240,00</p>
+              <p style="margin: 0 0 6px; font-size: 12.5px; color: #6B7A90;">{{ pagoTitulo }}</p>
+              <p style="margin: 0; font-size: 24px; font-weight: 800; letter-spacing: -.8px;">{{ pagoValor }}</p>
+              <p style="margin: 6px 0 0; font-size: 12.5px; color: #6B7A90;">{{ pagoNota }}</p>
             </div>
-            <div style="display: flex; flex-direction: column; gap: 10px; font-size: 13.5px; color: #46536A;">
-              <div style="display: flex; justify-content: space-between;"><span style="color: #9AA7BC;">Transação</span><span>#TX-88412</span></div>
-              <div style="display: flex; justify-content: space-between;"><span style="color: #9AA7BC;">Conciliação</span><span style="padding: 6px 11px; border-radius: 999px; background: #E6F8F1; color: #059669; font-size: 12px; font-weight: 600; width: max-content;">Conciliado</span></div>
+            <div style="display: flex; flex-direction: column; gap: 12px; font-size: 13.5px; color: #46536A;">
+              <sc-for list="{{ pagamentos }}" as="cobranca" hint-placeholder-count="2">
+                <div style="display: flex; flex-direction: column; gap: 6px;">
+                  <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap;">
+                    <span style="{{ cobranca.selo }}">{{ cobranca.estado }}</span>
+                    <span style="font-weight: 700;">{{ cobranca.valor }}</span>
+                  </div>
+                  <span style="font-size: 11.5px; color: #9AA7BC;">{{ cobranca.nota }}</span>
+                </div>
+              </sc-for>
+              <p style="{{ pagamentosVazio }}">Nenhuma cobrança registrada para este pedido.</p>
             </div>
           </div>
 
           <div style="background: #FFFFFF; border: 1px solid #E6EAF2; border-radius: 24px; padding: 22px 24px;">
-            <h2 style="margin: 0 0 16px; font-size: 17px; font-weight: 700;">Entrega</h2>
-            <div style="display: flex; flex-direction: column; gap: 10px; font-size: 13.5px; color: #46536A;">
-              <div style="display: flex; justify-content: space-between;"><span style="color: #9AA7BC;">Modo</span><span>Retirada · Filial Centro</span></div>
-              <div style="display: flex; justify-content: space-between;"><span style="color: #9AA7BC;">Janela</span><span>27 ago · 10h – 18h</span></div>
-              <div style="display: flex; justify-content: space-between;"><span style="color: #9AA7BC;">Responsável</span><span>Carla M.</span></div>
+            <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 16px; flex-wrap: wrap;">
+              <h2 style="margin: 0; font-size: 17px; font-weight: 700;">Entrega</h2>
+              <span style="{{ envioSelo }}">{{ envioEstado }}</span>
             </div>
+            <p style="{{ envioForaEstilo }}">Nenhum envio aberto para este pedido.</p>
+            <button onClick="{{ abrirEnvio }}" style="{{ btnEnvio }}"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h11v9H3z"/><path d="M14 11h4l3 3v3h-7z"/><circle cx="7" cy="18" r="1.8"/><circle cx="17.5" cy="18" r="1.8"/></svg>Abrir envio</button>
+            <form onSubmit="{{ salvarRastreio }}" style="{{ envioFormEstilo }}">
+              <label style="display: block;"><span style="display: block; margin-bottom: 7px; font-size: 12.5px; font-weight: 600; color: #6B7A90;">Transportadora</span><input name="transportadora" defaultValue="{{ transportadora }}" placeholder="Correios, motoboy, retirada" style="width: 100%; height: 44px; padding: 0 14px; border: 1px solid #E6EAF2; border-radius: 12px; background: #FFFFFF; font-family: inherit; font-size: 14px; color: #0B1220;"></label>
+              <label style="display: block; margin-top: 12px;"><span style="display: block; margin-bottom: 7px; font-size: 12.5px; font-weight: 600; color: #6B7A90;">Rastreio</span><input name="rastreio" defaultValue="{{ rastreio }}" placeholder="Código de acompanhamento" style="width: 100%; height: 44px; padding: 0 14px; border: 1px solid #E6EAF2; border-radius: 12px; background: #FFFFFF; font-family: inherit; font-size: 14px; color: #0B1220;"></label>
+              <button style="width: 100%; height: 44px; margin-top: 14px; display: flex; align-items: center; justify-content: center; gap: 9px; border: 1px solid #E6EAF2; border-radius: 12px; background: #FFFFFF; color: #0B1220; font-family: inherit; font-size: 13.5px; font-weight: 600; cursor: pointer;" style-hover="background: #F1F5FD; border-color: #D6E2FC; color: #2563EB;"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5 10 17.5 19 7"/></svg>Salvar rastreio</button>
+              <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px;">
+                <sc-for list="{{ estadosEnvio }}" as="passo" hint-placeholder-count="4">
+                  <button type="button" onClick="{{ passo.ir }}" style="{{ passo.estilo }}">{{ passo.rotulo }}</button>
+                </sc-for>
+              </div>
+            </form>
           </div>
 
           <div style="background: #0B1220; border-radius: 24px; padding: 22px 24px; color: #FFFFFF; display: flex; align-items: center; gap: 18px;">
-            <div style="width: 76px; height: 76px; border-radius: 16px; background: #FFFFFF; display: grid; grid-template-columns: repeat(5, 1fr); grid-template-rows: repeat(5, 1fr); gap: 2px; padding: 8px; flex: 0 0 auto;">
-              <span style="background:#0B1220"></span><span style="background:#0B1220"></span><span></span><span style="background:#0B1220"></span><span style="background:#0B1220"></span>
-              <span style="background:#0B1220"></span><span></span><span style="background:#0B1220"></span><span></span><span style="background:#0B1220"></span>
-              <span></span><span style="background:#0B1220"></span><span style="background:#0B1220"></span><span style="background:#0B1220"></span><span></span>
-              <span style="background:#0B1220"></span><span></span><span style="background:#0B1220"></span><span></span><span style="background:#0B1220"></span>
-              <span style="background:#0B1220"></span><span style="background:#0B1220"></span><span></span><span style="background:#0B1220"></span><span style="background:#0B1220"></span>
-            </div>
-            <div>
+            <div style="width: 76px; height: 76px; border-radius: 16px; background: linear-gradient(135deg,#2563EB,#06B6D4); display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 800; letter-spacing: -.6px; flex: 0 0 auto;">{{ osNumero }}</div>
+            <div style="min-width: 0;">
               <p style="margin: 0 0 6px; font-size: 12px; letter-spacing: 1.6px; text-transform: uppercase; color: rgba(255,255,255,.55);">Ordem de serviço</p>
-              <p style="margin: 0 0 10px; font-size: 15px; font-weight: 700;">OS-10482 · lote 214</p>
-              <a href="#" style="font-size: 13px; font-weight: 700; color: #22D3EE;">Abrir versão imprimível</a>
+              <p style="margin: 0 0 6px; font-size: 15px; font-weight: 700;">{{ osTitulo }}</p>
+              <p style="margin: 0; font-size: 12.5px; color: rgba(255,255,255,.6);">{{ osNota }}</p>
             </div>
           </div>
+
+          <form onSubmit="{{ cancelar }}" style="{{ cancelarEstilo }}">
+            <h2 style="margin: 0 0 6px; font-size: 17px; font-weight: 700;">Cancelar pedido</h2>
+            <p style="margin: 0 0 14px; font-size: 12.5px; color: #9AA7BC;">O motivo fica gravado no pedido e aparece para quem abrir depois.</p>
+            <input name="motivo" placeholder="Por que o pedido foi cancelado" style="width: 100%; height: 44px; padding: 0 14px; border: 1px solid #E6EAF2; border-radius: 12px; background: #FFFFFF; font-family: inherit; font-size: 14px; color: #0B1220;">
+            <button style="width: 100%; height: 44px; margin-top: 12px; display: flex; align-items: center; justify-content: center; gap: 9px; border: 1px solid #FFE0E6; border-radius: 12px; background: #FFF1F3; color: #E11D48; font-family: inherit; font-size: 13.5px; font-weight: 700; cursor: pointer;" style-hover="background: #FFE4E9;"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>Cancelar pedido</button>
+          </form>
         </div>
       </div>
     </div>

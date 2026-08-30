@@ -12,32 +12,20 @@ export const CSS_PSEUDO = `
 .dc5:hover { background: #F1F5FD; color: #2563EB; }
 .dc6:hover { background: #FFF1F3; color: #E11D48; }
 .dc7:hover { background: #F1F5FD; border-color: #D6E2FC; color: #2563EB; }
-.dc8:hover { background: #F1F5FD; border-color: #D6E2FC; color: #2563EB; }
-.dc9:hover { filter: brightness(1.06); }
+.dc8:hover { background: #FFFFFF; color: #2563EB; }
+.dc9:hover { background: #FFFFFF; color: #2563EB; }
 .dc10:hover { background: #FFFFFF; color: #2563EB; }
 .dc11:hover { background: #FFFFFF; color: #2563EB; }
 .dc12:hover { background: #FFFFFF; color: #2563EB; }
 .dc13:hover { background: #FFFFFF; color: #2563EB; }
-.dc14:hover { background: #FFFFFF; color: #2563EB; }
-.dc15:hover { background: #2563EB; }
+.dc14:hover { background: #2563EB; }
+.dc15:focus, .dc15:focus-within { border-color: #2563EB; }
 .dc16:focus, .dc16:focus-within { border-color: #2563EB; }
-.dc17:focus, .dc17:focus-within { border-color: #2563EB; }
-.dc18:hover { background: #F1F5FD; color: #2563EB; }
-.dc19:hover { filter: brightness(1.06); }
+.dc17:hover { background: #F1F5FD; color: #2563EB; }
+.dc18:hover { filter: brightness(1.06); }
+.dc19:hover { background: #F1F5FD; color: #2563EB; border-color: #D6E2FC; }
 .dc20:hover { background: rgba(255,255,255,.1); }
-.dc21:hover { border-color: #2563EB; color: #2563EB; }
-.dc22:hover { background: #F8FAFE; }
-.dc23:hover { background: #F8FAFE; }
-.dc24:hover { background: #F8FAFE; }
-.dc25:hover { background: #F8FAFE; }
-.dc26:hover { background: #F8FAFE; }
-.dc27:hover { background: #F8FAFE; }
-.dc28:hover { background: #F8FAFE; }
-.dc29:hover { background: #F1F5FD; color: #2563EB; }
-.dc30:focus, .dc30:focus-within { border-color: #2563EB; }
-.dc31:focus, .dc31:focus-within { border-color: #2563EB; }
-.dc32:hover { background: #F1F5FD; color: #2563EB; }
-.dc33:hover { filter: brightness(1.06); }
+.dc21:hover { background: #F8FAFE; }
 `;
 
 export default function ExpedicaoDesign({ v }: { v: any }) {
@@ -414,52 +402,49 @@ export default function ExpedicaoDesign({ v }: { v: any }) {
                   Operação · Expedição
                 </p>
                 <h1 style={{ margin: '0 0 8px', fontSize: '30px', fontWeight: '800', letterSpacing: '-1px' }}>
-                  Expedição e embalagem
+                  Expedição
                 </h1>
                 <p style={{ margin: '0', fontSize: '14.5px', color: '#6B7A90' }}>
-                  68 volumes para despachar hoje · coleta Correios 14h e Loggi 17h · 2 ocorrências abertas
+                  {v.resumo}
                 </p>
               </div>
               <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-                <button style={{ whiteSpace: 'nowrap', height: '44px', padding: '0 18px', display: 'flex', alignItems: 'center', gap: '9px', border: '1px solid #E6EAF2', borderRadius: '14px', background: '#FFFFFF', color: '#0B1220', fontFamily: 'inherit', fontSize: '14px', fontWeight: '600', cursor: 'pointer' }} className="dc7">
+                <a href="/pedidos" style={{ textDecoration: 'none', whiteSpace: 'nowrap', height: '44px', padding: '0 18px', display: 'flex', alignItems: 'center', gap: '9px', border: '1px solid #E6EAF2', borderRadius: '14px', background: '#FFFFFF', color: '#0B1220', fontFamily: 'inherit', fontSize: '14px', fontWeight: '600', cursor: 'pointer' }} className="dc7">
                   <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M14 3v5h5" />
                     <path d="M6 3h8l5 5v13H6z" />
                   </svg>
-                  Romaneio do dia
-                </button>
-                <button style={{ whiteSpace: 'nowrap', height: '44px', padding: '0 18px', display: 'flex', alignItems: 'center', gap: '9px', border: '1px solid #E6EAF2', borderRadius: '14px', background: '#FFFFFF', color: '#0B1220', fontFamily: 'inherit', fontSize: '14px', fontWeight: '600', cursor: 'pointer' }} className="dc8">
+                  Ver pedidos
+                </a>
+                <button onClick={v.abrirTodos} style={css(v.btnAbrir)}>
                   <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M12 8v5M12 16.5h.01" />
-                    <circle cx="12" cy="12" r="8.5" />
+                    <path d="M3 7h11v10H3z" />
+                    <path d="M14 10h4l3 3v4h-7z" />
+                    <circle cx="7" cy="18.5" r="1.6" />
+                    <circle cx="17" cy="18.5" r="1.6" />
                   </svg>
-                  Ocorrências
-                </button>
-                <button onClick={v.openModal} style={{ whiteSpace: 'nowrap', height: '44px', padding: '0 18px', display: 'flex', alignItems: 'center', gap: '9px', border: '0', borderRadius: '14px', background: 'linear-gradient(135deg,#2563EB,#06B6D4)', color: '#FFFFFF', fontFamily: 'inherit', fontSize: '14px', fontWeight: '700', cursor: 'pointer', boxShadow: '0 8px 20px rgba(37,99,235,.28)' }} className="dc9">
-                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M7 9V4h10v5" />
-                    <rect x="4" y="9" width="16" height="7" rx="2.5" />
-                    <path d="M7 14h10v6H7z" />
-                  </svg>
-                  Gerar etiquetas
+                  {v.rotuloAbrir}
                 </button>
               </div>
             </div>
             <div style={{ display: 'flex', gap: '4px', padding: '5px', background: '#F4F7FC', border: '1px solid #E6EAF2', borderRadius: '999px', flexWrap: 'wrap', width: 'max-content', maxWidth: '100%' }}>
-              <span onClick={v.setP0} style={css(v.per0)} className="dc10">
-                Para embalar
+              <span onClick={v.setP0} style={css(v.per0)} className="dc8">
+                {v.rot0}
               </span>
-              <span onClick={v.setP1} style={css(v.per1)} className="dc11">
-                Etiquetados
+              <span onClick={v.setP1} style={css(v.per1)} className="dc9">
+                {v.rot1}
               </span>
-              <span onClick={v.setP2} style={css(v.per2)} className="dc12">
-                Coletas
+              <span onClick={v.setP2} style={css(v.per2)} className="dc10">
+                {v.rot2}
               </span>
-              <span onClick={v.setP3} style={css(v.per3)} className="dc13">
-                Retiradas
+              <span onClick={v.setP3} style={css(v.per3)} className="dc11">
+                {v.rot3}
               </span>
-              <span onClick={v.setP4} style={css(v.per4)} className="dc14">
-                Ocorrências
+              <span onClick={v.setP4} style={css(v.per4)} className="dc12">
+                {v.rot4}
+              </span>
+              <span onClick={v.setP5} style={css(v.per5)} className="dc13">
+                {v.rot5}
               </span>
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px', alignItems: 'start' }}>
@@ -467,112 +452,86 @@ export default function ExpedicaoDesign({ v }: { v: any }) {
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px', marginBottom: '18px', flexWrap: 'wrap' }}>
                   <div>
                     <h2 style={{ margin: '0', fontSize: '18px', fontWeight: '700' }}>
-                      Estação de embalagem
+                      Envio em foco
                     </h2>
                     <p style={{ margin: '5px 0 0', fontSize: '13px', color: '#6B7A90' }}>
-                      Bipe a OS para conferir os itens e imprimir a etiqueta
+                      {v.focoSub}
                     </p>
                   </div>
-                  <span style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 13px', borderRadius: '999px', background: '#E6F8F1', color: '#059669', fontSize: '12.5px', fontWeight: '700' }}>
-                    <span style={{ width: '8px', height: '8px', borderRadius: '999px', background: '#10B981' }}>
-                    </span>
-                    Zebra ZT230 pronta
+                  <span style={css(v.focoSelo)}>
+                    {v.focoEstado}
                   </span>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '8px 8px 8px 18px', border: '1.5px solid #2563EB', borderRadius: '18px', background: '#F8FAFE', marginBottom: '20px' }}>
                   <span style={{ color: '#2563EB', flex: '0 0 auto' }}>
                     <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M4 6v12M8 6v12M12 6v12M16 6v12M20 6v12" />
+                      <circle cx="11" cy="11" r="7" />
+                      <path d="m20 20-3.5-3.5" />
                     </svg>
                   </span>
-                  <input value="OS-10482" style={{ flex: '1', minWidth: '0', border: '0', background: 'transparent', fontFamily: 'monospace', fontSize: '18px', fontWeight: '700', color: '#0B1220' }} />
-                  <button style={{ whiteSpace: 'nowrap', height: '42px', padding: '0 18px', border: '0', borderRadius: '13px', background: '#0B1220', color: '#FFFFFF', fontFamily: 'inherit', fontSize: '13.5px', fontWeight: '700', cursor: 'pointer' }} className="dc15">
-                    Conferir
+                  <input value={v.busca} onChange={v.setBusca} onKeyDown={v.buscaTecla} placeholder="número do pedido" style={{ flex: '1', minWidth: '0', border: '0', background: 'transparent', fontFamily: 'monospace', fontSize: '18px', fontWeight: '700', color: '#0B1220' }} />
+                  <button onClick={v.localizar} style={{ whiteSpace: 'nowrap', height: '42px', padding: '0 18px', border: '0', borderRadius: '13px', background: '#0B1220', color: '#FFFFFF', fontFamily: 'inherit', fontSize: '13.5px', fontWeight: '700', cursor: 'pointer' }} className="dc14">
+                    Localizar
                   </button>
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '18px', alignItems: 'start' }}>
                   <div>
                     <p style={{ margin: '0 0 12px', fontSize: '12px', letterSpacing: '1.4px', textTransform: 'uppercase', color: '#9AA7BC', fontWeight: '700' }}>
-                      Conferência de itens · 3 de 3
+                      {v.itensTitulo}
                     </p>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 14px', borderRadius: '15px', background: '#F8FAFE', border: '1px solid #EEF1F7' }}>
-                        <span style={{ width: '22px', height: '22px', borderRadius: '7px', background: '#10B981', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#FFFFFF', flex: '0 0 auto' }}>
-                          <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M20 6 9 17l-5-5" />
-                          </svg>
-                        </span>
-                        <div style={{ flex: '1', minWidth: '0' }}>
-                          <p style={{ margin: '0', fontSize: '13.5px', fontWeight: '600' }}>
-                            Fotolivro 30×30 · capa dura
-                          </p>
-                          <p style={{ margin: '2px 0 0', fontSize: '12px', color: '#6B7A90' }}>
-                            1 un · lote 214
-                          </p>
+                      {v.itens.map((it: any, i9: number) => (
+                        <div key={i9} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 14px', borderRadius: '15px', background: '#F8FAFE', border: '1px solid #EEF1F7' }}>
+                          <span style={{ width: '22px', height: '22px', borderRadius: '7px', background: '#10B981', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#FFFFFF', flex: '0 0 auto' }}>
+                            <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
+                              <path d="M20 6 9 17l-5-5" />
+                            </svg>
+                          </span>
+                          <div style={{ flex: '1', minWidth: '0' }}>
+                            <p style={{ margin: '0', fontSize: '13.5px', fontWeight: '600' }}>
+                              {it.descricao}
+                            </p>
+                            <p style={{ margin: '2px 0 0', fontSize: '12px', color: '#6B7A90' }}>
+                              {it.detalhe}
+                            </p>
+                          </div>
                         </div>
-                      </div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 14px', borderRadius: '15px', background: '#F8FAFE', border: '1px solid #EEF1F7' }}>
-                        <span style={{ width: '22px', height: '22px', borderRadius: '7px', background: '#10B981', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#FFFFFF', flex: '0 0 auto' }}>
-                          <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M20 6 9 17l-5-5" />
-                          </svg>
-                        </span>
-                        <div style={{ flex: '1', minWidth: '0' }}>
-                          <p style={{ margin: '0', fontSize: '13.5px', fontWeight: '600' }}>
-                            Estojo rígido personalizado
-                          </p>
-                          <p style={{ margin: '2px 0 0', fontSize: '12px', color: '#6B7A90' }}>
-                            1 un · linho azul
-                          </p>
-                        </div>
-                      </div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 14px', borderRadius: '15px', background: '#F8FAFE', border: '1px solid #EEF1F7' }}>
-                        <span style={{ width: '22px', height: '22px', borderRadius: '7px', background: '#10B981', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#FFFFFF', flex: '0 0 auto' }}>
-                          <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M20 6 9 17l-5-5" />
-                          </svg>
-                        </span>
-                        <div style={{ flex: '1', minWidth: '0' }}>
-                          <p style={{ margin: '0', fontSize: '13.5px', fontWeight: '600' }}>
-                            Revelação 15×21
-                          </p>
-                          <p style={{ margin: '2px 0 0', fontSize: '12px', color: '#6B7A90' }}>
-                            40 un · envelope kraft
-                          </p>
-                        </div>
-                      </div>
+                      ))}
+                      <p style={css(v.itensVazio)}>
+                        {v.itensTextoVazio}
+                      </p>
                     </div>
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: '12px', marginTop: '16px' }}>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', minWidth: '0' }}>
                         <label style={{ fontSize: '12.5px', fontWeight: '600', color: '#6B7A90' }}>
-                          Peso (kg)
+                          Transportadora
                         </label>
-                        <input value="1,84" style={{ height: '46px', padding: '0 15px', border: '1px solid #E6EAF2', borderRadius: '14px', fontFamily: 'inherit', fontSize: '14px', color: '#0B1220', minWidth: '0' }} className="dc16" />
+                        <input value={v.transportadora} onChange={v.setTransportadora} disabled={v.semFoco} placeholder="Correios, Jadlog…" style={{ height: '46px', padding: '0 15px', border: '1px solid #E6EAF2', borderRadius: '14px', fontFamily: 'inherit', fontSize: '14px', color: '#0B1220', minWidth: '0' }} className="dc15" />
                       </div>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', minWidth: '0' }}>
                         <label style={{ fontSize: '12.5px', fontWeight: '600', color: '#6B7A90' }}>
-                          Caixa
+                          Rastreio
                         </label>
-                        <input value="C2 · 32×32×8" style={{ height: '46px', padding: '0 15px', border: '1px solid #E6EAF2', borderRadius: '14px', fontFamily: 'inherit', fontSize: '14px', color: '#0B1220', minWidth: '0' }} className="dc17" />
+                        <input value={v.rastreio} onChange={v.setRastreio} disabled={v.semFoco} placeholder="código do objeto" style={{ height: '46px', padding: '0 15px', border: '1px solid #E6EAF2', borderRadius: '14px', fontFamily: 'inherit', fontSize: '14px', color: '#0B1220', minWidth: '0' }} className="dc16" />
                       </div>
                     </div>
                   </div>
                   <div>
                     <p style={{ margin: '0 0 12px', fontSize: '12px', letterSpacing: '1.4px', textTransform: 'uppercase', color: '#9AA7BC', fontWeight: '700' }}>
-                      Prévia da etiqueta
+                      Etiqueta
                     </p>
                     <div style={{ border: '1px solid #E6EAF2', borderRadius: '18px', padding: '18px', background: '#FFFFFF', boxShadow: '0 10px 24px rgba(11,18,32,.07)' }}>
                       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '12px', paddingBottom: '12px', borderBottom: '1.5px dashed #CBD5E6' }}>
                         <div style={{ minWidth: '0' }}>
                           <p style={{ margin: '0', fontSize: '15px', fontWeight: '800' }}>
-                            PHOTOON
+                            {v.lojaNome}
                           </p>
                           <p style={{ margin: '3px 0 0', fontSize: '11px', color: '#6B7A90' }}>
-                            Fábrica Lapa · São Paulo, SP
+                            {v.remetente}
                           </p>
                         </div>
-                        <span style={{ padding: '4px 9px', borderRadius: '7px', background: '#0B1220', color: '#FFFFFF', fontSize: '10.5px', fontWeight: '700' }}>
-                          PAC
+                        <span style={css(v.etiquetaSelo)}>
+                          {v.etiquetaModal}
                         </span>
                       </div>
                       <div style={{ padding: '12px 0', borderBottom: '1.5px dashed #CBD5E6' }}>
@@ -580,101 +539,41 @@ export default function ExpedicaoDesign({ v }: { v: any }) {
                           Destinatário
                         </p>
                         <p style={{ margin: '5px 0 0', fontSize: '13.5px', fontWeight: '700' }}>
-                          {v.linha1.nome}
+                          {v.destinatario}
                         </p>
                         <p style={{ margin: '3px 0 0', fontSize: '12px', color: '#46536A', lineHeight: '1.5' }}>
-                          Rua das Artes, 210 · sala 4
+                          {v.enderecoLinha1}
                           <br />
-                          São Paulo, SP · 01310-000
+                          {v.enderecoLinha2}
                         </p>
                       </div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '14px', paddingTop: '12px' }}>
-                        <div style={{ display: 'flex', alignItems: 'flex-end', gap: '2px', height: '44px', flex: '1', minWidth: '0' }}>
-                          <span style={{ flex: '1', height: '100%', background: '#0B1220' }}>
-                          </span>
-                          <span style={{ flex: '1', height: '60%', background: '#0B1220' }}>
-                          </span>
-                          <span style={{ flex: '1', height: '90%', background: '#0B1220' }}>
-                          </span>
-                          <span style={{ flex: '1', height: '45%', background: '#0B1220' }}>
-                          </span>
-                          <span style={{ flex: '1', height: '100%', background: '#0B1220' }}>
-                          </span>
-                          <span style={{ flex: '1', height: '70%', background: '#0B1220' }}>
-                          </span>
-                          <span style={{ flex: '1', height: '55%', background: '#0B1220' }}>
-                          </span>
-                          <span style={{ flex: '1', height: '95%', background: '#0B1220' }}>
-                          </span>
-                          <span style={{ flex: '1', height: '100%', background: '#0B1220' }}>
-                          </span>
-                          <span style={{ flex: '1', height: '60%', background: '#0B1220' }}>
-                          </span>
-                          <span style={{ flex: '1', height: '90%', background: '#0B1220' }}>
-                          </span>
-                          <span style={{ flex: '1', height: '45%', background: '#0B1220' }}>
-                          </span>
-                          <span style={{ flex: '1', height: '100%', background: '#0B1220' }}>
-                          </span>
-                          <span style={{ flex: '1', height: '70%', background: '#0B1220' }}>
-                          </span>
-                          <span style={{ flex: '1', height: '55%', background: '#0B1220' }}>
-                          </span>
-                          <span style={{ flex: '1', height: '95%', background: '#0B1220' }}>
-                          </span>
-                          <span style={{ flex: '1', height: '100%', background: '#0B1220' }}>
-                          </span>
-                          <span style={{ flex: '1', height: '60%', background: '#0B1220' }}>
-                          </span>
-                          <span style={{ flex: '1', height: '90%', background: '#0B1220' }}>
-                          </span>
-                          <span style={{ flex: '1', height: '45%', background: '#0B1220' }}>
-                          </span>
-                          <span style={{ flex: '1', height: '100%', background: '#0B1220' }}>
-                          </span>
-                          <span style={{ flex: '1', height: '70%', background: '#0B1220' }}>
-                          </span>
-                          <span style={{ flex: '1', height: '55%', background: '#0B1220' }}>
-                          </span>
-                          <span style={{ flex: '1', height: '95%', background: '#0B1220' }}>
-                          </span>
-                          <span style={{ flex: '1', height: '100%', background: '#0B1220' }}>
-                          </span>
-                          <span style={{ flex: '1', height: '60%', background: '#0B1220' }}>
-                          </span>
-                          <span style={{ flex: '1', height: '90%', background: '#0B1220' }}>
-                          </span>
-                          <span style={{ flex: '1', height: '45%', background: '#0B1220' }}>
-                          </span>
-                          <span style={{ flex: '1', height: '100%', background: '#0B1220' }}>
-                          </span>
-                          <span style={{ flex: '1', height: '70%', background: '#0B1220' }}>
-                          </span>
-                          <span style={{ flex: '1', height: '55%', background: '#0B1220' }}>
-                          </span>
-                          <span style={{ flex: '1', height: '95%', background: '#0B1220' }}>
-                          </span>
-                          <span style={{ flex: '1', height: '100%', background: '#0B1220' }}>
-                          </span>
-                          <span style={{ flex: '1', height: '60%', background: '#0B1220' }}>
-                          </span>
-                        </div>
+                        {Boolean(v.temRastreio) && (
+                          <>
+                            <div style={{ display: 'flex', alignItems: 'flex-end', gap: '2px', height: '44px', flex: '1', minWidth: '0' }}>
+                              {v.barras.map((b: any, i13: number) => (
+                                <span key={i13} style={css(b.estilo)}>
+                                </span>
+                              ))}
+                            </div>
+                          </>
+                        )}
                         <div style={{ textAlign: 'right', flex: '0 0 auto' }}>
                           <p style={{ margin: '0', fontSize: '11px', color: '#9AA7BC' }}>
                             Rastreio
                           </p>
                           <p style={{ margin: '2px 0 0', fontSize: '12.5px', fontWeight: '700', fontFamily: 'monospace' }}>
-                            PT884120BR
+                            {v.rastreioEtiqueta}
                           </p>
                         </div>
                       </div>
                     </div>
                     <div style={{ display: 'flex', gap: '10px', marginTop: '14px' }}>
-                      <button style={{ whiteSpace: 'nowrap', flex: '1', height: '44px', border: '1px solid #E6EAF2', borderRadius: '14px', background: '#FFFFFF', color: '#46536A', fontFamily: 'inherit', fontSize: '13.5px', fontWeight: '600', cursor: 'pointer' }} className="dc18">
-                        Reimprimir
+                      <button onClick={v.acaoSecundaria} style={css(v.btnSecundario)} className="dc17">
+                        {v.rotuloSecundario}
                       </button>
-                      <button style={{ whiteSpace: 'nowrap', flex: '1', height: '44px', border: '0', borderRadius: '14px', background: 'linear-gradient(135deg,#2563EB,#06B6D4)', color: '#FFFFFF', fontFamily: 'inherit', fontSize: '13.5px', fontWeight: '700', cursor: 'pointer', boxShadow: '0 8px 18px rgba(37,99,235,.26)' }} className="dc19">
-                        Despachar volume
+                      <button onClick={v.acaoPrincipal} style={css(v.btnPrincipal)} className="dc18">
+                        {v.rotuloPrincipal}
                       </button>
                     </div>
                   </div>
@@ -683,118 +582,83 @@ export default function ExpedicaoDesign({ v }: { v: any }) {
               <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', minWidth: '0' }}>
                 <div style={{ background: '#FFFFFF', border: '1px solid #E6EAF2', borderRadius: '24px', padding: '22px 24px' }}>
                   <h2 style={{ margin: '0 0 16px', fontSize: '17px', fontWeight: '700' }}>
-                    Coletas de hoje
+                    Por transportadora
                   </h2>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                    <div style={{ padding: '14px', borderRadius: '16px', background: '#F8FAFE', border: '1px solid #EEF1F7' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px', marginBottom: '10px' }}>
-                        <p style={{ margin: '0', fontSize: '13.5px', fontWeight: '700' }}>
-                          Correios · 14h00
-                        </p>
-                        <span style={{ whiteSpace: 'nowrap', padding: '4px 9px', borderRadius: '999px', background: '#FEF3E2', color: '#B45309', fontSize: '11px', fontWeight: '700' }}>
-                          em 2 h
-                        </span>
-                      </div>
-                      <div style={{ marginBottom: '8px', display: 'flex', justifyContent: 'space-between', fontSize: '12.5px', color: '#6B7A90' }}>
-                        <span>
-                          36 volumes etiquetados
-                        </span>
-                        <span>
-                          de 42
-                        </span>
-                      </div>
-                      <div style={{ height: '7px', borderRadius: '999px', background: '#EEF1F7' }}>
-                        <div style={{ width: '86%', height: '100%', borderRadius: '999px', background: 'linear-gradient(90deg,#2563EB,#06B6D4)' }}>
+                    {v.transportadoras.map((t: any, i8: number) => (
+                      <div key={i8} style={{ padding: '14px', borderRadius: '16px', background: '#F8FAFE', border: '1px solid #EEF1F7' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px', marginBottom: '10px' }}>
+                          <p style={{ margin: '0', fontSize: '13.5px', fontWeight: '700' }}>
+                            {t.nome}
+                          </p>
+                          <span style={css(t.selo)}>
+                            {t.chip}
+                          </span>
+                        </div>
+                        <div style={{ marginBottom: '8px', display: 'flex', justifyContent: 'space-between', fontSize: '12.5px', color: '#6B7A90' }}>
+                          <span>
+                            {t.detalhe}
+                          </span>
+                          <span>
+                            {t.total}
+                          </span>
+                        </div>
+                        <div style={{ height: '7px', borderRadius: '999px', background: '#EEF1F7' }}>
+                          <div style={css(t.barra)}>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                    <div style={{ padding: '14px', borderRadius: '16px', background: '#F8FAFE', border: '1px solid #EEF1F7' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px', marginBottom: '10px' }}>
-                        <p style={{ margin: '0', fontSize: '13.5px', fontWeight: '700' }}>
-                          Loggi · 17h00
-                        </p>
-                        <span style={{ whiteSpace: 'nowrap', padding: '4px 9px', borderRadius: '999px', background: '#F1F5FD', color: '#46536A', fontSize: '11px', fontWeight: '700' }}>
-                          em 5 h
-                        </span>
-                      </div>
-                      <div style={{ marginBottom: '8px', display: 'flex', justifyContent: 'space-between', fontSize: '12.5px', color: '#6B7A90' }}>
-                        <span>
-                          4 volumes etiquetados
-                        </span>
-                        <span>
-                          de 26
-                        </span>
-                      </div>
-                      <div style={{ height: '7px', borderRadius: '999px', background: '#EEF1F7' }}>
-                        <div style={{ width: '15%', height: '100%', borderRadius: '999px', background: '#6366F1' }}>
-                        </div>
-                      </div>
-                    </div>
+                    ))}
+                    <p style={css(v.transportadorasVazio)}>
+                      Nenhum envio tem transportadora ainda.
+                    </p>
                   </div>
                 </div>
                 <div style={{ background: '#FFFFFF', border: '1px solid #E6EAF2', borderRadius: '24px', padding: '22px 24px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px', marginBottom: '16px' }}>
                     <h2 style={{ margin: '0', fontSize: '17px', fontWeight: '700' }}>
-                      Retiradas no balcão
+                      Prontos sem envio
                     </h2>
-                    <span style={{ whiteSpace: 'nowrap', padding: '5px 10px', borderRadius: '999px', background: '#FEF3E2', color: '#B45309', fontSize: '11.5px', fontWeight: '700' }}>
-                      9 aguardando
+                    <span style={css(v.semEnvioSelo)}>
+                      {v.semEnvioResumo}
                     </span>
                   </div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px', borderRadius: '15px', background: '#F8FAFE', border: '1px solid #EEF1F7' }}>
-                      <span style={{ width: '32px', height: '32px', borderRadius: '10px', background: '#EDEBFE', color: '#6366F1', fontSize: '11px', fontWeight: '700', display: 'flex', alignItems: 'center', justifyContent: 'center', flex: '0 0 auto' }}>
-                        MB
-                      </span>
-                      <div style={{ flex: '1', minWidth: '0' }}>
-                        <p style={{ margin: '0', fontSize: '13px', fontWeight: '600' }}>
-                          {v.linha3.nome}
-                        </p>
-                        <p style={{ margin: '2px 0 0', fontSize: '12px', color: '#6B7A90' }}>
-                          avisado hoje · Centro
-                        </p>
+                    {v.semEnvio.map((s: any, i8: number) => (
+                      <div key={i8} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px', borderRadius: '15px', background: '#F8FAFE', border: '1px solid #EEF1F7' }}>
+                        <span style={{ width: '32px', height: '32px', borderRadius: '10px', background: '#EDEBFE', color: '#6366F1', fontSize: '11px', fontWeight: '700', display: 'flex', alignItems: 'center', justifyContent: 'center', flex: '0 0 auto' }}>
+                          {s.iniciais}
+                        </span>
+                        <div style={{ flex: '1', minWidth: '0' }}>
+                          <p style={{ margin: '0', fontSize: '13px', fontWeight: '600' }}>
+                            {s.cliente}
+                          </p>
+                          <p style={{ margin: '2px 0 0', fontSize: '12px', color: '#6B7A90' }}>
+                            {s.detalhe}
+                          </p>
+                        </div>
+                        <button onClick={s.abrirEnvio} style={{ whiteSpace: 'nowrap', height: '34px', padding: '0 13px', border: '1px solid #E6EAF2', borderRadius: '12px', background: '#FFFFFF', color: '#46536A', fontFamily: 'inherit', fontSize: '12.5px', fontWeight: '600', cursor: 'pointer' }} className="dc19">
+                          Abrir envio
+                        </button>
                       </div>
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px', borderRadius: '15px', background: '#FEF3E2', border: '1px solid #FCE9CE' }}>
-                      <span style={{ width: '32px', height: '32px', borderRadius: '10px', background: '#FFFFFF', color: '#B45309', fontSize: '11px', fontWeight: '700', display: 'flex', alignItems: 'center', justifyContent: 'center', flex: '0 0 auto' }}>
-                        LV
-                      </span>
-                      <div style={{ flex: '1', minWidth: '0' }}>
-                        <p style={{ margin: '0', fontSize: '13px', fontWeight: '600' }}>
-                          Luz Viva Estúdio
-                        </p>
-                        <p style={{ margin: '2px 0 0', fontSize: '12px', color: '#6B7A90' }}>
-                          há 6 dias · cobrar retirada
-                        </p>
-                      </div>
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px', borderRadius: '15px', background: '#F8FAFE', border: '1px solid #EEF1F7' }}>
-                      <span style={{ width: '32px', height: '32px', borderRadius: '10px', background: '#E4F8FC', color: '#0891B2', fontSize: '11px', fontWeight: '700', display: 'flex', alignItems: 'center', justifyContent: 'center', flex: '0 0 auto' }}>
-                        AP
-                      </span>
-                      <div style={{ flex: '1', minWidth: '0' }}>
-                        <p style={{ margin: '0', fontSize: '13px', fontWeight: '600' }}>
-                          {v.linha4.nome}
-                        </p>
-                        <p style={{ margin: '2px 0 0', fontSize: '12px', color: '#6B7A90' }}>
-                          avisada ontem · Norte
-                        </p>
-                      </div>
-                    </div>
+                    ))}
+                    <p style={css(v.semEnvioVazio)}>
+                      Todo pedido pronto já tem envio aberto.
+                    </p>
                   </div>
                 </div>
                 <div style={{ background: '#0B1220', borderRadius: '24px', padding: '22px 24px', color: '#FFFFFF' }}>
                   <p style={{ margin: '0 0 8px', fontSize: '12px', letterSpacing: '1.6px', textTransform: 'uppercase', color: 'rgba(255,255,255,.55)', fontWeight: '700' }}>
-                    Ocorrências
+                    Devoluções
                   </p>
                   <p style={{ margin: '0 0 6px', fontSize: '26px', fontWeight: '800', letterSpacing: '-.8px' }}>
-                    2 abertas
+                    {v.devolvidosValor}
                   </p>
                   <p style={{ margin: '0 0 16px', fontSize: '13px', color: 'rgba(255,255,255,.7)' }}>
-                    1 extravio em análise nos Correios e 1 endereço insuficiente aguardando cliente.
+                    {v.devolvidosTexto}
                   </p>
-                  <button style={{ whiteSpace: 'nowrap', height: '40px', padding: '0 16px', border: '1px solid rgba(255,255,255,.25)', borderRadius: '999px', background: 'transparent', color: '#FFFFFF', fontFamily: 'inherit', fontSize: '13.5px', fontWeight: '600', cursor: 'pointer' }} className="dc20">
-                    Abrir ocorrências
+                  <button onClick={v.verDevolvidos} style={{ whiteSpace: 'nowrap', height: '40px', padding: '0 16px', border: '1px solid rgba(255,255,255,.25)', borderRadius: '999px', background: 'transparent', color: '#FFFFFF', fontFamily: 'inherit', fontSize: '13.5px', fontWeight: '600', cursor: 'pointer' }} className="dc20">
+                    Ver devolvidos
                   </button>
                 </div>
               </div>
@@ -802,23 +666,17 @@ export default function ExpedicaoDesign({ v }: { v: any }) {
             <div style={{ background: '#FFFFFF', border: '1px solid #E6EAF2', borderRadius: '24px', overflow: 'hidden' }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px', padding: '18px 24px', flexWrap: 'wrap' }}>
                 <h2 style={{ margin: '0', fontSize: '18px', fontWeight: '700' }}>
-                  Volumes do dia
+                  Envios
                 </h2>
                 <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                  <span style={{ padding: '9px 14px', borderRadius: '999px', background: '#F1F5FD', border: '1px solid #D6E2FC', fontSize: '12.5px', fontWeight: '700', color: '#2563EB', cursor: 'pointer' }}>
-                    3 selecionados
-                  </span>
-                  <span style={{ padding: '9px 14px', borderRadius: '999px', background: '#F4F7FC', border: '1px solid #E6EAF2', fontSize: '12.5px', fontWeight: '600', color: '#46536A', cursor: 'pointer' }} className="dc21">
-                    Imprimir selecionados
+                  <span style={{ padding: '9px 14px', borderRadius: '999px', background: '#F1F5FD', border: '1px solid #D6E2FC', fontSize: '12.5px', fontWeight: '700', color: '#2563EB' }}>
+                    {v.listaResumo}
                   </span>
                 </div>
               </div>
               <div style={{ overflowX: 'auto' }}>
-                <div style={{ display: 'grid', gridTemplateColumns: '26px minmax(110px,.8fr) minmax(110px,.8fr) minmax(170px,1.3fr) minmax(130px,1fr) minmax(140px,1fr) minmax(70px,.5fr) minmax(120px,.9fr)', gap: '14px', padding: '10px 24px', background: '#F8FAFE', borderTop: '1px solid #EEF1F7', borderBottom: '1px solid #EEF1F7', fontSize: '11.5px', letterSpacing: '.6px', textTransform: 'uppercase', color: '#9AA7BC', fontWeight: '700' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '26px minmax(110px,.8fr) minmax(170px,1.3fr) minmax(130px,1fr) minmax(140px,1fr) minmax(110px,.8fr) minmax(110px,.8fr) minmax(120px,.9fr)', gap: '14px', padding: '10px 24px', background: '#F8FAFE', borderTop: '1px solid #EEF1F7', borderBottom: '1px solid #EEF1F7', fontSize: '11.5px', letterSpacing: '.6px', textTransform: 'uppercase', color: '#9AA7BC', fontWeight: '700' }}>
                   <span>
-                  </span>
-                  <span>
-                    Volume
                   </span>
                   <span>
                     Pedido
@@ -833,304 +691,45 @@ export default function ExpedicaoDesign({ v }: { v: any }) {
                     Rastreio
                   </span>
                   <span>
-                    Itens
+                    Valor
+                  </span>
+                  <span>
+                    Atualizado
                   </span>
                   <span>
                     Status
                   </span>
                 </div>
-                <div style={{ display: 'grid', gridTemplateColumns: '26px minmax(110px,.8fr) minmax(110px,.8fr) minmax(170px,1.3fr) minmax(130px,1fr) minmax(140px,1fr) minmax(70px,.5fr) minmax(120px,.9fr)', gap: '14px', alignItems: 'center', padding: '14px 24px', borderBottom: '1px solid #F4F6FB', cursor: 'pointer' }} className="dc22">
-                  <span style={{ width: '18px', height: '18px', borderRadius: '6px', border: '1.5px solid #2563EB', background: '#2563EB', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#FFFFFF' }}>
-                    <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M20 6 9 17l-5-5" />
-                    </svg>
-                  </span>
-                  <span style={{ fontSize: '13px', fontWeight: '700', color: '#46536A' }}>
-                    VOL-4412
-                  </span>
-                  <a href="./Pedido.dc.html" style={{ fontSize: '13px', fontWeight: '600' }}>
-                    #PT-10479
-                  </a>
-                  <span style={{ fontSize: '13.5px', color: '#34405A', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                    {v.linha3.nome}
-                  </span>
-                  <span style={{ fontSize: '13px', color: '#6B7A90' }}>
-                    Retirada balcão
-                  </span>
-                  <span style={{ fontSize: '12.5px', color: '#9AA7BC', fontFamily: 'monospace' }}>
-                    —
-                  </span>
-                  <span style={{ fontSize: '13px', color: '#6B7A90' }}>
-                    2
-                  </span>
-                  <span style={{ whiteSpace: 'nowrap', padding: '6px 11px', borderRadius: '999px', background: '#E6F8F1', color: '#059669', fontSize: '12px', fontWeight: '600', width: 'max-content' }}>
-                    Pronto para coleta
-                  </span>
-                </div>
-                <div style={{ display: 'grid', gridTemplateColumns: '26px minmax(110px,.8fr) minmax(110px,.8fr) minmax(170px,1.3fr) minmax(130px,1fr) minmax(140px,1fr) minmax(70px,.5fr) minmax(120px,.9fr)', gap: '14px', alignItems: 'center', padding: '14px 24px', borderBottom: '1px solid #F4F6FB', cursor: 'pointer' }} className="dc23">
-                  <span style={{ width: '18px', height: '18px', borderRadius: '6px', border: '1.5px solid #2563EB', background: '#2563EB', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#FFFFFF' }}>
-                    <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M20 6 9 17l-5-5" />
-                    </svg>
-                  </span>
-                  <span style={{ fontSize: '13px', fontWeight: '700', color: '#46536A' }}>
-                    VOL-4411
-                  </span>
-                  <a href="./Pedido.dc.html" style={{ fontSize: '13px', fontWeight: '600' }}>
-                    #PT-10471
-                  </a>
-                  <span style={{ fontSize: '13.5px', color: '#34405A', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                    {v.linha2.nome}
-                  </span>
-                  <span style={{ fontSize: '13px', color: '#6B7A90' }}>
-                    Correios PAC
-                  </span>
-                  <span style={{ fontSize: '12.5px', color: '#9AA7BC', fontFamily: 'monospace' }}>
-                    PT884120BR
-                  </span>
-                  <span style={{ fontSize: '13px', color: '#6B7A90' }}>
-                    12
-                  </span>
-                  <span style={{ whiteSpace: 'nowrap', padding: '6px 11px', borderRadius: '999px', background: '#E6F8F1', color: '#059669', fontSize: '12px', fontWeight: '600', width: 'max-content' }}>
-                    Pronto para coleta
-                  </span>
-                </div>
-                <div style={{ display: 'grid', gridTemplateColumns: '26px minmax(110px,.8fr) minmax(110px,.8fr) minmax(170px,1.3fr) minmax(130px,1fr) minmax(140px,1fr) minmax(70px,.5fr) minmax(120px,.9fr)', gap: '14px', alignItems: 'center', padding: '14px 24px', borderBottom: '1px solid #F4F6FB', cursor: 'pointer' }} className="dc24">
-                  <span style={{ width: '18px', height: '18px', borderRadius: '6px', border: '1.5px solid #2563EB', background: '#2563EB', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#FFFFFF' }}>
-                    <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M20 6 9 17l-5-5" />
-                    </svg>
-                  </span>
-                  <span style={{ fontSize: '13px', fontWeight: '700', color: '#46536A' }}>
-                    VOL-4410
-                  </span>
-                  <a href="./Pedido.dc.html" style={{ fontSize: '13px', fontWeight: '600' }}>
-                    #PT-10468
-                  </a>
-                  <span style={{ fontSize: '13.5px', color: '#34405A', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                    Studio Lume
-                  </span>
-                  <span style={{ fontSize: '13px', color: '#6B7A90' }}>
-                    Correios SEDEX
-                  </span>
-                  <span style={{ fontSize: '12.5px', color: '#9AA7BC', fontFamily: 'monospace' }}>
-                    PT884118BR
-                  </span>
-                  <span style={{ fontSize: '13px', color: '#6B7A90' }}>
-                    3
-                  </span>
-                  <span style={{ whiteSpace: 'nowrap', padding: '6px 11px', borderRadius: '999px', background: '#E6F8F1', color: '#059669', fontSize: '12px', fontWeight: '600', width: 'max-content' }}>
-                    Pronto para coleta
-                  </span>
-                </div>
-                <div style={{ display: 'grid', gridTemplateColumns: '26px minmax(110px,.8fr) minmax(110px,.8fr) minmax(170px,1.3fr) minmax(130px,1fr) minmax(140px,1fr) minmax(70px,.5fr) minmax(120px,.9fr)', gap: '14px', alignItems: 'center', padding: '14px 24px', borderBottom: '1px solid #F4F6FB', cursor: 'pointer' }} className="dc25">
-                  <span style={{ width: '18px', height: '18px', borderRadius: '6px', border: '1.5px solid #CBD5E6', background: 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#FFFFFF' }}>
-                  </span>
-                  <span style={{ fontSize: '13px', fontWeight: '700', color: '#46536A' }}>
-                    VOL-4409
-                  </span>
-                  <a href="./Pedido.dc.html" style={{ fontSize: '13px', fontWeight: '600' }}>
-                    #PT-10482
-                  </a>
-                  <span style={{ fontSize: '13.5px', color: '#34405A', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                    Studio Lume
-                  </span>
-                  <span style={{ fontSize: '13px', color: '#6B7A90' }}>
-                    Correios PAC
-                  </span>
-                  <span style={{ fontSize: '12.5px', color: '#9AA7BC', fontFamily: 'monospace' }}>
-                    —
-                  </span>
-                  <span style={{ fontSize: '13px', color: '#6B7A90' }}>
-                    3
-                  </span>
-                  <span style={{ whiteSpace: 'nowrap', padding: '6px 11px', borderRadius: '999px', background: '#EAF0FF', color: '#2563EB', fontSize: '12px', fontWeight: '600', width: 'max-content' }}>
-                    Embalando
-                  </span>
-                </div>
-                <div style={{ display: 'grid', gridTemplateColumns: '26px minmax(110px,.8fr) minmax(110px,.8fr) minmax(170px,1.3fr) minmax(130px,1fr) minmax(140px,1fr) minmax(70px,.5fr) minmax(120px,.9fr)', gap: '14px', alignItems: 'center', padding: '14px 24px', borderBottom: '1px solid #F4F6FB', cursor: 'pointer' }} className="dc26">
-                  <span style={{ width: '18px', height: '18px', borderRadius: '6px', border: '1.5px solid #CBD5E6', background: 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#FFFFFF' }}>
-                  </span>
-                  <span style={{ fontSize: '13px', fontWeight: '700', color: '#46536A' }}>
-                    VOL-4408
-                  </span>
-                  <a href="./Pedido.dc.html" style={{ fontSize: '13px', fontWeight: '600' }}>
-                    #PT-10462
-                  </a>
-                  <span style={{ fontSize: '13.5px', color: '#34405A', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                    {v.linha4.nome}
-                  </span>
-                  <span style={{ fontSize: '13px', color: '#6B7A90' }}>
-                    Loggi
-                  </span>
-                  <span style={{ fontSize: '12.5px', color: '#9AA7BC', fontFamily: 'monospace' }}>
-                    LG-77120
-                  </span>
-                  <span style={{ fontSize: '13px', color: '#6B7A90' }}>
-                    1
-                  </span>
-                  <span style={{ whiteSpace: 'nowrap', padding: '6px 11px', borderRadius: '999px', background: '#EDEBFE', color: '#6366F1', fontSize: '12px', fontWeight: '600', width: 'max-content' }}>
-                    Coletado
-                  </span>
-                </div>
-                <div style={{ display: 'grid', gridTemplateColumns: '26px minmax(110px,.8fr) minmax(110px,.8fr) minmax(170px,1.3fr) minmax(130px,1fr) minmax(140px,1fr) minmax(70px,.5fr) minmax(120px,.9fr)', gap: '14px', alignItems: 'center', padding: '14px 24px', borderBottom: '1px solid #F4F6FB', cursor: 'pointer' }} className="dc27">
-                  <span style={{ width: '18px', height: '18px', borderRadius: '6px', border: '1.5px solid #CBD5E6', background: 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#FFFFFF' }}>
-                  </span>
-                  <span style={{ fontSize: '13px', fontWeight: '700', color: '#46536A' }}>
-                    VOL-4404
-                  </span>
-                  <a href="./Pedido.dc.html" style={{ fontSize: '13px', fontWeight: '600' }}>
-                    #PT-10455
-                  </a>
-                  <span style={{ fontSize: '13.5px', color: '#34405A', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                    {v.linha5.nome}
-                  </span>
-                  <span style={{ fontSize: '13px', color: '#6B7A90' }}>
-                    Correios PAC
-                  </span>
-                  <span style={{ fontSize: '12.5px', color: '#9AA7BC', fontFamily: 'monospace' }}>
-                    PT883990BR
-                  </span>
-                  <span style={{ fontSize: '13px', color: '#6B7A90' }}>
-                    4
-                  </span>
-                  <span style={{ whiteSpace: 'nowrap', padding: '6px 11px', borderRadius: '999px', background: '#FFF1F3', color: '#E11D48', fontSize: '12px', fontWeight: '600', width: 'max-content' }}>
-                    Extravio
-                  </span>
-                </div>
-                <div style={{ display: 'grid', gridTemplateColumns: '26px minmax(110px,.8fr) minmax(110px,.8fr) minmax(170px,1.3fr) minmax(130px,1fr) minmax(140px,1fr) minmax(70px,.5fr) minmax(120px,.9fr)', gap: '14px', alignItems: 'center', padding: '14px 24px', borderBottom: '1px solid #F4F6FB', cursor: 'pointer' }} className="dc28">
-                  <span style={{ width: '18px', height: '18px', borderRadius: '6px', border: '1.5px solid #CBD5E6', background: 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#FFFFFF' }}>
-                  </span>
-                  <span style={{ fontSize: '13px', fontWeight: '700', color: '#46536A' }}>
-                    VOL-4401
-                  </span>
-                  <a href="./Pedido.dc.html" style={{ fontSize: '13px', fontWeight: '600' }}>
-                    #PT-10448
-                  </a>
-                  <span style={{ fontSize: '13.5px', color: '#34405A', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                    Luz Viva Estúdio
-                  </span>
-                  <span style={{ fontSize: '13px', color: '#6B7A90' }}>
-                    Retirada balcão
-                  </span>
-                  <span style={{ fontSize: '12.5px', color: '#9AA7BC', fontFamily: 'monospace' }}>
-                    —
-                  </span>
-                  <span style={{ fontSize: '13px', color: '#6B7A90' }}>
-                    6
-                  </span>
-                  <span style={{ whiteSpace: 'nowrap', padding: '6px 11px', borderRadius: '999px', background: '#FEF3E2', color: '#B45309', fontSize: '12px', fontWeight: '600', width: 'max-content' }}>
-                    Aguardando cliente
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div style={css(v.ov)} onClick={v.closeModal}>
-          </div>
-          <div style={css(v.sh)}>
-            <div style={{ width: 'min(620px, 100%)', maxHeight: '86vh', overflowY: 'auto', background: '#FFFFFF', borderRadius: '24px', boxShadow: '0 30px 70px rgba(11,18,32,.3)', pointerEvents: 'auto' }}>
-              <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '20px', padding: '24px 26px 18px', borderBottom: '1px solid #F0F3F9' }}>
-                <div style={{ minWidth: '0' }}>
-                  <h2 style={{ margin: '0', fontSize: '20px', fontWeight: '800', letterSpacing: '-.5px' }}>
-                    Gerar etiquetas
-                  </h2>
-                  <p style={{ margin: '6px 0 0', fontSize: '13.5px', color: '#6B7A90' }}>
-                    3 volumes selecionados · Correios PAC e SEDEX
-                  </p>
-                </div>
-                <span onClick={v.closeModal} style={{ width: '36px', height: '36px', borderRadius: '12px', border: '1px solid #E6EAF2', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#6B7A90', cursor: 'pointer', flex: '0 0 auto' }} className="dc29">
-                  <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M18 6 6 18M6 6l12 12" />
-                  </svg>
-                </span>
-              </div>
-              <div style={{ padding: '22px 26px', display: 'flex', flexDirection: 'column', gap: '18px' }}>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px' }}>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', minWidth: '0' }}>
-                    <label style={{ fontSize: '12.5px', fontWeight: '600', color: '#6B7A90' }}>
-                      Impressora
-                    </label>
-                    <input value="Zebra ZT230 · Fábrica Lapa" style={{ height: '46px', padding: '0 15px', border: '1px solid #E6EAF2', borderRadius: '14px', fontFamily: 'inherit', fontSize: '14px', color: '#0B1220', minWidth: '0' }} className="dc30" />
-                  </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', minWidth: '0' }}>
-                    <label style={{ fontSize: '12.5px', fontWeight: '600', color: '#6B7A90' }}>
-                      Formato
-                    </label>
-                    <input value="100 × 150 mm" style={{ height: '46px', padding: '0 15px', border: '1px solid #E6EAF2', borderRadius: '14px', fontFamily: 'inherit', fontSize: '14px', color: '#0B1220', minWidth: '0' }} className="dc31" />
-                    <span style={{ fontSize: '11.5px', color: '#9AA7BC' }}>
-                      padrão Correios
+                {v.envios.map((e: any, i6: number) => (
+                  <div key={i6} onClick={e.focar} style={{ display: 'grid', gridTemplateColumns: '26px minmax(110px,.8fr) minmax(170px,1.3fr) minmax(130px,1fr) minmax(140px,1fr) minmax(110px,.8fr) minmax(110px,.8fr) minmax(120px,.9fr)', gap: '14px', alignItems: 'center', padding: '14px 24px', borderBottom: '1px solid #F4F6FB', cursor: 'pointer' }} className="dc21">
+                    <span style={css(e.marca)}>
+                    </span>
+                    <a href={e.href} style={{ fontSize: '13px', fontWeight: '600' }}>
+                      {e.numero}
+                    </a>
+                    <span style={{ fontSize: '13.5px', color: '#34405A', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                      {e.cliente}
+                    </span>
+                    <span style={{ fontSize: '13px', color: '#6B7A90' }}>
+                      {e.transportadora}
+                    </span>
+                    <span style={{ fontSize: '12.5px', color: '#9AA7BC', fontFamily: 'monospace' }}>
+                      {e.rastreio}
+                    </span>
+                    <span style={{ fontSize: '13px', color: '#6B7A90' }}>
+                      {e.valor}
+                    </span>
+                    <span style={{ fontSize: '13px', color: '#6B7A90' }}>
+                      {e.quando}
+                    </span>
+                    <span style={css(e.selo)}>
+                      {e.estado}
                     </span>
                   </div>
-                </div>
-                <div style={{ border: '1px solid #E6EAF2', borderRadius: '18px', overflow: 'hidden' }}>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1.1fr 1.6fr 1fr', gap: '12px', padding: '10px 16px', background: '#F8FAFE', fontSize: '11.5px', letterSpacing: '.6px', textTransform: 'uppercase', color: '#9AA7BC', fontWeight: '700' }}>
-                    <span>
-                      Volume
-                    </span>
-                    <span>
-                      Cliente
-                    </span>
-                    <span>
-                      Serviço
-                    </span>
-                  </div>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1.1fr 1.6fr 1fr', gap: '12px', padding: '12px 16px', borderTop: '1px solid #F4F6FB', fontSize: '13px' }}>
-                    <span style={{ fontWeight: '700' }}>
-                      VOL-4412
-                    </span>
-                    <span>
-                      {v.linha3.nome}
-                    </span>
-                    <span style={{ color: '#6B7A90' }}>
-                      Retirada
-                    </span>
-                  </div>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1.1fr 1.6fr 1fr', gap: '12px', padding: '12px 16px', borderTop: '1px solid #F4F6FB', fontSize: '13px' }}>
-                    <span style={{ fontWeight: '700' }}>
-                      VOL-4411
-                    </span>
-                    <span>
-                      {v.linha2.nome}
-                    </span>
-                    <span style={{ color: '#6B7A90' }}>
-                      PAC
-                    </span>
-                  </div>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1.1fr 1.6fr 1fr', gap: '12px', padding: '12px 16px', borderTop: '1px solid #F4F6FB', fontSize: '13px' }}>
-                    <span style={{ fontWeight: '700' }}>
-                      VOL-4410
-                    </span>
-                    <span>
-                      Studio Lume
-                    </span>
-                    <span style={{ color: '#6B7A90' }}>
-                      SEDEX
-                    </span>
-                  </div>
-                </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '14px', padding: '14px 16px', border: '1px solid #E6EAF2', borderRadius: '16px', background: '#F8FAFE' }}>
-                  <div style={{ flex: '1', minWidth: '0' }}>
-                    <p style={{ margin: '0', fontSize: '13.5px', fontWeight: '600' }}>
-                      Avisar clientes com o código de rastreio
-                    </p>
-                    <p style={{ margin: '3px 0 0', fontSize: '12.5px', color: '#6B7A90' }}>
-                      WhatsApp e e-mail ao confirmar o despacho
-                    </p>
-                  </div>
-                  <span style={{ width: '44px', height: '26px', borderRadius: '999px', background: 'linear-gradient(135deg,#2563EB,#06B6D4)', padding: '3px', display: 'flex', justifyContent: 'flex-end', cursor: 'pointer', flex: '0 0 auto' }}>
-                    <span style={{ width: '20px', height: '20px', borderRadius: '999px', background: '#FFFFFF', boxShadow: '0 2px 5px rgba(11,18,32,.18)' }}>
-                    </span>
-                  </span>
-                </div>
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '10px', padding: '18px 26px', borderTop: '1px solid #F0F3F9', background: '#F8FAFE' }}>
-                <button onClick={v.closeModal} style={{ whiteSpace: 'nowrap', height: '42px', padding: '0 18px', border: '1px solid #E6EAF2', borderRadius: '13px', background: '#FFFFFF', color: '#46536A', fontFamily: 'inherit', fontSize: '13.5px', fontWeight: '600', cursor: 'pointer' }} className="dc32">
-                  Cancelar
-                </button>
-                <button onClick={v.closeModal} style={{ whiteSpace: 'nowrap', height: '42px', padding: '0 20px', border: '0', borderRadius: '13px', background: 'linear-gradient(135deg,#2563EB,#06B6D4)', color: '#FFFFFF', fontFamily: 'inherit', fontSize: '13.5px', fontWeight: '700', cursor: 'pointer', boxShadow: '0 8px 18px rgba(37,99,235,.26)' }} className="dc33">
-                  Imprimir 3 etiquetas
-                </button>
+                ))}
+                <p style={css(v.enviosVazio)}>
+                  {v.enviosTextoVazio}
+                </p>
               </div>
             </div>
           </div>

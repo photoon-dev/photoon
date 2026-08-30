@@ -1,0 +1,10 @@
+{
+  "trocas": [
+    { "de": "            Photoon",                 "para": "            {v.nomeLoja}" },
+    { "de": "            photoon.com.br",          "para": "            {v.enderecoLoja}" },
+    { "de": "              JM",                    "para": "              {v.iniciais}" },
+    { "de": "                Julia Martins",       "para": "                {v.nomeCliente}", "primeira": false },
+    { "de": "                Formatura 2026",      "para": "                {v.subCliente}" },
+    { "de": "                julia.martins@email.com", "para": "                {v.emailCliente}" }
+  ]
+}

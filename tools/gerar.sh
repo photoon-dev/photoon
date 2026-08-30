@@ -31,6 +31,11 @@ fi
 
 if [ "$alvo" = tudo ] || [ "$alvo" = cliente ]; then
   gerar 'Cliente Meus projetos.dc.html' MeusProjetosDesign meus-projetos.json
+  # A casca (cabeçalho, trilho e gaveta) é a mesma nas três; o zip trazia
+  # "Julia Martins" e "Photoon" escritos à mão nela — a config troca por binding.
+  gerar 'Cliente Minha conta.dc.html'      MinhaContaDesign cliente-casca.json
+  gerar 'Cliente Ajuda.dc.html'            AjudaDesign      cliente-casca.json
+  gerar 'Cliente Galeria de fotos.dc.html' GaleriaDesign    cliente-casca.json
 fi
 
 # Telas do painel do lojista que vêm inteiras do design (menu + cabeçalho +

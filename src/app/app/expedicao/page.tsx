@@ -1,35 +1,42 @@
 import { redirect } from 'next/navigation';
 import { molduraDaLoja } from '@/lib/painel-loja';
-import { listarEnvios } from '@/lib/pedidos';
-import ExpedicaoDesign, { CSS_PSEUDO } from '@/components/design/ExpedicaoDesign';
-import TelaDoDesign from '@/components/app/TelaDoDesign';
+import { itensDosPedidos, listarEnvios, pedidosSemEnvio } from '@/lib/pedidos';
+import ExpedicaoDoDesign from '@/components/app/ExpedicaoDoDesign';
 import '../app.css';
 
 export const dynamic = 'force-dynamic';
 
-export default async function Pagina() {
+export default async function Pagina({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | undefined>>;
+}) {
   const m = await molduraDaLoja();
   if (!m) redirect('/');
 
-  const { envios } = await listarEnvios(m.loja.id, '');
+  const q = await searchParams;
 
   /*
-   * O design traz seis linhas de exemplo com nomes fictícios. Aqui elas
-   * recebem os nomes reais desta tela; quando não há tantos registros, a
-   * linha fica em branco em vez de mostrar um cliente que não existe.
+   * A busca traz a loja inteira e a aba filtra no navegador. São dezenas de
+   * linhas, não milhares, e em troca o painel lateral pode somar por
+   * transportadora sobre tudo — não só sobre a aba aberta — e trocar de aba
+   * não custa uma ida ao banco.
    */
-  const nomes = envios.map((e) => e.pedidos?.clientes?.nome ?? `#${e.pedidos?.numero ?? ''}`);
-  const linhas = Object.fromEntries(
-    Array.from({ length: 6 }, (_, i) => [`linha${i}`, { nome: nomes[i] ?? '' }]),
-  );
+  const [{ envios, porEstado }, semEnvio] = await Promise.all([
+    listarEnvios(m.loja.id, ''),
+    pedidosSemEnvio(m.loja.id),
+  ]);
+
+  const itens = await itensDosPedidos(envios.map((e) => e.pedido_id));
 
   return (
-    <TelaDoDesign
-      Design={ExpedicaoDesign}
-      cssPseudo={CSS_PSEUDO}
-      ativo={3}
+    <ExpedicaoDoDesign
       painel={m.painel}
-      dados={linhas}
+      envios={envios}
+      porEstado={porEstado}
+      semEnvio={semEnvio}
+      itens={itens}
+      estado={q.estado ?? ''}
     />
   );
 }

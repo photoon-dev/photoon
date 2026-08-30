@@ -160,6 +160,16 @@ export function useDashboardDesign({
     // Selo do menu: álbuns que pedem atenção. Era "14" fixo.
     v.selo1 = String((n?.comPendencia ?? 0) + (n?.emEdicao ?? 0));
     v.usuarioCargo = painel?.usuarioCargo ?? '';
+    /* Duas linhas da moldura ficaram sem valor desde a primeira tela: o
+     * subtítulo da loja, no topo do menu, e o selo do plano, dentro do menu da
+     * conta. Sem elas o design mostra um vazio no lugar de um texto — vale em
+     * todas as 19 telas, porque a moldura é a mesma. */
+    v.lojaSub = painel?.plano ? `Plano ${painel.plano.nome}` : 'Sem plano';
+    v.planoResumo = !painel?.plano
+      ? 'Sem plano contratado'
+      : limite
+        ? `Plano ${painel.plano.nome} · ${n?.projetos ?? 0}/${limite} álbuns`
+        : `Plano ${painel.plano.nome}`;
     v.agora = new Date().toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' });
     v.saudacao =
       `${hora < 12 ? 'Bom dia' : hora < 18 ? 'Boa tarde' : 'Boa noite'}, ${primeiroNome}.` +

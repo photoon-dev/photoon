@@ -217,18 +217,19 @@
       <div style="display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; flex-wrap: wrap;">
         <div>
           <p style="margin: 0 0 8px; font-size: 12px; letter-spacing: 1.6px; text-transform: uppercase; color: #9AA7BC; font-weight: 700;">Operação · Expedição</p>
-          <h1 style="margin: 0 0 8px; font-size: 30px; font-weight: 800; letter-spacing: -1px;">Expedição e embalagem</h1>
-          <p style="margin: 0; font-size: 14.5px; color: #6B7A90;">68 volumes para despachar hoje · coleta Correios 14h e Loggi 17h · 2 ocorrências abertas</p>
+          <h1 style="margin: 0 0 8px; font-size: 30px; font-weight: 800; letter-spacing: -1px;">Expedição</h1>
+          <p style="margin: 0; font-size: 14.5px; color: #6B7A90;">{{ resumo }}</p>
         </div>
-        <div style="display: flex; gap: 10px; flex-wrap: wrap;"><button  style="white-space: nowrap; height: 44px; padding: 0 18px; display: flex; align-items: center; gap: 9px; border: 1px solid #E6EAF2; border-radius: 14px; background: #FFFFFF; color: #0B1220; font-family: inherit; font-size: 14px; font-weight: 600; cursor: pointer;" style-hover="background: #F1F5FD; border-color: #D6E2FC; color: #2563EB;"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3v5h5"/><path d="M6 3h8l5 5v13H6z"/></svg>Romaneio do dia</button><button  style="white-space: nowrap; height: 44px; padding: 0 18px; display: flex; align-items: center; gap: 9px; border: 1px solid #E6EAF2; border-radius: 14px; background: #FFFFFF; color: #0B1220; font-family: inherit; font-size: 14px; font-weight: 600; cursor: pointer;" style-hover="background: #F1F5FD; border-color: #D6E2FC; color: #2563EB;"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v5M12 16.5h.01"/><circle cx="12" cy="12" r="8.5"/></svg>Ocorrências</button><button onClick="{{ openModal }}" style="white-space: nowrap; height: 44px; padding: 0 18px; display: flex; align-items: center; gap: 9px; border: 0; border-radius: 14px; background: linear-gradient(135deg,#2563EB,#06B6D4); color: #FFFFFF; font-family: inherit; font-size: 14px; font-weight: 700; cursor: pointer; box-shadow: 0 8px 20px rgba(37,99,235,.28);" style-hover="filter: brightness(1.06);"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M7 9V4h10v5"/><rect x="4" y="9" width="16" height="7" rx="2.5"/><path d="M7 14h10v6H7z"/></svg>Gerar etiquetas</button></div>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;"><a href="/pedidos" style="text-decoration: none; white-space: nowrap; height: 44px; padding: 0 18px; display: flex; align-items: center; gap: 9px; border: 1px solid #E6EAF2; border-radius: 14px; background: #FFFFFF; color: #0B1220; font-family: inherit; font-size: 14px; font-weight: 600; cursor: pointer;" style-hover="background: #F1F5FD; border-color: #D6E2FC; color: #2563EB;"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3v5h5"/><path d="M6 3h8l5 5v13H6z"/></svg>Ver pedidos</a><button onClick="{{ abrirTodos }}" style="{{ btnAbrir }}"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h11v10H3z"/><path d="M14 10h4l3 3v4h-7z"/><circle cx="7" cy="18.5" r="1.6"/><circle cx="17" cy="18.5" r="1.6"/></svg>{{ rotuloAbrir }}</button></div>
       </div>
 
       <div style="display: flex; gap: 4px; padding: 5px; background: #F4F7FC; border: 1px solid #E6EAF2; border-radius: 999px; flex-wrap: wrap; width: max-content; max-width: 100%;">
-        <span onClick="{{ setP0 }}" style="{{ per0 }}" style-hover="background: #FFFFFF; color: #2563EB;">Para embalar</span>
-        <span onClick="{{ setP1 }}" style="{{ per1 }}" style-hover="background: #FFFFFF; color: #2563EB;">Etiquetados</span>
-        <span onClick="{{ setP2 }}" style="{{ per2 }}" style-hover="background: #FFFFFF; color: #2563EB;">Coletas</span>
-        <span onClick="{{ setP3 }}" style="{{ per3 }}" style-hover="background: #FFFFFF; color: #2563EB;">Retiradas</span>
-        <span onClick="{{ setP4 }}" style="{{ per4 }}" style-hover="background: #FFFFFF; color: #2563EB;">Ocorrências</span>
+        <span onClick="{{ setP0 }}" style="{{ per0 }}" style-hover="background: #FFFFFF; color: #2563EB;">{{ rot0 }}</span>
+        <span onClick="{{ setP1 }}" style="{{ per1 }}" style-hover="background: #FFFFFF; color: #2563EB;">{{ rot1 }}</span>
+        <span onClick="{{ setP2 }}" style="{{ per2 }}" style-hover="background: #FFFFFF; color: #2563EB;">{{ rot2 }}</span>
+        <span onClick="{{ setP3 }}" style="{{ per3 }}" style-hover="background: #FFFFFF; color: #2563EB;">{{ rot3 }}</span>
+        <span onClick="{{ setP4 }}" style="{{ per4 }}" style-hover="background: #FFFFFF; color: #2563EB;">{{ rot4 }}</span>
+        <span onClick="{{ setP5 }}" style="{{ per5 }}" style-hover="background: #FFFFFF; color: #2563EB;">{{ rot5 }}</span>
       </div>
 
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; align-items: start;">
@@ -236,95 +237,67 @@
         <div style="background: #FFFFFF; border: 1px solid #E6EAF2; border-radius: 24px; padding: 22px 26px; grid-column: span 2; min-width: 0;">
           <div style="display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 18px; flex-wrap: wrap;">
             <div>
-              <h2 style="margin: 0; font-size: 18px; font-weight: 700;">Estação de embalagem</h2>
-              <p style="margin: 5px 0 0; font-size: 13px; color: #6B7A90;">Bipe a OS para conferir os itens e imprimir a etiqueta</p>
+              <h2 style="margin: 0; font-size: 18px; font-weight: 700;">Envio em foco</h2>
+              <p style="margin: 5px 0 0; font-size: 13px; color: #6B7A90;">{{ focoSub }}</p>
             </div>
-            <span style="display: flex; align-items: center; gap: 8px; padding: 8px 13px; border-radius: 999px; background: #E6F8F1; color: #059669; font-size: 12.5px; font-weight: 700;"><span style="width: 8px; height: 8px; border-radius: 999px; background: #10B981;"></span>Zebra ZT230 pronta</span>
+            <span style="{{ focoSelo }}">{{ focoEstado }}</span>
           </div>
 
           <div style="display: flex; align-items: center; gap: 12px; padding: 8px 8px 8px 18px; border: 1.5px solid #2563EB; border-radius: 18px; background: #F8FAFE; margin-bottom: 20px;">
-            <span style="color: #2563EB; flex: 0 0 auto;"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6v12M8 6v12M12 6v12M16 6v12M20 6v12"/></svg></span>
-            <input value="OS-10482" style="flex: 1; min-width: 0; border: 0; background: transparent; font-family: monospace; font-size: 18px; font-weight: 700; color: #0B1220;"/>
-            <button style="white-space: nowrap; height: 42px; padding: 0 18px; border: 0; border-radius: 13px; background: #0B1220; color: #FFFFFF; font-family: inherit; font-size: 13.5px; font-weight: 700; cursor: pointer;" style-hover="background: #2563EB;">Conferir</button>
+            <span style="color: #2563EB; flex: 0 0 auto;"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></span>
+            <input value="{{ busca }}" onChange="{{ setBusca }}" onKeyDown="{{ buscaTecla }}" placeholder="número do pedido" style="flex: 1; min-width: 0; border: 0; background: transparent; font-family: monospace; font-size: 18px; font-weight: 700; color: #0B1220;"/>
+            <button onClick="{{ localizar }}" style="white-space: nowrap; height: 42px; padding: 0 18px; border: 0; border-radius: 13px; background: #0B1220; color: #FFFFFF; font-family: inherit; font-size: 13.5px; font-weight: 700; cursor: pointer;" style-hover="background: #2563EB;">Localizar</button>
           </div>
 
           <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 18px; align-items: start;">
             <div>
-              <p style="margin: 0 0 12px; font-size: 12px; letter-spacing: 1.4px; text-transform: uppercase; color: #9AA7BC; font-weight: 700;">Conferência de itens · 3 de 3</p>
+              <p style="margin: 0 0 12px; font-size: 12px; letter-spacing: 1.4px; text-transform: uppercase; color: #9AA7BC; font-weight: 700;">{{ itensTitulo }}</p>
               <div style="display: flex; flex-direction: column; gap: 10px;">
-                <div style="display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 15px; background: #F8FAFE; border: 1px solid #EEF1F7;"><span style="width: 22px; height: 22px; border-radius: 7px; background: #10B981; display: flex; align-items: center; justify-content: center; color: #FFFFFF; flex: 0 0 auto;"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span><div style="flex: 1; min-width: 0;"><p style="margin: 0; font-size: 13.5px; font-weight: 600;">Fotolivro 30×30 · capa dura</p><p style="margin: 2px 0 0; font-size: 12px; color: #6B7A90;">1 un · lote 214</p></div></div>
-                <div style="display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 15px; background: #F8FAFE; border: 1px solid #EEF1F7;"><span style="width: 22px; height: 22px; border-radius: 7px; background: #10B981; display: flex; align-items: center; justify-content: center; color: #FFFFFF; flex: 0 0 auto;"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span><div style="flex: 1; min-width: 0;"><p style="margin: 0; font-size: 13.5px; font-weight: 600;">Estojo rígido personalizado</p><p style="margin: 2px 0 0; font-size: 12px; color: #6B7A90;">1 un · linho azul</p></div></div>
-                <div style="display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 15px; background: #F8FAFE; border: 1px solid #EEF1F7;"><span style="width: 22px; height: 22px; border-radius: 7px; background: #10B981; display: flex; align-items: center; justify-content: center; color: #FFFFFF; flex: 0 0 auto;"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span><div style="flex: 1; min-width: 0;"><p style="margin: 0; font-size: 13.5px; font-weight: 600;">Revelação 15×21</p><p style="margin: 2px 0 0; font-size: 12px; color: #6B7A90;">40 un · envelope kraft</p></div></div>
+                <sc-for list="{{ itens }}" as="it" hint-placeholder-count="3">
+                <div style="display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 15px; background: #F8FAFE; border: 1px solid #EEF1F7;"><span style="width: 22px; height: 22px; border-radius: 7px; background: #10B981; display: flex; align-items: center; justify-content: center; color: #FFFFFF; flex: 0 0 auto;"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span><div style="flex: 1; min-width: 0;"><p style="margin: 0; font-size: 13.5px; font-weight: 600;">{{ it.descricao }}</p><p style="margin: 2px 0 0; font-size: 12px; color: #6B7A90;">{{ it.detalhe }}</p></div></div>
+                </sc-for>
+                <p style="{{ itensVazio }}">{{ itensTextoVazio }}</p>
               </div>
               <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 12px; margin-top: 16px;">
             <div style="display: flex; flex-direction: column; gap: 8px; min-width: 0;">
-              <label style="font-size: 12.5px; font-weight: 600; color: #6B7A90;">Peso (kg)</label>
-              <input value="1,84" style="height: 46px; padding: 0 15px; border: 1px solid #E6EAF2; border-radius: 14px; font-family: inherit; font-size: 14px; color: #0B1220; min-width: 0;" style-focus="border-color: #2563EB;"/>
+              <label style="font-size: 12.5px; font-weight: 600; color: #6B7A90;">Transportadora</label>
+              <input value="{{ transportadora }}" onChange="{{ setTransportadora }}" disabled="{{ semFoco }}" placeholder="Correios, Jadlog…" style="height: 46px; padding: 0 15px; border: 1px solid #E6EAF2; border-radius: 14px; font-family: inherit; font-size: 14px; color: #0B1220; min-width: 0;" style-focus="border-color: #2563EB;"/>
               
             </div>
             <div style="display: flex; flex-direction: column; gap: 8px; min-width: 0;">
-              <label style="font-size: 12.5px; font-weight: 600; color: #6B7A90;">Caixa</label>
-              <input value="C2 · 32×32×8" style="height: 46px; padding: 0 15px; border: 1px solid #E6EAF2; border-radius: 14px; font-family: inherit; font-size: 14px; color: #0B1220; min-width: 0;" style-focus="border-color: #2563EB;"/>
+              <label style="font-size: 12.5px; font-weight: 600; color: #6B7A90;">Rastreio</label>
+              <input value="{{ rastreio }}" onChange="{{ setRastreio }}" disabled="{{ semFoco }}" placeholder="código do objeto" style="height: 46px; padding: 0 15px; border: 1px solid #E6EAF2; border-radius: 14px; font-family: inherit; font-size: 14px; color: #0B1220; min-width: 0;" style-focus="border-color: #2563EB;"/>
               
             </div>
               </div>
             </div>
 
             <div>
-              <p style="margin: 0 0 12px; font-size: 12px; letter-spacing: 1.4px; text-transform: uppercase; color: #9AA7BC; font-weight: 700;">Prévia da etiqueta</p>
+              <p style="margin: 0 0 12px; font-size: 12px; letter-spacing: 1.4px; text-transform: uppercase; color: #9AA7BC; font-weight: 700;">Etiqueta</p>
               <div style="border: 1px solid #E6EAF2; border-radius: 18px; padding: 18px; background: #FFFFFF; box-shadow: 0 10px 24px rgba(11,18,32,.07);">
                 <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; padding-bottom: 12px; border-bottom: 1.5px dashed #CBD5E6;">
-                  <div style="min-width: 0;"><p style="margin: 0; font-size: 15px; font-weight: 800;">PHOTOON</p><p style="margin: 3px 0 0; font-size: 11px; color: #6B7A90;">Fábrica Lapa · São Paulo, SP</p></div>
-                  <span style="padding: 4px 9px; border-radius: 7px; background: #0B1220; color: #FFFFFF; font-size: 10.5px; font-weight: 700;">PAC</span>
+                  <div style="min-width: 0;"><p style="margin: 0; font-size: 15px; font-weight: 800;">{{ lojaNome }}</p><p style="margin: 3px 0 0; font-size: 11px; color: #6B7A90;">{{ remetente }}</p></div>
+                  <span style="{{ etiquetaSelo }}">{{ etiquetaModal }}</span>
                 </div>
                 <div style="padding: 12px 0; border-bottom: 1.5px dashed #CBD5E6;">
                   <p style="margin: 0; font-size: 10.5px; letter-spacing: 1px; text-transform: uppercase; color: #9AA7BC; font-weight: 700;">Destinatário</p>
-                  <p style="margin: 5px 0 0; font-size: 13.5px; font-weight: 700;">{{ linha1.nome }}</p>
-                  <p style="margin: 3px 0 0; font-size: 12px; color: #46536A; line-height: 1.5;">Rua das Artes, 210 · sala 4<br/>São Paulo, SP · 01310-000</p>
+                  <p style="margin: 5px 0 0; font-size: 13.5px; font-weight: 700;">{{ destinatario }}</p>
+                  <p style="margin: 3px 0 0; font-size: 12px; color: #46536A; line-height: 1.5;">{{ enderecoLinha1 }}<br/>{{ enderecoLinha2 }}</p>
                 </div>
                 <div style="display: flex; align-items: center; gap: 14px; padding-top: 12px;">
+                  <sc-if value="{{ temRastreio }}">
                   <div style="display: flex; align-items: flex-end; gap: 2px; height: 44px; flex: 1; min-width: 0;">
-                    <span style="flex: 1; height: 100%; background: #0B1220;"></span>
-                    <span style="flex: 1; height: 60%; background: #0B1220;"></span>
-                    <span style="flex: 1; height: 90%; background: #0B1220;"></span>
-                    <span style="flex: 1; height: 45%; background: #0B1220;"></span>
-                    <span style="flex: 1; height: 100%; background: #0B1220;"></span>
-                    <span style="flex: 1; height: 70%; background: #0B1220;"></span>
-                    <span style="flex: 1; height: 55%; background: #0B1220;"></span>
-                    <span style="flex: 1; height: 95%; background: #0B1220;"></span>
-                    <span style="flex: 1; height: 100%; background: #0B1220;"></span>
-                    <span style="flex: 1; height: 60%; background: #0B1220;"></span>
-                    <span style="flex: 1; height: 90%; background: #0B1220;"></span>
-                    <span style="flex: 1; height: 45%; background: #0B1220;"></span>
-                    <span style="flex: 1; height: 100%; background: #0B1220;"></span>
-                    <span style="flex: 1; height: 70%; background: #0B1220;"></span>
-                    <span style="flex: 1; height: 55%; background: #0B1220;"></span>
-                    <span style="flex: 1; height: 95%; background: #0B1220;"></span>
-                    <span style="flex: 1; height: 100%; background: #0B1220;"></span>
-                    <span style="flex: 1; height: 60%; background: #0B1220;"></span>
-                    <span style="flex: 1; height: 90%; background: #0B1220;"></span>
-                    <span style="flex: 1; height: 45%; background: #0B1220;"></span>
-                    <span style="flex: 1; height: 100%; background: #0B1220;"></span>
-                    <span style="flex: 1; height: 70%; background: #0B1220;"></span>
-                    <span style="flex: 1; height: 55%; background: #0B1220;"></span>
-                    <span style="flex: 1; height: 95%; background: #0B1220;"></span>
-                    <span style="flex: 1; height: 100%; background: #0B1220;"></span>
-                    <span style="flex: 1; height: 60%; background: #0B1220;"></span>
-                    <span style="flex: 1; height: 90%; background: #0B1220;"></span>
-                    <span style="flex: 1; height: 45%; background: #0B1220;"></span>
-                    <span style="flex: 1; height: 100%; background: #0B1220;"></span>
-                    <span style="flex: 1; height: 70%; background: #0B1220;"></span>
-                    <span style="flex: 1; height: 55%; background: #0B1220;"></span>
-                    <span style="flex: 1; height: 95%; background: #0B1220;"></span>
-                    <span style="flex: 1; height: 100%; background: #0B1220;"></span>
-                    <span style="flex: 1; height: 60%; background: #0B1220;"></span>
+                    <sc-for list="{{ barras }}" as="b" hint-placeholder-count="24">
+                    <span style="{{ b.estilo }}"></span>
+                    </sc-for>
                   </div>
-                  <div style="text-align: right; flex: 0 0 auto;"><p style="margin: 0; font-size: 11px; color: #9AA7BC;">Rastreio</p><p style="margin: 2px 0 0; font-size: 12.5px; font-weight: 700; font-family: monospace;">PT884120BR</p></div>
+                  </sc-if>
+                  <div style="text-align: right; flex: 0 0 auto;"><p style="margin: 0; font-size: 11px; color: #9AA7BC;">Rastreio</p><p style="margin: 2px 0 0; font-size: 12.5px; font-weight: 700; font-family: monospace;">{{ rastreioEtiqueta }}</p></div>
                 </div>
               </div>
               <div style="display: flex; gap: 10px; margin-top: 14px;">
-                <button style="white-space: nowrap; flex: 1; height: 44px; border: 1px solid #E6EAF2; border-radius: 14px; background: #FFFFFF; color: #46536A; font-family: inherit; font-size: 13.5px; font-weight: 600; cursor: pointer;" style-hover="background: #F1F5FD; color: #2563EB;">Reimprimir</button>
-                <button style="white-space: nowrap; flex: 1; height: 44px; border: 0; border-radius: 14px; background: linear-gradient(135deg,#2563EB,#06B6D4); color: #FFFFFF; font-family: inherit; font-size: 13.5px; font-weight: 700; cursor: pointer; box-shadow: 0 8px 18px rgba(37,99,235,.26);" style-hover="filter: brightness(1.06);">Despachar volume</button>
+                <button onClick="{{ acaoSecundaria }}" style="{{ btnSecundario }}" style-hover="background: #F1F5FD; color: #2563EB;">{{ rotuloSecundario }}</button>
+                <button onClick="{{ acaoPrincipal }}" style="{{ btnPrincipal }}" style-hover="filter: brightness(1.06);">{{ rotuloPrincipal }}</button>
               </div>
             </div>
           </div>
@@ -332,159 +305,63 @@
 
         <div style="display: flex; flex-direction: column; gap: 20px; min-width: 0;">
           <div style="background: #FFFFFF; border: 1px solid #E6EAF2; border-radius: 24px; padding: 22px 24px;">
-            <h2 style="margin: 0 0 16px; font-size: 17px; font-weight: 700;">Coletas de hoje</h2>
+            <h2 style="margin: 0 0 16px; font-size: 17px; font-weight: 700;">Por transportadora</h2>
             <div style="display: flex; flex-direction: column; gap: 12px;">
+              <sc-for list="{{ transportadoras }}" as="t" hint-placeholder-count="2">
               <div style="padding: 14px; border-radius: 16px; background: #F8FAFE; border: 1px solid #EEF1F7;">
-                <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 10px;"><p style="margin: 0; font-size: 13.5px; font-weight: 700;">Correios · 14h00</p><span style="white-space: nowrap; padding: 4px 9px; border-radius: 999px; background: #FEF3E2; color: #B45309; font-size: 11px; font-weight: 700;">em 2 h</span></div>
-                <div style="margin-bottom: 8px; display: flex; justify-content: space-between; font-size: 12.5px; color: #6B7A90;"><span>36 volumes etiquetados</span><span>de 42</span></div>
-                <div style="height: 7px; border-radius: 999px; background: #EEF1F7;"><div style="width: 86%; height: 100%; border-radius: 999px; background: linear-gradient(90deg,#2563EB,#06B6D4);"></div></div>
+                <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 10px;"><p style="margin: 0; font-size: 13.5px; font-weight: 700;">{{ t.nome }}</p><span style="{{ t.selo }}">{{ t.chip }}</span></div>
+                <div style="margin-bottom: 8px; display: flex; justify-content: space-between; font-size: 12.5px; color: #6B7A90;"><span>{{ t.detalhe }}</span><span>{{ t.total }}</span></div>
+                <div style="height: 7px; border-radius: 999px; background: #EEF1F7;"><div style="{{ t.barra }}"></div></div>
               </div>
-              <div style="padding: 14px; border-radius: 16px; background: #F8FAFE; border: 1px solid #EEF1F7;">
-                <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 10px;"><p style="margin: 0; font-size: 13.5px; font-weight: 700;">Loggi · 17h00</p><span style="white-space: nowrap; padding: 4px 9px; border-radius: 999px; background: #F1F5FD; color: #46536A; font-size: 11px; font-weight: 700;">em 5 h</span></div>
-                <div style="margin-bottom: 8px; display: flex; justify-content: space-between; font-size: 12.5px; color: #6B7A90;"><span>4 volumes etiquetados</span><span>de 26</span></div>
-                <div style="height: 7px; border-radius: 999px; background: #EEF1F7;"><div style="width: 15%; height: 100%; border-radius: 999px; background: #6366F1;"></div></div>
-              </div>
+              </sc-for>
+              <p style="{{ transportadorasVazio }}">Nenhum envio tem transportadora ainda.</p>
             </div>
           </div>
           <div style="background: #FFFFFF; border: 1px solid #E6EAF2; border-radius: 24px; padding: 22px 24px;">
             <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 16px;">
-              <h2 style="margin: 0; font-size: 17px; font-weight: 700;">Retiradas no balcão</h2>
-              <span style="white-space: nowrap; padding: 5px 10px; border-radius: 999px; background: #FEF3E2; color: #B45309; font-size: 11.5px; font-weight: 700;">9 aguardando</span>
+              <h2 style="margin: 0; font-size: 17px; font-weight: 700;">Prontos sem envio</h2>
+              <span style="{{ semEnvioSelo }}">{{ semEnvioResumo }}</span>
             </div>
             <div style="display: flex; flex-direction: column; gap: 10px;">
-              <div style="display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 15px; background: #F8FAFE; border: 1px solid #EEF1F7;"><span style="width: 32px; height: 32px; border-radius: 10px; background: #EDEBFE; color: #6366F1; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex: 0 0 auto;">MB</span><div style="flex: 1; min-width: 0;"><p style="margin: 0; font-size: 13px; font-weight: 600;">{{ linha3.nome }}</p><p style="margin: 2px 0 0; font-size: 12px; color: #6B7A90;">avisado hoje · Centro</p></div></div>
-              <div style="display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 15px; background: #FEF3E2; border: 1px solid #FCE9CE;"><span style="width: 32px; height: 32px; border-radius: 10px; background: #FFFFFF; color: #B45309; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex: 0 0 auto;">LV</span><div style="flex: 1; min-width: 0;"><p style="margin: 0; font-size: 13px; font-weight: 600;">Luz Viva Estúdio</p><p style="margin: 2px 0 0; font-size: 12px; color: #6B7A90;">há 6 dias · cobrar retirada</p></div></div>
-              <div style="display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 15px; background: #F8FAFE; border: 1px solid #EEF1F7;"><span style="width: 32px; height: 32px; border-radius: 10px; background: #E4F8FC; color: #0891B2; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex: 0 0 auto;">AP</span><div style="flex: 1; min-width: 0;"><p style="margin: 0; font-size: 13px; font-weight: 600;">{{ linha4.nome }}</p><p style="margin: 2px 0 0; font-size: 12px; color: #6B7A90;">avisada ontem · Norte</p></div></div>
+              <sc-for list="{{ semEnvio }}" as="s" hint-placeholder-count="3">
+              <div style="display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 15px; background: #F8FAFE; border: 1px solid #EEF1F7;"><span style="width: 32px; height: 32px; border-radius: 10px; background: #EDEBFE; color: #6366F1; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex: 0 0 auto;">{{ s.iniciais }}</span><div style="flex: 1; min-width: 0;"><p style="margin: 0; font-size: 13px; font-weight: 600;">{{ s.cliente }}</p><p style="margin: 2px 0 0; font-size: 12px; color: #6B7A90;">{{ s.detalhe }}</p></div><button onClick="{{ s.abrirEnvio }}" style="white-space: nowrap; height: 34px; padding: 0 13px; border: 1px solid #E6EAF2; border-radius: 12px; background: #FFFFFF; color: #46536A; font-family: inherit; font-size: 12.5px; font-weight: 600; cursor: pointer;" style-hover="background: #F1F5FD; color: #2563EB; border-color: #D6E2FC;">Abrir envio</button></div>
+              </sc-for>
+              <p style="{{ semEnvioVazio }}">Todo pedido pronto já tem envio aberto.</p>
             </div>
           </div>
           <div style="background: #0B1220; border-radius: 24px; padding: 22px 24px; color: #FFFFFF;">
-            <p style="margin: 0 0 8px; font-size: 12px; letter-spacing: 1.6px; text-transform: uppercase; color: rgba(255,255,255,.55); font-weight: 700;">Ocorrências</p>
-            <p style="margin: 0 0 6px; font-size: 26px; font-weight: 800; letter-spacing: -.8px;">2 abertas</p>
-            <p style="margin: 0 0 16px; font-size: 13px; color: rgba(255,255,255,.7);">1 extravio em análise nos Correios e 1 endereço insuficiente aguardando cliente.</p>
-            <button style="white-space: nowrap; height: 40px; padding: 0 16px; border: 1px solid rgba(255,255,255,.25); border-radius: 999px; background: transparent; color: #FFFFFF; font-family: inherit; font-size: 13.5px; font-weight: 600; cursor: pointer;" style-hover="background: rgba(255,255,255,.1);">Abrir ocorrências</button>
+            <p style="margin: 0 0 8px; font-size: 12px; letter-spacing: 1.6px; text-transform: uppercase; color: rgba(255,255,255,.55); font-weight: 700;">Devoluções</p>
+            <p style="margin: 0 0 6px; font-size: 26px; font-weight: 800; letter-spacing: -.8px;">{{ devolvidosValor }}</p>
+            <p style="margin: 0 0 16px; font-size: 13px; color: rgba(255,255,255,.7);">{{ devolvidosTexto }}</p>
+            <button onClick="{{ verDevolvidos }}" style="white-space: nowrap; height: 40px; padding: 0 16px; border: 1px solid rgba(255,255,255,.25); border-radius: 999px; background: transparent; color: #FFFFFF; font-family: inherit; font-size: 13.5px; font-weight: 600; cursor: pointer;" style-hover="background: rgba(255,255,255,.1);">Ver devolvidos</button>
           </div>
         </div>
       </div>
 
       <div style="background: #FFFFFF; border: 1px solid #E6EAF2; border-radius: 24px; overflow: hidden;">
         <div style="display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 18px 24px; flex-wrap: wrap;">
-          <h2 style="margin: 0; font-size: 18px; font-weight: 700;">Volumes do dia</h2>
+          <h2 style="margin: 0; font-size: 18px; font-weight: 700;">Envios</h2>
           <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-            <span style="padding: 9px 14px; border-radius: 999px; background: #F1F5FD; border: 1px solid #D6E2FC; font-size: 12.5px; font-weight: 700; color: #2563EB; cursor: pointer;">3 selecionados</span>
-            <span style="padding: 9px 14px; border-radius: 999px; background: #F4F7FC; border: 1px solid #E6EAF2; font-size: 12.5px; font-weight: 600; color: #46536A; cursor: pointer;" style-hover="border-color: #2563EB; color: #2563EB;">Imprimir selecionados</span>
+            <span style="padding: 9px 14px; border-radius: 999px; background: #F1F5FD; border: 1px solid #D6E2FC; font-size: 12.5px; font-weight: 700; color: #2563EB;">{{ listaResumo }}</span>
           </div>
         </div>
         <div style="overflow-x: auto;">
-          <div style="display: grid; grid-template-columns: 26px minmax(110px,.8fr) minmax(110px,.8fr) minmax(170px,1.3fr) minmax(130px,1fr) minmax(140px,1fr) minmax(70px,.5fr) minmax(120px,.9fr); gap: 14px; padding: 10px 24px; background: #F8FAFE; border-top: 1px solid #EEF1F7; border-bottom: 1px solid #EEF1F7; font-size: 11.5px; letter-spacing: .6px; text-transform: uppercase; color: #9AA7BC; font-weight: 700;">
-            <span></span><span>Volume</span><span>Pedido</span><span>Cliente</span><span>Transportadora</span><span>Rastreio</span><span>Itens</span><span>Status</span>
+          <div style="display: grid; grid-template-columns: 26px minmax(110px,.8fr) minmax(170px,1.3fr) minmax(130px,1fr) minmax(140px,1fr) minmax(110px,.8fr) minmax(110px,.8fr) minmax(120px,.9fr); gap: 14px; padding: 10px 24px; background: #F8FAFE; border-top: 1px solid #EEF1F7; border-bottom: 1px solid #EEF1F7; font-size: 11.5px; letter-spacing: .6px; text-transform: uppercase; color: #9AA7BC; font-weight: 700;">
+            <span></span><span>Pedido</span><span>Cliente</span><span>Transportadora</span><span>Rastreio</span><span>Valor</span><span>Atualizado</span><span>Status</span>
           </div>
-            <div style="display: grid; grid-template-columns: 26px minmax(110px,.8fr) minmax(110px,.8fr) minmax(170px,1.3fr) minmax(130px,1fr) minmax(140px,1fr) minmax(70px,.5fr) minmax(120px,.9fr); gap: 14px; align-items: center; padding: 14px 24px; border-bottom: 1px solid #F4F6FB; cursor: pointer;" style-hover="background: #F8FAFE;">
-              <span style="width: 18px; height: 18px; border-radius: 6px; border: 1.5px solid #2563EB; background: #2563EB; display: flex; align-items: center; justify-content: center; color: #FFFFFF;"><svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>
-              <span style="font-size: 13px; font-weight: 700; color: #46536A;">VOL-4412</span>
-              <a href="./Pedido.dc.html" style="font-size: 13px; font-weight: 600;">#PT-10479</a>
-              <span style="font-size: 13.5px; color: #34405A; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ linha3.nome }}</span>
-              <span style="font-size: 13px; color: #6B7A90;">Retirada balcão</span>
-              <span style="font-size: 12.5px; color: #9AA7BC; font-family: monospace;">—</span>
-              <span style="font-size: 13px; color: #6B7A90;">2</span>
-              <span style="white-space: nowrap; padding: 6px 11px; border-radius: 999px; background: #E6F8F1; color: #059669; font-size: 12px; font-weight: 600; width: max-content;">Pronto para coleta</span>
+            <sc-for list="{{ envios }}" as="e" hint-placeholder-count="6">
+            <div onClick="{{ e.focar }}" style="display: grid; grid-template-columns: 26px minmax(110px,.8fr) minmax(170px,1.3fr) minmax(130px,1fr) minmax(140px,1fr) minmax(110px,.8fr) minmax(110px,.8fr) minmax(120px,.9fr); gap: 14px; align-items: center; padding: 14px 24px; border-bottom: 1px solid #F4F6FB; cursor: pointer;" style-hover="background: #F8FAFE;">
+              <span style="{{ e.marca }}"></span>
+              <a href="{{ e.href }}" style="font-size: 13px; font-weight: 600;">{{ e.numero }}</a>
+              <span style="font-size: 13.5px; color: #34405A; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ e.cliente }}</span>
+              <span style="font-size: 13px; color: #6B7A90;">{{ e.transportadora }}</span>
+              <span style="font-size: 12.5px; color: #9AA7BC; font-family: monospace;">{{ e.rastreio }}</span>
+              <span style="font-size: 13px; color: #6B7A90;">{{ e.valor }}</span>
+              <span style="font-size: 13px; color: #6B7A90;">{{ e.quando }}</span>
+              <span style="{{ e.selo }}">{{ e.estado }}</span>
             </div>
-            <div style="display: grid; grid-template-columns: 26px minmax(110px,.8fr) minmax(110px,.8fr) minmax(170px,1.3fr) minmax(130px,1fr) minmax(140px,1fr) minmax(70px,.5fr) minmax(120px,.9fr); gap: 14px; align-items: center; padding: 14px 24px; border-bottom: 1px solid #F4F6FB; cursor: pointer;" style-hover="background: #F8FAFE;">
-              <span style="width: 18px; height: 18px; border-radius: 6px; border: 1.5px solid #2563EB; background: #2563EB; display: flex; align-items: center; justify-content: center; color: #FFFFFF;"><svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>
-              <span style="font-size: 13px; font-weight: 700; color: #46536A;">VOL-4411</span>
-              <a href="./Pedido.dc.html" style="font-size: 13px; font-weight: 600;">#PT-10471</a>
-              <span style="font-size: 13.5px; color: #34405A; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ linha2.nome }}</span>
-              <span style="font-size: 13px; color: #6B7A90;">Correios PAC</span>
-              <span style="font-size: 12.5px; color: #9AA7BC; font-family: monospace;">PT884120BR</span>
-              <span style="font-size: 13px; color: #6B7A90;">12</span>
-              <span style="white-space: nowrap; padding: 6px 11px; border-radius: 999px; background: #E6F8F1; color: #059669; font-size: 12px; font-weight: 600; width: max-content;">Pronto para coleta</span>
-            </div>
-            <div style="display: grid; grid-template-columns: 26px minmax(110px,.8fr) minmax(110px,.8fr) minmax(170px,1.3fr) minmax(130px,1fr) minmax(140px,1fr) minmax(70px,.5fr) minmax(120px,.9fr); gap: 14px; align-items: center; padding: 14px 24px; border-bottom: 1px solid #F4F6FB; cursor: pointer;" style-hover="background: #F8FAFE;">
-              <span style="width: 18px; height: 18px; border-radius: 6px; border: 1.5px solid #2563EB; background: #2563EB; display: flex; align-items: center; justify-content: center; color: #FFFFFF;"><svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>
-              <span style="font-size: 13px; font-weight: 700; color: #46536A;">VOL-4410</span>
-              <a href="./Pedido.dc.html" style="font-size: 13px; font-weight: 600;">#PT-10468</a>
-              <span style="font-size: 13.5px; color: #34405A; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Studio Lume</span>
-              <span style="font-size: 13px; color: #6B7A90;">Correios SEDEX</span>
-              <span style="font-size: 12.5px; color: #9AA7BC; font-family: monospace;">PT884118BR</span>
-              <span style="font-size: 13px; color: #6B7A90;">3</span>
-              <span style="white-space: nowrap; padding: 6px 11px; border-radius: 999px; background: #E6F8F1; color: #059669; font-size: 12px; font-weight: 600; width: max-content;">Pronto para coleta</span>
-            </div>
-            <div style="display: grid; grid-template-columns: 26px minmax(110px,.8fr) minmax(110px,.8fr) minmax(170px,1.3fr) minmax(130px,1fr) minmax(140px,1fr) minmax(70px,.5fr) minmax(120px,.9fr); gap: 14px; align-items: center; padding: 14px 24px; border-bottom: 1px solid #F4F6FB; cursor: pointer;" style-hover="background: #F8FAFE;">
-              <span style="width: 18px; height: 18px; border-radius: 6px; border: 1.5px solid #CBD5E6; background: transparent; display: flex; align-items: center; justify-content: center; color: #FFFFFF;"></span>
-              <span style="font-size: 13px; font-weight: 700; color: #46536A;">VOL-4409</span>
-              <a href="./Pedido.dc.html" style="font-size: 13px; font-weight: 600;">#PT-10482</a>
-              <span style="font-size: 13.5px; color: #34405A; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Studio Lume</span>
-              <span style="font-size: 13px; color: #6B7A90;">Correios PAC</span>
-              <span style="font-size: 12.5px; color: #9AA7BC; font-family: monospace;">—</span>
-              <span style="font-size: 13px; color: #6B7A90;">3</span>
-              <span style="white-space: nowrap; padding: 6px 11px; border-radius: 999px; background: #EAF0FF; color: #2563EB; font-size: 12px; font-weight: 600; width: max-content;">Embalando</span>
-            </div>
-            <div style="display: grid; grid-template-columns: 26px minmax(110px,.8fr) minmax(110px,.8fr) minmax(170px,1.3fr) minmax(130px,1fr) minmax(140px,1fr) minmax(70px,.5fr) minmax(120px,.9fr); gap: 14px; align-items: center; padding: 14px 24px; border-bottom: 1px solid #F4F6FB; cursor: pointer;" style-hover="background: #F8FAFE;">
-              <span style="width: 18px; height: 18px; border-radius: 6px; border: 1.5px solid #CBD5E6; background: transparent; display: flex; align-items: center; justify-content: center; color: #FFFFFF;"></span>
-              <span style="font-size: 13px; font-weight: 700; color: #46536A;">VOL-4408</span>
-              <a href="./Pedido.dc.html" style="font-size: 13px; font-weight: 600;">#PT-10462</a>
-              <span style="font-size: 13.5px; color: #34405A; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ linha4.nome }}</span>
-              <span style="font-size: 13px; color: #6B7A90;">Loggi</span>
-              <span style="font-size: 12.5px; color: #9AA7BC; font-family: monospace;">LG-77120</span>
-              <span style="font-size: 13px; color: #6B7A90;">1</span>
-              <span style="white-space: nowrap; padding: 6px 11px; border-radius: 999px; background: #EDEBFE; color: #6366F1; font-size: 12px; font-weight: 600; width: max-content;">Coletado</span>
-            </div>
-            <div style="display: grid; grid-template-columns: 26px minmax(110px,.8fr) minmax(110px,.8fr) minmax(170px,1.3fr) minmax(130px,1fr) minmax(140px,1fr) minmax(70px,.5fr) minmax(120px,.9fr); gap: 14px; align-items: center; padding: 14px 24px; border-bottom: 1px solid #F4F6FB; cursor: pointer;" style-hover="background: #F8FAFE;">
-              <span style="width: 18px; height: 18px; border-radius: 6px; border: 1.5px solid #CBD5E6; background: transparent; display: flex; align-items: center; justify-content: center; color: #FFFFFF;"></span>
-              <span style="font-size: 13px; font-weight: 700; color: #46536A;">VOL-4404</span>
-              <a href="./Pedido.dc.html" style="font-size: 13px; font-weight: 600;">#PT-10455</a>
-              <span style="font-size: 13.5px; color: #34405A; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ linha5.nome }}</span>
-              <span style="font-size: 13px; color: #6B7A90;">Correios PAC</span>
-              <span style="font-size: 12.5px; color: #9AA7BC; font-family: monospace;">PT883990BR</span>
-              <span style="font-size: 13px; color: #6B7A90;">4</span>
-              <span style="white-space: nowrap; padding: 6px 11px; border-radius: 999px; background: #FFF1F3; color: #E11D48; font-size: 12px; font-weight: 600; width: max-content;">Extravio</span>
-            </div>
-            <div style="display: grid; grid-template-columns: 26px minmax(110px,.8fr) minmax(110px,.8fr) minmax(170px,1.3fr) minmax(130px,1fr) minmax(140px,1fr) minmax(70px,.5fr) minmax(120px,.9fr); gap: 14px; align-items: center; padding: 14px 24px; border-bottom: 1px solid #F4F6FB; cursor: pointer;" style-hover="background: #F8FAFE;">
-              <span style="width: 18px; height: 18px; border-radius: 6px; border: 1.5px solid #CBD5E6; background: transparent; display: flex; align-items: center; justify-content: center; color: #FFFFFF;"></span>
-              <span style="font-size: 13px; font-weight: 700; color: #46536A;">VOL-4401</span>
-              <a href="./Pedido.dc.html" style="font-size: 13px; font-weight: 600;">#PT-10448</a>
-              <span style="font-size: 13.5px; color: #34405A; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Luz Viva Estúdio</span>
-              <span style="font-size: 13px; color: #6B7A90;">Retirada balcão</span>
-              <span style="font-size: 12.5px; color: #9AA7BC; font-family: monospace;">—</span>
-              <span style="font-size: 13px; color: #6B7A90;">6</span>
-              <span style="white-space: nowrap; padding: 6px 11px; border-radius: 999px; background: #FEF3E2; color: #B45309; font-size: 12px; font-weight: 600; width: max-content;">Aguardando cliente</span>
-            </div>
-        </div>
-      </div>
-    </div>
-    <div style="{{ ov }}" onClick="{{ closeModal }}"></div>
-    <div style="{{ sh }}">
-      <div style="width: min(620px, 100%); max-height: 86vh; overflow-y: auto; background: #FFFFFF; border-radius: 24px; box-shadow: 0 30px 70px rgba(11,18,32,.3); pointer-events: auto;">
-        <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; padding: 24px 26px 18px; border-bottom: 1px solid #F0F3F9;">
-          <div style="min-width: 0;"><h2 style="margin: 0; font-size: 20px; font-weight: 800; letter-spacing: -.5px;">Gerar etiquetas</h2><p style="margin: 6px 0 0; font-size: 13.5px; color: #6B7A90;">3 volumes selecionados · Correios PAC e SEDEX</p></div>
-          <span onClick="{{ closeModal }}" style="width: 36px; height: 36px; border-radius: 12px; border: 1px solid #E6EAF2; display: flex; align-items: center; justify-content: center; color: #6B7A90; cursor: pointer; flex: 0 0 auto;" style-hover="background: #F1F5FD; color: #2563EB;"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg></span>
-        </div>
-        <div style="padding: 22px 26px; display: flex; flex-direction: column; gap: 18px;">
-          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
-            <div style="display: flex; flex-direction: column; gap: 8px; min-width: 0;">
-              <label style="font-size: 12.5px; font-weight: 600; color: #6B7A90;">Impressora</label>
-              <input value="Zebra ZT230 · Fábrica Lapa" style="height: 46px; padding: 0 15px; border: 1px solid #E6EAF2; border-radius: 14px; font-family: inherit; font-size: 14px; color: #0B1220; min-width: 0;" style-focus="border-color: #2563EB;"/>
-              
-            </div>
-            <div style="display: flex; flex-direction: column; gap: 8px; min-width: 0;">
-              <label style="font-size: 12.5px; font-weight: 600; color: #6B7A90;">Formato</label>
-              <input value="100 × 150 mm" style="height: 46px; padding: 0 15px; border: 1px solid #E6EAF2; border-radius: 14px; font-family: inherit; font-size: 14px; color: #0B1220; min-width: 0;" style-focus="border-color: #2563EB;"/>
-              <span style="font-size: 11.5px; color: #9AA7BC;">padrão Correios</span>
-            </div>
-          </div>
-          <div style="border: 1px solid #E6EAF2; border-radius: 18px; overflow: hidden;">
-            <div style="display: grid; grid-template-columns: 1.1fr 1.6fr 1fr; gap: 12px; padding: 10px 16px; background: #F8FAFE; font-size: 11.5px; letter-spacing: .6px; text-transform: uppercase; color: #9AA7BC; font-weight: 700;"><span>Volume</span><span>Cliente</span><span>Serviço</span></div>
-            <div style="display: grid; grid-template-columns: 1.1fr 1.6fr 1fr; gap: 12px; padding: 12px 16px; border-top: 1px solid #F4F6FB; font-size: 13px;"><span style="font-weight: 700;">VOL-4412</span><span>{{ linha3.nome }}</span><span style="color: #6B7A90;">Retirada</span></div>
-            <div style="display: grid; grid-template-columns: 1.1fr 1.6fr 1fr; gap: 12px; padding: 12px 16px; border-top: 1px solid #F4F6FB; font-size: 13px;"><span style="font-weight: 700;">VOL-4411</span><span>{{ linha2.nome }}</span><span style="color: #6B7A90;">PAC</span></div>
-            <div style="display: grid; grid-template-columns: 1.1fr 1.6fr 1fr; gap: 12px; padding: 12px 16px; border-top: 1px solid #F4F6FB; font-size: 13px;"><span style="font-weight: 700;">VOL-4410</span><span>Studio Lume</span><span style="color: #6B7A90;">SEDEX</span></div>
-          </div>
-          <div style="display: flex; align-items: center; gap: 14px; padding: 14px 16px; border: 1px solid #E6EAF2; border-radius: 16px; background: #F8FAFE;">
-            <div style="flex: 1; min-width: 0;"><p style="margin: 0; font-size: 13.5px; font-weight: 600;">Avisar clientes com o código de rastreio</p><p style="margin: 3px 0 0; font-size: 12.5px; color: #6B7A90;">WhatsApp e e-mail ao confirmar o despacho</p></div>
-            <span style="width: 44px; height: 26px; border-radius: 999px; background: linear-gradient(135deg,#2563EB,#06B6D4); padding: 3px; display: flex; justify-content: flex-end; cursor: pointer; flex: 0 0 auto;"><span style="width: 20px; height: 20px; border-radius: 999px; background: #FFFFFF; box-shadow: 0 2px 5px rgba(11,18,32,.18);"></span></span>
-          </div>
-        </div>
-        <div style="display: flex; align-items: center; justify-content: flex-end; gap: 10px; padding: 18px 26px; border-top: 1px solid #F0F3F9; background: #F8FAFE;">
-          <button onClick="{{ closeModal }}" style="white-space: nowrap; height: 42px; padding: 0 18px; border: 1px solid #E6EAF2; border-radius: 13px; background: #FFFFFF; color: #46536A; font-family: inherit; font-size: 13.5px; font-weight: 600; cursor: pointer;" style-hover="background: #F1F5FD; color: #2563EB;">Cancelar</button>
-          <button onClick="{{ closeModal }}" style="white-space: nowrap; height: 42px; padding: 0 20px; border: 0; border-radius: 13px; background: linear-gradient(135deg,#2563EB,#06B6D4); color: #FFFFFF; font-family: inherit; font-size: 13.5px; font-weight: 700; cursor: pointer; box-shadow: 0 8px 18px rgba(37,99,235,.26);" style-hover="filter: brightness(1.06);">Imprimir 3 etiquetas</button>
+            </sc-for>
+            <p style="{{ enviosVazio }}">{{ enviosTextoVazio }}</p>
         </div>
       </div>
     </div>
