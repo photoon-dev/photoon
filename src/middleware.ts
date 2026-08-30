@@ -3,7 +3,9 @@ import { updateSession } from '@/lib/supabase/middleware';
 import { classificarHost, TENANT_HEADER } from '@/lib/tenant';
 
 /** Rotas da loja que exigem um cliente final autenticado. */
-const PROTEGIDAS_LOJA = ['/meus-projetos', '/projetos', '/editor'];
+const PROTEGIDAS_LOJA = [
+  '/meus-projetos', '/projetos', '/editor', '/minha-conta', '/galeria', '/ajuda',
+];
 /** Rotas públicas dentro do subdomínio da loja. */
 const PUBLICAS_LOJA = ['/entrar', '/auth'];
 /** Rotas públicas do painel do lojista (app.photoon.com.br). */

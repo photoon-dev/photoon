@@ -89,15 +89,20 @@ cores e formatos moram em `src/lib/pedidos-termos.ts` (reexportado por
 |---|---|
 | Entrar, Meus projetos, Detalhe | dado real |
 | **Editor** | 28 de 30 controles confirmados |
-| Galeria | 24 fotos, 13 bolinhas de pessoas, filtro por rosto, visor |
-| Minha conta | foto de perfil, nome, telefone |
-| Ajuda | 10 dúvidas, contatos reais da loja |
+| Galeria | layout do design; 24 fotos, 13 bolinhas de pessoas, filtro por rosto, visor |
+| Minha conta | layout do design; dados, endereço, documentos, acessos e compras |
+| Ajuda | layout do design; 10 dúvidas, contatos reais da loja |
+
+As três nasceram do `.dc.html` e dividem a mesma casca (`useCascaCliente`):
+cabeçalho, trilho, menu da conta e avisos são um só código nas três.
+**Falta a mesma casca em `/projetos/[id]`**, que ainda usa `AppHeader`.
 
 ### Painel do lojista
 | Tela | Estado |
 |---|---|
 | Dashboard | dado real (era todo inventado; corrigido) |
 | **Pedidos** | **completa** — KPIs calculados, abas filtrando pela URL, selo de não vistos, tabela real |
+| **Detalhe do pedido** | **completa** — régua das 7 etapas, itens e totais, histórico do que o banco registra, produção, cobranças, rastreio gravável e cancelamento |
 | **Produção** | **completa** — quadro das 5 etapas reais, arrastar entre etapas, avançar no card, fila de espera, carga por responsável |
 | **Expedição** | **completa** — envio em foco com itens do pedido, transportadora/rastreio graváveis, etiqueta com o endereço do banco, abas por estado |
 | Clientes, Configurações, Templates | dado real |
@@ -146,7 +151,8 @@ mostra o mesmo com quadro, arrastar e ação de servidor):
 Também existem componentes Tailwind escritos pelos agentes
 (`PainelCRM.tsx`, `PainelCatalogo.tsx`, …) — **não são usados**. Servem de
 referência da lógica; podem ser apagados quando a tela do design estiver ligada.
-(`PainelProducao.tsx` e `PainelExpedicao.tsx` já foram, com as telas ligadas.)
+(`PainelProducao.tsx`, `PainelExpedicao.tsx` e `PainelPedidosDetalhe.tsx` já foram,
+com as telas ligadas.)
 
 ### 5.2. Ações de servidor sem tela ligada
 `src/app/app/actions-comercial.ts` e `actions-sistema.ts` existem e não estão
