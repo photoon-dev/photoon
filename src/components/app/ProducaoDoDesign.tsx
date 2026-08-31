@@ -3,9 +3,7 @@
 import { useRef, useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import ProducaoDesign, { CSS_PSEUDO } from '@/components/design/ProducaoDesign';
-import { useDashboardDesign, type PainelDaLoja } from '@/components/app/useDashboardDesign';
-import { ROTAS_LOJISTA } from '@/lib/rotas-lojista';
-import MenuLojista from '@/components/app/MenuLojista';
+import { useDashboardDesign } from '@/components/app/useDashboardDesign';
 import { reais } from '@/lib/preco';
 import {
   ETAPAS_PRODUCAO,
@@ -87,18 +85,16 @@ function prazo(dia: string | null): [string, string, string] {
 }
 
 export default function ProducaoDoDesign({
-  painel,
   fila,
   pendentes,
   ver,
 }: {
-  painel: PainelDaLoja;
   fila: Record<EtapaProducao, ItemDaFila[]>;
   pendentes: PedidoDaLinha[];
   ver: string;
 }) {
   const router = useRouter();
-  const v = useDashboardDesign({ ativo: 2, rotas: ROTAS_LOJISTA, painel });
+  const v = useDashboardDesign();
   /* Quem está sendo arrastado vive num ref, não só no estado: o `drop` precisa
    * ler o valor no mesmo instante em que acontece, e o estado só chega ao
    * handler no render seguinte. O estado fica para o realce da coluna. */
@@ -164,7 +160,7 @@ export default function ProducaoDoDesign({
   const revisao = fila.revisao ?? [];
 
   return (
-    <div className="om-app">
+    <>
       <style dangerouslySetInnerHTML={{ __html: CSS_PSEUDO }} />
       <ProducaoDesign
         v={{
@@ -332,7 +328,6 @@ export default function ProducaoDoDesign({
             : 'margin:0;padding:20px;text-align:center;font-size:13px;color:#9AA7BC',
         }}
       />
-      <MenuLojista />
-    </div>
+    </>
   );
 }

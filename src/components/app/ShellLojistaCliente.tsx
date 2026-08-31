@@ -1,17 +1,9 @@
 'use client';
 
 import ShellLojistaDesign, { CSS_PSEUDO } from '@/components/design/ShellLojistaDesign';
-import { useDashboardDesign } from '@/components/app/useDashboardDesign';
+import { useDashboardDesign, type PainelDaLoja } from '@/components/app/useDashboardDesign';
 import MenuLojista from '@/components/app/MenuLojista';
 import { ROTAS_LOJISTA } from '@/lib/rotas-lojista';
-
-/**
- * Moldura do painel do lojista: menu lateral, cabeçalho e busca, tudo vindo
- * de Dashboard.dc.html. O conteúdo de cada tela entra no slot.
- *
- * `ativo` é o índice do módulo no menu; `rotas` diz quais já têm tela.
- */
-
 
 export type Identidade = {
   nome: string;
@@ -20,19 +12,27 @@ export type Identidade = {
   planoResumo: string;
 };
 
+/**
+ * Menu lateral, topbar e busca — tudo vindo de `Dashboard.dc.html`. O conteúdo
+ * de cada tela entra no slot.
+ *
+ * `ativo` é o índice do módulo no menu; `ROTAS_LOJISTA` diz quais já têm tela.
+ */
 export default function ShellLojistaCliente({
   ativo,
   children,
   cartaoPlano,
   identidade,
+  painel,
 }: {
   ativo: number;
   children: React.ReactNode;
-  /** Cartão de consumo, no rodapé do menu lateral. */
   cartaoPlano?: React.ReactNode;
   identidade: Identidade;
+  /** Números da loja, para o selo do menu e o cartão de consumo. */
+  painel?: PainelDaLoja;
 }) {
-  const v = useDashboardDesign({ ativo, rotas: ROTAS_LOJISTA });
+  const v = useDashboardDesign({ ativo, rotas: ROTAS_LOJISTA, painel });
 
   return (
     <div className="om-app">
@@ -50,6 +50,8 @@ export default function ShellLojistaCliente({
           lojaSub: identidade.lojaSub,
           planoResumo: identidade.planoResumo,
           hrefSair: '/auth/sair',
+          // Substitui o módulo Suporte, que saiu do menu.
+          abrirAjuda: () => { window.location.href = '/ajuda'; },
           sair: (e: React.MouseEvent) => {
             e.preventDefault();
             const f = document.createElement('form');

@@ -1,7 +1,9 @@
 import { notFound, redirect } from 'next/navigation';
-import { identidadeLojista, lojaAtual, numerosDaLoja, planoDaLoja } from '@/lib/lojista';
+import { lojaAtual } from '@/lib/lojista';
 import { getPedido } from '@/lib/pedidos';
 import PedidoDoDesign from '@/components/app/PedidoDoDesign';
+import ShellLojista from '@/components/app/ShellLojista';
+import { MODULO } from '@/lib/rotas-lojista';
 import '../../app.css';
 
 export const dynamic = 'force-dynamic';
@@ -11,25 +13,15 @@ export default async function PedidoPage({ params }: { params: Promise<{ id: str
   if (!atual) redirect('/');
   const { id } = await params;
 
-  const [pedido, ident, numeros, plano] = await Promise.all([
-    getPedido(atual.id, id),
-    identidadeLojista(),
-    numerosDaLoja(atual.id),
-    planoDaLoja(atual.id),
-  ]);
+  const pedido = await getPedido(atual.id, id);
   // A RLS já limita ao pedido da própria loja; ausente aqui significa 404.
   if (!pedido) notFound();
 
   return (
-    <PedidoDoDesign
-      painel={{
-        lojaNome: atual.nome,
-        usuarioNome: ident.nome,
-        usuarioCargo: ident.email,
-        numeros,
-        plano: plano ? { nome: plano.nome, limite: plano.limite_projetos } : null,
-      }}
-      dados={pedido}
-    />
+    <ShellLojista ativo={MODULO['Pedidos']}>
+      <PedidoDoDesign
+        dados={pedido}
+      />
+    </ShellLojista>
   );
 }

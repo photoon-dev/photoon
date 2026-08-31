@@ -2,48 +2,28 @@
 
 import DashboardDesign, { CSS_PSEUDO } from '@/components/design/DashboardDesign';
 import { useDashboardDesign, type PainelDaLoja } from '@/components/app/useDashboardDesign';
-import { ROTAS_LOJISTA } from '@/lib/rotas-lojista';
-import MenuLojista from '@/components/app/MenuLojista';
-import type { IdentidadeLojista } from '@/lib/lojista';
 
 /**
- * Dashboard do lojista — app.photoon.com.br
+ * Conteúdo do dashboard do lojista.
  *
- * Usa a tela inteira do design (menu + cabeçalho + conteúdo), porque os cards
- * de KPI fazem parte dela. As outras telas montam sobre ShellLojista.
+ * Menu e cabeçalho vêm do `ShellLojista`, como em todas as outras telas — antes
+ * esta usava a tela inteira do design e trazia a vigésima segunda cópia do menu.
  */
 export default function DashboardLojista({
-  identidade,
   painel,
 }: {
-  identidade: IdentidadeLojista;
   painel: PainelDaLoja;
 }) {
-  const v = useDashboardDesign({ ativo: 0, rotas: ROTAS_LOJISTA, painel });
+  const v = useDashboardDesign({ painel });
 
   return (
-    <div className="om-app">
+    <>
       <style dangerouslySetInnerHTML={{ __html: CSS_PSEUDO }} />
       <DashboardDesign
         v={{
           ...v,
-          usuarioNome: identidade.nome,
-          usuarioEmail: identidade.email,
-          lojaSub: identidade.lojaSub,
-          planoResumo: identidade.planoResumo,
-          hrefSair: '/auth/sair',
-          // Um link nao encerra sessao: o /auth/sair espera POST.
-          sair: (e: React.MouseEvent) => {
-            e.preventDefault();
-            const f = document.createElement('form');
-            f.method = 'post';
-            f.action = '/auth/sair';
-            document.body.appendChild(f);
-            f.submit();
-          },
         }}
       />
-      <MenuLojista />
-    </div>
+    </>
   );
 }

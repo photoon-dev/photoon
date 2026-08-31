@@ -1,17 +1,20 @@
 import { redirect } from 'next/navigation';
-import { molduraDaLoja } from '@/lib/painel-loja';
+import { lojaAtual } from '@/lib/lojista';
 import { carteiraDaLoja, resolverPeriodo } from '@/lib/financeiro';
+import { MODULO } from '@/lib/rotas-lojista';
 import CarteiraDesign, { CSS_PSEUDO } from '@/components/design/CarteiraDesign';
-import TelaDoDesign from '@/components/app/TelaDoDesign';
+import ShellLojista from '@/components/app/ShellLojista';
+import ConteudoDoDesign from '@/components/app/ConteudoDoDesign';
+import AvisoRotaLegada from '@/components/app/AvisoRotaLegada';
 import '../app.css';
 
 export const dynamic = 'force-dynamic';
 
 export default async function Pagina() {
-  const m = await molduraDaLoja();
-  if (!m) redirect('/');
+  const loja = await lojaAtual();
+  if (!loja) redirect('/');
 
-  const carteira = await carteiraDaLoja(m.loja.id, resolverPeriodo({ dias: '90' }));
+  const carteira = await carteiraDaLoja(loja.id, resolverPeriodo({ dias: '90' }));
 
   /*
    * O design traz seis linhas de exemplo com nomes fictícios. Aqui elas
@@ -24,12 +27,13 @@ export default async function Pagina() {
   );
 
   return (
-    <TelaDoDesign
-      Design={CarteiraDesign}
-      cssPseudo={CSS_PSEUDO}
-      ativo={13}
-      painel={m.painel}
-      dados={linhas}
-    />
+    <ShellLojista ativo={MODULO['Financeiro']}>
+      <AvisoRotaLegada rota="/carteira" />
+      <ConteudoDoDesign
+        Design={CarteiraDesign}
+        cssPseudo={CSS_PSEUDO}
+        dados={linhas}
+      />
+    </ShellLojista>
   );
 }

@@ -1,7 +1,9 @@
 import { redirect } from 'next/navigation';
-import { molduraDaLoja } from '@/lib/painel-loja';
+import { lojaAtual } from '@/lib/lojista';
 import { filaDeProducao, pedidosForaDaFila } from '@/lib/pedidos';
 import ProducaoDoDesign from '@/components/app/ProducaoDoDesign';
+import ShellLojista from '@/components/app/ShellLojista';
+import { MODULO } from '@/lib/rotas-lojista';
 import '../app.css';
 
 export const dynamic = 'force-dynamic';
@@ -11,19 +13,21 @@ export default async function Pagina({
 }: {
   searchParams: Promise<Record<string, string | undefined>>;
 }) {
-  const m = await molduraDaLoja();
-  if (!m) redirect('/');
+  const loja = await lojaAtual();
+  if (!loja) redirect('/');
 
   // O recorte vive na URL, como em Pedidos: o link de "atrasados" é guardável
   // e o botão de voltar do navegador funciona.
   const q = await searchParams;
 
   const [fila, pendentes] = await Promise.all([
-    filaDeProducao(m.loja.id),
-    pedidosForaDaFila(m.loja.id),
+    filaDeProducao(loja.id),
+    pedidosForaDaFila(loja.id),
   ]);
 
   return (
-    <ProducaoDoDesign painel={m.painel} fila={fila} pendentes={pendentes} ver={q.ver ?? ''} />
+    <ShellLojista ativo={MODULO['Produção']}>
+      <ProducaoDoDesign fila={fila} pendentes={pendentes} ver={q.ver ?? ''} />
+    </ShellLojista>
   );
 }

@@ -1,7 +1,9 @@
 import { redirect } from 'next/navigation';
-import { identidadeLojista, lojaAtual, numerosDaLoja, planoDaLoja } from '@/lib/lojista';
+import { lojaAtual } from '@/lib/lojista';
 import { listarPedidos } from '@/lib/pedidos';
 import PedidosDoDesign from '@/components/app/PedidosDoDesign';
+import ShellLojista from '@/components/app/ShellLojista';
+import { MODULO } from '@/lib/rotas-lojista';
 import '../app.css';
 
 export const dynamic = 'force-dynamic';
@@ -25,26 +27,16 @@ export default async function PedidosPage({
     pagina: Number(q.pagina ?? 0) || 0,
   };
 
-  const [dados, ident, numeros, plano] = await Promise.all([
-    listarPedidos(atual.id, filtros),
-    identidadeLojista(),
-    numerosDaLoja(atual.id),
-    planoDaLoja(atual.id),
-  ]);
+  const dados = await listarPedidos(atual.id, filtros);
 
   return (
-    <PedidosDoDesign
-      painel={{
-        lojaNome: atual.nome,
-        usuarioNome: ident.nome,
-        usuarioCargo: ident.email,
-        numeros,
-        plano: plano ? { nome: plano.nome, limite: plano.limite_projetos } : null,
-      }}
-      pedidos={dados.pedidos}
-      total={dados.total}
-      naoVistos={dados.naoVistos}
-      filtros={filtros}
-    />
+    <ShellLojista ativo={MODULO['Pedidos']}>
+      <PedidosDoDesign
+        pedidos={dados.pedidos}
+        total={dados.total}
+        naoVistos={dados.naoVistos}
+        filtros={filtros}
+      />
+    </ShellLojista>
   );
 }

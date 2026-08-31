@@ -3,9 +3,7 @@
 import { useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import PedidoDesign, { CSS_PSEUDO } from '@/components/design/PedidoDesign';
-import { useDashboardDesign, type PainelDaLoja } from '@/components/app/useDashboardDesign';
-import { ROTAS_LOJISTA } from '@/lib/rotas-lojista';
-import MenuLojista from '@/components/app/MenuLojista';
+import { useDashboardDesign } from '@/components/app/useDashboardDesign';
 import {
   ESTADOS_EXPEDICAO,
   ESTADOS_PAGAMENTO,
@@ -113,14 +111,12 @@ const FLUXO: EstadoPedido[] = [
 ];
 
 export default function PedidoDoDesign({
-  painel,
   dados,
 }: {
-  painel: PainelDaLoja;
   dados: PedidoDetalhado;
 }) {
   const router = useRouter();
-  const v = useDashboardDesign({ ativo: 1, rotas: ROTAS_LOJISTA, painel });
+  const v = useDashboardDesign();
   const [, iniciar] = useTransition();
 
   const { pedido, itens, producao, expedicao, pagamentos } = dados;
@@ -203,7 +199,7 @@ export default function PedidoDoDesign({
           : ['Sem cobrança', COR_PAGAMENTO.expirado];
 
   return (
-    <div className="om-app">
+    <>
       <style dangerouslySetInnerHTML={{ __html: CSS_PSEUDO }} />
       <PedidoDesign
         v={{
@@ -375,7 +371,6 @@ export default function PedidoDoDesign({
           },
         }}
       />
-      <MenuLojista />
-    </div>
+    </>
   );
 }

@@ -1,21 +1,20 @@
 import { redirect } from 'next/navigation';
-import { molduraDaLoja } from '@/lib/painel-loja';
+import { lojaAtual } from '@/lib/lojista';
+import { MODULO } from '@/lib/rotas-lojista';
 import PrecosDesign, { CSS_PSEUDO } from '@/components/design/PrecosDesign';
-import TelaDoDesign from '@/components/app/TelaDoDesign';
+import ShellLojista from '@/components/app/ShellLojista';
+import ConteudoDoDesign from '@/components/app/ConteudoDoDesign';
 import '../app.css';
 
 export const dynamic = 'force-dynamic';
 
 export default async function Pagina() {
-  const m = await molduraDaLoja();
-  if (!m) redirect('/');
+  const loja = await lojaAtual();
+  if (!loja) redirect('/');
 
   return (
-    <TelaDoDesign
-      Design={PrecosDesign}
-      cssPseudo={CSS_PSEUDO}
-      ativo={6}
-      painel={m.painel}
-    />
+    <ShellLojista ativo={MODULO['Preços']}>
+      <ConteudoDoDesign Design={PrecosDesign} cssPseudo={CSS_PSEUDO} />
+    </ShellLojista>
   );
 }

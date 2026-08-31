@@ -3,9 +3,7 @@
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import ExpedicaoDesign, { CSS_PSEUDO } from '@/components/design/ExpedicaoDesign';
-import { useDashboardDesign, type PainelDaLoja } from '@/components/app/useDashboardDesign';
-import { ROTAS_LOJISTA } from '@/lib/rotas-lojista';
-import MenuLojista from '@/components/app/MenuLojista';
+import { useDashboardDesign } from '@/components/app/useDashboardDesign';
 import {
   ESTADOS_EXPEDICAO,
   dataCurta,
@@ -89,18 +87,19 @@ const iniciais = (nome: string | null | undefined) =>
 const ehRetirada = (t: string | null) => /retirad|balc[ãa]o/i.test(t ?? '');
 
 export default function ExpedicaoDoDesign({
-  painel,
+  lojaNome,
   envios,
   semEnvio,
   itens,
 }: {
-  painel: PainelDaLoja;
+  /** Nome da loja, que vai no remetente da etiqueta. */
+  lojaNome: string;
   envios: EnvioDaLista[];
   semEnvio: { id: string; numero: number }[];
   itens: Record<string, ItemDoPedido[]>;
 }) {
   const router = useRouter();
-  const v = useDashboardDesign({ ativo: 3, rotas: ROTAS_LOJISTA, painel });
+  const v = useDashboardDesign();
   const [, iniciar] = useTransition();
 
   const [aba, setAba] = useState<Aba>('embalar');
@@ -236,7 +235,7 @@ export default function ExpedicaoDoDesign({
   const selecionados = envios.filter((e) => marcados.includes(e.id));
 
   return (
-    <div className="om-app">
+    <>
       <style dangerouslySetInnerHTML={{ __html: CSS_PSEUDO }} />
       <ExpedicaoDesign
         v={{
@@ -323,7 +322,7 @@ export default function ExpedicaoDoDesign({
           onRastreio: (ev: React.ChangeEvent<HTMLInputElement>) => setRastreio(ev.target.value),
 
           // ------------------------------------------------------- etiqueta
-          remetenteNome: painel.lojaNome,
+          remetenteNome: lojaNome,
           remetente: emFoco ? `Envio aberto em ${dataCurta(emFoco.atualizado_em)}` : '—',
           servico: (emFoco?.transportadora || 'SEM').slice(0, 12).toUpperCase(),
           destNome: emFoco?.pedidos.clientes?.nome ?? 'Sem cliente',
@@ -405,7 +404,6 @@ export default function ExpedicaoDoDesign({
           imprimirRotulo: `Imprimir ${selecionados.length} ${selecionados.length === 1 ? 'etiqueta' : 'etiquetas'}`,
         }}
       />
-      <MenuLojista />
-    </div>
+    </>
   );
 }

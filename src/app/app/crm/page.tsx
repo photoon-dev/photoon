@@ -1,21 +1,22 @@
 import { redirect } from 'next/navigation';
-import { molduraDaLoja } from '@/lib/painel-loja';
+import { lojaAtual } from '@/lib/lojista';
+import { MODULO } from '@/lib/rotas-lojista';
 import CRMDesign, { CSS_PSEUDO } from '@/components/design/CRMDesign';
-import TelaDoDesign from '@/components/app/TelaDoDesign';
+import ShellLojista from '@/components/app/ShellLojista';
+import ConteudoDoDesign from '@/components/app/ConteudoDoDesign';
+import AvisoRotaLegada from '@/components/app/AvisoRotaLegada';
 import '../app.css';
 
 export const dynamic = 'force-dynamic';
 
 export default async function Pagina() {
-  const m = await molduraDaLoja();
-  if (!m) redirect('/');
+  const loja = await lojaAtual();
+  if (!loja) redirect('/');
 
   return (
-    <TelaDoDesign
-      Design={CRMDesign}
-      cssPseudo={CSS_PSEUDO}
-      ativo={9}
-      painel={m.painel}
-    />
+    <ShellLojista ativo={MODULO['Clientes']}>
+      <AvisoRotaLegada rota="/crm" />
+      <ConteudoDoDesign Design={CRMDesign} cssPseudo={CSS_PSEUDO} />
+    </ShellLojista>
   );
 }

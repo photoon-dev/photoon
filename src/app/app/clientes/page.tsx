@@ -8,6 +8,7 @@ import {
   CLIENTES_POR_PAGINA,
 } from '@/lib/lojista';
 import { ROOT_DOMAIN } from '@/lib/tenant';
+import { MODULO } from '@/lib/rotas-lojista';
 import ShellLojista from '@/components/app/ShellLojista';
 import CardPlano from '@/components/app/CardPlano';
 import PainelClientes from '@/components/app/PainelClientes';
@@ -34,7 +35,7 @@ export default async function ClientesPage({
   ]);
 
   return (
-    <ShellLojista ativo={8} cartaoPlano={<CardPlano plano={plano} uso={uso} compacto />}>
+    <ShellLojista ativo={MODULO['Clientes']} cartaoPlano={<CardPlano plano={plano} uso={uso} compacto />}>
       <PainelClientes
         clientes={clientes}
         templates={templates}

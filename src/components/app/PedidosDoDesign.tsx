@@ -2,9 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import PedidosDesign, { CSS_PSEUDO } from '@/components/design/PedidosDesign';
-import { useDashboardDesign, type PainelDaLoja } from '@/components/app/useDashboardDesign';
-import { ROTAS_LOJISTA } from '@/lib/rotas-lojista';
-import MenuLojista from '@/components/app/MenuLojista';
+import { useDashboardDesign } from '@/components/app/useDashboardDesign';
 import { reais } from '@/lib/preco';
 import type { PedidoResumo, FiltrosPedidos } from '@/lib/pedidos';
 
@@ -39,20 +37,18 @@ const selo = ([, bg, cor]: [string, string, string]) =>
   'font-size:12px;font-weight:600;width:max-content;white-space:nowrap';
 
 export default function PedidosDoDesign({
-  painel,
   pedidos,
   total,
   naoVistos,
   filtros,
 }: {
-  painel: PainelDaLoja;
   pedidos: PedidoResumo[];
   total: number;
   naoVistos: number;
   filtros: FiltrosPedidos;
 }) {
   const router = useRouter();
-  const v = useDashboardDesign({ ativo: 1, rotas: ROTAS_LOJISTA, painel });
+  const v = useDashboardDesign();
 
   const conta = (e: string) => pedidos.filter((p) => p.estado === e).length;
   const emAberto = pedidos
@@ -89,7 +85,7 @@ export default function PedidosDoDesign({
   ];
 
   return (
-    <div className="om-app">
+    <>
       <style dangerouslySetInnerHTML={{ __html: CSS_PSEUDO }} />
       <PedidosDesign
         v={{
@@ -154,7 +150,6 @@ export default function PedidosDoDesign({
           }),
         }}
       />
-      <MenuLojista />
-    </div>
+    </>
   );
 }
