@@ -88,6 +88,66 @@ update public.clientes c   set filial_id = f.id from public.filiais f where f.lo
 update public.vendedores v set filial_id = f.id from public.filiais f where f.lojista_id = v.lojista_id and f.padrao and v.filial_id is null;
 
 -- ---------------------------------------------------------------------------
+-- Sequenciais por loja, atômicos
+--
+-- `max(...) + 1` não serve: entre o SELECT de uma transação e o INSERT dela,
+-- outra transação lê o mesmo máximo e as duas calculam o mesmo número. Com o
+-- índice único isso vira erro na cara do cliente em vez de código duplicado —
+-- falha segura, mas ainda é falha, e some justamente quando a loja está
+-- movimentada.
+--
+-- O contador resolve pela raiz: `update ... returning` tranca a LINHA do
+-- contador, então duas transações simultâneas entram em fila e cada uma sai
+-- com um valor diferente. Vale mesmo quando as chamadas estão em transações
+-- separadas — que é o caso de um RPC pelo PostgREST, onde um advisory lock
+-- seria solto assim que a função retornasse, reabrindo a corrida.
+--
+-- Uma SEQUENCE do Postgres não serviria aqui: ela é não-transacional e pula
+-- números quando a transação aborta. O contador em tabela é transacional --
+-- se o insert do projeto volta atrás, o contador volta junto e o número é
+-- reaproveitado. O preço é que os inserts de uma mesma loja se serializam;
+-- para o volume de uma loja de fotografia, é troca barata por não ter buraco
+-- nem colisão.
+--
+-- Fica em `private` porque a API não expõe esse schema — nenhum cliente
+-- precisa ler nem escrever o contador direto.
+-- ---------------------------------------------------------------------------
+create table if not exists private.loja_sequencias (
+  lojista_id uuid not null references public.lojistas(id) on delete cascade,
+  escopo     text not null,            -- 'projeto' | 'pedido'
+  valor      bigint not null,
+  primary key (lojista_id, escopo)
+);
+
+create or replace function private.proximo_sequencial(loja uuid, p_escopo text, inicio bigint)
+returns bigint language plpgsql volatile security definer set search_path = public as $$
+declare v bigint;
+begin
+  loop
+    -- Caminho normal: a linha existe e o update a tranca.
+    update private.loja_sequencias
+       set valor = valor + 1
+     where lojista_id = loja and escopo = p_escopo
+    returning valor into v;
+    exit when found;
+
+    -- Primeira vez desta loja neste escopo.
+    begin
+      insert into private.loja_sequencias (lojista_id, escopo, valor)
+      values (loja, p_escopo, inicio + 1);
+      v := inicio + 1;
+      exit;
+    exception when unique_violation then
+      -- Outra transação criou a linha entre o update e o insert: volta ao
+      -- update, que agora encontra.
+      null;
+    end;
+  end loop;
+  return v;
+end;
+$$;
+
+-- ---------------------------------------------------------------------------
 -- Código amigável do projeto
 --
 -- Letra do tipo de produto + 7 dígitos, sequencial por loja:
@@ -96,6 +156,10 @@ update public.vendedores v set filial_id = f.id from public.filiais f where f.lo
 -- Sequencial e não aleatório porque o atendimento precisa comparar dois
 -- códigos e saber qual é mais novo. Começa em 4.500.000 para que o primeiro
 -- projeto de uma loja nova não anuncie que é o primeiro.
+--
+-- O número é da LOJA, não da categoria: sequenciais separados por letra fariam
+-- L4500001 e R4500001 nascerem no mesmo dia, e um dígito trocado ao telefone
+-- viraria outro projeto que existe.
 -- ---------------------------------------------------------------------------
 alter table public.projetos add column if not exists codigo text;
 
@@ -116,21 +180,9 @@ returns text language sql immutable as $$
 $$;
 
 create or replace function public.proximo_codigo_projeto(loja uuid, categoria text)
-returns text language plpgsql volatile security definer set search_path = public as $$
-declare
-  letra text := public.letra_do_produto(categoria);
-  proximo bigint;
-begin
-  -- O maior número já usado nesta loja, qualquer que seja a letra: o
-  -- sequencial é da loja, não da categoria, senão dois projetos de tipos
-  -- diferentes recebem o mesmo número e só a letra os separa.
-  select coalesce(max(substring(codigo from 2)::bigint), 4500000) + 1
-    into proximo
-    from public.projetos
-   where lojista_id = loja and codigo ~ '^[A-Z][0-9]{7}$';
-
-  return letra || lpad(proximo::text, 7, '0');
-end;
+returns text language sql volatile security definer set search_path = public as $$
+  select public.letra_do_produto(categoria)
+      || lpad(private.proximo_sequencial(loja, 'projeto', 4500000)::text, 7, '0');
 $$;
 
 create or replace function public.projeto_recebe_codigo()
@@ -150,7 +202,8 @@ drop trigger if exists projetos_codigo on public.projetos;
 create trigger projetos_codigo before insert on public.projetos
   for each row execute function public.projeto_recebe_codigo();
 
--- Os projetos que já existem.
+-- Os projetos que já existem, em ordem de criação. O contador nasce aqui e
+-- continua de onde este laço parar.
 do $$
 declare r record;
 begin
@@ -165,12 +218,46 @@ begin
 end $$;
 
 -- ---------------------------------------------------------------------------
--- Código amigável do pedido
+-- Número e código amigável do pedido
 --
--- `numero` já é sequencial por loja e visível ao cliente. O código é só a
--- forma de escrever esse mesmo número — coluna gerada, não há o que sair de
--- sincronia e não há migração de dado.
+-- `numero` já era sequencial por loja e visível ao cliente ("#1042"), e tinha
+-- exatamente a mesma corrida: `proximo_numero_pedido` era um `max(numero)+1`
+-- puro. Passa a sair do mesmo contador.
+--
+-- O contador de cada loja começa no maior número que ela já usou, então
+-- **nenhum pedido existente muda de número** e o próximo continua a série.
+--
+-- `codigo` é coluna gerada: é só a forma de escrever o mesmo `numero`, não há
+-- o que sair de sincronia e não há dado a migrar.
 -- ---------------------------------------------------------------------------
+insert into private.loja_sequencias (lojista_id, escopo, valor)
+select l.id, 'pedido', coalesce((select max(p.numero) from public.pedidos p where p.lojista_id = l.id), 1000)
+from public.lojistas l
+on conflict (lojista_id, escopo) do nothing;
+
+create or replace function public.proximo_numero_pedido(loja uuid)
+returns int language sql volatile security definer set search_path = public as $$
+  select private.proximo_sequencial(loja, 'pedido', 1000)::int;
+$$;
+
+-- Quem inserir sem número recebe um, atômico. Quem passar o número (o seed,
+-- por exemplo) fica com o que passou.
+create or replace function public.pedido_recebe_numero()
+returns trigger language plpgsql security definer set search_path = public as $$
+begin
+  if new.numero is null then
+    new.numero := public.proximo_numero_pedido(new.lojista_id);
+  end if;
+  return new;
+end;
+$$;
+
+drop trigger if exists pedidos_numero on public.pedidos;
+create trigger pedidos_numero before insert on public.pedidos
+  for each row execute function public.pedido_recebe_numero();
+
+-- `numero` precisa aceitar nulo na entrada para o trigger poder preenchê-lo;
+-- a coluna continua NOT NULL, que é checado depois do trigger BEFORE.
 alter table public.pedidos
   add column if not exists codigo text generated always as ('PT-' || numero::text) stored;
 
