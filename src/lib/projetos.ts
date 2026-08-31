@@ -313,3 +313,204 @@ export async function opcoesDeFiltro(lojistaId: string): Promise<{
       .sort(ordenar),
   };
 }
+
+// ---------------------------------------------------------------------------
+// Detalhe do projeto — /projetos/:id
+// ---------------------------------------------------------------------------
+
+export type ArquivoDoProjeto = {
+  id: string;
+  tipo: string;
+  nome: string;
+  caminho: string;
+  bucket: string;
+  mime: string | null;
+  bytes: number;
+  checksum: string | null;
+  versao: number;
+  estado: string;
+  criado_em: string;
+};
+
+export type VersaoDoProjeto = {
+  id: string;
+  versao: number;
+  motivo: string | null;
+  bytes: number;
+  criado_em: string;
+};
+
+export type ValidacaoDoProjeto = {
+  id: string;
+  regra: string;
+  severidade: 'informacao' | 'aviso' | 'erro';
+  pagina: number | null;
+  elemento: string | null;
+  descricao: string;
+  recomendacao: string | null;
+};
+
+export type EventoDoProjeto = {
+  id: string;
+  descricao: string;
+  autor: string | null;
+  criado_em: string;
+};
+
+export type JobDoProjeto = {
+  id: string;
+  estado: string;
+  etapa: string;
+  progresso: number;
+  tentativa: number;
+  erro_mensagem: string | null;
+  criado_em: string;
+  concluido_em: string | null;
+};
+
+export type ProjetoCompleto = {
+  projeto: {
+    id: string;
+    codigo: string | null;
+    titulo: string;
+    status: string;
+    produto_nome: string | null;
+    produto_tamanho: string | null;
+    formato_aberto: string | null;
+    formato_fechado: string | null;
+    largura_mm: number | null;
+    altura_mm: number | null;
+    total_paginas: number | null;
+    fotos_enviadas: number | null;
+    fotos_usadas: number | null;
+    capa_url: string | null;
+    capa_tipo: string | null;
+    dorso_mm: number | null;
+    bytes_total: number | null;
+    progresso: number | null;
+    avisos: unknown;
+    criado_em: string;
+    atualizado_em: string;
+    finalizado_em: string | null;
+    fechado_em: string | null;
+    arquivado_em: string | null;
+    clientes: { id: string; nome: string | null; email: string | null } | null;
+    galerias: { id: string; nome: string | null } | null;
+    filiais: { id: string; nome: string } | null;
+  };
+  pedido: { id: string; codigo: string | null; numero: number; estado: string } | null;
+  arquivos: ArquivoDoProjeto[];
+  versoes: VersaoDoProjeto[];
+  validacoes: ValidacaoDoProjeto[];
+  eventos: EventoDoProjeto[];
+  jobs: JobDoProjeto[];
+};
+
+/**
+ * Tudo o que a tela de detalhe mostra, em uma ida só.
+ *
+ * As seis abas leem de tabelas diferentes de propósito: arquivo, versão,
+ * validação e job de renderização são entidades próprias, não campos do
+ * projeto. Buscar tudo junto aqui evita seis viagens ao banco quando o lojista
+ * troca de aba.
+ */
+export async function getProjeto(
+  lojistaId: string,
+  id: string,
+): Promise<ProjetoCompleto | null> {
+  const supabase = await createClient();
+
+  const { data: projeto } = await supabase
+    .from('projetos')
+    .select(
+      'id, codigo, titulo, status, produto_nome, produto_tamanho, formato_aberto, ' +
+        'formato_fechado, largura_mm, altura_mm, total_paginas, fotos_enviadas, ' +
+        'fotos_usadas, capa_url, capa_tipo, dorso_mm, bytes_total, progresso, avisos, ' +
+        'criado_em, atualizado_em, finalizado_em, fechado_em, arquivado_em, ' +
+        'clientes(id, nome, email), galerias(id, nome), filiais(id, nome)',
+    )
+    .eq('lojista_id', lojistaId)
+    .eq('id', id)
+    .maybeSingle();
+
+  // A RLS já limita ao projeto da própria loja; ausente aqui significa 404.
+  if (!projeto) return null;
+
+  const [arquivos, versoes, validacoes, eventos, jobs, pedidos] = await Promise.all([
+    supabase
+      .from('projeto_arquivos')
+      .select('id, tipo, nome, caminho, bucket, mime, bytes, checksum, versao, estado, criado_em')
+      .eq('projeto_id', id)
+      .is('removido_em', null)
+      .order('criado_em', { ascending: false }),
+    supabase
+      .from('projeto_versoes')
+      .select('id, versao, motivo, bytes, criado_em')
+      .eq('projeto_id', id)
+      .order('versao', { ascending: false }),
+    supabase
+      .from('projeto_validacoes')
+      .select('id, regra, severidade, pagina, elemento, descricao, recomendacao')
+      .eq('projeto_id', id)
+      .order('severidade', { ascending: true }),
+    supabase
+      .from('projeto_eventos')
+      .select('id, descricao, autor, criado_em')
+      .eq('projeto_id', id)
+      .order('criado_em', { ascending: false })
+      .limit(200),
+    supabase
+      .from('render_jobs')
+      .select('id, estado, etapa, progresso, tentativa, erro_mensagem, criado_em, concluido_em')
+      .eq('projeto_id', id)
+      .order('criado_em', { ascending: false }),
+    pedidoDosProjetosComEstado([id]),
+  ]);
+
+  return {
+    projeto: projeto as unknown as ProjetoCompleto['projeto'],
+    pedido: pedidos[id] ?? null,
+    arquivos: (arquivos.data ?? []) as unknown as ArquivoDoProjeto[],
+    versoes: (versoes.data ?? []) as unknown as VersaoDoProjeto[],
+    validacoes: (validacoes.data ?? []) as unknown as ValidacaoDoProjeto[],
+    eventos: (eventos.data ?? []) as unknown as EventoDoProjeto[],
+    jobs: (jobs.data ?? []) as unknown as JobDoProjeto[],
+  };
+}
+
+/** Como `pedidoDosProjetos`, mas trazendo o estado — o detalhe mostra. */
+async function pedidoDosProjetosComEstado(
+  projetoIds: string[],
+): Promise<Record<string, { id: string; codigo: string | null; numero: number; estado: string }>> {
+  if (!projetoIds.length) return {};
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from('pedido_itens')
+    .select('projeto_id, pedidos(id, codigo, numero, estado)')
+    .in('projeto_id', projetoIds);
+
+  const mapa: Record<string, { id: string; codigo: string | null; numero: number; estado: string }> = {};
+  for (const l of (data ?? []) as unknown as {
+    projeto_id: string;
+    pedidos: { id: string; codigo: string | null; numero: number; estado: string } | null;
+  }[]) {
+    if (l.pedidos && !mapa[l.projeto_id]) mapa[l.projeto_id] = l.pedidos;
+  }
+  return mapa;
+}
+
+/**
+ * URL assinada de um arquivo do projeto.
+ *
+ * Regra 21: o bucket é privado e a URL vale por uma hora. Nada de link
+ * permanente — um endereço que nunca expira é um vazamento com data marcada.
+ */
+export async function urlAssinada(
+  bucket: string,
+  caminho: string,
+  segundos = 3600,
+): Promise<string | null> {
+  const supabase = await createClient();
+  const { data } = await supabase.storage.from(bucket).createSignedUrl(caminho, segundos);
+  return data?.signedUrl ?? null;
+}
