@@ -69,10 +69,10 @@ export type RotaLegada = {
 export const ROTAS_LEGADAS: RotaLegada[] = [
   { de: '/crm',         para: '/clientes',                destino: 'a ficha de cada cliente',                    migrado: false },
   { de: '/marketing',   para: '/loja/cupons',             destino: 'Loja > Cupons e Configurações > Comunicação', migrado: false },
-  { de: '/vendedores',  para: '/configuracoes?aba=equipe',destino: 'Configurações > Equipe',                     migrado: false },
+  { de: '/vendedores',  para: '/configuracoes?aba=equipe', destino: 'Configurações > Equipe',                     migrado: false },
   { de: '/carteira',    para: '/financeiro?aba=carteira', destino: 'Financeiro > Carteira',                      migrado: false },
   { de: '/pagamentos',  para: '/financeiro',              destino: 'Financeiro',                                 migrado: false },
-  { de: '/auditoria',   para: '/configuracoes?aba=auditoria', destino: 'Configurações > Segurança > Auditoria',  migrado: false },
+  { de: '/auditoria',   para: '/configuracoes?aba=auditoria',  destino: 'Configurações > Segurança > Auditoria',  migrado: false },
   { de: '/suporte',     para: '/ajuda',                   destino: 'o botão Ajuda, no topo da tela',             migrado: true },
 ];
 
