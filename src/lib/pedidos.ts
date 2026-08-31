@@ -1,5 +1,5 @@
-import type { Tom } from '@/components/ui/tokens';
 import { createClient } from '@/lib/supabase/server';
+import type { Tom } from '@/components/ui/tokens';
 import {
   ETAPAS_PRODUCAO,
   PEDIDOS_POR_PAGINA,
@@ -1107,4 +1107,69 @@ function mapearColunaKanban(etapa: string): string | null {
     case 'pronto':           return 'pronto';
     default:                 return 'aguardando';
   }
+}
+// Adicao em src/lib/pedidos.ts — listagem de expedicao com todos os 10
+// estados do briefing, volumes/peso/dimensoes, SLA, etc.
+export type ExpedicaoCompleta = {
+  id: string;
+  pedido_id: string;
+  pedido_numero: number;
+  pedido_prazo: string | null;
+  cliente_nome: string | null;
+  estado: string;            // valor cru do banco (10 valores + 1 legado)
+  transportadora: string | null;
+  rastreio: string | null;
+  modalidade: string | null;
+  volumes: number | null;
+  peso_kg: number | null;
+  largura_cm: number | null;
+  altura_cm: number | null;
+  profundidade_cm: number | null;
+  coleta_em: string | null;
+  previsao_em: string | null;
+  sla_dias: number | null;
+  responsavel: string | null;
+  etiqueta_url: string | null;
+  endereco: Record<string, unknown> | null;
+  atualizado_em: string;
+};
+
+export async function expedicoesCompletas(lojistaId: string): Promise<ExpedicaoCompleta[]> {
+  const supabase = await createClient();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data } = (await supabase
+    .from('expedicao')
+    .select(
+      'id, estado, transportadora, rastreio, modalidade, volumes, peso_kg, ' +
+        'largura_cm, altura_cm, profundidade_cm, coleta_em, previsao_em, ' +
+        'sla_dias, responsavel, etiqueta_url, endereco, atualizado_em, ' +
+        'pedidos!inner(id, numero, prazo_em, lojista_id, clientes(nome))',
+    )
+    .eq('pedidos.lojista_id', lojistaId)
+    .order('atualizado_em', { ascending: false })) as { data: any[] | null };
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return (data ?? []).map((linha: any) => ({
+    id: linha.id,
+    pedido_id: linha.pedidos.id,
+    pedido_numero: linha.pedidos.numero,
+    pedido_prazo: linha.pedidos.prazo_em,
+    cliente_nome: linha.pedidos.clientes?.nome ?? null,
+    estado: linha.estado,
+    transportadora: linha.transportadora,
+    rastreio: linha.rastreio,
+    modalidade: linha.modalidade,
+    volumes: linha.volumes,
+    peso_kg: linha.peso_kg,
+    largura_cm: linha.largura_cm,
+    altura_cm: linha.altura_cm,
+    profundidade_cm: linha.profundidade_cm,
+    coleta_em: linha.coleta_em,
+    previsao_em: linha.previsao_em,
+    sla_dias: linha.sla_dias,
+    responsavel: linha.responsavel,
+    etiqueta_url: linha.etiqueta_url,
+    endereco: linha.endereco,
+    atualizado_em: linha.atualizado_em,
+  }));
 }
