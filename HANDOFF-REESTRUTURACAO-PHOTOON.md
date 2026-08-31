@@ -83,7 +83,7 @@ altere a master.
 
 ## 2. Estado atual
 
-**Fase 7 concluída. A próxima é a Fase 8.**
+**Fases 8, 9 e 10 concluídas. A próxima é a Fase 11 (Templates).**
 
 | Fase | Assunto | Estado |
 |---|---|---|
@@ -94,9 +94,9 @@ altere a master.
 | 5 | Central de Projetos | ✅ concluída |
 | 6 | Detalhe do Projeto | ✅ concluída |
 | 7 | Central de Renderização | ✅ concluída (worker sem credencial) |
-| 8 | Pedidos e relação Pedido × Projeto | ⬜ não iniciada |
-| 9 | Produção | ⬜ não iniciada |
-| 10 | Expedição | ⬜ não iniciada |
+| 8 | Pedidos e relação Pedido × Projeto | ✅ concluída (parcial — ver 11.1) |
+| 9 | Produção | ✅ concluída (parcial — ver 11.2) |
+| 10 | Expedição | ✅ concluída (parcial — ver 11.3) |
 | 11–16 | Templates, Financeiro, Configurações, Relatórios, área do cliente, fluxo ponta a ponta | ⬜ não iniciadas |
 
 ### Parcialmente concluído
@@ -137,6 +137,10 @@ Em ordem, do mais antigo para o mais novo:
 | `a6ae4d8` | Fase 5: 0016 — os revokes da 0015 não surtiam efeito |
 | `57a06dd` | Fase 6: detalhe administrativo do projeto em `/projetos/:id` |
 | `2c6c7d7` | Fase 7: Central de Renderização, com fila fora da requisição HTTP |
+| `e72723a` | Handoff: contexto completo para continuar em outra sessão |
+| `28fb06f` | Fase 8: detalhe do pedido em 7 abas com Render seguro |
+| `c67195a` | Fases 9 e 10: migrations 0017/0018 + vocabulário das 8 etapas e 10 estados |
+| `e5b7cca` | Fases 9 e 10 (parte 2): cabeçalhos de Produção e Expedição |
 
 **Sobre `9f594da`:** é o trabalho que já estava na árvore (Expedição e Galeria)
 quando a reestruturação começou, commitado à parte a pedido do usuário. Cinco
@@ -926,70 +930,67 @@ pede senha real e é pulada).
 
 ## 15. Próximos passos, em ordem
 
-1. **Aplicar a migração 0016** (`supabase/migrations/0016_permissao_das_funcoes.sql`).
-   É a correção de segurança. Entregar o conteúdo do arquivo em um bloco único
-   para o usuário colar no SQL Editor do Supabase — ele não é programador e
-   pediu para não receber comandos.
-2. **Rodar `node tools/checar-banco.mjs`** e confirmar que as 3 RPC passam a
-   aparecer fechadas a `anon`.
-3. **Rodar `npx tsc --noEmit`, `npm run build`, `node tools/checar-casca.mjs` e
-   `node tools/checar-consultas.mjs`** para confirmar que a árvore está sã.
+1. **Aplicar a migration 0016** (`supabase/migrations/0016_permissao_das_funcoes.sql`).
+   É a correção de segurança. O SQL foi entregue em bloco único no chat;
+   o usuário cola no SQL Editor do Supabase e clica em Run. O arquivo já
+   está no repo, idempotente e testado em Postgres local — rodar duas
+   vezes não muda nada.
+2. **Rodar `node tools/checar-banco.mjs`** e confirmar que as 3 RPC
+   (`proximo_numero_pedido`, `proximo_codigo_projeto`, `projetos_busca`)
+   passaram a aparecer "ok anon nao consegue chamar" em vez de "ABERTA a anon".
+3. **Validar visualmente o preview** (seção 16): abrir o navegador na URL
+   da VPS, com o subdomínio certo (`app.photoon.com.br` para o painel do
+   lojista, `admin.photoon.com.br` para o super admin) ou via
+   `DEFAULT_TENANT_SLUG` apontando para uma loja existente.
 4. **Fechar a Fase 6:** criar `/projetos/:id/resumo` e ligar as ações do
    cabeçalho que ainda não existem (duplicar, arquivar, baixar arquivos,
-   restaurar versão).
-5. **Fase 8 — Pedidos e relação Pedido × Projeto.** Começar pela aba Projetos
-   no detalhe do pedido; depois as 7 abas, os filtros, as ações em massa e a
-   ordem de serviço em `/pedidos/:id/os`.
-6. **Fase 9 — Produção.** Kanban de 8 estágios, card de renderização, tempo no
-   estágio, e mostrar `producao_historico`.
-7. **Fase 10 — Expedição.** Ampliar (não reescrever) a tela que já existe, com
-   os campos e estados novos.
-8. Commitar cada fase separadamente, na branch `reestruturacao`. **Sem merge na
-   master.**
+   restaurar versão). O botão "Resumo" hoje dá 404.
+5. **Fase 11 — Templates e Design** (próxima fase do briefing). A rota
+   `/templates` já existe e está ativa no menu.
+6. **Pendências da Fase 8** (Fase 8.1): OS page (`/pedidos/:id/os`), 15
+   filtros da lista, ações em massa. Tudo aditivo, sem mexer no que já
+   está commitado.
+7. **Pendências da Fase 9 e 10** documentadas em 11.2.1 e 11.3.1. A
+   principal é a renovação visual do `ProducaoDoDesign` para mostrar as
+   8 colunas do Kanban (regenerar `Producao.dc.html` via
+   `./tools/gerar.sh telas`).
 
 ---
 
-## 16. Prompt para continuar
+## 16. Preview ativo
 
-```
-Leia primeiro o arquivo HANDOFF-REESTRUTURACAO-PHOTOON.md na raiz do projeto
-/root/photoon. Ele tem todo o contexto da reestruturação e você não precisa
-reler nenhuma conversa anterior.
+**A branch `reestruturacao` está no ar em preview, em paralelo à
+master que continua rodando em produção.**
 
-Depois de ler:
+- **Como:** build do worktree atual (`/root/photoon`) com `npm run
+  build`, cópia de `public/` e `.next/static/` para dentro de
+  `.next/standalone/`, e o servidor `server.js` rodando em background
+  com `PORT=3101 HOSTNAME=0.0.0.0` e as `NEXT_PUBLIC_*` do `.env`.
+  Nenhum container Docker novo, nenhum Caddy rule novo, nenhuma
+  mudança em `master` ou na imagem que serve a produção.
+- **Por que:** o briefing diz que a Fase 8 não pode ser conferida
+  visualmente só com `tsc`/`build`/`checar-*.mjs`. O preview
+  permite abrir o navegador antes de cada commit e confirmar que
+  nada quebrou na UI.
+- **URL:** `http://srv1934934.hstgr.cloud:3101`. O middleware do
+  Next roteia por `Host` header: `app.photoon.com.br:3101` cai no
+  painel do lojista, `admin.photoon.com.br:3101` no super admin,
+  `<loja>.photoon.com.br:3101` no painel do cliente. Para acessar
+  via IP, defina `DEFAULT_TENANT_SLUG=<slug>` em `.env` e reinicie
+  o preview (`bash start-preview.sh`).
+- **Para parar:** `pkill -f 'PORT=3101.*server.js'` ou
+  `kill <pid>` (o `start-preview.sh` imprime o PID na saída).
+- **Para reiniciar após um commit novo:** rebuilda
+  (`npm run build`) e roda `bash start-preview.sh` de novo. O
+  script mata o anterior, copia `public/` e `.next/static/` para
+  o standalone, e sobe o servidor em background.
+- **Log:** `/tmp/photoon-preview.log`.
+- **Verificação de que está no ar:** `ss -tlnp | grep 3101`
+  (deve mostrar `users:(("next-server (v",pid=…,fd=21))`) e
+  `curl -sI http://127.0.0.1:3101/admin` (deve devolver 307
+  redirect para `/entrar`).
 
-1. Confirme a branch e o estado do git. Deve estar em `reestruturacao`, árvore
-   limpa, com o commit do handoff no topo. NÃO faça merge na master, nem agora
-   nem depois.
-2. Rode os verificadores do projeto (tsc, build, checar-casca, checar-banco,
-   checar-consultas) e me diga o que encontrou.
-3. Não refaça o que já está pronto. As Fases 1 a 7 estão concluídas — a única
-   pendência delas é a rota /projetos/:id/resumo e as ações de cabeçalho do
-   detalhe do projeto.
-4. A primeira coisa a resolver é aplicar a migração 0016, que corrige uma
-   vulnerabilidade real de permissão de funções. Eu não sou programador: me
-   entregue o SQL completo em UM único bloco e diga apenas "cole este bloco no
-   SQL Editor do Supabase e clique em Run". Não me mande caminho de arquivo
-   nem comando de terminal.
-5. Fora isso, execute sozinho tudo que você conseguir executar no ambiente:
-   build, testes, git, scripts, migrações locais de teste. Não me peça para
-   rodar nada que você mesmo possa rodar.
-6. Corrija qualquer bug que encontrar antes de seguir para a fase seguinte.
-7. Continue automaticamente pelas Fases 8, 9 e 10 (Pedidos e relação Pedido ×
-   Projeto, Produção, Expedição), na ordem, sem parar para me pedir
-   autorização.
-8. Mantenha os commits organizados, um por fase, na branch reestruturacao.
-9. Ao terminar cada fase, me dê só um resumo curto: o que foi feito, o que foi
-   corrigido, se está funcionando, e qual fase começou em seguida.
+O `photoon-app-1` (Docker, imagem antiga) **continua servindo a
+master em `app.photoon.com.br:443`** e o Caddy **continua
+apontando para ele** — o preview é independente.
 
-Só me interrompa se houver risco real de perda de dados, necessidade de uma
-credencial que você não possui, ou uma decisão de produto que não dê para
-inferir do briefing.
-```
-
----
-
-## 17. Estado do Git
-
-Branch `reestruturacao`, com o commit deste handoff no topo. Árvore limpa —
-nenhum arquivo modificado ou não rastreado pendente. Sem merge na master.
