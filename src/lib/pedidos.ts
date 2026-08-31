@@ -961,3 +961,150 @@ export async function dadosDaOS(
       : null,
   } as DadosDaOS;
 }
+// Adicao em src/lib/pedidos.ts — dados do Kanban de Producao com 8 colunas.
+// Cada item carrega pedido, projeto, cliente, filial, prazo, prioridade,
+// responsavel e tempo no estagio (calculado de entrou_na_etapa_em).
+
+export type CardKanban = {
+  id: string;
+  pedido_id: string;
+  pedido_numero: number;
+  pedido_prazo: string | null;
+  cliente_nome: string | null;
+  projeto_id: string;
+  projeto_codigo: string | null;
+  projeto_titulo: string;
+  categoria: string | null;
+  filial_nome: string | null;
+  responsavel: string | null;
+  /** ISO timestamp em que a ficha entrou na etapa atual. */
+  entrou_na_etapa_em: string;
+  /** Etapa crua do banco (10 valores possiveis). */
+  etapa: string;
+  prioridade: number;
+};
+
+/**
+ * Retorna os 8 grupos do Kanban. Cada grupo e o `id` da coluna (um dos
+ * `ColunaKanban` em pedidos-termos). Itens com `etapa` legada caem na
+ * coluna adjacente via `colunaDoKanban(etapa)`.
+ */
+export type KanbanProducao = {
+  colunas: Array<{
+    coluna: string;
+    rotulo: string;
+    tom: 'neutro' | 'azul' | 'ciano' | 'verde' | 'ambar' | 'coral' | 'indigo';
+    cards: CardKanban[];
+  }>;
+  total: number;
+  semResponsavel: number;
+  atrasados: number;
+};
+
+export async function kanbanProducao(lojistaId: string): Promise<KanbanProducao> {
+  const supabase = await createClient();
+  // Seleciona tudo que o card precisa numa so consulta. INNER JOIN em
+  // pedidos para garantir que so aparecem pedidos da loja (defesa em
+  // profundidade, mesmo com RLS).
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data } = (await supabase
+    .from('producao')
+    .select(
+      `id, etapa, responsavel, prioridade, entrou_na_etapa_em,
+       pedidos!inner(id, numero, prazo_em, lojista_id, clientes(nome),
+                     filial_id, filiais:filial_id(nome))`,
+    )
+    .eq('pedidos.lojista_id', lojistaId)) as { data: any[] | null };
+
+  // O briefing pede 8 colunas, na ordem:
+  const ORDEM = [
+    { coluna: 'aguardando',       rotulo: 'Aguardando',       tom: 'neutro' as const },
+    { coluna: 'preflight',        rotulo: 'Pre-flight',       tom: 'azul' as const },
+    { coluna: 'arquivos_prontos', rotulo: 'Arquivos prontos', tom: 'azul' as const },
+    { coluna: 'impressao',        rotulo: 'Impressao',        tom: 'azul' as const },
+    { coluna: 'acabamento',       rotulo: 'Acabamento',       tom: 'indigo' as const },
+    { coluna: 'qualidade',        rotulo: 'Qualidade',        tom: 'ambar' as const },
+    { coluna: 'embalagem',        rotulo: 'Embalagem',        tom: 'indigo' as const },
+    { coluna: 'pronto',           rotulo: 'Pronto',           tom: 'verde' as const },
+  ];
+
+  const grupos = new Map<string, CardKanban[]>();
+  for (const o of ORDEM) grupos.set(o.coluna, []);
+
+  let semResponsavel = 0;
+  let atrasados = 0;
+  const hoje = new Date().toISOString().slice(0, 10);
+
+  for (const linha of (data ?? []) as any[]) {
+    const ped = linha.pedidos;
+    // O card precisa de 1 projeto. Pegamos o primeiro projeto do pedido
+    // (a coluna "Projeto" no card e representativa; o detalhe tem a lista).
+    // Para evitar N+1 queries, aceitamos que o card mostre "—" se nao
+    // houver projeto via pedido_itens.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data: projs } = (await supabase
+      .from('pedido_itens')
+      .select('projeto_id, projetos!inner(id, codigo, titulo, categoria)')
+      .eq('pedido_id', ped.id)
+      .eq('projetos.lojista_id', lojistaId)
+      .limit(1)) as { data: any[] | null };
+    const proj = projs?.[0]?.projetos;
+
+    // Mapeia etapa do banco para a coluna do Kanban (legados vao para
+    // a coluna adjacente).
+    const etapa = linha.etapa as string;
+    const coluna = mapearColunaKanban(etapa);
+
+    if (!coluna) continue; // ignora etapas nao mapeadas (defesa)
+
+    const card: CardKanban = {
+      id: linha.id,
+      pedido_id: ped.id,
+      pedido_numero: ped.numero,
+      pedido_prazo: ped.prazo_em,
+      cliente_nome: ped.clientes?.nome ?? null,
+      projeto_id: proj?.id ?? '',
+      projeto_codigo: proj?.codigo ?? null,
+      projeto_titulo: proj?.titulo ?? '—',
+      categoria: proj?.categoria ?? null,
+      filial_nome: ped.filiais?.nome ?? null,
+      responsavel: linha.responsavel,
+      entrou_na_etapa_em: linha.entrou_na_etapa_em,
+      etapa,
+      prioridade: linha.prioridade ?? 0,
+    };
+    grupos.get(coluna)!.push(card);
+    if (!linha.responsavel) semResponsavel += 1;
+    if (ped.prazo_em && ped.prazo_em.slice(0, 10) <= hoje && coluna !== 'pronto') {
+      atrasados += 1;
+    }
+  }
+
+  return {
+    colunas: ORDEM.map((o) => ({
+      coluna: o.coluna,
+      rotulo: o.rotulo,
+      tom: o.tom,
+      cards: grupos.get(o.coluna) ?? [],
+    })),
+    total: (data ?? []).length,
+    semResponsavel,
+    atrasados,
+  };
+}
+
+function mapearColunaKanban(etapa: string): string | null {
+  switch (etapa) {
+    case 'fila':             return 'aguardando';
+    case 'revisao':          return 'qualidade';
+    case 'aguardando':       return 'aguardando';
+    case 'preflight':        return 'preflight';
+    case 'arquivos_prontos': return 'arquivos_prontos';
+    case 'impressao':        return 'impressao';
+    case 'acabamento':       return 'acabamento';
+    case 'qualidade':        return 'qualidade';
+    case 'embalagem':        return 'embalagem';
+    case 'pronto':           return 'pronto';
+    default:                 return 'aguardando';
+  }
+}

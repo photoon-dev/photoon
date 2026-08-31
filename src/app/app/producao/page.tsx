@@ -1,40 +1,30 @@
 import { redirect } from 'next/navigation';
 import { lojaAtual } from '@/lib/lojista';
-import { filaDeProducao, pedidosForaDaFila, resumoRenderizacao } from '@/lib/pedidos';
-import ProducaoDoDesign from '@/components/app/ProducaoDoDesign';
+import { kanbanProducao } from '@/lib/pedidos';
 import ResumoRenderizacao from '@/components/app/ResumoRenderizacao';
+import KanbanProducao from '@/components/app/KanbanProducao';
 import ShellLojista from '@/components/app/ShellLojista';
 import { MODULO } from '@/lib/rotas-lojista';
+import { resumoRenderizacao } from '@/lib/pedidos';
 import '../app.css';
 
 export const dynamic = 'force-dynamic';
 
-export default async function Pagina({
-  searchParams,
-}: {
-  searchParams: Promise<Record<string, string | undefined>>;
-}) {
+export default async function Pagina() {
   const loja = await lojaAtual();
   if (!loja) redirect('/');
 
-  // O recorte vive na URL, como em Pedidos: o link de "atrasados" é guardável
-  // e o botão de voltar do navegador funciona.
-  const q = await searchParams;
-
-  // O resumo da renderização entra como "cabeçalho" da Produção — sem
-  // duplicar a fila, só os contadores. Quem quiser ver a fila abre o
-  // botão "Abrir Central de Renderização".
-  const [fila, pendentes, renderResumo] = await Promise.all([
-    filaDeProducao(loja.id),
-    pedidosForaDaFila(loja.id),
+  // Kanban com 8 colunas + resumo de renderizacao (contadores).
+  const [kanban, render] = await Promise.all([
+    kanbanProducao(loja.id),
     resumoRenderizacao(loja.id),
   ]);
 
   return (
     <ShellLojista ativo={MODULO['Produção']}>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
-        <ResumoRenderizacao r={renderResumo} />
-        <ProducaoDoDesign fila={fila} pendentes={pendentes} ver={q.ver ?? ''} />
+        <ResumoRenderizacao r={render} />
+        <KanbanProducao kanban={kanban} />
       </div>
     </ShellLojista>
   );
