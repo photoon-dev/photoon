@@ -55,9 +55,20 @@ São **gerados** por `tools/dc2tsx.py` a partir de `design/extraido/*.dc.html`.
 Todo binding novo nasce no `.dc.html`; depois `./tools/gerar.sh`.
 
 ### 3.2. Cada tela do zip traz sua PRÓPRIA cópia do menu e do cabeçalho
-Com "Lab Cores", "Marta Reis" e "1,44 TB de 2 TB" escritos à mão. Já foram
-ligados nas 19 telas. **Se exportar o design de novo, o defeito volta** —
-reaplique a substituição de moldura.
+Com "Lab Cores", "Marta Reis" e "1,44 TB de 2 TB" escritos à mão — 22 cópias.
+
+**Resolvido na reestruturação.** `tools/telas/conteudo.json` liga o modo
+`somenteConteudo` do `dc2tsx.py`: o gerador descarta tudo entre `<aside>` e
+`</header>` e devolve só o miolo do `<main>`. A moldura vem de um arquivo só
+(`Dashboard.dc.html` → `ShellLojistaDesign`) e cada tela entra no slot.
+
+Duas consequências para quem mexer nisso:
+- **O menu do lojista se edita em `Dashboard.dc.html` e em
+  `src/lib/rotas-lojista.ts`.** Em mais nenhum lugar.
+- Se exportar o design de novo, as telas voltam com a moldura junto — mas o
+  recorte a descarta sozinho. O que **não** se recupera é o `equilibrar()`:
+  alguns `.dc.html` abrem uma `<div>` no `<main>` que só fecha depois de
+  `</main>`, e o gerador avisa em qual arquivo quando fecha por você.
 
 ### 3.3. Fonte única de verdade
 O projeto já teve quatro modelos de layout incompatíveis e três estados
