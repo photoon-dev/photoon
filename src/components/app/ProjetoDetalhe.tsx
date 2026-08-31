@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useTransition } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Abas from '@/components/ui/Abas';
 import Ficha, { Campo } from '@/components/ui/Ficha';
@@ -7,7 +8,9 @@ import Tabela, { type Coluna } from '@/components/ui/Tabela';
 import EstadoVazio from '@/components/ui/EstadoVazio';
 import Selo from '@/components/ui/Selo';
 import Botao from '@/components/ui/Botao';
+import Confirmacao from '@/components/ui/Confirmacao';
 import { COR } from '@/components/ui/tokens';
+import { enfileirarProjeto } from '@/app/app/actions-render';
 import {
   dataHora,
   laminas,
@@ -66,6 +69,9 @@ const TIPO_ARQUIVO: Record<string, string> = {
 export default function ProjetoDetalhe({ dados }: { dados: ProjetoCompleto }) {
   const router = useRouter();
   const busca = useSearchParams();
+  const [ocupado, iniciar] = useTransition();
+  const [confirmando, setConfirmando] = useState(false);
+  const [aviso, setAviso] = useState<string | null>(null);
   const { projeto: p, pedido, arquivos, versoes, validacoes, eventos, jobs } = dados;
 
   const aba = busca.get('aba') ?? 'resumo';
@@ -129,6 +135,13 @@ export default function ProjetoDetalhe({ dados }: { dados: ProjetoCompleto }) {
         </div>
 
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+          <Botao
+            variante="primario"
+            ocupado={ocupado}
+            onClick={() => setConfirmando(true)}
+          >
+            {jobs.length ? 'Renderizar novamente' : 'Renderizar'}
+          </Botao>
           <Botao variante="secundario" onClick={() => router.push(`/projetos/${p.id}/resumo`)}>
             Resumo
           </Botao>
@@ -151,6 +164,28 @@ export default function ProjetoDetalhe({ dados }: { dados: ProjetoCompleto }) {
           { chave: 'historico', rotulo: 'Histórico', contagem: eventos.length },
           { chave: 'versoes', rotulo: 'Versões', contagem: versoes.length },
         ]}
+      />
+
+      {aviso && (
+        <p style={{ margin: 0, fontSize: 13.5, color: COR.ambar }}>{aviso}</p>
+      )}
+
+      <Confirmacao
+        aberto={confirmando}
+        aoFechar={() => setConfirmando(false)}
+        titulo={jobs.length ? 'Renderizar este projeto de novo?' : 'Renderizar este projeto?'}
+        descricao={
+          'O projeto entra na fila e o worker gera capa, miolo, preview e o ZIP. ' +
+          'Nada roda agora nesta tela — a renderização acontece fora, e você acompanha na Central.'
+        }
+        rotuloConfirmar="Colocar na fila"
+        aoConfirmar={() =>
+          iniciar(async () => {
+            const r = await enfileirarProjeto(p.id, pedido?.id ?? null);
+            if (!r.ok) setAviso(r.erro ?? 'Não foi possível enfileirar.');
+            else router.push('/renderizacao');
+          })
+        }
       />
 
       {aba === 'resumo' && <AbaResumo dados={dados} />}

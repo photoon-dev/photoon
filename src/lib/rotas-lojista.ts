@@ -24,7 +24,7 @@ export const MENU_LOJISTA: ItemDoMenu[] = [
   { indice: 1,  rotulo: 'Pedidos',            rota: '/pedidos',              pronto: true },
   { indice: 2,  rotulo: 'Projetos',           rota: '/projetos',             pronto: true  },
   { indice: 3,  rotulo: 'Produção',           rota: '/producao',             pronto: true },
-  { indice: 4,  rotulo: 'Renderização',       rota: '/renderizacao',         pronto: false },
+  { indice: 4,  rotulo: 'Renderização',       rota: '/renderizacao',         pronto: true  },
   { indice: 5,  rotulo: 'Expedição',          rota: '/expedicao',            pronto: true },
   { indice: 6,  rotulo: 'Loja',               rota: '/loja',                 pronto: true },
   { indice: 7,  rotulo: 'Catálogo',           rota: '/catalogo',             pronto: true },
