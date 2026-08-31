@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from 'react';
 import type { NumerosDaLoja } from '@/lib/lojista';
+import { MENU_LOJISTA } from '@/lib/rotas-lojista';
 
 /**
  * Porte de `Component extends DCLogic` de Dashboard.dc.html.
@@ -11,12 +12,11 @@ import type { NumerosDaLoja } from '@/lib/lojista';
  * tela — os que não têm apenas destacam o item, sem levar a lugar nenhum.
  */
 
-/** Ordem dos itens do menu, igual à do design. */
-export const MODULOS = [
-  'Dashboard', 'Pedidos', 'Producao', 'Expedicao', 'Loja', 'Catalogo', 'Precos',
-  'Temas', 'Clientes', 'CRM', 'Vendedores', 'Marketing', 'Financeiro', 'Carteira',
-  'Relatorios', 'Automacoes', 'Integracoes', 'Auditoria', 'Suporte', 'Configuracoes',
-] as const;
+/**
+ * Ordem dos itens do menu. Vem de `MENU_LOJISTA`, que é a mesma lista que o
+ * `Dashboard.dc.html` desenha — duas listas escritas à mão saem de sincronia.
+ */
+export const MODULOS = MENU_LOJISTA.map((m) => m.rotulo);
 
 export type PainelDaLoja = {
   lojaNome: string;
@@ -45,17 +45,34 @@ export function useDashboardDesign({
   return useMemo(() => {
     const c = collapsed;
 
+    /**
+     * Três estados, não dois: ativo, disponível e ainda sem tela. O terceiro
+     * fica esmaecido e com o cursor padrão — o lojista vê que o módulo existe
+     * no plano sem clicar num link que não leva a lugar nenhum.
+     */
     const navStyle = (i: number) => {
       const on = active === i;
+      const disponivel = Boolean(rotas[i]);
       return (
         `display:flex;align-items:center;gap:13px;height:44px;min-height:44px;flex:0 0 auto;` +
         `padding:0 14px;border-radius:14px;font-size:14px;font-weight:${on ? 600 : 500};` +
-        `cursor:pointer;white-space:nowrap;overflow:hidden;transition:background .16s,color .16s;` +
+        `white-space:nowrap;overflow:hidden;transition:background .16s,color .16s;` +
         (on
-          ? 'background:linear-gradient(135deg,#2563EB,#06B6D4);color:#FFFFFF;box-shadow:0 8px 18px rgba(37,99,235,.26);'
-          : 'background:transparent;color:#46536A;')
+          ? 'cursor:pointer;background:linear-gradient(135deg,#2563EB,#06B6D4);color:#FFFFFF;box-shadow:0 8px 18px rgba(37,99,235,.26);'
+          : disponivel
+            ? 'cursor:pointer;background:transparent;color:#46536A;'
+            : 'cursor:default;background:transparent;color:#B4BECD;')
       );
     };
+
+    /** Selo redondo do menu (Pedidos, Projetos, Renderização). */
+    const seloEstilo = (valor: string, alerta = false) =>
+      !valor || valor === '0'
+        ? 'display:none'
+        : `margin-left:auto;padding:2px 8px;border-radius:999px;` +
+          `background:${alerta ? '#FFE4E9' : 'rgba(255,255,255,.22)'};` +
+          `color:${alerta ? '#E11D48' : 'inherit'};` +
+          `font-size:11px;font-weight:700;${c ? 'display:none' : ''}`;
 
     const perStyle = (i: number) => {
       const on = period === i;
@@ -105,12 +122,11 @@ export function useDashboardDesign({
         `animation:menuIn .16s ease both;${menu ? '' : 'display:none'}`,
     };
 
-    for (let i = 0; i < 20; i++) {
+    for (let i = 0; i < MENU_LOJISTA.length; i++) {
       v['nav' + i] = navStyle(i);
       v['pick' + i] = () => {
         const rota = rotas[i];
         if (rota) window.location.href = rota;
-        else setActive(i);
       };
     }
     for (let i = 0; i < 6; i++) {
@@ -157,8 +173,15 @@ export function useDashboardDesign({
     // O design dizia "Armazenamento" com 1,44 TB fixos. Não medimos disco; o
     // que de fato limita a loja é a cota de álbuns do plano.
     v.usoTitulo = 'Álbuns no plano';
-    // Selo do menu: álbuns que pedem atenção. Era "14" fixo.
-    v.selo1 = String((n?.comPendencia ?? 0) + (n?.emEdicao ?? 0));
+    /* Selos do menu. Eram "14" fixo no design. Cada um conta o que de fato
+     * espera uma pessoa: pedido não visto, projeto com pendência, render com
+     * erro. Zero some — selo com "0" é ruído. */
+    v.selo1 = String(n?.pedidosNaoVistos ?? 0);
+    v.selo1Estilo = seloEstilo(v.selo1 as string);
+    v.selo2 = String((n?.comPendencia ?? 0) + (n?.emEdicao ?? 0));
+    v.selo2Estilo = seloEstilo(v.selo2 as string);
+    v.selo4 = String(n?.rendersComErro ?? 0);
+    v.selo4Estilo = seloEstilo(v.selo4 as string, true);
     v.usuarioCargo = painel?.usuarioCargo ?? '';
     /* Duas linhas da moldura ficaram sem valor desde a primeira tela: o
      * subtítulo da loja, no topo do menu, e o selo do plano, dentro do menu da

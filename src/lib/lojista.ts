@@ -117,7 +117,22 @@ export async function lojaAtual(): Promise<{ id: string; slug: string; nome: str
   return l ?? null;
 }
 
-export async function getLojistaPorId(id: string) {
+export type LojistaCompleto = {
+  id: string;
+  slug: string;
+  nome: string;
+  logo_url: string | null;
+  cor_primaria: string | null;
+  cor_secundaria: string | null;
+  descricao: string | null;
+  telefone_suporte: string | null;
+  email_suporte: string | null;
+  url_politica: string | null;
+  url_contato: string | null;
+  ativo: boolean;
+};
+
+export async function getLojistaPorId(id: string): Promise<LojistaCompleto | null> {
   const supabase = await createClient();
   const { data } = await supabase
     .from('lojistas')
@@ -127,7 +142,7 @@ export async function getLojistaPorId(id: string) {
     )
     .eq('id', id)
     .maybeSingle();
-  return data;
+  return (data as LojistaCompleto | null) ?? null;
 }
 
 // ---------------------------------------------------------------------------
@@ -287,6 +302,13 @@ export type NumerosDaLoja = {
   fotos: number;
   laminas: number;
   progressoMedio: number;
+  /** Pedidos que ninguém da loja abriu ainda. Selo do menu. */
+  pedidosNaoVistos: number;
+  /**
+   * Jobs de renderização com erro. Ausente enquanto a Central de Renderização
+   * não existir — selo ausente é melhor que selo zerado que não mede nada.
+   */
+  rendersComErro?: number;
   /** Álbuns criados e concluídos por dia, últimos 30 dias. */
   serieCriados: number[];
   serieProntos: number[];
@@ -313,7 +335,7 @@ export type NumerosDaLoja = {
 export async function numerosDaLoja(lojistaId: string): Promise<NumerosDaLoja> {
   const supabase = await createClient();
 
-  const [clientes, projetos, fotos] = await Promise.all([
+  const [clientes, projetos, fotos, naoVistos] = await Promise.all([
     supabase.from('clientes').select('id', { count: 'exact', head: true }).eq('lojista_id', lojistaId),
     supabase
       .from('projetos')
@@ -322,6 +344,11 @@ export async function numerosDaLoja(lojistaId: string): Promise<NumerosDaLoja> {
       .order('atualizado_em', { ascending: false })
       .limit(200),
     supabase.from('galeria_fotos').select('id', { count: 'exact', head: true }),
+    supabase
+      .from('pedidos')
+      .select('id', { count: 'exact', head: true })
+      .eq('lojista_id', lojistaId)
+      .is('visto_em', null),
   ]);
 
   const lista = (projetos.data ?? []) as unknown as {
@@ -346,6 +373,7 @@ export async function numerosDaLoja(lojistaId: string): Promise<NumerosDaLoja> {
     fotos: fotos.count ?? 0,
     laminas: 0,
     progressoMedio: lista.length ? Math.round(soma / lista.length) : 0,
+    pedidosNaoVistos: naoVistos.count ?? 0,
     ...(() => {
       // 30 baldes de um dia. Um álbum entra no dia em que foi mexido pela
       // última vez — é a informação que temos sem uma tabela de eventos.

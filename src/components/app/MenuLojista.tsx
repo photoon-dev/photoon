@@ -1,6 +1,7 @@
 'use client';
 
 import MenuInferior, { type ItemMenu, type AcaoCentral } from '@/components/MenuInferior';
+import { MENU_LOJISTA } from '@/lib/rotas-lojista';
 import {
   IconGrade,
   IconUsuario,
@@ -16,13 +17,21 @@ import {
 /**
  * Navegação de celular do painel do lojista.
  *
- * Dois destinos de cada lado da ação central. Cadastrar cliente é o que o
- * lojista mais faz, então é ela que ganha o botão em destaque.
+ * Dois destinos de cada lado da ação central. Pedidos é o que o lojista mais
+ * abre no telefone; cadastrar cliente é o que ele mais faz, então é ela que
+ * ganha o botão em destaque.
+ *
+ * O `href` de cada extra sai de `MENU_LOJISTA`, e módulo ainda sem tela fica
+ * sem href — o `MenuInferior` já trata isso como item inativo. Antes esta
+ * lista tinha rótulos escritos à mão sem href nenhum: seis itens que não
+ * levavam a lugar algum.
  */
+const rota = (rotulo: string) => MENU_LOJISTA.find((m) => m.rotulo === rotulo && m.pronto)?.rota;
+
 const PRINCIPAIS: ItemMenu[] = [
-  { rotulo: 'Início', href: '/', icone: <IconGrade size={30} /> },
-  { rotulo: 'Clientes', href: '/clientes', icone: <IconUsuario size={30} /> },
-  { rotulo: 'Modelos', href: '/templates', icone: <IconGaleria size={30} /> },
+  { rotulo: 'Início', href: rota('Dashboard'), icone: <IconGrade size={30} /> },
+  { rotulo: 'Pedidos', href: rota('Pedidos'), icone: <IconCompartilhar size={30} /> },
+  { rotulo: 'Clientes', href: rota('Clientes'), icone: <IconUsuario size={30} /> },
 ];
 
 const ACAO: AcaoCentral = {
@@ -32,13 +41,14 @@ const ACAO: AcaoCentral = {
 };
 
 const EXTRAS: ItemMenu[] = [
-  { rotulo: 'Ajustes', href: '/configuracoes', icone: <IconRelogio size={26} /> },
-  { rotulo: 'Pedidos', icone: <IconCompartilhar size={26} /> },
-  { rotulo: 'Produção', icone: <IconRelogio size={26} /> },
-  { rotulo: 'Expedição', icone: <IconOlho size={26} /> },
-  { rotulo: 'Catálogo', icone: <IconGaleria size={26} /> },
-  { rotulo: 'Financeiro', icone: <IconAlerta size={26} /> },
-  { rotulo: 'Relatórios', icone: <IconInfo size={26} /> },
+  { rotulo: 'Projetos', href: rota('Projetos'), icone: <IconGaleria size={26} /> },
+  { rotulo: 'Produção', href: rota('Produção'), icone: <IconRelogio size={26} /> },
+  { rotulo: 'Renderização', href: rota('Renderização'), icone: <IconAlerta size={26} /> },
+  { rotulo: 'Expedição', href: rota('Expedição'), icone: <IconOlho size={26} /> },
+  { rotulo: 'Catálogo', href: rota('Catálogo'), icone: <IconGaleria size={26} /> },
+  { rotulo: 'Financeiro', href: rota('Financeiro'), icone: <IconInfo size={26} /> },
+  { rotulo: 'Relatórios', href: rota('Relatórios'), icone: <IconInfo size={26} /> },
+  { rotulo: 'Configurações', href: rota('Configurações'), icone: <IconRelogio size={26} /> },
 ];
 
 export default function MenuLojista() {
