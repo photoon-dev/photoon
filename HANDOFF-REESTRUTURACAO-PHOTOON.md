@@ -1206,3 +1206,80 @@ O `photoon-app-1` (Docker, imagem antiga) **continua servindo a
 master em `app.photoon.com.br:443`** e o Caddy **continua
 apontando para ele** — o preview é independente.
 
+
+---
+
+## 18. Rodada de 16 correções visuais (commit `47543e6`)
+
+Apos deploy da `reestruturacao` em `app.photoon.com.br`, o usuario abriu uma
+rodada de 16 correcoes baseadas no que viu rodando. Estado da rodada:
+
+| # | Item | Estado | Commit |
+|---|---|---|---|
+| 1 | Auditoria do plano | feito nesta sessao | `47543e6` (HANDOFF 18) |
+| 2 | Padronizacao visual | feito: tokens, CartaoKPI `compacto`, ListaPedidosSelecionaveis como ref | `47543e6` |
+| 3 | Projetos compactar | feito: 6 KPIs `compacto`, filtros 4+drawer, tabela densa | `47543e6` |
+| 4 | Detalhe do Projeto | feito: Resumo em 2 colunas, `Bloco`/`Linha` com divisores | `47543e6` |
+| 5 | Pedidos filtros | feito: 4 visiveis + drawer 11 (ja no `1686bad`) | `1686bad` |
+| 6 | Clientes redesenhar | feito: header+KPI+tabela+expansao, modal Novo cliente | `47543e6` |
+| 7 | Kanban 8 colunas | feito: 8 colunas, moverEtapaProducao, tempo no estagio | `aaf472c` |
+| 8 | Render worker | codigo escrito, container nao sobe | bloqueado por `SUPABASE_SERVICE_ROLE_KEY` |
+| 9 | Expedicao 10 estados | feito: 10 chips + lista com todos os campos | `6b84c1e` |
+| 10 | OS | feito: QR + barcode code128 + Imprimir + Gerar PDF + Mostrar valores | `ad7832c` |
+| 11 | Migrations 0017/0018 | sao no-op (re-assert + funcao SQL), painel usa helper JS | verificado |
+| 12 | Sidebar | ja seguia o padrao: `position:sticky`, `height:100vh`, `flex column`; header `flex:0 0 auto`, nav `flex:1 overflowY:auto`, rodape `flex:0 0 auto` | pre-existente |
+| 13 | Responsividade | pagina `/entrar` e casca sao universais, layout por CSS | HTTP OK em 1920/1440/1366; abaixo de 1024 o menu vira MenuInferior |
+| 14 | Revisao visual real | NAO foi possivel sem credencial de teste; HTTP-only confirma casca | pedir `SENHA_TESTE` se for unica falta |
+| 15 | Sem merge | master intocada em `b6cc7eb`; rollback taggeado | mantido |
+| 16 | Criterio de conclusao | parcialmente atendido (visual pronto, migrations pendentes) | ver "O que falta para concluir" abaixo |
+
+### O que esta pronto nesta rodada
+
+- `src/components/ui/CartaoKPI.tsx` agora aceita `compacto` (padding 14x16,
+  valor 24px) para alinhar densidade com a lista que vem embaixo.
+- `src/components/app/BarraDeFiltrosProjetos.tsx` (novo): barra de filtros da
+  Central de Projetos com 4 visiveis (busca, status, cliente, periodo) + drawer
+  com 6 extras (produto, filial, pedido, capa, render, editadode, arquivados).
+  Contador no botao, limpar tudo, persistencia na URL.
+- `src/components/app/ProjetosDaLoja.tsx`: 6 KPIs em uma linha (versao
+  compacta), barra nova, tabela densa (8 colunas, header `10 22`, linha
+  `12 22`).
+- `src/components/app/ProjetoDetalhe.tsx`: aba Resumo reescrita em 2 colunas,
+  com componentes `Bloco` (cartao branco com divisor) e `Linha` (rotulo +
+  valor) reusaveis.
+- `src/components/app/PainelClientes.tsx`: header com titulo e 4 KPIs
+  (Clientes ativos, Novos no periodo, Com projetos, Sem pedidos), botao
+  `+ Novo cliente` que abre modal, link da loja em cartao secundario
+  discreto, tabela compacta de 6 colunas (Cliente, Email, Eventos, Fotos,
+  Albums, Status), expansao por linha com toda a logica de galerias
+  (upload, face-api, criar album, criar evento, remover cliente).
+
+### O que falta para concluir (resumo)
+
+1. **Migration 0016** no Supabase (cola unica, idempotente). Apos aplicada,
+   `tools/checar-banco.mjs` volta a 0 problemas.
+2. **`SUPABASE_SERVICE_ROLE_KEY` no `.env`**. Sem ela, o container `render`
+   do `docker-compose.yml` nao sobe. O worker ja esta escrito
+   (`tools/worker-render.ts`) e validado em Postgres local; so falta a chave
+   para subir o container e validar a renderizacao ponta a ponta.
+3. **Revisao visual real**: HTTP-only nao pega UI. O usuario precisa abrir
+   o dominio com uma credencial de teste, ou me passar `SENHA_TESTE` para
+   rodar `tools/tirar-foto.mjs`.
+
+### Como subir o worker quando a chave chegar
+
+```bash
+# 1. adicionar no .env
+echo 'SUPABASE_SERVICE_ROLE_KEY=...' >> /root/photoon/.env
+
+# 2. subir o container (ja no docker-compose, restart unless-stopped)
+cd /root/photoon && docker compose up -d render
+
+# 3. ver online
+docker logs --tail 30 photoon-render-1
+# esperado: 'worker-render: worker-<pid> pronto, ouvindo a fila a cada 3000ms.'
+
+# 4. conferir no painel
+curl -sI -H 'Host: app.photoon.com.br' https://app.photoon.com.br/renderizacao
+# o cartao "Workers ativos" sai de 0 para 1
+```
