@@ -12,6 +12,11 @@ const ETAPA_TOM: Record<string, Tom> = {
   acabamento: 'indigo',
   revisao: 'ambar',
   pronto: 'verde',
+  aguardando: 'neutro',
+  preflight: 'azul',
+  arquivos_prontos: 'azul',
+  qualidade: 'ambar',
+  embalagem: 'indigo',
 };
 
 const ETAPA_ORDEM = ['fila', 'impressao', 'acabamento', 'revisao', 'pronto'] as const;

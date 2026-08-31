@@ -1,7 +1,13 @@
 import { redirect } from 'next/navigation';
 import { lojaAtual } from '@/lib/lojista';
-import { itensDosPedidos, listarEnvios, pedidosSemEnvio } from '@/lib/pedidos';
+import {
+  itensDosPedidos,
+  listarEnvios,
+  pedidosSemEnvio,
+  resumoExpedicao,
+} from '@/lib/pedidos';
 import ExpedicaoDoDesign from '@/components/app/ExpedicaoDoDesign';
+import ResumoExpedicao from '@/components/app/ResumoExpedicao';
 import ShellLojista from '@/components/app/ShellLojista';
 import { MODULO } from '@/lib/rotas-lojista';
 import '../app.css';
@@ -24,21 +30,25 @@ export default async function Pagina({
    * transportadora sobre tudo — não só sobre a aba aberta — e trocar de aba
    * não custa uma ida ao banco.
    */
-  const [{ envios }, semEnvio] = await Promise.all([
+  const [{ envios }, semEnvio, resumo] = await Promise.all([
     listarEnvios(loja.id, ''),
     pedidosSemEnvio(loja.id),
+    resumoExpedicao(loja.id),
   ]);
 
   const itens = await itensDosPedidos(envios.map((e) => e.pedido_id));
 
   return (
     <ShellLojista ativo={MODULO['Expedição']}>
-      <ExpedicaoDoDesign
-        lojaNome={loja.nome}
-        envios={envios}
-        semEnvio={semEnvio}
-        itens={itens}
-      />
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+        <ResumoExpedicao r={resumo} />
+        <ExpedicaoDoDesign
+          lojaNome={loja.nome}
+          envios={envios}
+          semEnvio={semEnvio}
+          itens={itens}
+        />
+      </div>
     </ShellLojista>
   );
 }
