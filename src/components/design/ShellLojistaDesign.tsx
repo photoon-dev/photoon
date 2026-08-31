@@ -10,22 +10,23 @@ export const CSS_PSEUDO = `
 .dc3:hover { background: #F1F5FD; color: #2563EB; }
 .dc4:hover { background: #F1F5FD; color: #2563EB; }
 .dc5:hover { background: #F1F5FD; color: #2563EB; }
-.dc6:hover { background: #FFF1F3; color: #E11D48; }
-.dc7:hover { box-shadow: 0 14px 30px rgba(11,18,32,.09); transform: translateY(-2px); }
+.dc6:hover { background: #F1F5FD; color: #2563EB; }
+.dc7:hover { background: #FFF1F3; color: #E11D48; }
 .dc8:hover { box-shadow: 0 14px 30px rgba(11,18,32,.09); transform: translateY(-2px); }
 .dc9:hover { box-shadow: 0 14px 30px rgba(11,18,32,.09); transform: translateY(-2px); }
 .dc10:hover { box-shadow: 0 14px 30px rgba(11,18,32,.09); transform: translateY(-2px); }
-.dc11:hover { background: #FFFFFF; color: #2563EB; }
+.dc11:hover { box-shadow: 0 14px 30px rgba(11,18,32,.09); transform: translateY(-2px); }
 .dc12:hover { background: #FFFFFF; color: #2563EB; }
 .dc13:hover { background: #FFFFFF; color: #2563EB; }
-.dc14:hover { background: #F8FAFE; }
-.dc15:hover { background: #FFE4E9; }
-.dc16:hover { background: #FCE9CE; }
-.dc17:hover { background: #E7EEFB; }
-.dc18:hover { background: #EAF0FF; border-color: #D6E2FC; }
-.dc19:hover { background: #E4F8FC; border-color: #CBEEF6; }
-.dc20:hover { background: #E6F8F1; border-color: #CDEEDF; }
-.dc21:hover { background: #EDEBFE; border-color: #DDD9FB; }
+.dc14:hover { background: #FFFFFF; color: #2563EB; }
+.dc15:hover { background: #F8FAFE; }
+.dc16:hover { background: #FFE4E9; }
+.dc17:hover { background: #FCE9CE; }
+.dc18:hover { background: #E7EEFB; }
+.dc19:hover { background: #EAF0FF; border-color: #D6E2FC; }
+.dc20:hover { background: #E4F8FC; border-color: #CBEEF6; }
+.dc21:hover { background: #E6F8F1; border-color: #CDEEDF; }
+.dc22:hover { background: #EDEBFE; border-color: #DDD9FB; }
 `;
 
 export default function ShellLojistaDesign({ v }: { v: any }) {
@@ -90,11 +91,24 @@ export default function ShellLojistaDesign({ v }: { v: any }) {
               <span style={css(v.labelStyle)}>
                 Pedidos
               </span>
-              <span style={css(v.badgeStyle)}>
+              <span style={css(v.selo1Estilo)}>
                 {v.selo1}
               </span>
             </div>
             <div onClick={v.pick2} style={css(v.nav2)}>
+              <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ flex: '0 0 auto' }}>
+                <path d="M5 4.5A1.5 1.5 0 0 1 6.5 3H18a1 1 0 0 1 1 1v14.5" />
+                <path d="M5 4.5V19a2 2 0 0 0 2 2h12" />
+                <path d="M9 7.5h6M9 11h6" />
+              </svg>
+              <span style={css(v.labelStyle)}>
+                Projetos
+              </span>
+              <span style={css(v.selo2Estilo)}>
+                {v.selo2}
+              </span>
+            </div>
+            <div onClick={v.pick3} style={css(v.nav3)}>
               <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ flex: '0 0 auto' }}>
                 <path d="M7 9V4h10v5" />
                 <rect x="4" y="9" width="16" height="7" rx="2.5" />
@@ -104,7 +118,18 @@ export default function ShellLojistaDesign({ v }: { v: any }) {
                 Produção
               </span>
             </div>
-            <div onClick={v.pick3} style={css(v.nav3)}>
+            <div onClick={v.pick4} style={css(v.nav4)}>
+              <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ flex: '0 0 auto' }}>
+                <path d="M13 3 4.5 13.5H11l-1 7.5 8.5-10.5H12z" />
+              </svg>
+              <span style={css(v.labelStyle)}>
+                Renderização
+              </span>
+              <span style={css(v.selo4Estilo)}>
+                {v.selo4}
+              </span>
+            </div>
+            <div onClick={v.pick5} style={css(v.nav5)}>
               <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ flex: '0 0 auto' }}>
                 <path d="M4 7.5 12 3.5l8 4v9L12 20.5l-8-4z" />
                 <path d="m4 7.5 8 4 8-4M12 11.5v9" />
@@ -114,9 +139,9 @@ export default function ShellLojistaDesign({ v }: { v: any }) {
               </span>
             </div>
             <p style={css(v.groupStyle)}>
-              Loja e catálogo
+              Loja
             </p>
-            <div onClick={v.pick4} style={css(v.nav4)}>
+            <div onClick={v.pick6} style={css(v.nav6)}>
               <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ flex: '0 0 auto' }}>
                 <path d="M4 9.5 5.5 4h13L20 9.5" />
                 <path d="M4 9.5h16V20H4z" />
@@ -126,7 +151,7 @@ export default function ShellLojistaDesign({ v }: { v: any }) {
                 Loja
               </span>
             </div>
-            <div onClick={v.pick5} style={css(v.nav5)}>
+            <div onClick={v.pick7} style={css(v.nav7)}>
               <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ flex: '0 0 auto' }}>
                 <rect x="3" y="4" width="18" height="16" rx="4" />
                 <path d="m3.5 16 4.6-4.2 4 3.4 3.4-3 5 4.4" />
@@ -136,7 +161,7 @@ export default function ShellLojistaDesign({ v }: { v: any }) {
                 Catálogo
               </span>
             </div>
-            <div onClick={v.pick6} style={css(v.nav6)}>
+            <div onClick={v.pick8} style={css(v.nav8)}>
               <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ flex: '0 0 auto' }}>
                 <path d="M4 11.5V5h6.5L20 14.5 13.5 21z" />
                 <circle cx="8" cy="8.5" r="1.4" />
@@ -145,19 +170,28 @@ export default function ShellLojistaDesign({ v }: { v: any }) {
                 Preços
               </span>
             </div>
-            <div onClick={v.pick7} style={css(v.nav7)}>
+            <div onClick={v.pick9} style={css(v.nav9)}>
               <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ flex: '0 0 auto' }}>
                 <path d="m12 3.5 8 4.2-8 4.2-8-4.2z" />
                 <path d="m4 12.5 8 4.2 8-4.2" />
               </svg>
               <span style={css(v.labelStyle)}>
-                Temas e templates
+                Templates e Design
+              </span>
+            </div>
+            <div onClick={v.pick10} style={css(v.nav10)}>
+              <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ flex: '0 0 auto' }}>
+                <path d="M4 8.5A1.5 1.5 0 0 1 5.5 7h13A1.5 1.5 0 0 1 20 8.5v2a1.75 1.75 0 0 0 0 3.5v2a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 16v-2a1.75 1.75 0 0 0 0-3.5z" />
+                <path d="M13.5 7v1.5M13.5 14.5V17" />
+              </svg>
+              <span style={css(v.labelStyle)}>
+                Cupons
               </span>
             </div>
             <p style={css(v.groupStyle)}>
-              Comercial
+              Clientes
             </p>
-            <div onClick={v.pick8} style={css(v.nav8)}>
+            <div onClick={v.pick11} style={css(v.nav11)}>
               <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ flex: '0 0 auto' }}>
                 <circle cx="9" cy="8" r="3.4" />
                 <path d="M3.5 19.5c.7-3.2 3-5 5.5-5s4.8 1.8 5.5 5M16.5 6.2a3 3 0 0 1 0 5.6M18.5 19.5c-.3-1.7-.9-3-1.8-3.9" />
@@ -166,57 +200,29 @@ export default function ShellLojistaDesign({ v }: { v: any }) {
                 Clientes
               </span>
             </div>
-            <div onClick={v.pick9} style={css(v.nav9)}>
+            <div onClick={v.pick12} style={css(v.nav12)}>
               <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ flex: '0 0 auto' }}>
-                <rect x="3" y="4" width="18" height="16" rx="4" />
-                <path d="M8 9h3.5M8 13h8M8 17h5" />
+                <path d="M12 15.5V4M8.5 7.5 12 4l3.5 3.5" />
+                <path d="M4.5 14v4.5a1.5 1.5 0 0 0 1.5 1.5h12a1.5 1.5 0 0 0 1.5-1.5V14" />
               </svg>
               <span style={css(v.labelStyle)}>
-                CRM
-              </span>
-            </div>
-            <div onClick={v.pick10} style={css(v.nav10)}>
-              <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ flex: '0 0 auto' }}>
-                <circle cx="12" cy="8" r="3.4" />
-                <path d="M5 20c.8-3.6 3.6-5.6 7-5.6s6.2 2 7 5.6" />
-              </svg>
-              <span style={css(v.labelStyle)}>
-                Vendedores
-              </span>
-            </div>
-            <div onClick={v.pick11} style={css(v.nav11)}>
-              <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ flex: '0 0 auto' }}>
-                <path d="M4 10v4h3l7 4V6l-7 4z" />
-                <path d="M17.5 9.5a4 4 0 0 1 0 5" />
-              </svg>
-              <span style={css(v.labelStyle)}>
-                Marketing
+                Importações
               </span>
             </div>
             <p style={css(v.groupStyle)}>
               Financeiro
             </p>
-            <div onClick={v.pick12} style={css(v.nav12)}>
+            <div onClick={v.pick13} style={css(v.nav13)}>
               <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ flex: '0 0 auto' }}>
                 <rect x="2.5" y="5" width="19" height="14" rx="4" />
                 <path d="M2.5 10h19" />
               </svg>
               <span style={css(v.labelStyle)}>
-                Pagamentos
-              </span>
-            </div>
-            <div onClick={v.pick13} style={css(v.nav13)}>
-              <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ flex: '0 0 auto' }}>
-                <path d="M4 7.5A2.5 2.5 0 0 1 6.5 5H18v3" />
-                <rect x="3" y="8" width="18" height="11" rx="3" />
-                <circle cx="16.5" cy="13.5" r="1.3" />
-              </svg>
-              <span style={css(v.labelStyle)}>
-                Carteira e faturas
+                Financeiro
               </span>
             </div>
             <p style={css(v.groupStyle)}>
-              Sistema
+              Gestão
             </p>
             <div onClick={v.pick14} style={css(v.nav14)}>
               <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ flex: '0 0 auto' }}>
@@ -226,15 +232,10 @@ export default function ShellLojistaDesign({ v }: { v: any }) {
                 Relatórios
               </span>
             </div>
+            <p style={css(v.groupStyle)}>
+              Sistema
+            </p>
             <div onClick={v.pick15} style={css(v.nav15)}>
-              <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ flex: '0 0 auto' }}>
-                <path d="M13 3 4.5 13.5H11l-1 7.5 8.5-10.5H12z" />
-              </svg>
-              <span style={css(v.labelStyle)}>
-                Automações
-              </span>
-            </div>
-            <div onClick={v.pick16} style={css(v.nav16)}>
               <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ flex: '0 0 auto' }}>
                 <path d="M9 3v6M15 3v6" />
                 <path d="M6 9h12v3a6 6 0 0 1-12 0z" />
@@ -244,25 +245,7 @@ export default function ShellLojistaDesign({ v }: { v: any }) {
                 Integrações
               </span>
             </div>
-            <div onClick={v.pick17} style={css(v.nav17)}>
-              <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ flex: '0 0 auto' }}>
-                <path d="M12 3.5 5 6.5v5c0 4.3 2.9 7.6 7 9 4.1-1.4 7-4.7 7-9v-5z" />
-                <path d="m9.3 12 1.9 1.9 3.6-3.9" />
-              </svg>
-              <span style={css(v.labelStyle)}>
-                Auditoria
-              </span>
-            </div>
-            <div onClick={v.pick18} style={css(v.nav18)}>
-              <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ flex: '0 0 auto' }}>
-                <circle cx="12" cy="12" r="8.5" />
-                <path d="M9.8 9.6a2.3 2.3 0 1 1 3 2.2v1.4M12 16.6h.01" />
-              </svg>
-              <span style={css(v.labelStyle)}>
-                Suporte
-              </span>
-            </div>
-            <div onClick={v.pick19} style={css(v.nav19)}>
+            <div onClick={v.pick16} style={css(v.nav16)}>
               <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ flex: '0 0 auto' }}>
                 <circle cx="12" cy="12" r="3.4" />
                 <path d="M12 2.5v3M12 18.5v3M21.5 12h-3M5.5 12h-3M18.7 5.3l-2.1 2.1M7.4 16.6l-2.1 2.1M18.7 18.7l-2.1-2.1M7.4 7.4 5.3 5.3" />
@@ -307,7 +290,13 @@ export default function ShellLojistaDesign({ v }: { v: any }) {
                 </svg>
                 <span className="ph-acao-texto">Novo pedido</span>
               </button>
-              <button style={{ position: 'relative', width: '44px', height: '44px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid #E6EAF2', borderRadius: '14px', background: '#FFFFFF', color: '#46536A', cursor: 'pointer' }} className="dc2">
+              <button onClick={v.abrirAjuda} title="Ajuda" aria-label="Ajuda" style={{ width: '44px', height: '44px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid #E6EAF2', borderRadius: '14px', background: '#FFFFFF', color: '#46536A', cursor: 'pointer' }} className="dc2">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="8.5" />
+                  <path d="M9.8 9.6a2.3 2.3 0 1 1 3 2.2v1.4M12 16.6h.01" />
+                </svg>
+              </button>
+              <button style={{ position: 'relative', width: '44px', height: '44px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid #E6EAF2', borderRadius: '14px', background: '#FFFFFF', color: '#46536A', cursor: 'pointer' }} className="dc3">
                 <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M18 8.5a6 6 0 1 0-12 0c0 6-2 7.5-2 7.5h16s-2-1.5-2-7.5M10.5 19.5a2 2 0 0 0 3 0" />
                 </svg>
@@ -344,20 +333,20 @@ export default function ShellLojistaDesign({ v }: { v: any }) {
                     </span>
                   </div>
                   <div style={{ padding: '8px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '11px', padding: '10px 12px', borderRadius: '12px', fontSize: '13.5px', color: '#34405A', cursor: 'pointer' }} className="dc3">
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '11px', padding: '10px 12px', borderRadius: '12px', fontSize: '13.5px', color: '#34405A', cursor: 'pointer' }} className="dc4">
                       <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                         <circle cx="12" cy="8" r="3.4" />
                         <path d="M5 20c.8-3.6 3.6-5.6 7-5.6s6.2 2 7 5.6" />
                       </svg>
                       Meu perfil
                     </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '11px', padding: '10px 12px', borderRadius: '12px', fontSize: '13.5px', color: '#34405A', cursor: 'pointer' }} className="dc4">
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '11px', padding: '10px 12px', borderRadius: '12px', fontSize: '13.5px', color: '#34405A', cursor: 'pointer' }} className="dc5">
                       <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                         <path d="M4 7.5 12 3.5l8 4v9L12 20.5l-8-4z" />
                       </svg>
                       Empresa e filiais
                     </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '11px', padding: '10px 12px', borderRadius: '12px', fontSize: '13.5px', color: '#34405A', cursor: 'pointer' }} className="dc5">
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '11px', padding: '10px 12px', borderRadius: '12px', fontSize: '13.5px', color: '#34405A', cursor: 'pointer' }} className="dc6">
                       <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                         <rect x="3" y="5" width="18" height="14" rx="4" />
                         <path d="M3 10h18" />
@@ -366,7 +355,7 @@ export default function ShellLojistaDesign({ v }: { v: any }) {
                     </div>
                   </div>
                   <div style={{ padding: '8px', borderTop: '1px solid #EEF1F7' }}>
-                    <a href={v.hrefSair} onClick={v.sair} style={{ display: 'flex', alignItems: 'center', gap: '11px', padding: '10px 12px', borderRadius: '12px', fontSize: '13.5px', color: '#E11D48' }} className="dc6">
+                    <a href={v.hrefSair} onClick={v.sair} style={{ display: 'flex', alignItems: 'center', gap: '11px', padding: '10px 12px', borderRadius: '12px', fontSize: '13.5px', color: '#E11D48' }} className="dc7">
                       <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                         <path d="M15 17v2a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v2M10 12h11M18 9l3 3-3 3" />
                       </svg>

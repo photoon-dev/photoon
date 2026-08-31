@@ -1,4 +1,5 @@
 {
+  "somenteConteudo": true,
   "trocas": [
     {
       "de": "style={{ display: 'grid', gridTemplateColumns: '1.75fr 1fr', gap: '20px', alignItems: 'start' }}",
@@ -6,26 +7,14 @@
       "primeira": false
     },
     {
-      "de": "style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr .8fr .9fr auto', gap: '16px', padding: '10px 26px'",
-      "para": "className=\"ph-tab-cab\" style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr .8fr .9fr auto', gap: '16px', padding: '10px 26px'",
+      "de": "style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr .8fr .9fr auto', gap: '16px', alignItems: 'center', padding: '10px 26px'",
+      "para": "className=\"ph-tab-cab\" style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr .8fr .9fr auto', gap: '16px', alignItems: 'center', padding: '10px 26px'",
       "primeira": false
     },
     {
       "de": "style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr .8fr .9fr auto', gap: '16px', alignItems: 'center', padding: '14px 26px'",
       "para": "data-ph-linha style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr .8fr .9fr auto', gap: '16px', alignItems: 'center', padding: '14px 26px'",
       "primeira": false
-    },
-    {
-      "de": "<span style={{ padding: '4px 9px', borderRadius: '8px', background: '#F1F5FD', fontSize: '11px', fontWeight: '600', color: '#6B7A90' }}>",
-      "para": "<span className=\"ph-atalho\" style={{ padding: '4px 9px', borderRadius: '8px', background: '#F1F5FD', fontSize: '11px', fontWeight: '600', color: '#6B7A90' }}>"
-    },
-    {
-      "de": "boxShadow: '0 8px 20px rgba(37,99,235,.28)' }} className=\"dc1\">",
-      "para": "boxShadow: '0 8px 20px rgba(37,99,235,.28)' }} className=\"dc1 ph-acao\">"
-    },
-    {
-      "de": "Novo pedido",
-      "para": "<span className=\"ph-acao-texto\">Novo pedido</span>"
     }
   ]
 }

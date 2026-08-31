@@ -38,25 +38,36 @@ if [ "$alvo" = tudo ] || [ "$alvo" = cliente ]; then
   gerar 'Cliente Galeria de fotos.dc.html' GaleriaDesign    cliente-casca.json
 fi
 
-# Telas do painel do lojista que vêm inteiras do design (menu + cabeçalho +
-# conteúdo). Todas usam os mesmos bindings de moldura do Dashboard.
+# Telas do painel do lojista.
+#
+# `conteudo.json` manda o gerador descartar a moldura: cada .dc.html trazia sua
+# própria cópia da sidebar e da topbar — vinte e duas cópias do mesmo menu. A
+# moldura de verdade é uma só (ShellLojistaDesign, abaixo) e o conteúdo de cada
+# tela entra no slot dela.
 if [ "$alvo" = tudo ] || [ "$alvo" = telas ]; then
-  gerar 'Pedidos.dc.html'     PedidosDesign     ''
-  gerar 'Pedido.dc.html'      PedidoDesign      ''
-  gerar 'Producao.dc.html'    ProducaoDesign    ''
-  gerar 'Expedicao.dc.html'   ExpedicaoDesign   ''
-  gerar 'Catalogo.dc.html'    CatalogoDesign    ''
-  gerar 'Precos.dc.html'      PrecosDesign      ''
-  gerar 'Loja.dc.html'        LojaDesign        ''
-  gerar 'CRM.dc.html'         CRMDesign         ''
-  gerar 'Vendedores.dc.html'  VendedoresDesign  ''
-  gerar 'Marketing.dc.html'   MarketingDesign   ''
-  gerar 'Financeiro.dc.html'  FinanceiroDesign  ''
-  gerar 'Carteira.dc.html'    CarteiraDesign    ''
-  gerar 'Relatorios.dc.html'  RelatoriosDesign  ''
-  gerar 'Integracoes.dc.html' IntegracoesDesign ''
-  gerar 'Auditoria.dc.html'   AuditoriaDesign   ''
-  gerar 'Suporte.dc.html'     SuporteDesign     ''
+  for par in \
+    'Pedidos.dc.html:PedidosDesign' \
+    'Pedido.dc.html:PedidoDesign' \
+    'Producao.dc.html:ProducaoDesign' \
+    'Expedicao.dc.html:ExpedicaoDesign' \
+    'Catalogo.dc.html:CatalogoDesign' \
+    'Precos.dc.html:PrecosDesign' \
+    'Loja.dc.html:LojaDesign' \
+    'CRM.dc.html:CRMDesign' \
+    'Vendedores.dc.html:VendedoresDesign' \
+    'Marketing.dc.html:MarketingDesign' \
+    'Financeiro.dc.html:FinanceiroDesign' \
+    'Carteira.dc.html:CarteiraDesign' \
+    'Relatorios.dc.html:RelatoriosDesign' \
+    'Integracoes.dc.html:IntegracoesDesign' \
+    'Auditoria.dc.html:AuditoriaDesign' \
+    'Suporte.dc.html:SuporteDesign' \
+    'Temas.dc.html:TemasDesign' \
+    'Configuracoes.dc.html:ConfiguracoesDesign' \
+    'Clientes.dc.html:ClientesDesign'
+  do
+    gerar "${par%%:*}" "${par##*:}" conteudo.json
+  done
 fi
 
 if [ "$alvo" = tudo ] || [ "$alvo" = lojista ]; then

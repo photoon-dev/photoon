@@ -400,6 +400,72 @@ def aplicar_trocas(saida, trocas):
     return saida
 
 
+def recortar_conteudo(corpo: str, caminho: str) -> str:
+    """
+    Descarta a moldura da tela e devolve só o conteúdo.
+
+    Cada `.dc.html` do painel do lojista traz sua própria cópia da sidebar e da
+    topbar — vinte e duas cópias do mesmo menu, escritas à mão. A moldura de
+    verdade é uma só (`ShellLojistaDesign`, gerada de Dashboard.dc.html), e o
+    conteúdo de cada tela entra no slot dela.
+
+    O corte é seguro porque a estrutura é idêntica nos vinte e dois arquivos:
+
+        <div flex>  <aside>menu</aside>  <main>  <header>topbar</header>
+                                                 ...conteúdo...
+                                         </main>  </div>
+
+    Fica o que está entre `</header>` e o `</main>` final. Se o arquivo fugir
+    dessa forma, aborta em vez de gerar uma tela truncada em silêncio.
+    """
+    fim_topbar = corpo.find('</header>')
+    fim_main = corpo.rfind('</main>')
+    if fim_topbar == -1 or fim_main == -1 or fim_main < fim_topbar:
+        raise SystemExit(
+            f'{caminho}: nao achei a moldura <header>...</header> ... </main>. '
+            'Sem ela o recorte de conteudo nao e confiavel.'
+        )
+    return equilibrar(corpo[fim_topbar + len('</header>'):fim_main], caminho)
+
+
+class Contador(HTMLParser):
+    """Acha as tags que um fragmento abre e não fecha."""
+
+    def __init__(self):
+        super().__init__(convert_charrefs=False)
+        self.pilha = []
+
+    def handle_starttag(self, tag, attrs):
+        if tag not in VAZIAS:
+            self.pilha.append(tag)
+
+    def handle_endtag(self, tag):
+        if tag in self.pilha:
+            while self.pilha and self.pilha.pop() != tag:
+                pass
+
+
+def equilibrar(fragmento: str, caminho: str) -> str:
+    """
+    Fecha o que o recorte deixou aberto.
+
+    O `<main>` de algumas telas exportadas abre uma `<div>` a mais do que
+    fecha — o fechamento sobrou depois de `</main>`, onde o navegador ainda
+    equilibrava o documento inteiro. Num recorte isso vira JSX quebrado.
+    Fechar aqui reproduz exatamente o aninhamento que o design tinha.
+    """
+    c = Contador()
+    c.feed(fragmento)
+    if not c.pilha:
+        return fragmento
+    print(
+        f"// {caminho.split('/')[-1]}: fechando {len(c.pilha)} tag(s) que o "
+        f"<main> deixou aberta(s): {', '.join(reversed(c.pilha))}",
+        file=sys.stderr,
+    )
+    return fragmento + ''.join(f'</{t}>' for t in reversed(c.pilha))
+
+
 def main():
     caminho, componente = sys.argv[1], sys.argv[2]
     cfg = json.loads(sys.argv[3]) if len(sys.argv) > 3 else {}
@@ -410,6 +476,8 @@ def main():
     bruto = open(caminho, encoding='utf-8').read()
     corpo = bruto.split('<x-dc>')[1].split('</x-dc>')[0]
     corpo = re.sub(r'<helmet>[\s\S]*?</helmet>', '', corpo)
+    if cfg.get('somenteConteudo'):
+        corpo = recortar_conteudo(corpo, caminho)
 
     c = Conversor()
     c.feed(corpo)
