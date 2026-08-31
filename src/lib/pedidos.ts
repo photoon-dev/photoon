@@ -47,43 +47,176 @@ const comoNumero = (s: string) => {
 };
 
 export type FiltrosPedidos = {
+  // basicos (pedidos)
   estado?: string;
   de?: string;
   ate?: string;
-  busca?: string;
+  busca?: string;          // busca universal (numero/codigo/cliente/projeto/produto)
+  numero?: string;         // numero do pedido
+  codigo?: string;         // codigo PT (ex.: PT-10482)
+  canal?: string;          // origem do pedido (loja física, site, whatsapp, ...)
+  filial?: string;         // uuid da filial
+  cliente?: string;        // uuid do cliente
+  projeto?: string;        // uuid do projeto
+  produto?: string;        // texto na descricao do item
+  categoria?: string;      // categoria do projeto (fotolivro, revelacao, ...)
+  tipo?: string;           // alias de categoria (algumas telas chamam 'tipo')
+  // financeiros (pagamentos)
+  forma_pagamento?: string; // pix, cartao, boleto, manual
+  status_pagamento?: string; // pendente, aprovado, recusado, estornado, expirado
+  // producao / expedicao
+  status_producao?: string; // 8 valores do Kanban + 5 legados
+  status_entrega?: string;  // 10 valores da expedicao
   pagina?: number;
 };
 
 export async function listarPedidos(
   lojistaId: string,
-  { estado = '', de = '', ate = '', busca = '', pagina = 0 }: FiltrosPedidos = {},
+  f: FiltrosPedidos = {},
 ): Promise<{ pedidos: PedidoResumo[]; total: number; naoVistos: number }> {
   const supabase = await createClient();
 
+  // -------- pre-querys para filtros que dependem de relacoes --------
+  // Cada um devolve um Set<pedido_id> para intersectar com a consulta
+  // principal. Volume pequeno (loja), entao queries em paralelo sao faceis.
+  const intersecoes: Array<Promise<{ data: any }>> = [];
+
+  if (f.cliente) {
+    intersecoes.push(
+      supabase.from('pedidos').select('id').eq('lojista_id', lojistaId).eq('cliente_id', f.cliente) as any,
+    );
+  }
+  if (f.projeto) {
+    intersecoes.push(
+      supabase
+        .from('pedido_itens')
+        .select('pedido_id, pedidos!inner(lojista_id)')
+        .eq('projeto_id', f.projeto)
+        .eq('projetos.lojista_id', lojistaId) as any,
+    );
+  }
+  if (f.produto) {
+    const t = limparBusca(f.produto);
+    if (t) {
+      intersecoes.push(
+        supabase
+          .from('pedido_itens')
+          .select('pedido_id, projetos!inner(lojista_id)')
+          .ilike('descricao', `%${t}%`)
+          .eq('projetos.lojista_id', lojistaId) as any,
+      );
+    }
+  }
+  if (f.categoria || f.tipo) {
+    const cat = f.categoria || f.tipo;
+    intersecoes.push(
+      supabase
+        .from('pedido_itens')
+        .select(
+          'pedido_id, projetos!inner(lojista_id, templates!inner(categoria))',
+        )
+        .eq('projetos.templates.categoria', cat)
+        .eq('projetos.lojista_id', lojistaId) as any,
+    );
+  }
+  if (f.forma_pagamento) {
+    intersecoes.push(
+      supabase
+        .from('pagamentos')
+        .select('pedido_id, pedidos!inner(lojista_id)')
+        .eq('metodo', f.forma_pagamento)
+        .eq('pedidos.lojista_id', lojistaId) as any,
+    );
+  }
+  if (f.status_pagamento) {
+    intersecoes.push(
+      supabase
+        .from('pagamentos')
+        .select('pedido_id, pedidos!inner(lojista_id)')
+        .eq('estado', f.status_pagamento)
+        .eq('pedidos.lojista_id', lojistaId) as any,
+    );
+  }
+  if (f.status_producao) {
+    intersecoes.push(
+      supabase
+        .from('producao')
+        .select('pedido_id, pedidos!inner(lojista_id)')
+        .eq('etapa', f.status_producao)
+        .eq('pedidos.lojista_id', lojistaId) as any,
+    );
+  }
+  if (f.status_entrega) {
+    intersecoes.push(
+      supabase
+        .from('expedicao')
+        .select('pedido_id, pedidos!inner(lojista_id)')
+        .eq('estado', f.status_entrega)
+        .eq('pedidos.lojista_id', lojistaId) as any,
+    );
+  }
+
+  const resultados = await Promise.all(intersecoes);
+  const idsPorFiltro: Set<string>[] = resultados
+    .map((r) => new Set((r.data ?? []).map((linha: any) => linha.pedido_id).filter(Boolean)));
+
+  // Interseccao dos sets (um pedido tem que estar em TODOS os filtros
+  // de relacao).
+  let idsFiltrados: Set<string> | null = null;
+  for (const s of idsPorFiltro) {
+    if (idsFiltrados === null) {
+      idsFiltrados = s;
+    } else {
+      const prox = new Set<string>();
+      for (const id of s) if (idsFiltrados.has(id)) prox.add(id);
+      idsFiltrados = prox;
+    }
+  }
+
+  // -------- busca universal (numero/codigo/cliente/projeto/produto) --------
+  const busca = f.busca?.trim() ?? '';
   const numero = busca ? comoNumero(busca) : null;
   const texto = busca && numero === null ? limparBusca(busca) : '';
+  // Se o usuario digitou algo que parece um codigo PT, faca match exato.
+  const ehCodigo = /^PT-?\d+$/i.test(busca);
 
-  // Buscar por nome do cliente exige junção interna; sem busca, a junção
-  // precisa continuar externa, senão o pedido sem cliente sumiria da lista.
+  // -------- query principal --------
   const selecao =
-    'id, numero, estado, canal, total, visto_em, prazo_em, criado_em, ' +
-    `clientes${texto ? '!inner' : ''}(id, nome, email)`;
+    'id, numero, codigo, estado, canal, total, visto_em, prazo_em, criado_em, ' +
+    `clientes${texto || f.cliente ? '!inner' : ''}(id, nome, email)`;
 
   let q = supabase
     .from('pedidos')
     .select(selecao, { count: 'exact' })
     .eq('lojista_id', lojistaId);
 
-  if (estado) q = q.eq('estado', estado);
-  if (de) q = q.gte('criado_em', de);
+  if (f.estado) q = q.eq('estado', f.estado);
+  if (f.canal) q = q.eq('canal', f.canal);
+  if (f.filial) q = q.eq('filial_id', f.filial);
+  if (f.de) q = q.gte('criado_em', f.de);
   // O campo é uma data e a coluna é timestamp: sem o fim do dia, filtrar
-  // "até hoje" descartaria tudo o que entrou hoje.
-  if (ate) q = q.lte('criado_em', `${ate}T23:59:59.999`);
+  // "ate hoje" descartaria tudo o que entrou hoje.
+  if (f.ate) q = q.lte('criado_em', `${f.ate}T23:59:59.999`);
   if (numero !== null) q = q.eq('numero', numero);
+  if (ehCodigo) {
+    q = q.ilike('codigo', busca.replace(/^PT-?/i, 'PT-%'));
+  } else if (f.codigo) {
+    q = q.ilike('codigo', `%${f.codigo}%`);
+  }
   if (texto) {
     q = q.or(`nome.ilike.%${texto}%,email.ilike.%${texto}%`, { referencedTable: 'clientes' });
   }
 
+  // Aplica intersecao dos filtros de relacao, se houver.
+  if (idsFiltrados !== null) {
+    if (idsFiltrados.size === 0) {
+      // Sem nenhum match: devolve lista vazia sem ir ao banco.
+      return { pedidos: [], total: 0, naoVistos: 0 };
+    }
+    q = q.in('id', Array.from(idsFiltrados));
+  }
+
+  const pagina = f.pagina ?? 0;
   const inicio = pagina * PEDIDOS_POR_PAGINA;
   const [lista, naoVistos] = await Promise.all([
     q.order('criado_em', { ascending: false }).range(inicio, inicio + PEDIDOS_POR_PAGINA - 1),
