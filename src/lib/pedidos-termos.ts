@@ -1,3 +1,4 @@
+import type { Tom } from '@/components/ui/tokens';
 /**
  * O vocabulário de pedidos, produção, expedição e pagamentos.
  *
@@ -25,8 +26,17 @@ export type EstadoPedido =
   | 'entregue'
   | 'cancelado';
 
-export type EtapaProducao = 'fila' | 'impressao' | 'acabamento' | 'revisao' | 'pronto';
-export type EstadoExpedicao = 'aguardando' | 'postado' | 'em_transito' | 'entregue' | 'devolvido';
+export type EtapaProducao =
+  // legados (0012 e anteriores) — preservados sem renomear
+  | 'fila' | 'impressao' | 'acabamento' | 'revisao' | 'pronto'
+  // do briefing da Fase 9 (alguns já estavam na 0015)
+  | 'aguardando' | 'preflight' | 'arquivos_prontos' | 'qualidade' | 'embalagem';
+export type EstadoExpedicao =
+  // legados (0012 e anteriores) — preservados sem renomear
+  | 'aguardando' | 'postado' | 'em_transito' | 'entregue' | 'devolvido'
+  // do briefing da Fase 10 (alguns já estavam na 0015)
+  | 'aguardando_embalagem' | 'pronto_para_envio' | 'etiqueta_gerada'
+  | 'aguardando_coleta' | 'problema_na_entrega' | 'retornado';
 export type EstadoPagamento = 'pendente' | 'aprovado' | 'recusado' | 'estornado' | 'expirado';
 
 /** Rótulo e cor de cada valor. `classe` é o par fundo/texto do selo. */
@@ -52,19 +62,34 @@ export const ESTADOS_PEDIDO: Termo<EstadoPedido>[] = [
 ];
 
 export const ETAPAS_PRODUCAO: Termo<EtapaProducao>[] = [
+  // legados
   { id: 'fila', rotulo: 'Na fila', classe: NEUTRO },
   { id: 'impressao', rotulo: 'Impressão', classe: AZUL },
   { id: 'acabamento', rotulo: 'Acabamento', classe: ROXO },
   { id: 'revisao', rotulo: 'Revisão', classe: AMBAR },
   { id: 'pronto', rotulo: 'Pronto', classe: VERDE },
+  // Fase 9 (alguns já estavam na 0015, re-listados para clareza)
+  { id: 'aguardando', rotulo: 'Aguardando', classe: NEUTRO },
+  { id: 'preflight', rotulo: 'Pré-flight', classe: AZUL },
+  { id: 'arquivos_prontos', rotulo: 'Arquivos prontos', classe: AZUL },
+  { id: 'qualidade', rotulo: 'Qualidade', classe: AMBAR },
+  { id: 'embalagem', rotulo: 'Embalagem', classe: ROXO },
 ];
 
 export const ESTADOS_EXPEDICAO: Termo<EstadoExpedicao>[] = [
+  // legados
   { id: 'aguardando', rotulo: 'Aguardando postagem', classe: NEUTRO },
   { id: 'postado', rotulo: 'Postado', classe: AZUL },
   { id: 'em_transito', rotulo: 'Em trânsito', classe: CIANO },
   { id: 'entregue', rotulo: 'Entregue', classe: VERDE },
   { id: 'devolvido', rotulo: 'Devolvido', classe: CORAL },
+  // Fase 10
+  { id: 'aguardando_embalagem', rotulo: 'Aguardando embalagem', classe: NEUTRO },
+  { id: 'pronto_para_envio', rotulo: 'Pronto para envio', classe: CIANO },
+  { id: 'etiqueta_gerada', rotulo: 'Etiqueta gerada', classe: AZUL },
+  { id: 'aguardando_coleta', rotulo: 'Aguardando coleta', classe: AZUL },
+  { id: 'problema_na_entrega', rotulo: 'Problema na entrega', classe: CORAL },
+  { id: 'retornado', rotulo: 'Retornado', classe: CORAL },
 ];
 
 /**
@@ -217,3 +242,119 @@ export type PedidoDaLinha = {
 
 export const PEDIDOS_POR_PAGINA = 25;
 
+// ---------------------------------------------------------------------------
+// Fase 9 — Kanban de Produção
+// ---------------------------------------------------------------------------
+
+/**
+ * As 8 colunas do Kanban, na ordem do briefing.
+ *
+ * O banco aceita 10 valores em `producao.etapa` (5 legados + 5 do briefing).
+ * A regra de mapeamento é `colunaDoKanban(etapa)` abaixo: legados caem na
+ * coluna adjacente (fila→Aguardando, revisao→Qualidade), sem renomear nada.
+ */
+export type ColunaKanban =
+  | 'aguardando'
+  | 'preflight'
+  | 'arquivos_prontos'
+  | 'impressao'
+  | 'acabamento'
+  | 'qualidade'
+  | 'embalagem'
+  | 'pronto';
+
+export const COLUNAS_KANBAN: { id: ColunaKanban; rotulo: string; tom: Tom }[] = [
+  { id: 'aguardando',       rotulo: 'Aguardando',       tom: 'neutro' },
+  { id: 'preflight',        rotulo: 'Pré-flight',       tom: 'azul' },
+  { id: 'arquivos_prontos', rotulo: 'Arquivos prontos', tom: 'azul' },
+  { id: 'impressao',        rotulo: 'Impressão',        tom: 'azul' },
+  { id: 'acabamento',       rotulo: 'Acabamento',       tom: 'indigo' },
+  { id: 'qualidade',        rotulo: 'Qualidade',        tom: 'ambar' },
+  { id: 'embalagem',        rotulo: 'Embalagem',        tom: 'indigo' },
+  { id: 'pronto',           rotulo: 'Pronto',           tom: 'verde' },
+];
+
+export function colunaDoKanban(etapa: string | null | undefined): ColunaKanban {
+  switch (etapa) {
+    case 'fila':         return 'aguardando';  // legado
+    case 'revisao':      return 'qualidade';   // legado
+    case 'aguardando':   return 'aguardando';
+    case 'preflight':    return 'preflight';
+    case 'arquivos_prontos': return 'arquivos_prontos';
+    case 'impressao':    return 'impressao';
+    case 'acabamento':   return 'acabamento';
+    case 'qualidade':    return 'qualidade';
+    case 'embalagem':    return 'embalagem';
+    case 'pronto':       return 'pronto';
+    default:             return 'aguardando';
+  }
+}
+
+export const PROXIMA_ETAPA_KANBAN: Record<ColunaKanban, ColunaKanban> = {
+  aguardando: 'preflight',
+  preflight: 'arquivos_prontos',
+  arquivos_prontos: 'impressao',
+  impressao: 'acabamento',
+  acabamento: 'qualidade',
+  qualidade: 'embalagem',
+  embalagem: 'pronto',
+  pronto: 'pronto',
+};
+
+export const ETAPA_ANTERIOR_KANBAN: Record<ColunaKanban, ColunaKanban> = {
+  aguardando: 'aguardando',
+  preflight: 'aguardando',
+  arquivos_prontos: 'preflight',
+  impressao: 'arquivos_prontos',
+  acabamento: 'impressao',
+  qualidade: 'acabamento',
+  embalagem: 'qualidade',
+  pronto: 'embalagem',
+};
+
+// ---------------------------------------------------------------------------
+// Fase 10 — UI da Expedição
+// ---------------------------------------------------------------------------
+
+/** As 10 colunas da UI da expedição, na ordem do briefing. */
+export type ColunaExpedicao =
+  | 'aguardando_embalagem'
+  | 'pronto_para_envio'
+  | 'etiqueta_gerada'
+  | 'aguardando_coleta'
+  | 'postado'
+  | 'em_transito'
+  | 'entregue'
+  | 'problema_na_entrega'
+  | 'retornado'
+  | 'devolvido';
+
+export const COLUNAS_EXPEDICAO: { id: ColunaExpedicao; rotulo: string; tom: Tom }[] = [
+  { id: 'aguardando_embalagem', rotulo: 'Aguardando embalagem', tom: 'neutro' },
+  { id: 'pronto_para_envio',    rotulo: 'Pronto para envio',    tom: 'ciano' },
+  { id: 'etiqueta_gerada',      rotulo: 'Etiqueta gerada',      tom: 'azul' },
+  { id: 'aguardando_coleta',    rotulo: 'Aguardando coleta',    tom: 'azul' },
+  { id: 'postado',              rotulo: 'Postado',              tom: 'azul' },
+  { id: 'em_transito',          rotulo: 'Em trânsito',          tom: 'ciano' },
+  { id: 'entregue',             rotulo: 'Entregue',             tom: 'verde' },
+  { id: 'problema_na_entrega',  rotulo: 'Problema na entrega',  tom: 'coral' },
+  { id: 'retornado',            rotulo: 'Retornado',            tom: 'coral' },
+  { id: 'devolvido',            rotulo: 'Devolvido',            tom: 'coral' },
+];
+
+export function colunaDaExpedicao(estado: string | null | undefined): ColunaExpedicao {
+  switch (estado) {
+    case 'aguardando':           return 'aguardando_embalagem';  // legado
+    case 'aguardando_embalagem': return 'aguardando_embalagem';
+    case 'pronto_para_envio':    return 'pronto_para_envio';
+    case 'etiqueta_gerada':      return 'etiqueta_gerada';
+    case 'aguardando_coleta':    return 'aguardando_coleta';
+    case 'postado':              return 'postado';
+    case 'em_transito':          return 'em_transito';
+    case 'entregue':             return 'entregue';
+    case 'problema_na_entrega':  return 'problema_na_entrega';
+    case 'retornado':            return 'retornado';
+    case 'devolvido':            return 'devolvido';
+    default:                     return 'aguardando_embalagem';
+  }
+}

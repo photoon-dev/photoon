@@ -31,11 +31,17 @@ import { colocarNaFila, moverEtapaProducao } from '@/app/app/actions-pedidos';
 
 /** Cor de cada etapa: ponto da coluna, fundo e texto do selo. */
 const COR: Record<EtapaProducao, [string, string, string]> = {
+
   fila: ['#06B6D4', '#E4F8FC', '#0891B2'],
   impressao: ['#2563EB', '#EAF0FF', '#2563EB'],
   acabamento: ['#6366F1', '#EDEBFE', '#6366F1'],
   revisao: ['#F59E0B', '#FEF3E2', '#B45309'],
   pronto: ['#10B981', '#E6F8F1', '#059669'],
+  aguardando: ['#06B6D4', '#E4F8FC', '#0891B2'],
+  preflight: ['#2563EB', '#EAF0FF', '#2563EB'],
+  arquivos_prontos: ['#2563EB', '#EAF0FF', '#2563EB'],
+  qualidade: ['#F59E0B', '#FEF3E2', '#B45309'],
+  embalagem: ['#6366F1', '#EDEBFE', '#6366F1'],
 };
 
 /**
@@ -44,11 +50,17 @@ const COR: Record<EtapaProducao, [string, string, string]> = {
  * impressa exigiria um dado que a fábrica não manda.
  */
 const ANDAMENTO: Record<EtapaProducao, number> = {
+
   fila: 10,
   impressao: 40,
   acabamento: 65,
   revisao: 85,
   pronto: 100,
+  aguardando: 10,
+  preflight: 20,
+  arquivos_prontos: 30,
+  qualidade: 85,
+  embalagem: 90,
 };
 
 const CARD =

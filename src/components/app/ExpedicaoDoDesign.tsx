@@ -37,11 +37,18 @@ import { definirEstadoExpedicao, salvarRastreio } from '@/app/app/actions-pedido
  */
 
 const SELO: Record<EstadoExpedicao, [string, string]> = {
+
   aguardando: ['#EEF1F7', '#6B7A90'],
   postado: ['#EAF0FF', '#2563EB'],
   em_transito: ['#E4F8FC', '#0891B2'],
   entregue: ['#E6F8F1', '#059669'],
   devolvido: ['#FFF1F3', '#E11D48'],
+  aguardando_embalagem: ['#EEF1F7', '#6B7A90'],
+  pronto_para_envio: ['#E4F8FC', '#0891B2'],
+  etiqueta_gerada: ['#EAF0FF', '#2563EB'],
+  aguardando_coleta: ['#EAF0FF', '#2563EB'],
+  problema_na_entrega: ['#FFF1F3', '#E11D48'],
+  retornado: ['#FFF1F3', '#E11D48'],
 };
 
 /** O caminho normal da caixa. É o que o botão principal oferece. */
