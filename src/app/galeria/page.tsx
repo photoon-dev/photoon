@@ -8,6 +8,8 @@ import {
   listarRostosGaleria,
   listarPessoasGaleria,
   listarNotificacoes,
+  listarProjetos,
+  usoDasFotos,
 } from '@/lib/data';
 import { perfilDoCliente } from '@/lib/cliente';
 import GaleriaDoDesign from '@/components/cliente/GaleriaDoDesign';
@@ -23,10 +25,12 @@ export default async function GaleriaPage() {
   const cliente = await garantirCliente(lojista.id);
   if (!cliente) notFound();
 
-  const [perfil, galerias, notificacoes] = await Promise.all([
+  const [perfil, galerias, notificacoes, projetos, uso] = await Promise.all([
     perfilDoCliente(lojista.id),
     listarGalerias(cliente.id),
     listarNotificacoes(cliente.id),
+    listarProjetos(cliente.id),
+    usoDasFotos(cliente.id),
   ]);
 
   // Uma galeria por evento; a mais recente é a que o cliente quer ver.
@@ -57,6 +61,8 @@ export default async function GaleriaPage() {
       fotos={fotos}
       rostos={rostos}
       pessoas={pessoas}
+      projetos={projetos}
+      uso={uso}
       galeriaNome={galeria?.nome ?? 'Sem galeria'}
     />
   );

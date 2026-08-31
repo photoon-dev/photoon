@@ -222,6 +222,12 @@ class Conversor(HTMLParser):
                 props.append(f'{nome}={{v.{LINKS[val]}}}')
                 continue
 
+            # Atributo booleano do HTML (`readonly`, `disabled`): vem sem valor.
+            # No JSX ele precisa do literal, senão vira string vazia.
+            if val is None:
+                props.append(f'{nome}={{true}}')
+                continue
+
             m = BIND.match(val)
             if m:
                 props.append(f'{nome}={{{expr(m.group(1))}}}')

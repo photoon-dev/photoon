@@ -421,6 +421,12 @@ export default function PedidoDesign({ v }: { v: any }) {
                   </svg>
                   Marcar visto
                 </button>
+                <button onClick={v.voltar} style={css(v.btnVoltar)}>
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M19 12H6M12 5l-7 7 7 7" />
+                  </svg>
+                  {v.rotuloVoltar}
+                </button>
                 <button onClick={v.avancar} style={css(v.btnAvancar)}>
                   <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M5 12h13M12 5l7 7-7 7" />

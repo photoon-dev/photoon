@@ -217,87 +217,115 @@
       <div style="display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; flex-wrap: wrap;">
         <div>
           <p style="margin: 0 0 8px; font-size: 12px; letter-spacing: 1.6px; text-transform: uppercase; color: #9AA7BC; font-weight: 700;">Operação · Expedição</p>
-          <h1 style="margin: 0 0 8px; font-size: 30px; font-weight: 800; letter-spacing: -1px;">Expedição</h1>
+          <h1 style="margin: 0 0 8px; font-size: 30px; font-weight: 800; letter-spacing: -1px;">Expedição e embalagem</h1>
           <p style="margin: 0; font-size: 14.5px; color: #6B7A90;">{{ resumo }}</p>
         </div>
-        <div style="display: flex; gap: 10px; flex-wrap: wrap;"><a href="/pedidos" style="text-decoration: none; white-space: nowrap; height: 44px; padding: 0 18px; display: flex; align-items: center; gap: 9px; border: 1px solid #E6EAF2; border-radius: 14px; background: #FFFFFF; color: #0B1220; font-family: inherit; font-size: 14px; font-weight: 600; cursor: pointer;" style-hover="background: #F1F5FD; border-color: #D6E2FC; color: #2563EB;"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3v5h5"/><path d="M6 3h8l5 5v13H6z"/></svg>Ver pedidos</a><button onClick="{{ abrirTodos }}" style="{{ btnAbrir }}"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h11v10H3z"/><path d="M14 10h4l3 3v4h-7z"/><circle cx="7" cy="18.5" r="1.6"/><circle cx="17" cy="18.5" r="1.6"/></svg>{{ rotuloAbrir }}</button></div>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;"><button onClick="{{ imprimirPagina }}" style="white-space: nowrap; height: 44px; padding: 0 18px; display: flex; align-items: center; gap: 9px; border: 1px solid #E6EAF2; border-radius: 14px; background: #FFFFFF; color: #0B1220; font-family: inherit; font-size: 14px; font-weight: 600; cursor: pointer;" style-hover="background: #F1F5FD; border-color: #D6E2FC; color: #2563EB;"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3v5h5"/><path d="M6 3h8l5 5v13H6z"/></svg>Romaneio do dia</button><button onClick="{{ verOcorrencias }}" style="{{ btnOcorrencias }}"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v5M12 16.5h.01"/><circle cx="12" cy="12" r="8.5"/></svg>{{ rotuloOcorrencias }}</button><button onClick="{{ openModal }}" style="white-space: nowrap; height: 44px; padding: 0 18px; display: flex; align-items: center; gap: 9px; border: 0; border-radius: 14px; background: linear-gradient(135deg,#2563EB,#06B6D4); color: #FFFFFF; font-family: inherit; font-size: 14px; font-weight: 700; cursor: pointer; box-shadow: 0 8px 20px rgba(37,99,235,.28);" style-hover="filter: brightness(1.06);"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M7 9V4h10v5"/><rect x="4" y="9" width="16" height="7" rx="2.5"/><path d="M7 14h10v6H7z"/></svg>Gerar etiquetas</button></div>
       </div>
 
       <div style="display: flex; gap: 4px; padding: 5px; background: #F4F7FC; border: 1px solid #E6EAF2; border-radius: 999px; flex-wrap: wrap; width: max-content; max-width: 100%;">
-        <span onClick="{{ setP0 }}" style="{{ per0 }}" style-hover="background: #FFFFFF; color: #2563EB;">{{ rot0 }}</span>
-        <span onClick="{{ setP1 }}" style="{{ per1 }}" style-hover="background: #FFFFFF; color: #2563EB;">{{ rot1 }}</span>
-        <span onClick="{{ setP2 }}" style="{{ per2 }}" style-hover="background: #FFFFFF; color: #2563EB;">{{ rot2 }}</span>
-        <span onClick="{{ setP3 }}" style="{{ per3 }}" style-hover="background: #FFFFFF; color: #2563EB;">{{ rot3 }}</span>
-        <span onClick="{{ setP4 }}" style="{{ per4 }}" style-hover="background: #FFFFFF; color: #2563EB;">{{ rot4 }}</span>
-        <span onClick="{{ setP5 }}" style="{{ per5 }}" style-hover="background: #FFFFFF; color: #2563EB;">{{ rot5 }}</span>
+        <span onClick="{{ setP0 }}" style="{{ per0 }}" style-hover="background: #FFFFFF; color: #2563EB;">{{ aba0 }}</span>
+        <span onClick="{{ setP1 }}" style="{{ per1 }}" style-hover="background: #FFFFFF; color: #2563EB;">{{ aba1 }}</span>
+        <span onClick="{{ setP2 }}" style="{{ per2 }}" style-hover="background: #FFFFFF; color: #2563EB;">{{ aba2 }}</span>
+        <span onClick="{{ setP3 }}" style="{{ per3 }}" style-hover="background: #FFFFFF; color: #2563EB;">{{ aba3 }}</span>
+        <span onClick="{{ setP4 }}" style="{{ per4 }}" style-hover="background: #FFFFFF; color: #2563EB;">{{ aba4 }}</span>
       </div>
 
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; align-items: start;">
+      <div class="exp-split">
 
-        <div style="background: #FFFFFF; border: 1px solid #E6EAF2; border-radius: 24px; padding: 22px 26px; grid-column: span 2; min-width: 0;">
+        <div style="background: #FFFFFF; border: 1px solid #E6EAF2; border-radius: 24px; padding: 22px 26px; min-width: 0;">
           <div style="display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 18px; flex-wrap: wrap;">
             <div>
-              <h2 style="margin: 0; font-size: 18px; font-weight: 700;">Envio em foco</h2>
-              <p style="margin: 5px 0 0; font-size: 13px; color: #6B7A90;">{{ focoSub }}</p>
+              <h2 style="margin: 0; font-size: 18px; font-weight: 700;">Estação de embalagem</h2>
+              <p style="margin: 5px 0 0; font-size: 13px; color: #6B7A90;">{{ estacaoNota }}</p>
             </div>
-            <span style="{{ focoSelo }}">{{ focoEstado }}</span>
+            <span style="{{ estacaoSelo }}"><span style="{{ estacaoPonto }}"></span>{{ estacaoEstado }}</span>
           </div>
 
           <div style="display: flex; align-items: center; gap: 12px; padding: 8px 8px 8px 18px; border: 1.5px solid #2563EB; border-radius: 18px; background: #F8FAFE; margin-bottom: 20px;">
-            <span style="color: #2563EB; flex: 0 0 auto;"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></span>
-            <input value="{{ busca }}" onChange="{{ setBusca }}" onKeyDown="{{ buscaTecla }}" placeholder="número do pedido" style="flex: 1; min-width: 0; border: 0; background: transparent; font-family: monospace; font-size: 18px; font-weight: 700; color: #0B1220;"/>
-            <button onClick="{{ localizar }}" style="white-space: nowrap; height: 42px; padding: 0 18px; border: 0; border-radius: 13px; background: #0B1220; color: #FFFFFF; font-family: inherit; font-size: 13.5px; font-weight: 700; cursor: pointer;" style-hover="background: #2563EB;">Localizar</button>
+            <span style="color: #2563EB; flex: 0 0 auto;"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6v12M8 6v12M12 6v12M16 6v12M20 6v12"/></svg></span>
+            <input defaultValue="{{ busca }}" onChange="{{ onBusca }}" placeholder="Número do pedido" style="flex: 1; min-width: 0; border: 0; background: transparent; font-family: monospace; font-size: 18px; font-weight: 700; color: #0B1220;"/>
+            <button onClick="{{ conferir }}" style="white-space: nowrap; height: 42px; padding: 0 18px; border: 0; border-radius: 13px; background: #0B1220; color: #FFFFFF; font-family: inherit; font-size: 13.5px; font-weight: 700; cursor: pointer;" style-hover="background: #2563EB;">Conferir</button>
           </div>
 
           <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 18px; align-items: start;">
             <div>
               <p style="margin: 0 0 12px; font-size: 12px; letter-spacing: 1.4px; text-transform: uppercase; color: #9AA7BC; font-weight: 700;">{{ itensTitulo }}</p>
               <div style="display: flex; flex-direction: column; gap: 10px;">
-                <sc-for list="{{ itens }}" as="it" hint-placeholder-count="3">
-                <div style="display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 15px; background: #F8FAFE; border: 1px solid #EEF1F7;"><span style="width: 22px; height: 22px; border-radius: 7px; background: #10B981; display: flex; align-items: center; justify-content: center; color: #FFFFFF; flex: 0 0 auto;"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span><div style="flex: 1; min-width: 0;"><p style="margin: 0; font-size: 13.5px; font-weight: 600;">{{ it.descricao }}</p><p style="margin: 2px 0 0; font-size: 12px; color: #6B7A90;">{{ it.detalhe }}</p></div></div>
+                <sc-for list="{{ itens }}" as="item" hint-placeholder-count="3">
+                <div style="display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 15px; background: #F8FAFE; border: 1px solid #EEF1F7;"><span style="width: 22px; height: 22px; border-radius: 7px; background: #10B981; display: flex; align-items: center; justify-content: center; color: #FFFFFF; flex: 0 0 auto;"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span><div style="flex: 1; min-width: 0;"><p style="margin: 0; font-size: 13.5px; font-weight: 600;">{{ item.descricao }}</p><p style="margin: 2px 0 0; font-size: 12px; color: #6B7A90;">{{ item.detalhe }}</p></div></div>
                 </sc-for>
-                <p style="{{ itensVazio }}">{{ itensTextoVazio }}</p>
+                <p style="{{ itensVazio }}">Nenhum item gravado neste pedido.</p>
               </div>
               <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 12px; margin-top: 16px;">
             <div style="display: flex; flex-direction: column; gap: 8px; min-width: 0;">
               <label style="font-size: 12.5px; font-weight: 600; color: #6B7A90;">Transportadora</label>
-              <input value="{{ transportadora }}" onChange="{{ setTransportadora }}" disabled="{{ semFoco }}" placeholder="Correios, Jadlog…" style="height: 46px; padding: 0 15px; border: 1px solid #E6EAF2; border-radius: 14px; font-family: inherit; font-size: 14px; color: #0B1220; min-width: 0;" style-focus="border-color: #2563EB;"/>
+              <input name="transportadora" defaultValue="{{ transportadora }}" onChange="{{ onTransportadora }}" placeholder="Correios, motoboy, retirada" style="height: 46px; padding: 0 15px; border: 1px solid #E6EAF2; border-radius: 14px; font-family: inherit; font-size: 14px; color: #0B1220; min-width: 0;" style-focus="border-color: #2563EB;"/>
               
             </div>
             <div style="display: flex; flex-direction: column; gap: 8px; min-width: 0;">
               <label style="font-size: 12.5px; font-weight: 600; color: #6B7A90;">Rastreio</label>
-              <input value="{{ rastreio }}" onChange="{{ setRastreio }}" disabled="{{ semFoco }}" placeholder="código do objeto" style="height: 46px; padding: 0 15px; border: 1px solid #E6EAF2; border-radius: 14px; font-family: inherit; font-size: 14px; color: #0B1220; min-width: 0;" style-focus="border-color: #2563EB;"/>
+              <input name="rastreio" defaultValue="{{ rastreio }}" onChange="{{ onRastreio }}" placeholder="Código de acompanhamento" style="height: 46px; padding: 0 15px; border: 1px solid #E6EAF2; border-radius: 14px; font-family: inherit; font-size: 14px; color: #0B1220; min-width: 0;" style-focus="border-color: #2563EB;"/>
               
             </div>
               </div>
             </div>
 
             <div>
-              <p style="margin: 0 0 12px; font-size: 12px; letter-spacing: 1.4px; text-transform: uppercase; color: #9AA7BC; font-weight: 700;">Etiqueta</p>
+              <p style="margin: 0 0 12px; font-size: 12px; letter-spacing: 1.4px; text-transform: uppercase; color: #9AA7BC; font-weight: 700;">Prévia da etiqueta</p>
               <div style="border: 1px solid #E6EAF2; border-radius: 18px; padding: 18px; background: #FFFFFF; box-shadow: 0 10px 24px rgba(11,18,32,.07);">
                 <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; padding-bottom: 12px; border-bottom: 1.5px dashed #CBD5E6;">
-                  <div style="min-width: 0;"><p style="margin: 0; font-size: 15px; font-weight: 800;">{{ lojaNome }}</p><p style="margin: 3px 0 0; font-size: 11px; color: #6B7A90;">{{ remetente }}</p></div>
-                  <span style="{{ etiquetaSelo }}">{{ etiquetaModal }}</span>
+                  <div style="min-width: 0;"><p style="margin: 0; font-size: 15px; font-weight: 800;">{{ remetenteNome }}</p><p style="margin: 3px 0 0; font-size: 11px; color: #6B7A90;">{{ remetente }}</p></div>
+                  <span style="padding: 4px 9px; border-radius: 7px; background: #0B1220; color: #FFFFFF; font-size: 10.5px; font-weight: 700;">{{ servico }}</span>
                 </div>
                 <div style="padding: 12px 0; border-bottom: 1.5px dashed #CBD5E6;">
                   <p style="margin: 0; font-size: 10.5px; letter-spacing: 1px; text-transform: uppercase; color: #9AA7BC; font-weight: 700;">Destinatário</p>
-                  <p style="margin: 5px 0 0; font-size: 13.5px; font-weight: 700;">{{ destinatario }}</p>
-                  <p style="margin: 3px 0 0; font-size: 12px; color: #46536A; line-height: 1.5;">{{ enderecoLinha1 }}<br/>{{ enderecoLinha2 }}</p>
+                  <p style="margin: 5px 0 0; font-size: 13.5px; font-weight: 700;">{{ destNome }}</p>
+                  <p style="margin: 3px 0 0; font-size: 12px; color: #46536A; line-height: 1.5;">{{ destLinha1 }}<br/>{{ destLinha2 }}</p>
                 </div>
                 <div style="display: flex; align-items: center; gap: 14px; padding-top: 12px;">
-                  <sc-if value="{{ temRastreio }}">
                   <div style="display: flex; align-items: flex-end; gap: 2px; height: 44px; flex: 1; min-width: 0;">
-                    <sc-for list="{{ barras }}" as="b" hint-placeholder-count="24">
-                    <span style="{{ b.estilo }}"></span>
-                    </sc-for>
+                    <span style="flex: 1; height: 100%; background: #0B1220;"></span>
+                    <span style="flex: 1; height: 60%; background: #0B1220;"></span>
+                    <span style="flex: 1; height: 90%; background: #0B1220;"></span>
+                    <span style="flex: 1; height: 45%; background: #0B1220;"></span>
+                    <span style="flex: 1; height: 100%; background: #0B1220;"></span>
+                    <span style="flex: 1; height: 70%; background: #0B1220;"></span>
+                    <span style="flex: 1; height: 55%; background: #0B1220;"></span>
+                    <span style="flex: 1; height: 95%; background: #0B1220;"></span>
+                    <span style="flex: 1; height: 100%; background: #0B1220;"></span>
+                    <span style="flex: 1; height: 60%; background: #0B1220;"></span>
+                    <span style="flex: 1; height: 90%; background: #0B1220;"></span>
+                    <span style="flex: 1; height: 45%; background: #0B1220;"></span>
+                    <span style="flex: 1; height: 100%; background: #0B1220;"></span>
+                    <span style="flex: 1; height: 70%; background: #0B1220;"></span>
+                    <span style="flex: 1; height: 55%; background: #0B1220;"></span>
+                    <span style="flex: 1; height: 95%; background: #0B1220;"></span>
+                    <span style="flex: 1; height: 100%; background: #0B1220;"></span>
+                    <span style="flex: 1; height: 60%; background: #0B1220;"></span>
+                    <span style="flex: 1; height: 90%; background: #0B1220;"></span>
+                    <span style="flex: 1; height: 45%; background: #0B1220;"></span>
+                    <span style="flex: 1; height: 100%; background: #0B1220;"></span>
+                    <span style="flex: 1; height: 70%; background: #0B1220;"></span>
+                    <span style="flex: 1; height: 55%; background: #0B1220;"></span>
+                    <span style="flex: 1; height: 95%; background: #0B1220;"></span>
+                    <span style="flex: 1; height: 100%; background: #0B1220;"></span>
+                    <span style="flex: 1; height: 60%; background: #0B1220;"></span>
+                    <span style="flex: 1; height: 90%; background: #0B1220;"></span>
+                    <span style="flex: 1; height: 45%; background: #0B1220;"></span>
+                    <span style="flex: 1; height: 100%; background: #0B1220;"></span>
+                    <span style="flex: 1; height: 70%; background: #0B1220;"></span>
+                    <span style="flex: 1; height: 55%; background: #0B1220;"></span>
+                    <span style="flex: 1; height: 95%; background: #0B1220;"></span>
+                    <span style="flex: 1; height: 100%; background: #0B1220;"></span>
+                    <span style="flex: 1; height: 60%; background: #0B1220;"></span>
                   </div>
-                  </sc-if>
                   <div style="text-align: right; flex: 0 0 auto;"><p style="margin: 0; font-size: 11px; color: #9AA7BC;">Rastreio</p><p style="margin: 2px 0 0; font-size: 12.5px; font-weight: 700; font-family: monospace;">{{ rastreioEtiqueta }}</p></div>
                 </div>
               </div>
               <div style="display: flex; gap: 10px; margin-top: 14px;">
-                <button onClick="{{ acaoSecundaria }}" style="{{ btnSecundario }}" style-hover="background: #F1F5FD; color: #2563EB;">{{ rotuloSecundario }}</button>
-                <button onClick="{{ acaoPrincipal }}" style="{{ btnPrincipal }}" style-hover="filter: brightness(1.06);">{{ rotuloPrincipal }}</button>
+                <button onClick="{{ imprimirPagina }}" style="white-space: nowrap; flex: 1; height: 44px; border: 1px solid #E6EAF2; border-radius: 14px; background: #FFFFFF; color: #46536A; font-family: inherit; font-size: 13.5px; font-weight: 600; cursor: pointer;" style-hover="background: #F1F5FD; color: #2563EB;">Imprimir</button>
+                <button onClick="{{ despachar }}" style="{{ btnDespachar }}">{{ rotuloDespachar }}</button>
               </div>
             </div>
           </div>
@@ -307,67 +335,102 @@
           <div style="background: #FFFFFF; border: 1px solid #E6EAF2; border-radius: 24px; padding: 22px 24px;">
             <h2 style="margin: 0 0 16px; font-size: 17px; font-weight: 700;">Por transportadora</h2>
             <div style="display: flex; flex-direction: column; gap: 12px;">
-              <sc-for list="{{ transportadoras }}" as="t" hint-placeholder-count="2">
+              <sc-for list="{{ coletas }}" as="c" hint-placeholder-count="2">
               <div style="padding: 14px; border-radius: 16px; background: #F8FAFE; border: 1px solid #EEF1F7;">
-                <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 10px;"><p style="margin: 0; font-size: 13.5px; font-weight: 700;">{{ t.nome }}</p><span style="{{ t.selo }}">{{ t.chip }}</span></div>
-                <div style="margin-bottom: 8px; display: flex; justify-content: space-between; font-size: 12.5px; color: #6B7A90;"><span>{{ t.detalhe }}</span><span>{{ t.total }}</span></div>
-                <div style="height: 7px; border-radius: 999px; background: #EEF1F7;"><div style="{{ t.barra }}"></div></div>
+                <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 10px;"><p style="margin: 0; font-size: 13.5px; font-weight: 700;">{{ c.titulo }}</p><span style="{{ c.selo }}">{{ c.seloRotulo }}</span></div>
+                <div style="margin-bottom: 8px; display: flex; justify-content: space-between; align-items: baseline; font-size: 12.5px; color: #6B7A90;"><span>{{ c.resumo }}</span><span style="{{ c.pctEstilo }}">{{ c.pct }}</span></div>
+                <div style="height: 8px; border-radius: 999px; background: #E3E9F5;"><div style="{{ c.barra }}"></div></div>
               </div>
               </sc-for>
-              <p style="{{ transportadorasVazio }}">Nenhum envio tem transportadora ainda.</p>
+              <p style="{{ coletasVazio }}">Nenhum envio aberto nesta loja.</div>
             </div>
           </div>
           <div style="background: #FFFFFF; border: 1px solid #E6EAF2; border-radius: 24px; padding: 22px 24px;">
             <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 16px;">
-              <h2 style="margin: 0; font-size: 17px; font-weight: 700;">Prontos sem envio</h2>
-              <span style="{{ semEnvioSelo }}">{{ semEnvioResumo }}</span>
+              <h2 style="margin: 0; font-size: 17px; font-weight: 700;">Retiradas no balcão</h2>
+              <span style="{{ retiradasSelo }}">{{ retiradasRotulo }}</span>
             </div>
             <div style="display: flex; flex-direction: column; gap: 10px;">
-              <sc-for list="{{ semEnvio }}" as="s" hint-placeholder-count="3">
-              <div style="display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 15px; background: #F8FAFE; border: 1px solid #EEF1F7;"><span style="width: 32px; height: 32px; border-radius: 10px; background: #EDEBFE; color: #6366F1; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex: 0 0 auto;">{{ s.iniciais }}</span><div style="flex: 1; min-width: 0;"><p style="margin: 0; font-size: 13px; font-weight: 600;">{{ s.cliente }}</p><p style="margin: 2px 0 0; font-size: 12px; color: #6B7A90;">{{ s.detalhe }}</p></div><button onClick="{{ s.abrirEnvio }}" style="white-space: nowrap; height: 34px; padding: 0 13px; border: 1px solid #E6EAF2; border-radius: 12px; background: #FFFFFF; color: #46536A; font-family: inherit; font-size: 12.5px; font-weight: 600; cursor: pointer;" style-hover="background: #F1F5FD; color: #2563EB; border-color: #D6E2FC;">Abrir envio</button></div>
+              <sc-for list="{{ retiradas }}" as="r" hint-placeholder-count="3">
+              <div style="{{ r.linha }}"><span style="{{ r.avatar }}">{{ r.iniciais }}</span><div style="flex: 1; min-width: 0;"><p style="margin: 0; font-size: 13.5px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ r.nome }}</p><p style="margin: 2px 0 0; font-size: 12px; color: #6B7A90;">{{ r.nota }}</p></div><a href="{{ r.href }}" style="font-size: 12.5px; font-weight: 700; white-space: nowrap;">Abrir</a></div>
               </sc-for>
-              <p style="{{ semEnvioVazio }}">Todo pedido pronto já tem envio aberto.</p>
+              <p style="{{ retiradasVazio }}">Nenhuma retirada no balcão em aberto.</p>
             </div>
           </div>
-          <div style="background: #0B1220; border-radius: 24px; padding: 22px 24px; color: #FFFFFF;">
-            <p style="margin: 0 0 8px; font-size: 12px; letter-spacing: 1.6px; text-transform: uppercase; color: rgba(255,255,255,.55); font-weight: 700;">Devoluções</p>
-            <p style="margin: 0 0 6px; font-size: 26px; font-weight: 800; letter-spacing: -.8px;">{{ devolvidosValor }}</p>
-            <p style="margin: 0 0 16px; font-size: 13px; color: rgba(255,255,255,.7);">{{ devolvidosTexto }}</p>
-            <button onClick="{{ verDevolvidos }}" style="white-space: nowrap; height: 40px; padding: 0 16px; border: 1px solid rgba(255,255,255,.25); border-radius: 999px; background: transparent; color: #FFFFFF; font-family: inherit; font-size: 13.5px; font-weight: 600; cursor: pointer;" style-hover="background: rgba(255,255,255,.1);">Ver devolvidos</button>
+          <div style="background: linear-gradient(150deg,#0B1220,#1E2A44); border-radius: 24px; padding: 22px 24px; color: #FFFFFF; flex: 1; display: flex; flex-direction: column; justify-content: center;">
+            <p style="margin: 0 0 8px; font-size: 12px; letter-spacing: 1.6px; text-transform: uppercase; color: rgba(255,255,255,.55); font-weight: 700;">Ocorrências</p>
+            <p style="margin: 0 0 6px; font-size: 26px; font-weight: 800; letter-spacing: -.8px;">{{ ocorrenciasTitulo }}</p>
+            <p style="margin: 0 0 16px; font-size: 13px; color: rgba(255,255,255,.7);">{{ ocorrenciasTexto }}</p>
+            <button onClick="{{ verOcorrencias }}" style="white-space: nowrap; align-self: flex-start; height: 40px; padding: 0 16px; border: 1px solid rgba(255,255,255,.25); border-radius: 999px; background: transparent; color: #FFFFFF; font-family: inherit; font-size: 13.5px; font-weight: 600; cursor: pointer;" style-hover="background: rgba(255,255,255,.1);">Abrir ocorrências</button>
           </div>
         </div>
       </div>
 
       <div style="background: #FFFFFF; border: 1px solid #E6EAF2; border-radius: 24px; overflow: hidden;">
         <div style="display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 18px 24px; flex-wrap: wrap;">
-          <h2 style="margin: 0; font-size: 18px; font-weight: 700;">Envios</h2>
+          <h2 style="margin: 0; font-size: 18px; font-weight: 700;">Volumes do dia</h2>
           <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-            <span style="padding: 9px 14px; border-radius: 999px; background: #F1F5FD; border: 1px solid #D6E2FC; font-size: 12.5px; font-weight: 700; color: #2563EB;">{{ listaResumo }}</span>
+            <span style="{{ selecionadosEstilo }}">{{ selecionadosRotulo }}</span>
+            <span onClick="{{ openModal }}" style="padding: 9px 14px; border-radius: 999px; background: #F4F7FC; border: 1px solid #E6EAF2; font-size: 12.5px; font-weight: 600; color: #46536A; cursor: pointer;" style-hover="border-color: #2563EB; color: #2563EB;">Imprimir selecionados</span>
           </div>
         </div>
         <div style="overflow-x: auto;">
-          <div style="display: grid; grid-template-columns: 26px minmax(110px,.8fr) minmax(170px,1.3fr) minmax(130px,1fr) minmax(140px,1fr) minmax(110px,.8fr) minmax(110px,.8fr) minmax(120px,.9fr); gap: 14px; padding: 10px 24px; background: #F8FAFE; border-top: 1px solid #EEF1F7; border-bottom: 1px solid #EEF1F7; font-size: 11.5px; letter-spacing: .6px; text-transform: uppercase; color: #9AA7BC; font-weight: 700;">
-            <span></span><span>Pedido</span><span>Cliente</span><span>Transportadora</span><span>Rastreio</span><span>Valor</span><span>Atualizado</span><span>Status</span>
+          <div style="display: grid; grid-template-columns: 26px minmax(110px,.8fr) minmax(110px,.8fr) minmax(170px,1.3fr) minmax(130px,1fr) minmax(140px,1fr) minmax(70px,.5fr) minmax(120px,.9fr); gap: 14px; padding: 10px 24px; background: #F8FAFE; border-top: 1px solid #EEF1F7; border-bottom: 1px solid #EEF1F7; font-size: 11.5px; letter-spacing: .6px; text-transform: uppercase; color: #9AA7BC; font-weight: 700;">
+            <span></span><span>Volume</span><span>Pedido</span><span>Cliente</span><span>Transportadora</span><span>Rastreio</span><span>Itens</span><span>Status</span>
           </div>
-            <sc-for list="{{ envios }}" as="e" hint-placeholder-count="6">
-            <div onClick="{{ e.focar }}" style="display: grid; grid-template-columns: 26px minmax(110px,.8fr) minmax(170px,1.3fr) minmax(130px,1fr) minmax(140px,1fr) minmax(110px,.8fr) minmax(110px,.8fr) minmax(120px,.9fr); gap: 14px; align-items: center; padding: 14px 24px; border-bottom: 1px solid #F4F6FB; cursor: pointer;" style-hover="background: #F8FAFE;">
-              <span style="{{ e.marca }}"></span>
-              <a href="{{ e.href }}" style="font-size: 13px; font-weight: 600;">{{ e.numero }}</a>
-              <span style="font-size: 13.5px; color: #34405A; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ e.cliente }}</span>
-              <span style="font-size: 13px; color: #6B7A90;">{{ e.transportadora }}</span>
-              <span style="font-size: 12.5px; color: #9AA7BC; font-family: monospace;">{{ e.rastreio }}</span>
-              <span style="font-size: 13px; color: #6B7A90;">{{ e.valor }}</span>
-              <span style="font-size: 13px; color: #6B7A90;">{{ e.quando }}</span>
-              <span style="{{ e.selo }}">{{ e.estado }}</span>
+            <sc-for list="{{ volumes }}" as="v" hint-placeholder-count="6">
+            <div onClick="{{ v.abrir }}" style="display: grid; grid-template-columns: 26px minmax(110px,.8fr) minmax(110px,.8fr) minmax(170px,1.3fr) minmax(130px,1fr) minmax(140px,1fr) minmax(70px,.5fr) minmax(120px,.9fr); gap: 14px; align-items: center; padding: 14px 24px; border-bottom: 1px solid #F4F6FB; cursor: pointer;" style-hover="background: #F8FAFE;">
+              <span onClick="{{ v.marcar }}" style="{{ v.check }}"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>
+              <span style="font-size: 13px; font-weight: 700; color: #46536A;">{{ v.volume }}</span>
+              <a href="{{ v.href }}" style="font-size: 13px; font-weight: 600;">{{ v.pedido }}</a>
+              <span style="font-size: 13.5px; color: #34405A; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ v.cliente }}</span>
+              <span style="font-size: 13px; color: #6B7A90;">{{ v.transportadora }}</span>
+              <span style="font-size: 12.5px; color: #9AA7BC; font-family: monospace;">{{ v.rastreio }}</span>
+              <span style="font-size: 13px; color: #6B7A90;">{{ v.itens }}</span>
+              <span style="{{ v.selo }}">{{ v.estado }}</span>
             </div>
             </sc-for>
-            <p style="{{ enviosVazio }}">{{ enviosTextoVazio }}</p>
+            <p style="{{ volumesVazio }}">Nenhum volume nesta aba.</p>
+        </div>
+        </div>
+      </div>
+    </div>
+    <div style="{{ ov }}" onClick="{{ closeModal }}"></div>
+    <div style="{{ sh }}">
+      <div style="width: min(620px, 100%); max-height: 86vh; overflow-y: auto; background: #FFFFFF; border-radius: 24px; box-shadow: 0 30px 70px rgba(11,18,32,.3); pointer-events: auto;">
+        <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; padding: 24px 26px 18px; border-bottom: 1px solid #F0F3F9;">
+          <div style="min-width: 0;"><h2 style="margin: 0; font-size: 20px; font-weight: 800; letter-spacing: -.5px;">Gerar etiquetas</h2><p style="margin: 6px 0 0; font-size: 13.5px; color: #6B7A90;">{{ modalResumo }}</p></div>
+          <span onClick="{{ closeModal }}" style="width: 36px; height: 36px; border-radius: 12px; border: 1px solid #E6EAF2; display: flex; align-items: center; justify-content: center; color: #6B7A90; cursor: pointer; flex: 0 0 auto;" style-hover="background: #F1F5FD; color: #2563EB;"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg></span>
+        </div>
+        <div style="padding: 22px 26px; display: flex; flex-direction: column; gap: 18px;">
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
+            <div style="display: flex; flex-direction: column; gap: 8px; min-width: 0;">
+              <label style="font-size: 12.5px; font-weight: 600; color: #6B7A90;">Volumes</label><input readOnly value="{{ modalContagem }}" style="height: 46px; padding: 0 15px; border: 1px solid #E6EAF2; border-radius: 14px; font-family: inherit; font-size: 14px; color: #0B1220; min-width: 0;"/>
+              
+              
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 8px; min-width: 0;">
+              <label style="font-size: 12.5px; font-weight: 600; color: #6B7A90;">Formato</label>
+              <input readOnly value="100 × 150 mm" style="height: 46px; padding: 0 15px; border: 1px solid #E6EAF2; border-radius: 14px; font-family: inherit; font-size: 14px; color: #0B1220; min-width: 0;"/>
+              <span style="font-size: 11.5px; color: #9AA7BC;">o que a prévia ao lado imprime</span>
+            </div>
+          </div>
+          <div style="border: 1px solid #E6EAF2; border-radius: 18px; overflow: hidden;">
+            <div style="display: grid; grid-template-columns: 1.1fr 1.6fr 1fr; gap: 12px; padding: 10px 16px; background: #F8FAFE; font-size: 11.5px; letter-spacing: .6px; text-transform: uppercase; color: #9AA7BC; font-weight: 700;"><span>Volume</span><span>Cliente</span><span>Serviço</span></div>
+            <sc-for list="{{ modalLinhas }}" as="m" hint-placeholder-count="3">
+            <div style="display: grid; grid-template-columns: 1.1fr 1.6fr 1fr; gap: 12px; padding: 12px 16px; border-top: 1px solid #F4F6FB; font-size: 13px;"><span style="font-weight: 700;">{{ m.volume }}</span><span>{{ m.cliente }}</span><span style="color: #6B7A90;">{{ m.servico }}</span></div>
+            </sc-for>
+            <p style="{{ modalVazio }}">Marque um volume na tabela para gerar a etiqueta.</p>
+          </div>
+                  </div>
+        <div style="display: flex; align-items: center; justify-content: flex-end; gap: 10px; padding: 18px 26px; border-top: 1px solid #F0F3F9; background: #F8FAFE;">
+          <button onClick="{{ closeModal }}" style="white-space: nowrap; height: 42px; padding: 0 18px; border: 1px solid #E6EAF2; border-radius: 13px; background: #FFFFFF; color: #46536A; font-family: inherit; font-size: 13.5px; font-weight: 600; cursor: pointer;" style-hover="background: #F1F5FD; color: #2563EB;">Cancelar</button>
+          <button onClick="{{ imprimirPagina }}" style="white-space: nowrap; height: 42px; padding: 0 20px; border: 0; border-radius: 13px; background: linear-gradient(135deg,#2563EB,#06B6D4); color: #FFFFFF; font-family: inherit; font-size: 13.5px; font-weight: 700; cursor: pointer; box-shadow: 0 8px 18px rgba(37,99,235,.26);" style-hover="filter: brightness(1.06);">{{ imprimirRotulo }}</button>
         </div>
       </div>
     </div>
     </main>
 </div>
-
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props="{}">
 class Component extends DCLogic {
@@ -415,7 +478,6 @@ class Component extends DCLogic {
     return v;
   }
 }
-
 </script>
 </body>
 </html>

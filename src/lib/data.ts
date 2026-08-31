@@ -192,6 +192,27 @@ export async function listarProjetos(clienteId: string): Promise<Projeto[]> {
   return ((data ?? []) as unknown as LinhaProjeto[]).map(normalizaProjeto);
 }
 
+/**
+ * Em que projetos cada foto da galeria já está sendo usada.
+ *
+ * A Galeria mostra "já usada / ainda livre" e agrupa por álbum; sem isto os
+ * dois seriam chute. Uma foto pode estar em mais de um álbum — a chave é a
+ * foto, o valor é a lista de projetos.
+ */
+export async function usoDasFotos(clienteId: string): Promise<Record<string, string[]>> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from('projeto_fotos')
+    .select('projeto_id, galeria_foto_id, projetos!inner(cliente_id)')
+    .eq('projetos.cliente_id', clienteId);
+
+  const uso: Record<string, string[]> = {};
+  for (const l of (data ?? []) as unknown as { projeto_id: string; galeria_foto_id: string }[]) {
+    (uso[l.galeria_foto_id] ??= []).push(l.projeto_id);
+  }
+  return uso;
+}
+
 export async function getProjeto(id: string): Promise<Projeto | null> {
   const supabase = await createClient();
   const { data } = await supabase.from('projetos').select(CAMPOS_PROJETO).eq('id', id).maybeSingle();

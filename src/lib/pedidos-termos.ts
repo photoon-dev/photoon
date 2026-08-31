@@ -99,6 +99,15 @@ export const PROXIMO_ESTADO: Partial<Record<EstadoPedido, EstadoPedido>> = {
   enviado: 'entregue',
 };
 
+/**
+ * O caminho de volta. Existe porque a loja erra: marca "enviado" no pedido
+ * errado, adianta um estado sem querer. Voltar um passo é operação normal de
+ * balcão, e sem isto o único jeito seria mexer no banco.
+ */
+export const ESTADO_ANTERIOR: Partial<Record<EstadoPedido, EstadoPedido>> = Object.fromEntries(
+  Object.entries(PROXIMO_ESTADO).map(([de, para]) => [para, de as EstadoPedido]),
+) as Partial<Record<EstadoPedido, EstadoPedido>>;
+
 export const PROXIMA_ETAPA: Partial<Record<EtapaProducao, EtapaProducao>> = {
   fila: 'impressao',
   impressao: 'acabamento',

@@ -6,26 +6,36 @@ import ExpedicaoDesign, { CSS_PSEUDO } from '@/components/design/ExpedicaoDesign
 import { useDashboardDesign, type PainelDaLoja } from '@/components/app/useDashboardDesign';
 import { ROTAS_LOJISTA } from '@/lib/rotas-lojista';
 import MenuLojista from '@/components/app/MenuLojista';
-import { reais } from '@/lib/preco';
 import {
   ESTADOS_EXPEDICAO,
   dataCurta,
   type EstadoExpedicao,
   type ItemDoPedido,
-  type PedidoDaLinha,
 } from '@/lib/pedidos-termos';
 // Só o tipo: `import type` some na compilação e não puxa o client do Supabase.
 import type { EnvioDaLista } from '@/lib/pedidos';
-import { abrirExpedicao, definirEstadoExpedicao, salvarRastreio } from '@/app/app/actions-pedidos';
+import { definirEstadoExpedicao, salvarRastreio } from '@/app/app/actions-pedidos';
 
 /**
- * Tela de Expedição com o layout do design.
+ * Expedição e embalagem, com o layout novo do Claude Design.
  *
- * A "estação de embalagem" do design bipa a OS, pesa a caixa e manda para uma
- * Zebra. Nada disso existe aqui: o que existe é a ficha de expedição —
- * transportadora, rastreio e estado. O painel grande virou o envio em foco,
- * com os itens reais do pedido e os dois campos que a ação grava; a etiqueta
- * ao lado mostra o endereço que está no banco, não um endereço de exemplo.
+ * O desenho traz uma estação de embalagem, o painel de coletas, as retiradas
+ * no balcão, o cartão de ocorrências e a tabela de volumes do dia.
+ *
+ * O que o banco tem é a ficha de expedição: transportadora, rastreio, estado,
+ * endereço e as datas. Então:
+ *
+ * - a **estação** é o envio em foco. "Bipar a OS" é procurar pelo número do
+ *   pedido; conferir os itens é listar `pedido_itens`; peso e caixa não
+ *   existem em lugar nenhum e deram lugar aos dois campos que a ação grava —
+ *   transportadora e rastreio;
+ * - **coletas** não são horários de Correios e Loggi (não há agenda de coleta
+ *   no sistema): é a carga por transportadora, com quantos volumes já têm
+ *   rastreio;
+ * - **retiradas no balcão** são os envios cuja transportadora diz retirada;
+ * - **ocorrências** são os envios devolvidos;
+ * - **imprimir** é o `print` do navegador sobre a prévia que está na tela. Não
+ *   há impressora térmica integrada, e fingir uma Zebra pronta seria mentira.
  */
 
 const SELO: Record<EstadoExpedicao, [string, string]> = {
@@ -41,16 +51,26 @@ const PROXIMO: Partial<Record<EstadoExpedicao, EstadoExpedicao>> = {
   aguardando: 'postado',
   postado: 'em_transito',
   em_transito: 'entregue',
-  // Depois de entregue só resta a devolução — é o único movimento real que
-  // sobra, então é ele que o botão passa a oferecer.
   entregue: 'devolvido',
 };
 
-const selo = (estado: EstadoExpedicao, tamanho = '12px') => {
+/** As cinco abas do desenho, cada uma sobre um recorte real da lista. */
+const ABAS = ['embalar', 'etiquetados', 'coletas', 'retiradas', 'ocorrencias'] as const;
+type Aba = (typeof ABAS)[number];
+
+const ROTULO_ABA: Record<Aba, string> = {
+  embalar: 'Para embalar',
+  etiquetados: 'Etiquetados',
+  coletas: 'Coletas',
+  retiradas: 'Retiradas',
+  ocorrencias: 'Ocorrências',
+};
+
+const selo = (estado: EstadoExpedicao) => {
   const [bg, cor] = SELO[estado] ?? SELO.aguardando;
   return (
     `white-space:nowrap;padding:6px 11px;border-radius:999px;background:${bg};color:${cor};` +
-    `font-size:${tamanho};font-weight:600;width:max-content`
+    'font-size:12px;font-weight:600;width:max-content'
   );
 };
 
@@ -58,130 +78,162 @@ const rotulo = (estado: EstadoExpedicao) =>
   ESTADOS_EXPEDICAO.find((e) => e.id === estado)?.rotulo ?? estado;
 
 const iniciais = (nome: string | null | undefined) =>
-  (nome ?? '')
-    .split(' ')
+  (nome ?? '?')
+    .split(/\s+/)
     .filter(Boolean)
     .slice(0, 2)
     .map((p) => p[0]?.toUpperCase() ?? '')
-    .join('') || '—';
+    .join('') || '?';
 
-const BOTAO_SEC =
-  'white-space:nowrap;flex:1;height:44px;border:1px solid #E6EAF2;border-radius:14px;background:#FFFFFF;' +
-  'color:#46536A;font-family:inherit;font-size:13.5px;font-weight:600;cursor:pointer';
+/** Retirada no balcão não é um estado: está escrito na transportadora. */
+const ehRetirada = (t: string | null) => /retirad|balc[ãa]o/i.test(t ?? '');
 
 export default function ExpedicaoDoDesign({
   painel,
   envios,
-  porEstado,
   semEnvio,
   itens,
-  estado,
 }: {
   painel: PainelDaLoja;
-  /** Todos os envios da loja; a aba filtra aqui mesmo, sem nova consulta. */
   envios: EnvioDaLista[];
-  porEstado: Record<string, number>;
-  semEnvio: PedidoDaLinha[];
+  semEnvio: { id: string; numero: number }[];
   itens: Record<string, ItemDoPedido[]>;
-  estado: string;
 }) {
   const router = useRouter();
   const v = useDashboardDesign({ ativo: 3, rotas: ROTAS_LOJISTA, painel });
-  const [ocupado, iniciar] = useTransition();
+  const [, iniciar] = useTransition();
+
+  const [aba, setAba] = useState<Aba>('embalar');
+  const [foco, setFoco] = useState<string | null>(envios[0]?.id ?? null);
   const [busca, setBusca] = useState('');
+  const [marcados, setMarcados] = useState<string[]>([]);
+  const [modal, setModal] = useState(false);
+  const [transportadora, setTransportadora] = useState<string | null>(null);
+  const [rastreio, setRastreio] = useState<string | null>(null);
 
-  const lista = estado ? envios.filter((e) => e.estado === estado) : envios;
+  const emFoco = envios.find((e) => e.id === foco) ?? envios[0] ?? null;
 
-  const [focoId, setFocoId] = useState<string | null>(null);
-  const foco = envios.find((e) => e.id === focoId) ?? lista[0] ?? null;
-
-  /* Transportadora e rastreio são editáveis antes de postar. O rascunho é
-   * guardado com o id do envio: trocar de foco não pode levar o texto digitado
-   * para a caixa de outro cliente. */
-  const [rascunho, setRascunho] = useState<{ id: string; transportadora: string; rastreio: string } | null>(null);
-  const campo =
-    rascunho && foco && rascunho.id === foco.id
-      ? rascunho
-      : {
-          id: foco?.id ?? '',
-          transportadora: foco?.transportadora ?? '',
-          rastreio: foco?.rastreio ?? '',
-        };
-  const editar = (mudanca: Partial<typeof campo>) =>
-    setRascunho({ ...campo, id: foco?.id ?? '', ...mudanca });
-
-  const comCampos = (fd: FormData) => {
-    fd.set('expedicao_id', campo.id);
-    fd.set('transportadora', campo.transportadora);
-    fd.set('rastreio', campo.rastreio);
-    return fd;
+  // Enquanto o operador não digitar, os campos mostram o que está gravado.
+  const campo = {
+    transportadora: transportadora ?? emFoco?.transportadora ?? '',
+    rastreio: rastreio ?? emFoco?.rastreio ?? '',
   };
 
-  const salvar = () =>
-    iniciar(async () => {
-      await salvarRastreio(comCampos(new FormData()));
-      setRascunho(null);
-      router.refresh();
-    });
-
-  const mover = (destino: EstadoExpedicao) => {
-    const fd = comCampos(new FormData());
-    fd.set('estado', destino);
-    iniciar(async () => {
-      await definirEstadoExpedicao(fd);
-      setRascunho(null);
-      router.refresh();
-    });
-  };
-
-  const abrir = (pedidoId: string) => {
-    const fd = new FormData();
-    fd.set('pedido_id', pedidoId);
-    iniciar(async () => {
-      await abrirExpedicao(fd);
-      router.refresh();
-    });
-  };
-
-  const irPara = (id: string) => router.push(id ? `/expedicao?estado=${id}` : '/expedicao');
-
-  /** Acha o envio pelo número do pedido — o que o lojista tem na mão é a OS. */
-  const localizar = () => {
-    const n = Number(busca.replace(/[^\d]/g, ''));
-    const achado = envios.find((e) => e.pedidos?.numero === n);
-    if (achado) {
-      setFocoId(achado.id);
-      setBusca('');
+  /** Cada aba é um recorte da mesma lista; nenhuma delas volta ao banco. */
+  const daAba = (e: EnvioDaLista, id: Aba) => {
+    switch (id) {
+      case 'embalar':
+        return e.estado === 'aguardando' && !e.rastreio;
+      case 'etiquetados':
+        return Boolean(e.rastreio) && e.estado === 'aguardando';
+      case 'coletas':
+        return e.estado === 'postado' || e.estado === 'em_transito';
+      case 'retiradas':
+        return ehRetirada(e.transportadora) && e.estado !== 'entregue';
+      case 'ocorrencias':
+        return e.estado === 'devolvido';
     }
   };
 
-  const itensDoFoco = foco ? (itens[foco.pedido_id] ?? []) : [];
-  const end = foco?.endereco ?? null;
-  const linhaEndereco =
-    end && (end.rua || end.cidade)
-      ? [
-          [end.rua, end.numero].filter(Boolean).join(', '),
-          [end.cidade, end.uf].filter(Boolean).join(', ') + (end.cep ? ` · ${end.cep}` : ''),
-        ]
-      : ['Endereço não cadastrado neste envio', ''];
+  const visiveis = envios.filter((e) => daAba(e, aba));
+  const devolvidos = envios.filter((e) => e.estado === 'devolvido');
+  const retiradas = envios.filter((e) => ehRetirada(e.transportadora) && e.estado !== 'entregue');
+  const paraDespachar = envios.filter((e) => e.estado === 'aguardando').length;
 
-  const abas: [string, string][] = [
-    ['', 'Todos'],
-    ...ESTADOS_EXPEDICAO.map((e) => [e.id, e.rotulo] as [string, string]),
-  ];
-  const totalGeral = Object.values(porEstado).reduce((t, n) => t + n, 0);
+  const focar = (id: string) => {
+    setFoco(id);
+    setTransportadora(null);
+    setRastreio(null);
+  };
 
-  /* Carga por transportadora. O design tinha "Correios 14h" e "Loggi 17h"
-   * escritos à mão; horário de coleta a plataforma não sabe. O que ela sabe é
-   * quantas caixas foram por cada uma e quantas já chegaram. */
-  const porTransportadora = new Map<string, EnvioDaLista[]>();
-  for (const e of envios) {
-    const chave = e.transportadora ?? 'Sem transportadora';
-    porTransportadora.set(chave, [...(porTransportadora.get(chave) ?? []), e]);
-  }
+  const gravar = (extra?: EstadoExpedicao) => {
+    if (!emFoco) return;
+    const fd = new FormData();
+    fd.set('expedicao_id', emFoco.id);
+    fd.set('transportadora', campo.transportadora);
+    fd.set('rastreio', campo.rastreio);
+    iniciar(async () => {
+      await salvarRastreio(fd);
+      if (extra) {
+        const fd2 = new FormData();
+        fd2.set('expedicao_id', emFoco.id);
+        fd2.set('estado', extra);
+        await definirEstadoExpedicao(fd2);
+      }
+      setTransportadora(null);
+      setRastreio(null);
+      router.refresh();
+    });
+  };
 
-  const devolvidos = porEstado.devolvido ?? 0;
-  const proximo = foco ? PROXIMO[foco.estado] : undefined;
+  // ------------------------------------------------------------- etiqueta
+  const end = emFoco?.endereco ?? null;
+  const linha1 = end
+    ? [end.rua, end.numero].filter(Boolean).join(', ') +
+      (end.complemento ? ` · ${end.complemento}` : '')
+    : 'Sem endereço gravado';
+  const linha2 = end
+    ? [[end.bairro, end.cidade].filter(Boolean).join(' · '), end.uf, end.cep]
+        .filter(Boolean)
+        .join(' · ')
+    : 'Grave o endereço no pedido para a etiqueta sair certa';
+
+  // -------------------------------------------------- carga por transportadora
+  const nomes = Array.from(
+    new Set(envios.map((e) => (e.transportadora || 'Sem transportadora').trim())),
+  );
+  const coletas = nomes
+    .map((nome) => {
+      const lista = envios.filter((e) => (e.transportadora || 'Sem transportadora').trim() === nome);
+      const prontos = lista.filter((e) => e.rastreio).length;
+      const pct = lista.length ? Math.round((prontos / lista.length) * 100) : 0;
+      const atrasado = pct < 50;
+      return {
+        nome,
+        total: lista.length,
+        titulo: nome,
+        seloRotulo: `${lista.length} ${lista.length === 1 ? 'volume' : 'volumes'}`,
+        selo:
+          'white-space:nowrap;padding:4px 9px;border-radius:999px;font-size:11px;font-weight:700;' +
+          (atrasado ? 'background:#FEF3E2;color:#B45309' : 'background:#F1F5FD;color:#46536A'),
+        resumo: `${prontos} de ${lista.length} com código de rastreio`,
+        pct: `${pct}%`,
+        pctEstilo: `font-size:13px;font-weight:700;color:${atrasado ? '#B45309' : '#2563EB'}`,
+        barra:
+          `width:${pct}%;height:100%;border-radius:999px;background:` +
+          (atrasado
+            ? 'linear-gradient(90deg,#F59E0B,#FBBF24)'
+            : 'linear-gradient(90deg,#2563EB,#06B6D4)'),
+      };
+    })
+    .sort((a, b) => b.total - a.total);
+
+  // -------------------------------------------------------------- volumes
+  const volume = (e: EnvioDaLista) => {
+    const marcado = marcados.includes(e.id);
+    return {
+      volume: `#${e.pedidos.numero}`,
+      pedido: `#${e.pedidos.numero}`,
+      href: `/pedidos/${e.pedido_id}`,
+      cliente: e.pedidos.clientes?.nome ?? 'Sem cliente',
+      transportadora: e.transportadora || '—',
+      rastreio: e.rastreio || '—',
+      itens: String(itens[e.pedido_id]?.length ?? 0),
+      estado: rotulo(e.estado),
+      selo: selo(e.estado),
+      check:
+        'width:18px;height:18px;border-radius:6px;display:flex;align-items:center;justify-content:center;' +
+        `border:1.5px solid ${marcado ? '#2563EB' : '#CBD5E6'};` +
+        `background:${marcado ? '#2563EB' : 'transparent'};color:${marcado ? '#FFFFFF' : 'transparent'}`,
+      marcar: (ev?: React.MouseEvent) => {
+        ev?.stopPropagation();
+        setMarcados((s) => (s.includes(e.id) ? s.filter((x) => x !== e.id) : [...s, e.id]));
+      },
+      abrir: () => focar(e.id),
+    };
+  };
+
+  const selecionados = envios.filter((e) => marcados.includes(e.id));
 
   return (
     <div className="om-app">
@@ -190,173 +242,167 @@ export default function ExpedicaoDoDesign({
         v={{
           ...v,
 
-          resumo: totalGeral
-            ? `${totalGeral} ${totalGeral === 1 ? 'envio' : 'envios'} · ` +
-              `${porEstado.aguardando ?? 0} aguardando postagem · ` +
-              `${(porEstado.postado ?? 0) + (porEstado.em_transito ?? 0)} a caminho` +
-              (devolvidos ? ` · ${devolvidos} ${devolvidos === 1 ? 'devolvido' : 'devolvidos'}` : '')
-            : 'Nenhum envio ainda. A ficha nasce quando o pedido fica pronto.',
+          resumo:
+            `${paraDespachar} ${paraDespachar === 1 ? 'volume aguardando' : 'volumes aguardando'} despacho` +
+            ` · ${envios.length} ${envios.length === 1 ? 'envio aberto' : 'envios abertos'}` +
+            (semEnvio.length ? ` · ${semEnvio.length} prontos sem envio` : '') +
+            (devolvidos.length ? ` · ${devolvidos.length} devolvidos` : ''),
 
-          rotuloAbrir: ocupado ? 'Aguarde…' : `Abrir ${semEnvio.length} envio${semEnvio.length === 1 ? '' : 's'}`,
-          btnAbrir: semEnvio.length
-            ? 'white-space:nowrap;height:44px;padding:0 18px;display:flex;align-items:center;gap:9px;border:0;' +
-              'border-radius:14px;background:linear-gradient(135deg,#2563EB,#06B6D4);color:#FFFFFF;font-family:inherit;' +
-              'font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 8px 20px rgba(37,99,235,.28)'
-            : 'display:none',
-          abrirTodos: () => semEnvio.forEach((p) => abrir(p.id)),
+          imprimirPagina: () => window.print(),
+          verOcorrencias: () => setAba('ocorrencias'),
+          rotuloOcorrencias: devolvidos.length
+            ? `Ocorrências · ${devolvidos.length}`
+            : 'Ocorrências',
+          btnOcorrencias:
+            'white-space:nowrap;height:44px;padding:0 18px;display:flex;align-items:center;gap:9px;' +
+            `border:1px solid ${devolvidos.length ? '#FFE0E6' : '#E6EAF2'};border-radius:14px;` +
+            `background:${devolvidos.length ? '#FFF1F3' : '#FFFFFF'};color:${devolvidos.length ? '#E11D48' : '#0B1220'};` +
+            'font-family:inherit;font-size:14px;font-weight:600;cursor:pointer',
 
+          // ------------------------------------------------------------ abas
           ...Object.fromEntries(
-            abas.flatMap(([id, texto], i) => {
-              const on = estado === id;
-              const n = id ? (porEstado[id] ?? 0) : totalGeral;
-              return [
-                [`rot${i}`, `${texto} · ${n}`],
-                [
-                  `per${i}`,
-                  'padding:8px 16px;border-radius:999px;font-size:13px;font-weight:600;cursor:pointer;' +
-                    'white-space:nowrap;transition:all .16s;' +
-                    (on
-                      ? 'background:linear-gradient(135deg,#2563EB,#06B6D4);color:#FFFFFF;box-shadow:0 6px 14px rgba(37,99,235,.24)'
-                      : 'background:transparent;color:#6B7A90'),
-                ],
-                [`setP${i}`, () => irPara(id)],
-              ];
+            ABAS.map((id, i) => {
+              const n = envios.filter((e) => daAba(e, id)).length;
+              return [`aba${i}`, n ? `${ROTULO_ABA[id]} · ${n}` : ROTULO_ABA[id]];
             }),
           ),
+          ...Object.fromEntries(ABAS.map((id, i) => [`setP${i}`, () => setAba(id)])),
+          ...Object.fromEntries(
+            ABAS.map((id, i) => [
+              `per${i}`,
+              'padding:8px 16px;border-radius:999px;font-size:13px;font-weight:600;cursor:pointer;' +
+                'white-space:nowrap;transition:all .16s;' +
+                (aba === id
+                  ? 'background:linear-gradient(135deg,#2563EB,#06B6D4);color:#FFFFFF;box-shadow:0 6px 14px rgba(37,99,235,.24);'
+                  : 'background:transparent;color:#6B7A90;'),
+            ]),
+          ),
 
-          // ---------------------------------------------------------------- envio em foco
-          focoSub: foco
-            ? `Pedido #${foco.pedidos?.numero} · ${foco.pedidos?.clientes?.nome ?? 'sem cliente'} · ` +
-              `atualizado ${dataCurta(foco.atualizado_em)}`
-            : 'Escolha um envio na lista abaixo para conferir e despachar.',
-          focoEstado: foco ? rotulo(foco.estado) : 'nenhum envio',
-          focoSelo: foco ? selo(foco.estado, '12.5px') : selo('aguardando', '12.5px'),
+          // ------------------------------------------- estação de embalagem
+          estacaoNota: emFoco
+            ? `Pedido #${emFoco.pedidos.numero} · ${emFoco.pedidos.clientes?.nome ?? 'sem cliente'}`
+            : 'Nenhum envio aberto para conferir',
+          estacaoEstado: emFoco ? rotulo(emFoco.estado) : 'Sem envio',
+          estacaoSelo:
+            'display:flex;align-items:center;gap:8px;padding:8px 13px;border-radius:999px;' +
+            `font-size:12.5px;font-weight:700;${
+              emFoco?.rastreio
+                ? 'background:#E6F8F1;color:#059669'
+                : 'background:#FEF3E2;color:#B45309'
+            }`,
+          estacaoPonto:
+            `width:8px;height:8px;border-radius:999px;background:${emFoco?.rastreio ? '#10B981' : '#F59E0B'}`,
 
           busca,
-          setBusca: (e: React.ChangeEvent<HTMLInputElement>) => setBusca(e.target.value),
-          buscaTecla: (e: React.KeyboardEvent) => {
-            if (e.key === 'Enter') localizar();
+          onBusca: (ev: React.ChangeEvent<HTMLInputElement>) => setBusca(ev.target.value),
+          conferir: () => {
+            const q = busca.trim().replace(/^#/, '');
+            const achado = envios.find((e) => String(e.pedidos.numero) === q);
+            if (achado) focar(achado.id);
           },
-          localizar,
 
-          itensTitulo: foco
-            ? `Itens do pedido · ${itensDoFoco.length}`
-            : 'Itens do pedido',
-          itens: itensDoFoco.map((i) => ({
+          itensTitulo: emFoco
+            ? `Conferência de itens · ${itens[emFoco.pedido_id]?.length ?? 0}`
+            : 'Conferência de itens',
+          itens: (emFoco ? (itens[emFoco.pedido_id] ?? []) : []).map((i) => ({
             descricao: i.descricao,
             detalhe:
-              `${i.quantidade} un · ${reais(i.total)}` +
-              (i.paginas ? ` · ${i.paginas} páginas` : '') +
-              (i.fotos ? ` · ${i.fotos} fotos` : ''),
+              `${i.quantidade} un` +
+              (i.paginas > 0 ? ` · ${i.paginas} páginas` : '') +
+              (i.fotos > 0 ? ` · ${i.fotos} fotos` : ''),
           })),
-          itensVazio: itensDoFoco.length
-            ? 'display:none'
-            : 'margin:0;padding:16px;text-align:center;font-size:13px;color:#9AA7BC',
-          itensTextoVazio: foco ? 'Este pedido não tem itens lançados.' : 'Nenhum envio em foco.',
+          itensVazio:
+            emFoco && (itens[emFoco.pedido_id]?.length ?? 0) > 0
+              ? 'display:none'
+              : 'margin:0;font-size:13px;color:#9AA7BC',
 
           transportadora: campo.transportadora,
-          setTransportadora: (e: React.ChangeEvent<HTMLInputElement>) =>
-            editar({ transportadora: e.target.value }),
           rastreio: campo.rastreio,
-          setRastreio: (e: React.ChangeEvent<HTMLInputElement>) => editar({ rastreio: e.target.value }),
-          semFoco: !foco,
+          onTransportadora: (ev: React.ChangeEvent<HTMLInputElement>) =>
+            setTransportadora(ev.target.value),
+          onRastreio: (ev: React.ChangeEvent<HTMLInputElement>) => setRastreio(ev.target.value),
 
-          // ---------------------------------------------------------------- etiqueta
-          remetente: foco
-            ? `Pedido #${foco.pedidos?.numero} · aberto ${dataCurta(foco.pedidos?.criado_em)}`
-            : '—',
-          etiquetaModal: campo.transportadora || '—',
-          etiquetaSelo:
-            'padding:4px 9px;border-radius:7px;background:#0B1220;color:#FFFFFF;font-size:10.5px;font-weight:700;white-space:nowrap',
-          destinatario: foco?.pedidos?.clientes?.nome ?? 'Sem cliente vinculado',
-          enderecoLinha1: linhaEndereco[0],
-          enderecoLinha2: linhaEndereco[1],
-          temRastreio: Boolean(campo.rastreio),
-          // As barras são decorativas, mas derivam do próprio código: assim o
-          // desenho é estável entre servidor e navegador e muda com o objeto.
-          barras: [...campo.rastreio].map((ch) => ({
-            estilo: `flex:1;height:${45 + ((ch.charCodeAt(0) * 7) % 56)}%;background:#0B1220`,
-          })),
-          rastreioEtiqueta: campo.rastreio || '—',
+          // ------------------------------------------------------- etiqueta
+          remetenteNome: painel.lojaNome,
+          remetente: emFoco ? `Envio aberto em ${dataCurta(emFoco.atualizado_em)}` : '—',
+          servico: (emFoco?.transportadora || 'SEM').slice(0, 12).toUpperCase(),
+          destNome: emFoco?.pedidos.clientes?.nome ?? 'Sem cliente',
+          destLinha1: linha1,
+          destLinha2: linha2,
+          rastreioEtiqueta: emFoco?.rastreio || '—',
+          despachar: () => gravar(emFoco ? PROXIMO[emFoco.estado] : undefined),
+          rotuloDespachar: emFoco
+            ? PROXIMO[emFoco.estado]
+              ? `Salvar e marcar ${rotulo(PROXIMO[emFoco.estado]!).toLowerCase()}`
+              : 'Salvar rastreio'
+            : 'Sem envio',
+          btnDespachar: emFoco
+            ? 'white-space:nowrap;flex:1;height:44px;border:0;border-radius:14px;' +
+              'background:linear-gradient(135deg,#2563EB,#06B6D4);color:#FFFFFF;font-family:inherit;' +
+              'font-size:13.5px;font-weight:700;cursor:pointer;box-shadow:0 8px 18px rgba(37,99,235,.26)'
+            : 'display:none',
 
-          rotuloSecundario: ocupado ? '…' : 'Salvar dados',
-          btnSecundario: foco ? BOTAO_SEC : `${BOTAO_SEC};opacity:.45;pointer-events:none`,
-          acaoSecundaria: () => foco && salvar(),
-          rotuloPrincipal: proximo ? `Marcar ${rotulo(proximo).toLowerCase()}` : 'Envio encerrado',
-          btnPrincipal:
-            foco && proximo
-              ? 'white-space:nowrap;flex:1;height:44px;border:0;border-radius:14px;font-family:inherit;' +
-                'font-size:13.5px;font-weight:700;cursor:pointer;color:#FFFFFF;' +
-                (proximo === 'devolvido'
-                  ? 'background:#E11D48;box-shadow:0 8px 18px rgba(225,29,72,.26)'
-                  : 'background:linear-gradient(135deg,#2563EB,#06B6D4);box-shadow:0 8px 18px rgba(37,99,235,.26)')
-              : 'display:none',
-          acaoPrincipal: () => proximo && mover(proximo),
+          // ------------------------------------------ carga por transportadora
+          coletas,
+          coletasVazio: coletas.length ? 'display:none' : 'margin:0;font-size:13px;color:#9AA7BC',
 
-          // ---------------------------------------------------------------- painéis laterais
-          transportadoras: [...porTransportadora.entries()].map(([nome, grupo]) => {
-            const entregues = grupo.filter((e) => e.estado === 'entregue').length;
-            const pct = Math.round((entregues / grupo.length) * 100);
-            return {
-              nome,
-              chip: `${pct}% entregue`,
-              selo:
-                'white-space:nowrap;padding:4px 9px;border-radius:999px;font-size:11px;font-weight:700;' +
-                (pct === 100 ? 'background:#E6F8F1;color:#059669' : 'background:#FEF3E2;color:#B45309'),
-              detalhe: `${entregues} entregues`,
-              total: `de ${grupo.length}`,
-              barra: `width:${pct}%;height:100%;border-radius:999px;background:linear-gradient(90deg,#2563EB,#06B6D4)`,
-            };
-          }),
-          transportadorasVazio: porTransportadora.size
-            ? 'display:none'
-            : 'margin:0;padding:16px;text-align:center;font-size:13px;color:#9AA7BC',
-
-          semEnvio: semEnvio.map((p) => ({
-            iniciais: iniciais(p.clientes?.nome),
-            cliente: p.clientes?.nome ?? 'Sem cliente vinculado',
-            detalhe: `#${p.numero} · ${reais(p.total)}`,
-            abrirEnvio: () => abrir(p.id),
-          })),
-          semEnvioResumo: `${semEnvio.length} aguardando`,
-          semEnvioSelo:
+          // ------------------------------------------------------- retiradas
+          retiradasRotulo: `${retiradas.length} aguardando`,
+          retiradasSelo:
             'white-space:nowrap;padding:5px 10px;border-radius:999px;font-size:11.5px;font-weight:700;' +
-            (semEnvio.length ? 'background:#FEF3E2;color:#B45309' : 'background:#E6F8F1;color:#059669'),
-          semEnvioVazio: semEnvio.length
-            ? 'display:none'
-            : 'margin:0;padding:16px;text-align:center;font-size:13px;color:#9AA7BC',
-
-          devolvidosValor: `${devolvidos} ${devolvidos === 1 ? 'devolvido' : 'devolvidos'}`,
-          devolvidosTexto: devolvidos
-            ? 'Caixas que voltaram. A data de entrega é apagada na devolução, então o histórico não mente.'
-            : 'Nenhuma caixa voltou. O estado devolvido é gravado na própria ficha do envio.',
-          verDevolvidos: () => irPara('devolvido'),
-
-          // ---------------------------------------------------------------- lista
-          listaResumo: `${lista.length} de ${envios.length} ${envios.length === 1 ? 'envio' : 'envios'}`,
-          envios: lista.map((e) => ({
-            marca:
-              'width:18px;height:18px;border-radius:6px;' +
-              (foco?.id === e.id
-                ? 'border:1.5px solid #2563EB;background:#2563EB'
-                : 'border:1.5px solid #CBD5E6;background:transparent'),
-            numero: `#${e.pedidos?.numero ?? '—'}`,
-            href: `/pedidos/${e.pedidos?.id ?? ''}`,
-            cliente: e.pedidos?.clientes?.nome ?? 'Sem cliente vinculado',
-            transportadora: e.transportadora ?? '—',
-            rastreio: e.rastreio ?? '—',
-            valor: reais(e.pedidos?.total ?? 0),
-            quando: dataCurta(e.atualizado_em),
-            estado: rotulo(e.estado),
-            selo: selo(e.estado),
-            focar: () => setFocoId(e.id),
+            (retiradas.length ? 'background:#FEF3E2;color:#B45309' : 'background:#F1F5FD;color:#46536A'),
+          retiradas: retiradas.map((e) => ({
+            iniciais: iniciais(e.pedidos.clientes?.nome),
+            avatar:
+              'width:32px;height:32px;border-radius:10px;background:#EDEBFE;color:#6366F1;font-size:11px;' +
+              'font-weight:700;display:flex;align-items:center;justify-content:center;flex:0 0 auto',
+            nome: e.pedidos.clientes?.nome ?? 'Sem cliente',
+            nota: `#${e.pedidos.numero} · ${rotulo(e.estado).toLowerCase()}`,
+            linha:
+              'display:flex;align-items:center;gap:12px;padding:12px;border-radius:15px;' +
+              'background:#F8FAFE;border:1px solid #EEF1F7',
+            href: `/pedidos/${e.pedido_id}`,
           })),
-          enviosVazio: lista.length
+          retiradasVazio: retiradas.length ? 'display:none' : 'margin:0;font-size:13px;color:#9AA7BC',
+
+          // ----------------------------------------------------- ocorrências
+          ocorrenciasTitulo: `${devolvidos.length} ${devolvidos.length === 1 ? 'aberta' : 'abertas'}`,
+          ocorrenciasTexto: devolvidos.length
+            ? `Devolvidos: ${devolvidos.map((e) => `#${e.pedidos.numero}`).join(', ')}.`
+            : 'Nenhum envio devolvido. Devolução é o único tipo de ocorrência que o sistema registra hoje.',
+
+          // -------------------------------------------------------- volumes
+          volumes: visiveis.map(volume),
+          volumesVazio: visiveis.length
             ? 'display:none'
-            : 'margin:0;padding:44px;text-align:center;font-size:13.5px;color:#9AA7BC',
-          enviosTextoVazio: estado
-            ? 'Nenhum envio neste estado. Escolha outra aba.'
-            : 'Nenhum envio ainda. Um pedido pronto abre a ficha de expedição.',
+            : 'margin:0;padding:34px 24px;text-align:center;font-size:13.5px;color:#9AA7BC',
+          selecionadosRotulo: `${marcados.length} ${marcados.length === 1 ? 'selecionado' : 'selecionados'}`,
+          selecionadosEstilo:
+            'padding:9px 14px;border-radius:999px;font-size:12.5px;font-weight:700;cursor:pointer;' +
+            (marcados.length
+              ? 'background:#F1F5FD;border:1px solid #D6E2FC;color:#2563EB'
+              : 'background:#F4F7FC;border:1px solid #E6EAF2;color:#9AA7BC'),
+
+          // ---------------------------------------------------------- modal
+          openModal: () => setModal(true),
+          closeModal: () => setModal(false),
+          ov: modal
+            ? 'position:fixed;inset:0;z-index:80;background:rgba(11,18,32,.42)'
+            : 'display:none',
+          sh: modal
+            ? 'position:fixed;inset:0;z-index:81;display:flex;align-items:center;justify-content:center;padding:24px;pointer-events:none'
+            : 'display:none',
+          modalResumo: selecionados.length
+            ? `${selecionados.length} ${selecionados.length === 1 ? 'volume selecionado' : 'volumes selecionados'}`
+            : 'Nenhum volume selecionado',
+          modalContagem: String(selecionados.length),
+          modalLinhas: selecionados.map((e) => ({
+            volume: `#${e.pedidos.numero}`,
+            cliente: e.pedidos.clientes?.nome ?? 'Sem cliente',
+            servico: e.transportadora || '—',
+          })),
+          modalVazio: selecionados.length ? 'display:none' : 'margin:0;font-size:13px;color:#9AA7BC',
+          imprimirRotulo: `Imprimir ${selecionados.length} ${selecionados.length === 1 ? 'etiqueta' : 'etiquetas'}`,
         }}
       />
       <MenuLojista />

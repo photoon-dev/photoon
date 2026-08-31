@@ -22,7 +22,7 @@ export default async function Pagina({
    * transportadora sobre tudo — não só sobre a aba aberta — e trocar de aba
    * não custa uma ida ao banco.
    */
-  const [{ envios, porEstado }, semEnvio] = await Promise.all([
+  const [{ envios }, semEnvio] = await Promise.all([
     listarEnvios(m.loja.id, ''),
     pedidosSemEnvio(m.loja.id),
   ]);
@@ -33,10 +33,8 @@ export default async function Pagina({
     <ExpedicaoDoDesign
       painel={m.painel}
       envios={envios}
-      porEstado={porEstado}
       semEnvio={semEnvio}
       itens={itens}
-      estado={q.estado ?? ''}
     />
   );
 }

@@ -12,7 +12,7 @@ export const CSS_PSEUDO = `
 .dc5:hover { background: #F1F5FD; color: #2563EB; }
 .dc6:hover { background: #FFF1F3; color: #E11D48; }
 .dc7:hover { background: #F1F5FD; border-color: #D6E2FC; color: #2563EB; }
-.dc8:hover { background: #FFFFFF; color: #2563EB; }
+.dc8:hover { filter: brightness(1.06); }
 .dc9:hover { background: #FFFFFF; color: #2563EB; }
 .dc10:hover { background: #FFFFFF; color: #2563EB; }
 .dc11:hover { background: #FFFFFF; color: #2563EB; }
@@ -22,10 +22,12 @@ export const CSS_PSEUDO = `
 .dc15:focus, .dc15:focus-within { border-color: #2563EB; }
 .dc16:focus, .dc16:focus-within { border-color: #2563EB; }
 .dc17:hover { background: #F1F5FD; color: #2563EB; }
-.dc18:hover { filter: brightness(1.06); }
-.dc19:hover { background: #F1F5FD; color: #2563EB; border-color: #D6E2FC; }
-.dc20:hover { background: rgba(255,255,255,.1); }
-.dc21:hover { background: #F8FAFE; }
+.dc18:hover { background: rgba(255,255,255,.1); }
+.dc19:hover { border-color: #2563EB; color: #2563EB; }
+.dc20:hover { background: #F8FAFE; }
+.dc21:hover { background: #F1F5FD; color: #2563EB; }
+.dc22:hover { background: #F1F5FD; color: #2563EB; }
+.dc23:hover { filter: brightness(1.06); }
 `;
 
 export default function ExpedicaoDesign({ v }: { v: any }) {
@@ -402,76 +404,80 @@ export default function ExpedicaoDesign({ v }: { v: any }) {
                   Operação · Expedição
                 </p>
                 <h1 style={{ margin: '0 0 8px', fontSize: '30px', fontWeight: '800', letterSpacing: '-1px' }}>
-                  Expedição
+                  Expedição e embalagem
                 </h1>
                 <p style={{ margin: '0', fontSize: '14.5px', color: '#6B7A90' }}>
                   {v.resumo}
                 </p>
               </div>
               <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-                <a href="/pedidos" style={{ textDecoration: 'none', whiteSpace: 'nowrap', height: '44px', padding: '0 18px', display: 'flex', alignItems: 'center', gap: '9px', border: '1px solid #E6EAF2', borderRadius: '14px', background: '#FFFFFF', color: '#0B1220', fontFamily: 'inherit', fontSize: '14px', fontWeight: '600', cursor: 'pointer' }} className="dc7">
+                <button onClick={v.imprimirPagina} style={{ whiteSpace: 'nowrap', height: '44px', padding: '0 18px', display: 'flex', alignItems: 'center', gap: '9px', border: '1px solid #E6EAF2', borderRadius: '14px', background: '#FFFFFF', color: '#0B1220', fontFamily: 'inherit', fontSize: '14px', fontWeight: '600', cursor: 'pointer' }} className="dc7">
                   <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M14 3v5h5" />
                     <path d="M6 3h8l5 5v13H6z" />
                   </svg>
-                  Ver pedidos
-                </a>
-                <button onClick={v.abrirTodos} style={css(v.btnAbrir)}>
+                  Romaneio do dia
+                </button>
+                <button onClick={v.verOcorrencias} style={css(v.btnOcorrencias)}>
                   <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M3 7h11v10H3z" />
-                    <path d="M14 10h4l3 3v4h-7z" />
-                    <circle cx="7" cy="18.5" r="1.6" />
-                    <circle cx="17" cy="18.5" r="1.6" />
+                    <path d="M12 8v5M12 16.5h.01" />
+                    <circle cx="12" cy="12" r="8.5" />
                   </svg>
-                  {v.rotuloAbrir}
+                  {v.rotuloOcorrencias}
+                </button>
+                <button onClick={v.openModal} style={{ whiteSpace: 'nowrap', height: '44px', padding: '0 18px', display: 'flex', alignItems: 'center', gap: '9px', border: '0', borderRadius: '14px', background: 'linear-gradient(135deg,#2563EB,#06B6D4)', color: '#FFFFFF', fontFamily: 'inherit', fontSize: '14px', fontWeight: '700', cursor: 'pointer', boxShadow: '0 8px 20px rgba(37,99,235,.28)' }} className="dc8">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M7 9V4h10v5" />
+                    <rect x="4" y="9" width="16" height="7" rx="2.5" />
+                    <path d="M7 14h10v6H7z" />
+                  </svg>
+                  Gerar etiquetas
                 </button>
               </div>
             </div>
             <div style={{ display: 'flex', gap: '4px', padding: '5px', background: '#F4F7FC', border: '1px solid #E6EAF2', borderRadius: '999px', flexWrap: 'wrap', width: 'max-content', maxWidth: '100%' }}>
-              <span onClick={v.setP0} style={css(v.per0)} className="dc8">
-                {v.rot0}
+              <span onClick={v.setP0} style={css(v.per0)} className="dc9">
+                {v.aba0}
               </span>
-              <span onClick={v.setP1} style={css(v.per1)} className="dc9">
-                {v.rot1}
+              <span onClick={v.setP1} style={css(v.per1)} className="dc10">
+                {v.aba1}
               </span>
-              <span onClick={v.setP2} style={css(v.per2)} className="dc10">
-                {v.rot2}
+              <span onClick={v.setP2} style={css(v.per2)} className="dc11">
+                {v.aba2}
               </span>
-              <span onClick={v.setP3} style={css(v.per3)} className="dc11">
-                {v.rot3}
+              <span onClick={v.setP3} style={css(v.per3)} className="dc12">
+                {v.aba3}
               </span>
-              <span onClick={v.setP4} style={css(v.per4)} className="dc12">
-                {v.rot4}
-              </span>
-              <span onClick={v.setP5} style={css(v.per5)} className="dc13">
-                {v.rot5}
+              <span onClick={v.setP4} style={css(v.per4)} className="dc13">
+                {v.aba4}
               </span>
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px', alignItems: 'start' }}>
-              <div style={{ background: '#FFFFFF', border: '1px solid #E6EAF2', borderRadius: '24px', padding: '22px 26px', gridColumn: 'span 2', minWidth: '0' }}>
+            <div className="exp-split">
+              <div style={{ background: '#FFFFFF', border: '1px solid #E6EAF2', borderRadius: '24px', padding: '22px 26px', minWidth: '0' }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px', marginBottom: '18px', flexWrap: 'wrap' }}>
                   <div>
                     <h2 style={{ margin: '0', fontSize: '18px', fontWeight: '700' }}>
-                      Envio em foco
+                      Estação de embalagem
                     </h2>
                     <p style={{ margin: '5px 0 0', fontSize: '13px', color: '#6B7A90' }}>
-                      {v.focoSub}
+                      {v.estacaoNota}
                     </p>
                   </div>
-                  <span style={css(v.focoSelo)}>
-                    {v.focoEstado}
+                  <span style={css(v.estacaoSelo)}>
+                    <span style={css(v.estacaoPonto)}>
+                    </span>
+                    {v.estacaoEstado}
                   </span>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '8px 8px 8px 18px', border: '1.5px solid #2563EB', borderRadius: '18px', background: '#F8FAFE', marginBottom: '20px' }}>
                   <span style={{ color: '#2563EB', flex: '0 0 auto' }}>
                     <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
-                      <circle cx="11" cy="11" r="7" />
-                      <path d="m20 20-3.5-3.5" />
+                      <path d="M4 6v12M8 6v12M12 6v12M16 6v12M20 6v12" />
                     </svg>
                   </span>
-                  <input value={v.busca} onChange={v.setBusca} onKeyDown={v.buscaTecla} placeholder="número do pedido" style={{ flex: '1', minWidth: '0', border: '0', background: 'transparent', fontFamily: 'monospace', fontSize: '18px', fontWeight: '700', color: '#0B1220' }} />
-                  <button onClick={v.localizar} style={{ whiteSpace: 'nowrap', height: '42px', padding: '0 18px', border: '0', borderRadius: '13px', background: '#0B1220', color: '#FFFFFF', fontFamily: 'inherit', fontSize: '13.5px', fontWeight: '700', cursor: 'pointer' }} className="dc14">
-                    Localizar
+                  <input defaultValue={v.busca} onChange={v.onBusca} placeholder="Número do pedido" style={{ flex: '1', minWidth: '0', border: '0', background: 'transparent', fontFamily: 'monospace', fontSize: '18px', fontWeight: '700', color: '#0B1220' }} />
+                  <button onClick={v.conferir} style={{ whiteSpace: 'nowrap', height: '42px', padding: '0 18px', border: '0', borderRadius: '13px', background: '#0B1220', color: '#FFFFFF', fontFamily: 'inherit', fontSize: '13.5px', fontWeight: '700', cursor: 'pointer' }} className="dc14">
+                    Conferir
                   </button>
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '18px', alignItems: 'start' }}>
@@ -480,7 +486,7 @@ export default function ExpedicaoDesign({ v }: { v: any }) {
                       {v.itensTitulo}
                     </p>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                      {v.itens.map((it: any, i9: number) => (
+                      {v.itens.map((item: any, i9: number) => (
                         <div key={i9} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 14px', borderRadius: '15px', background: '#F8FAFE', border: '1px solid #EEF1F7' }}>
                           <span style={{ width: '22px', height: '22px', borderRadius: '7px', background: '#10B981', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#FFFFFF', flex: '0 0 auto' }}>
                             <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
@@ -489,16 +495,16 @@ export default function ExpedicaoDesign({ v }: { v: any }) {
                           </span>
                           <div style={{ flex: '1', minWidth: '0' }}>
                             <p style={{ margin: '0', fontSize: '13.5px', fontWeight: '600' }}>
-                              {it.descricao}
+                              {item.descricao}
                             </p>
                             <p style={{ margin: '2px 0 0', fontSize: '12px', color: '#6B7A90' }}>
-                              {it.detalhe}
+                              {item.detalhe}
                             </p>
                           </div>
                         </div>
                       ))}
                       <p style={css(v.itensVazio)}>
-                        {v.itensTextoVazio}
+                        Nenhum item gravado neste pedido.
                       </p>
                     </div>
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: '12px', marginTop: '16px' }}>
@@ -506,32 +512,32 @@ export default function ExpedicaoDesign({ v }: { v: any }) {
                         <label style={{ fontSize: '12.5px', fontWeight: '600', color: '#6B7A90' }}>
                           Transportadora
                         </label>
-                        <input value={v.transportadora} onChange={v.setTransportadora} disabled={v.semFoco} placeholder="Correios, Jadlog…" style={{ height: '46px', padding: '0 15px', border: '1px solid #E6EAF2', borderRadius: '14px', fontFamily: 'inherit', fontSize: '14px', color: '#0B1220', minWidth: '0' }} className="dc15" />
+                        <input name="transportadora" defaultValue={v.transportadora} onChange={v.onTransportadora} placeholder="Correios, motoboy, retirada" style={{ height: '46px', padding: '0 15px', border: '1px solid #E6EAF2', borderRadius: '14px', fontFamily: 'inherit', fontSize: '14px', color: '#0B1220', minWidth: '0' }} className="dc15" />
                       </div>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', minWidth: '0' }}>
                         <label style={{ fontSize: '12.5px', fontWeight: '600', color: '#6B7A90' }}>
                           Rastreio
                         </label>
-                        <input value={v.rastreio} onChange={v.setRastreio} disabled={v.semFoco} placeholder="código do objeto" style={{ height: '46px', padding: '0 15px', border: '1px solid #E6EAF2', borderRadius: '14px', fontFamily: 'inherit', fontSize: '14px', color: '#0B1220', minWidth: '0' }} className="dc16" />
+                        <input name="rastreio" defaultValue={v.rastreio} onChange={v.onRastreio} placeholder="Código de acompanhamento" style={{ height: '46px', padding: '0 15px', border: '1px solid #E6EAF2', borderRadius: '14px', fontFamily: 'inherit', fontSize: '14px', color: '#0B1220', minWidth: '0' }} className="dc16" />
                       </div>
                     </div>
                   </div>
                   <div>
                     <p style={{ margin: '0 0 12px', fontSize: '12px', letterSpacing: '1.4px', textTransform: 'uppercase', color: '#9AA7BC', fontWeight: '700' }}>
-                      Etiqueta
+                      Prévia da etiqueta
                     </p>
                     <div style={{ border: '1px solid #E6EAF2', borderRadius: '18px', padding: '18px', background: '#FFFFFF', boxShadow: '0 10px 24px rgba(11,18,32,.07)' }}>
                       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '12px', paddingBottom: '12px', borderBottom: '1.5px dashed #CBD5E6' }}>
                         <div style={{ minWidth: '0' }}>
                           <p style={{ margin: '0', fontSize: '15px', fontWeight: '800' }}>
-                            {v.lojaNome}
+                            {v.remetenteNome}
                           </p>
                           <p style={{ margin: '3px 0 0', fontSize: '11px', color: '#6B7A90' }}>
                             {v.remetente}
                           </p>
                         </div>
-                        <span style={css(v.etiquetaSelo)}>
-                          {v.etiquetaModal}
+                        <span style={{ padding: '4px 9px', borderRadius: '7px', background: '#0B1220', color: '#FFFFFF', fontSize: '10.5px', fontWeight: '700' }}>
+                          {v.servico}
                         </span>
                       </div>
                       <div style={{ padding: '12px 0', borderBottom: '1.5px dashed #CBD5E6' }}>
@@ -539,25 +545,85 @@ export default function ExpedicaoDesign({ v }: { v: any }) {
                           Destinatário
                         </p>
                         <p style={{ margin: '5px 0 0', fontSize: '13.5px', fontWeight: '700' }}>
-                          {v.destinatario}
+                          {v.destNome}
                         </p>
                         <p style={{ margin: '3px 0 0', fontSize: '12px', color: '#46536A', lineHeight: '1.5' }}>
-                          {v.enderecoLinha1}
+                          {v.destLinha1}
                           <br />
-                          {v.enderecoLinha2}
+                          {v.destLinha2}
                         </p>
                       </div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '14px', paddingTop: '12px' }}>
-                        {Boolean(v.temRastreio) && (
-                          <>
-                            <div style={{ display: 'flex', alignItems: 'flex-end', gap: '2px', height: '44px', flex: '1', minWidth: '0' }}>
-                              {v.barras.map((b: any, i13: number) => (
-                                <span key={i13} style={css(b.estilo)}>
-                                </span>
-                              ))}
-                            </div>
-                          </>
-                        )}
+                        <div style={{ display: 'flex', alignItems: 'flex-end', gap: '2px', height: '44px', flex: '1', minWidth: '0' }}>
+                          <span style={{ flex: '1', height: '100%', background: '#0B1220' }}>
+                          </span>
+                          <span style={{ flex: '1', height: '60%', background: '#0B1220' }}>
+                          </span>
+                          <span style={{ flex: '1', height: '90%', background: '#0B1220' }}>
+                          </span>
+                          <span style={{ flex: '1', height: '45%', background: '#0B1220' }}>
+                          </span>
+                          <span style={{ flex: '1', height: '100%', background: '#0B1220' }}>
+                          </span>
+                          <span style={{ flex: '1', height: '70%', background: '#0B1220' }}>
+                          </span>
+                          <span style={{ flex: '1', height: '55%', background: '#0B1220' }}>
+                          </span>
+                          <span style={{ flex: '1', height: '95%', background: '#0B1220' }}>
+                          </span>
+                          <span style={{ flex: '1', height: '100%', background: '#0B1220' }}>
+                          </span>
+                          <span style={{ flex: '1', height: '60%', background: '#0B1220' }}>
+                          </span>
+                          <span style={{ flex: '1', height: '90%', background: '#0B1220' }}>
+                          </span>
+                          <span style={{ flex: '1', height: '45%', background: '#0B1220' }}>
+                          </span>
+                          <span style={{ flex: '1', height: '100%', background: '#0B1220' }}>
+                          </span>
+                          <span style={{ flex: '1', height: '70%', background: '#0B1220' }}>
+                          </span>
+                          <span style={{ flex: '1', height: '55%', background: '#0B1220' }}>
+                          </span>
+                          <span style={{ flex: '1', height: '95%', background: '#0B1220' }}>
+                          </span>
+                          <span style={{ flex: '1', height: '100%', background: '#0B1220' }}>
+                          </span>
+                          <span style={{ flex: '1', height: '60%', background: '#0B1220' }}>
+                          </span>
+                          <span style={{ flex: '1', height: '90%', background: '#0B1220' }}>
+                          </span>
+                          <span style={{ flex: '1', height: '45%', background: '#0B1220' }}>
+                          </span>
+                          <span style={{ flex: '1', height: '100%', background: '#0B1220' }}>
+                          </span>
+                          <span style={{ flex: '1', height: '70%', background: '#0B1220' }}>
+                          </span>
+                          <span style={{ flex: '1', height: '55%', background: '#0B1220' }}>
+                          </span>
+                          <span style={{ flex: '1', height: '95%', background: '#0B1220' }}>
+                          </span>
+                          <span style={{ flex: '1', height: '100%', background: '#0B1220' }}>
+                          </span>
+                          <span style={{ flex: '1', height: '60%', background: '#0B1220' }}>
+                          </span>
+                          <span style={{ flex: '1', height: '90%', background: '#0B1220' }}>
+                          </span>
+                          <span style={{ flex: '1', height: '45%', background: '#0B1220' }}>
+                          </span>
+                          <span style={{ flex: '1', height: '100%', background: '#0B1220' }}>
+                          </span>
+                          <span style={{ flex: '1', height: '70%', background: '#0B1220' }}>
+                          </span>
+                          <span style={{ flex: '1', height: '55%', background: '#0B1220' }}>
+                          </span>
+                          <span style={{ flex: '1', height: '95%', background: '#0B1220' }}>
+                          </span>
+                          <span style={{ flex: '1', height: '100%', background: '#0B1220' }}>
+                          </span>
+                          <span style={{ flex: '1', height: '60%', background: '#0B1220' }}>
+                          </span>
+                        </div>
                         <div style={{ textAlign: 'right', flex: '0 0 auto' }}>
                           <p style={{ margin: '0', fontSize: '11px', color: '#9AA7BC' }}>
                             Rastreio
@@ -569,11 +635,11 @@ export default function ExpedicaoDesign({ v }: { v: any }) {
                       </div>
                     </div>
                     <div style={{ display: 'flex', gap: '10px', marginTop: '14px' }}>
-                      <button onClick={v.acaoSecundaria} style={css(v.btnSecundario)} className="dc17">
-                        {v.rotuloSecundario}
+                      <button onClick={v.imprimirPagina} style={{ whiteSpace: 'nowrap', flex: '1', height: '44px', border: '1px solid #E6EAF2', borderRadius: '14px', background: '#FFFFFF', color: '#46536A', fontFamily: 'inherit', fontSize: '13.5px', fontWeight: '600', cursor: 'pointer' }} className="dc17">
+                        Imprimir
                       </button>
-                      <button onClick={v.acaoPrincipal} style={css(v.btnPrincipal)} className="dc18">
-                        {v.rotuloPrincipal}
+                      <button onClick={v.despachar} style={css(v.btnDespachar)}>
+                        {v.rotuloDespachar}
                       </button>
                     </div>
                   </div>
@@ -585,155 +651,238 @@ export default function ExpedicaoDesign({ v }: { v: any }) {
                     Por transportadora
                   </h2>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                    {v.transportadoras.map((t: any, i8: number) => (
+                    {v.coletas.map((c: any, i8: number) => (
                       <div key={i8} style={{ padding: '14px', borderRadius: '16px', background: '#F8FAFE', border: '1px solid #EEF1F7' }}>
                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px', marginBottom: '10px' }}>
                           <p style={{ margin: '0', fontSize: '13.5px', fontWeight: '700' }}>
-                            {t.nome}
+                            {c.titulo}
                           </p>
-                          <span style={css(t.selo)}>
-                            {t.chip}
+                          <span style={css(c.selo)}>
+                            {c.seloRotulo}
                           </span>
                         </div>
-                        <div style={{ marginBottom: '8px', display: 'flex', justifyContent: 'space-between', fontSize: '12.5px', color: '#6B7A90' }}>
+                        <div style={{ marginBottom: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', fontSize: '12.5px', color: '#6B7A90' }}>
                           <span>
-                            {t.detalhe}
+                            {c.resumo}
                           </span>
-                          <span>
-                            {t.total}
+                          <span style={css(c.pctEstilo)}>
+                            {c.pct}
                           </span>
                         </div>
-                        <div style={{ height: '7px', borderRadius: '999px', background: '#EEF1F7' }}>
-                          <div style={css(t.barra)}>
+                        <div style={{ height: '8px', borderRadius: '999px', background: '#E3E9F5' }}>
+                          <div style={css(c.barra)}>
                           </div>
                         </div>
                       </div>
                     ))}
-                    <p style={css(v.transportadorasVazio)}>
-                      Nenhum envio tem transportadora ainda.
+                    <p style={css(v.coletasVazio)}>
+                      Nenhum envio aberto nesta loja.
                     </p>
                   </div>
                 </div>
-                <div style={{ background: '#FFFFFF', border: '1px solid #E6EAF2', borderRadius: '24px', padding: '22px 24px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px', marginBottom: '16px' }}>
-                    <h2 style={{ margin: '0', fontSize: '17px', fontWeight: '700' }}>
-                      Prontos sem envio
-                    </h2>
-                    <span style={css(v.semEnvioSelo)}>
-                      {v.semEnvioResumo}
-                    </span>
-                  </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                    {v.semEnvio.map((s: any, i8: number) => (
-                      <div key={i8} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px', borderRadius: '15px', background: '#F8FAFE', border: '1px solid #EEF1F7' }}>
-                        <span style={{ width: '32px', height: '32px', borderRadius: '10px', background: '#EDEBFE', color: '#6366F1', fontSize: '11px', fontWeight: '700', display: 'flex', alignItems: 'center', justifyContent: 'center', flex: '0 0 auto' }}>
-                          {s.iniciais}
-                        </span>
-                        <div style={{ flex: '1', minWidth: '0' }}>
-                          <p style={{ margin: '0', fontSize: '13px', fontWeight: '600' }}>
-                            {s.cliente}
-                          </p>
-                          <p style={{ margin: '2px 0 0', fontSize: '12px', color: '#6B7A90' }}>
-                            {s.detalhe}
-                          </p>
-                        </div>
-                        <button onClick={s.abrirEnvio} style={{ whiteSpace: 'nowrap', height: '34px', padding: '0 13px', border: '1px solid #E6EAF2', borderRadius: '12px', background: '#FFFFFF', color: '#46536A', fontFamily: 'inherit', fontSize: '12.5px', fontWeight: '600', cursor: 'pointer' }} className="dc19">
-                          Abrir envio
-                        </button>
+              </div>
+              <div style={{ background: '#FFFFFF', border: '1px solid #E6EAF2', borderRadius: '24px', padding: '22px 24px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px', marginBottom: '16px' }}>
+                  <h2 style={{ margin: '0', fontSize: '17px', fontWeight: '700' }}>
+                    Retiradas no balcão
+                  </h2>
+                  <span style={css(v.retiradasSelo)}>
+                    {v.retiradasRotulo}
+                  </span>
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                  {v.retiradas.map((r: any, i7: number) => (
+                    <div key={i7} style={css(r.linha)}>
+                      <span style={css(r.avatar)}>
+                        {r.iniciais}
+                      </span>
+                      <div style={{ flex: '1', minWidth: '0' }}>
+                        <p style={{ margin: '0', fontSize: '13.5px', fontWeight: '600', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                          {r.nome}
+                        </p>
+                        <p style={{ margin: '2px 0 0', fontSize: '12px', color: '#6B7A90' }}>
+                          {r.nota}
+                        </p>
                       </div>
-                    ))}
-                    <p style={css(v.semEnvioVazio)}>
-                      Todo pedido pronto já tem envio aberto.
-                    </p>
-                  </div>
-                </div>
-                <div style={{ background: '#0B1220', borderRadius: '24px', padding: '22px 24px', color: '#FFFFFF' }}>
-                  <p style={{ margin: '0 0 8px', fontSize: '12px', letterSpacing: '1.6px', textTransform: 'uppercase', color: 'rgba(255,255,255,.55)', fontWeight: '700' }}>
-                    Devoluções
+                      <a href={r.href} style={{ fontSize: '12.5px', fontWeight: '700', whiteSpace: 'nowrap' }}>
+                        Abrir
+                      </a>
+                    </div>
+                  ))}
+                  <p style={css(v.retiradasVazio)}>
+                    Nenhuma retirada no balcão em aberto.
                   </p>
-                  <p style={{ margin: '0 0 6px', fontSize: '26px', fontWeight: '800', letterSpacing: '-.8px' }}>
-                    {v.devolvidosValor}
-                  </p>
-                  <p style={{ margin: '0 0 16px', fontSize: '13px', color: 'rgba(255,255,255,.7)' }}>
-                    {v.devolvidosTexto}
-                  </p>
-                  <button onClick={v.verDevolvidos} style={{ whiteSpace: 'nowrap', height: '40px', padding: '0 16px', border: '1px solid rgba(255,255,255,.25)', borderRadius: '999px', background: 'transparent', color: '#FFFFFF', fontFamily: 'inherit', fontSize: '13.5px', fontWeight: '600', cursor: 'pointer' }} className="dc20">
-                    Ver devolvidos
-                  </button>
                 </div>
               </div>
-            </div>
-            <div style={{ background: '#FFFFFF', border: '1px solid #E6EAF2', borderRadius: '24px', overflow: 'hidden' }}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px', padding: '18px 24px', flexWrap: 'wrap' }}>
-                <h2 style={{ margin: '0', fontSize: '18px', fontWeight: '700' }}>
-                  Envios
-                </h2>
-                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                  <span style={{ padding: '9px 14px', borderRadius: '999px', background: '#F1F5FD', border: '1px solid #D6E2FC', fontSize: '12.5px', fontWeight: '700', color: '#2563EB' }}>
-                    {v.listaResumo}
-                  </span>
-                </div>
-              </div>
-              <div style={{ overflowX: 'auto' }}>
-                <div style={{ display: 'grid', gridTemplateColumns: '26px minmax(110px,.8fr) minmax(170px,1.3fr) minmax(130px,1fr) minmax(140px,1fr) minmax(110px,.8fr) minmax(110px,.8fr) minmax(120px,.9fr)', gap: '14px', padding: '10px 24px', background: '#F8FAFE', borderTop: '1px solid #EEF1F7', borderBottom: '1px solid #EEF1F7', fontSize: '11.5px', letterSpacing: '.6px', textTransform: 'uppercase', color: '#9AA7BC', fontWeight: '700' }}>
-                  <span>
-                  </span>
-                  <span>
-                    Pedido
-                  </span>
-                  <span>
-                    Cliente
-                  </span>
-                  <span>
-                    Transportadora
-                  </span>
-                  <span>
-                    Rastreio
-                  </span>
-                  <span>
-                    Valor
-                  </span>
-                  <span>
-                    Atualizado
-                  </span>
-                  <span>
-                    Status
-                  </span>
-                </div>
-                {v.envios.map((e: any, i6: number) => (
-                  <div key={i6} onClick={e.focar} style={{ display: 'grid', gridTemplateColumns: '26px minmax(110px,.8fr) minmax(170px,1.3fr) minmax(130px,1fr) minmax(140px,1fr) minmax(110px,.8fr) minmax(110px,.8fr) minmax(120px,.9fr)', gap: '14px', alignItems: 'center', padding: '14px 24px', borderBottom: '1px solid #F4F6FB', cursor: 'pointer' }} className="dc21">
-                    <span style={css(e.marca)}>
-                    </span>
-                    <a href={e.href} style={{ fontSize: '13px', fontWeight: '600' }}>
-                      {e.numero}
-                    </a>
-                    <span style={{ fontSize: '13.5px', color: '#34405A', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                      {e.cliente}
-                    </span>
-                    <span style={{ fontSize: '13px', color: '#6B7A90' }}>
-                      {e.transportadora}
-                    </span>
-                    <span style={{ fontSize: '12.5px', color: '#9AA7BC', fontFamily: 'monospace' }}>
-                      {e.rastreio}
-                    </span>
-                    <span style={{ fontSize: '13px', color: '#6B7A90' }}>
-                      {e.valor}
-                    </span>
-                    <span style={{ fontSize: '13px', color: '#6B7A90' }}>
-                      {e.quando}
-                    </span>
-                    <span style={css(e.selo)}>
-                      {e.estado}
-                    </span>
-                  </div>
-                ))}
-                <p style={css(v.enviosVazio)}>
-                  {v.enviosTextoVazio}
+              <div style={{ background: 'linear-gradient(150deg,#0B1220,#1E2A44)', borderRadius: '24px', padding: '22px 24px', color: '#FFFFFF', flex: '1', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                <p style={{ margin: '0 0 8px', fontSize: '12px', letterSpacing: '1.6px', textTransform: 'uppercase', color: 'rgba(255,255,255,.55)', fontWeight: '700' }}>
+                  Ocorrências
                 </p>
+                <p style={{ margin: '0 0 6px', fontSize: '26px', fontWeight: '800', letterSpacing: '-.8px' }}>
+                  {v.ocorrenciasTitulo}
+                </p>
+                <p style={{ margin: '0 0 16px', fontSize: '13px', color: 'rgba(255,255,255,.7)' }}>
+                  {v.ocorrenciasTexto}
+                </p>
+                <button onClick={v.verOcorrencias} style={{ whiteSpace: 'nowrap', alignSelf: 'flex-start', height: '40px', padding: '0 16px', border: '1px solid rgba(255,255,255,.25)', borderRadius: '999px', background: 'transparent', color: '#FFFFFF', fontFamily: 'inherit', fontSize: '13.5px', fontWeight: '600', cursor: 'pointer' }} className="dc18">
+                  Abrir ocorrências
+                </button>
               </div>
             </div>
           </div>
+          <div style={{ background: '#FFFFFF', border: '1px solid #E6EAF2', borderRadius: '24px', overflow: 'hidden' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px', padding: '18px 24px', flexWrap: 'wrap' }}>
+              <h2 style={{ margin: '0', fontSize: '18px', fontWeight: '700' }}>
+                Volumes do dia
+              </h2>
+              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                <span style={css(v.selecionadosEstilo)}>
+                  {v.selecionadosRotulo}
+                </span>
+                <span onClick={v.openModal} style={{ padding: '9px 14px', borderRadius: '999px', background: '#F4F7FC', border: '1px solid #E6EAF2', fontSize: '12.5px', fontWeight: '600', color: '#46536A', cursor: 'pointer' }} className="dc19">
+                  Imprimir selecionados
+                </span>
+              </div>
+            </div>
+            <div style={{ overflowX: 'auto' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '26px minmax(110px,.8fr) minmax(110px,.8fr) minmax(170px,1.3fr) minmax(130px,1fr) minmax(140px,1fr) minmax(70px,.5fr) minmax(120px,.9fr)', gap: '14px', padding: '10px 24px', background: '#F8FAFE', borderTop: '1px solid #EEF1F7', borderBottom: '1px solid #EEF1F7', fontSize: '11.5px', letterSpacing: '.6px', textTransform: 'uppercase', color: '#9AA7BC', fontWeight: '700' }}>
+                <span>
+                </span>
+                <span>
+                  Volume
+                </span>
+                <span>
+                  Pedido
+                </span>
+                <span>
+                  Cliente
+                </span>
+                <span>
+                  Transportadora
+                </span>
+                <span>
+                  Rastreio
+                </span>
+                <span>
+                  Itens
+                </span>
+                <span>
+                  Status
+                </span>
+              </div>
+              {v.volumes.map((v: any, i5: number) => (
+                <div key={i5} onClick={v.abrir} style={{ display: 'grid', gridTemplateColumns: '26px minmax(110px,.8fr) minmax(110px,.8fr) minmax(170px,1.3fr) minmax(130px,1fr) minmax(140px,1fr) minmax(70px,.5fr) minmax(120px,.9fr)', gap: '14px', alignItems: 'center', padding: '14px 24px', borderBottom: '1px solid #F4F6FB', cursor: 'pointer' }} className="dc20">
+                  <span onClick={v.marcar} style={css(v.check)}>
+                    <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M20 6 9 17l-5-5" />
+                    </svg>
+                  </span>
+                  <span style={{ fontSize: '13px', fontWeight: '700', color: '#46536A' }}>
+                    {v.volume}
+                  </span>
+                  <a href={v.href} style={{ fontSize: '13px', fontWeight: '600' }}>
+                    {v.pedido}
+                  </a>
+                  <span style={{ fontSize: '13.5px', color: '#34405A', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                    {v.cliente}
+                  </span>
+                  <span style={{ fontSize: '13px', color: '#6B7A90' }}>
+                    {v.transportadora}
+                  </span>
+                  <span style={{ fontSize: '12.5px', color: '#9AA7BC', fontFamily: 'monospace' }}>
+                    {v.rastreio}
+                  </span>
+                  <span style={{ fontSize: '13px', color: '#6B7A90' }}>
+                    {v.itens}
+                  </span>
+                  <span style={css(v.selo)}>
+                    {v.estado}
+                  </span>
+                </div>
+              ))}
+              <p style={css(v.volumesVazio)}>
+                Nenhum volume nesta aba.
+              </p>
+            </div>
+          </div>
         </main>
+      </div>
+      <div style={css(v.ov)} onClick={v.closeModal}>
+      </div>
+      <div style={css(v.sh)}>
+        <div style={{ width: 'min(620px, 100%)', maxHeight: '86vh', overflowY: 'auto', background: '#FFFFFF', borderRadius: '24px', boxShadow: '0 30px 70px rgba(11,18,32,.3)', pointerEvents: 'auto' }}>
+          <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '20px', padding: '24px 26px 18px', borderBottom: '1px solid #F0F3F9' }}>
+            <div style={{ minWidth: '0' }}>
+              <h2 style={{ margin: '0', fontSize: '20px', fontWeight: '800', letterSpacing: '-.5px' }}>
+                Gerar etiquetas
+              </h2>
+              <p style={{ margin: '6px 0 0', fontSize: '13.5px', color: '#6B7A90' }}>
+                {v.modalResumo}
+              </p>
+            </div>
+            <span onClick={v.closeModal} style={{ width: '36px', height: '36px', borderRadius: '12px', border: '1px solid #E6EAF2', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#6B7A90', cursor: 'pointer', flex: '0 0 auto' }} className="dc21">
+              <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M18 6 6 18M6 6l12 12" />
+              </svg>
+            </span>
+          </div>
+          <div style={{ padding: '22px 26px', display: 'flex', flexDirection: 'column', gap: '18px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', minWidth: '0' }}>
+                <label style={{ fontSize: '12.5px', fontWeight: '600', color: '#6B7A90' }}>
+                  Volumes
+                </label>
+                <input readOnly={true} value={v.modalContagem} style={{ height: '46px', padding: '0 15px', border: '1px solid #E6EAF2', borderRadius: '14px', fontFamily: 'inherit', fontSize: '14px', color: '#0B1220', minWidth: '0' }} />
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', minWidth: '0' }}>
+                <label style={{ fontSize: '12.5px', fontWeight: '600', color: '#6B7A90' }}>
+                  Formato
+                </label>
+                <input readOnly={true} value="100 × 150 mm" style={{ height: '46px', padding: '0 15px', border: '1px solid #E6EAF2', borderRadius: '14px', fontFamily: 'inherit', fontSize: '14px', color: '#0B1220', minWidth: '0' }} />
+                <span style={{ fontSize: '11.5px', color: '#9AA7BC' }}>
+                  o que a prévia ao lado imprime
+                </span>
+              </div>
+            </div>
+            <div style={{ border: '1px solid #E6EAF2', borderRadius: '18px', overflow: 'hidden' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1.1fr 1.6fr 1fr', gap: '12px', padding: '10px 16px', background: '#F8FAFE', fontSize: '11.5px', letterSpacing: '.6px', textTransform: 'uppercase', color: '#9AA7BC', fontWeight: '700' }}>
+                <span>
+                  Volume
+                </span>
+                <span>
+                  Cliente
+                </span>
+                <span>
+                  Serviço
+                </span>
+              </div>
+              {v.modalLinhas.map((m: any, i5: number) => (
+                <div key={i5} style={{ display: 'grid', gridTemplateColumns: '1.1fr 1.6fr 1fr', gap: '12px', padding: '12px 16px', borderTop: '1px solid #F4F6FB', fontSize: '13px' }}>
+                  <span style={{ fontWeight: '700' }}>
+                    {m.volume}
+                  </span>
+                  <span>
+                    {m.cliente}
+                  </span>
+                  <span style={{ color: '#6B7A90' }}>
+                    {m.servico}
+                  </span>
+                </div>
+              ))}
+              <p style={css(v.modalVazio)}>
+                Marque um volume na tabela para gerar a etiqueta.
+              </p>
+            </div>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '10px', padding: '18px 26px', borderTop: '1px solid #F0F3F9', background: '#F8FAFE' }}>
+            <button onClick={v.closeModal} style={{ whiteSpace: 'nowrap', height: '42px', padding: '0 18px', border: '1px solid #E6EAF2', borderRadius: '13px', background: '#FFFFFF', color: '#46536A', fontFamily: 'inherit', fontSize: '13.5px', fontWeight: '600', cursor: 'pointer' }} className="dc22">
+              Cancelar
+            </button>
+            <button onClick={v.imprimirPagina} style={{ whiteSpace: 'nowrap', height: '42px', padding: '0 20px', border: '0', borderRadius: '13px', background: 'linear-gradient(135deg,#2563EB,#06B6D4)', color: '#FFFFFF', fontFamily: 'inherit', fontSize: '13.5px', fontWeight: '700', cursor: 'pointer', boxShadow: '0 8px 18px rgba(37,99,235,.26)' }} className="dc23">
+              {v.imprimirRotulo}
+            </button>
+          </div>
+        </div>
       </div>
     </>
   );

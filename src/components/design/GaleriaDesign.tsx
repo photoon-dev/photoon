@@ -24,13 +24,19 @@ export const CSS_PSEUDO = `
 .dc17:hover { background: #F3F1FF; color: #4F46E5; }
 .dc18:hover { background: #FFF1F3; color: #E11D48; }
 .dc19:hover { color: #2563EB; }
-.dc20:hover { filter: brightness(1.06); color: #FFFFFF; }
-.dc21:hover { border-color: #D6E2FC; }
-.dc22:hover { background: #FFFFFF; }
-.dc23:hover { background: #FFFFFF; }
-.dc24:hover { background: rgba(255,255,255,.24); }
-.dc25:hover { background: #F1F5FD; color: #2563EB; }
-.dc26:hover { background: #F1F5FD; color: #2563EB; }
+.dc20:hover { background: #F1F5FD; border-color: #D6E2FC; color: #2563EB; }
+.dc21:hover { filter: brightness(1.06); color: #FFFFFF; }
+.dc22:hover { box-shadow: 0 16px 34px rgba(11,18,32,.1); }
+.dc23:hover { filter: brightness(1.06); }
+.dc24:hover { background: #F1F5FD; border-color: #D6E2FC; color: #2563EB; }
+.dc25:hover { background: #F1F5FD; border-color: #D6E2FC; color: #2563EB; }
+.dc26:hover { background: #FFFFFF; }
+.dc27:hover { background: #F1F5FD; color: #2563EB; }
+.dc28:hover { background: #F1F5FD; color: #2563EB; }
+.dc29:hover { background: rgba(255,255,255,.12); color: #FFFFFF; }
+.dc30:hover { background: #E4F8FC; color: #0B1220; }
+.dc31:hover { background: #F1F5FD; color: #2563EB; }
+.dc32:hover { background: #F1F5FD; border-color: #D6E2FC; color: #2563EB; }
 `;
 
 export default function GaleriaDesign({ v }: { v: any }) {
@@ -286,7 +292,7 @@ export default function GaleriaDesign({ v }: { v: any }) {
           </a>
         </aside>
         <main className="om-main" style={css(v.mainStyle)}>
-          <div style={{ maxWidth: '1180px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '20px', animation: 'riseIn .5s cubic-bezier(.2,.8,.2,1) both' }}>
+          <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '20px', animation: 'riseIn .5s cubic-bezier(.2,.8,.2,1) both' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '9px', fontSize: '13px', color: '#9AA7BC', flexWrap: 'wrap' }}>
               <a href={v.hrefProjetos} style={{ color: '#6B7A90', fontWeight: '600' }} className="dc19">
                 Meus projetos
@@ -298,105 +304,289 @@ export default function GaleriaDesign({ v }: { v: any }) {
                 Galeria de fotos
               </span>
             </div>
-            <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: '20px', flexWrap: 'wrap' }}>
+            <div style={{ background: '#FFFFFF', border: '1px solid #E6EAF2', borderRadius: '14px', padding: '24px 26px', display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: '20px', flexWrap: 'wrap' }}>
               <div style={{ minWidth: '0' }}>
-                <h1 style={{ margin: '0 0 6px', fontSize: '25px', fontWeight: '800', letterSpacing: '-.7px' }}>
-                  Galeria de fotos
-                </h1>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px', flexWrap: 'wrap' }}>
+                  <h1 style={{ margin: '0', fontSize: '26px', fontWeight: '800', letterSpacing: '-.8px' }}>
+                    Galeria de fotos
+                  </h1>
+                  <span style={{ padding: '6px 11px', borderRadius: '999px', background: '#F1F5FD', color: '#2563EB', fontSize: '12px', fontWeight: '700' }}>
+                    {v.chipGaleria}
+                  </span>
+                </div>
                 <p style={{ margin: '0', fontSize: '14px', color: '#6B7A90' }}>
                   {v.resumo}
                 </p>
               </div>
-              <a href={v.hrefProjetos} style={{ height: '46px', padding: '0 22px', display: 'flex', alignItems: 'center', gap: '9px', borderRadius: '12px', background: 'linear-gradient(135deg,#2563EB,#06B6D4)', color: '#FFFFFF', fontSize: '14px', fontWeight: '700', boxShadow: '0 8px 20px rgba(37,99,235,.28)' }} className="dc20">
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
-                  <rect x="3" y="3" width="7.5" height="7.5" rx="2.4" />
-                  <rect x="13.5" y="3" width="7.5" height="7.5" rx="2.4" />
-                  <rect x="3" y="13.5" width="7.5" height="7.5" rx="2.4" />
-                  <rect x="13.5" y="13.5" width="7.5" height="7.5" rx="2.4" />
-                </svg>
-                Montar um álbum
-              </a>
-            </div>
-            <div style={css(v.pessoasCartao)}>
-              <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '14px', flexWrap: 'wrap', marginBottom: '18px' }}>
-                <div>
-                  <p style={{ margin: '0', fontSize: '16.5px', fontWeight: '800', letterSpacing: '-.3px' }}>
-                    Pessoas nesta galeria
-                  </p>
-                  <p style={{ margin: '4px 0 0', fontSize: '13px', color: '#9AA7BC' }}>
-                    {v.pessoasNota}
-                  </p>
-                </div>
-                <button onClick={v.limparPessoa} style={css(v.limparEstilo)}>
-                  <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                    <path d="M6 6l12 12M18 6 6 18" />
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+                <button onClick={v.selectAll} style={{ whiteSpace: 'nowrap', height: '46px', padding: '0 18px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '9px', border: '1px solid #E6EAF2', borderRadius: '12px', background: '#FFFFFF', color: '#0B1220', fontFamily: 'inherit', fontSize: '14px', fontWeight: '600', cursor: 'pointer' }} className="dc20">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M5 12.5 10 17.5 19 7" />
                   </svg>
-                  Mostrar todas de novo
+                  Selecionar tudo
                 </button>
+                <a href={v.hrefCriarAlbum} style={{ whiteSpace: 'nowrap', height: '46px', padding: '0 20px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '9px', borderRadius: '12px', background: 'linear-gradient(135deg,#2563EB,#06B6D4)', color: '#FFFFFF', fontSize: '14px', fontWeight: '700', boxShadow: '0 10px 22px rgba(37,99,235,.26)' }} className="dc21">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M12 5v14M5 12h14" />
+                  </svg>
+                  Criar álbum
+                </a>
               </div>
-              <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
-                {v.pessoas.map((quem: any, i6: number) => (
-                  <button key={i6} onClick={quem.escolher} title={quem.titulo} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '9px', width: '78px', padding: '0', border: '0', background: 'transparent', cursor: 'pointer', fontFamily: 'inherit' }}>
-                    <span style={css(quem.foto)}>
+            </div>
+            <div style={{ background: '#FFFFFF', border: '1px solid #E6EAF2', borderRadius: '14px', padding: '20px 22px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '14px', flexWrap: 'wrap', marginBottom: '16px' }}>
+                <p style={{ margin: '0', fontSize: '12px', fontWeight: '800', color: '#9AA7BC', letterSpacing: '.8px', textTransform: 'uppercase' }}>
+                  Pessoas nesta galeria
+                </p>
+                <div style={{ display: 'flex', gap: '4px', padding: '4px', borderRadius: '12px', background: '#F4F7FC', border: '1px solid #EEF1F7' }}>
+                  <button onClick={v.faceScopeGeral} style={css(v.faceScopeGeralStyle)}>
+                    Geral
+                  </button>
+                  <button onClick={v.faceScopeAlbum} style={css(v.faceScopeAlbumStyle)}>
+                    Por álbum
+                  </button>
+                </div>
+              </div>
+              <div style={{ display: 'flex', gap: '24px', overflowX: 'auto', paddingBottom: '6px' }}>
+                {v.faces.map((fc: any, i6: number) => (
+                  <button key={i6} onClick={fc.pick} style={css(fc.chipStyle)}>
+                    <span style={css(fc.avatarStyle)}>
+                      {fc.initials}
                     </span>
-                    <span style={css(quem.nomeEstilo)}>
-                      {quem.nome}
+                    <span style={css(fc.nameStyle)}>
+                      {fc.name}
+                    </span>
+                    <span style={{ fontSize: '11px', color: '#9AA7BC', whiteSpace: 'nowrap' }}>
+                      {fc.countLabel}
                     </span>
                   </button>
                 ))}
               </div>
             </div>
-            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-              {v.filtros.map((filtro: any, i5: number) => (
-                <button key={i5} onClick={filtro.escolher} style={css(filtro.estilo)}>
-                  {filtro.rotulo}
+            <div style={{ background: '#FFFFFF', border: '1px solid #E6EAF2', borderRadius: '14px', padding: '14px 16px', display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', height: '46px', padding: '0 14px', border: '1px solid #E6EAF2', borderRadius: '12px', flex: '1', minWidth: '200px' }}>
+                <span style={{ color: '#9AA7BC', flex: '0 0 auto' }}>
+                  <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="11" cy="11" r="6.5" />
+                    <path d="m16 16 4.5 4.5" />
+                  </svg>
+                </span>
+                <input value={v.query} onChange={v.onQuery} placeholder="Buscar foto, rosto ou momento" style={{ flex: '1', minWidth: '0', border: '0', background: 'transparent', fontFamily: 'inherit', fontSize: '14px', color: '#0B1220' }} />
+              </div>
+              <select value={v.album} onChange={v.onAlbum} style={{ height: '46px', padding: '0 12px', border: '1px solid #E6EAF2', borderRadius: '12px', background: '#FFFFFF', fontFamily: 'inherit', fontSize: '13.5px', fontWeight: '600', color: '#0B1220', cursor: 'pointer' }}>
+                {v.albumOptions.map((o: any, i6: number) => (
+                  <option key={i6} value={o.value}>
+                    {o.label}
+                  </option>
+                ))}
+              </select>
+              <select value={v.orient} onChange={v.onOrient} style={{ height: '46px', padding: '0 12px', border: '1px solid #E6EAF2', borderRadius: '12px', background: '#FFFFFF', fontFamily: 'inherit', fontSize: '13.5px', fontWeight: '600', color: '#0B1220', cursor: 'pointer' }}>
+                {v.orientOptions.map((o: any, i6: number) => (
+                  <option key={i6} value={o.value}>
+                    {o.label}
+                  </option>
+                ))}
+              </select>
+              <select value={v.tag} onChange={v.onTag} style={{ height: '46px', padding: '0 12px', border: '1px solid #E6EAF2', borderRadius: '12px', background: '#FFFFFF', fontFamily: 'inherit', fontSize: '13.5px', fontWeight: '600', color: '#0B1220', cursor: 'pointer' }}>
+                {v.tagOptions.map((o: any, i6: number) => (
+                  <option key={i6} value={o.value}>
+                    {o.label}
+                  </option>
+                ))}
+              </select>
+              <div style={{ display: 'flex', gap: '4px', padding: '4px', borderRadius: '12px', background: '#F4F7FC', border: '1px solid #EEF1F7' }}>
+                <button onClick={v.viewAll} style={css(v.viewAllStyle)}>
+                  <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="3" y="3" width="7.5" height="7.5" rx="2.2" />
+                    <rect x="13.5" y="3" width="7.5" height="7.5" rx="2.2" />
+                    <rect x="3" y="13.5" width="7.5" height="7.5" rx="2.2" />
+                    <rect x="13.5" y="13.5" width="7.5" height="7.5" rx="2.2" />
+                  </svg>
+                  Fotos
                 </button>
-              ))}
-            </div>
-            <p style={css(v.vazioEstilo)}>
-              {v.vazioTexto}
-            </p>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(168px, 1fr))', gap: '14px' }}>
-              {v.fotos.map((foto: any, i5: number) => (
-                <button key={i5} onClick={foto.abrir} title={foto.titulo} style={{ position: 'relative', aspectRatio: '3 / 4', overflow: 'hidden', borderRadius: '16px', border: '1px solid #E6EAF2', background: '#F1F5FD', padding: '0', cursor: 'pointer' }} className="dc21">
-                  <img src={foto.url} alt="" loading="lazy" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
-                  <span style={css(foto.selo)}>
-                    <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                      <circle cx="12" cy="9" r="3.4" />
-                      <path d="M5 20c1-3.6 3.7-5.4 7-5.4s6 1.8 7 5.4" />
-                    </svg>
-                    {foto.rostos}
-                  </span>
+                <button onClick={v.viewAlbums} style={css(v.viewAlbumsStyle)}>
+                  <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M4 5h7v15H4zM13 5h7v15h-7z" />
+                  </svg>
+                  Álbuns
                 </button>
-              ))}
-            </div>
-          </div>
-        </main>
-        {Boolean(v.visorAberto) && (
-          <>
-            <div onClick={v.fecharVisor} style={{ position: 'fixed', inset: '0', zIndex: '80', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '30px', background: 'rgba(11,18,32,.86)', backdropFilter: 'blur(4px)' }}>
-              <img src={v.visorUrl} alt="" onClick={v.segurar} style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain', borderRadius: '12px', boxShadow: '0 30px 80px rgba(0,0,0,.5)' }} />
-              <button onClick={v.anterior} title="Anterior" style={{ position: 'absolute', left: '22px', top: '50%', transform: 'translateY(-50%)', width: '50px', height: '50px', borderRadius: '999px', border: '0', background: 'rgba(255,255,255,.92)', color: '#0B1220', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontFamily: 'inherit' }} className="dc22">
-                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M14 6l-6 6 6 6" />
-                </svg>
-              </button>
-              <button onClick={v.proxima} title="Próxima" style={{ position: 'absolute', right: '22px', top: '50%', transform: 'translateY(-50%)', width: '50px', height: '50px', borderRadius: '999px', border: '0', background: 'rgba(255,255,255,.92)', color: '#0B1220', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontFamily: 'inherit' }} className="dc23">
-                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M10 6l6 6-6 6" />
-                </svg>
-              </button>
-              <button onClick={v.fecharVisor} title="Fechar" style={{ position: 'absolute', right: '22px', top: '22px', width: '44px', height: '44px', borderRadius: '14px', border: '1px solid rgba(255,255,255,.28)', background: 'rgba(255,255,255,.12)', color: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontFamily: 'inherit' }} className="dc24">
-                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+              </div>
+              <button onClick={v.clearFilters} style={css(v.clearBtnStyle)}>
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M6 6l12 12M18 6 6 18" />
                 </svg>
+                Limpar
               </button>
-              <span style={{ position: 'absolute', bottom: '26px', left: '50%', transform: 'translateX(-50%)', padding: '9px 16px', borderRadius: '999px', background: 'rgba(11,18,32,.72)', color: '#FFFFFF', fontSize: '12.5px', fontWeight: '600' }}>
-                {v.visorContagem}
-              </span>
             </div>
-          </>
-        )}
+            {Boolean(v.isAlbumView) && (
+              <>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '20px', alignItems: 'start' }}>
+                  {v.albumCards.map((a: any, i7: number) => (
+                    <div key={i7} style={{ background: '#FFFFFF', border: '1px solid #E6EAF2', borderRadius: '14px', overflow: 'hidden', display: 'flex', flexDirection: 'column' }} className="dc22">
+                      <div style={css(a.coverStyle)}>
+                        <div style={{ position: 'absolute', inset: '0', display: 'grid', gridTemplateColumns: '2fr 1fr', gridTemplateRows: '1fr 1fr', gap: '3px', padding: '3px' }}>
+                          <span style={{ gridRow: 'span 2', background: 'rgba(255,255,255,.26)', borderRadius: '4px' }}>
+                          </span>
+                          <span style={{ background: 'rgba(255,255,255,.2)', borderRadius: '4px' }}>
+                          </span>
+                          <span style={{ background: 'rgba(255,255,255,.14)', borderRadius: '4px' }}>
+                          </span>
+                        </div>
+                      </div>
+                      <div style={{ padding: '18px', display: 'flex', flexDirection: 'column', gap: '14px', flex: '1' }}>
+                        <div>
+                          <p style={{ margin: '0', fontSize: '15.5px', fontWeight: '700', letterSpacing: '-.2px' }}>
+                            {a.name}
+                          </p>
+                          <p style={{ margin: '4px 0 0', fontSize: '12.5px', color: '#9AA7BC' }}>
+                            {a.sub}
+                          </p>
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px' }}>
+                          <span style={css(a.chipStyle)}>
+                            {a.chip}
+                          </span>
+                          <span style={{ fontSize: '12.5px', fontWeight: '700', color: '#46536A' }}>
+                            {a.pctLabel}
+                          </span>
+                        </div>
+                        <div style={{ height: '6px', borderRadius: '999px', background: '#EEF1F7' }}>
+                          <div style={css(a.barStyle)}>
+                          </div>
+                        </div>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                          <span style={{ display: 'flex', alignItems: 'center', gap: '7px', fontSize: '12.5px', color: '#6B7A90' }}>
+                            <span style={{ color: '#9AA7BC', display: 'flex' }}>
+                              <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
+                                <rect x="3" y="5" width="18" height="14" rx="3.5" />
+                                <circle cx="9" cy="11" r="1.6" />
+                                <path d="m4 18 5-4.4 3.4 3 3-2.6L20 18" />
+                              </svg>
+                            </span>
+                            {a.photosLabel}
+                          </span>
+                          <span style={{ display: 'flex', alignItems: 'center', gap: '7px', fontSize: '12.5px', color: '#6B7A90' }}>
+                            <span style={{ color: '#9AA7BC', display: 'flex' }}>
+                              <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
+                                <circle cx="12" cy="12" r="8.5" />
+                                <circle cx="9.4" cy="10.6" r="1" />
+                                <circle cx="14.6" cy="10.6" r="1" />
+                                <path d="M9.4 14.8a3.4 3.4 0 0 0 5.2 0" />
+                              </svg>
+                            </span>
+                            {a.facesLabel}
+                          </span>
+                        </div>
+                        <div style={{ display: 'flex', gap: '10px', marginTop: 'auto', paddingTop: '4px' }}>
+                          <button onClick={a.openPhotos} style={{ flex: '1', minWidth: '0', height: '44px', padding: '0 14px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', border: '0', borderRadius: '12px', background: 'linear-gradient(135deg,#2563EB,#06B6D4)', color: '#FFFFFF', fontFamily: 'inherit', fontSize: '13.5px', fontWeight: '700', cursor: 'pointer', whiteSpace: 'nowrap' }} className="dc23">
+                            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
+                              <path d="M2.5 12S6 6.5 12 6.5 21.5 12 21.5 12 18 17.5 12 17.5 2.5 12 2.5 12z" />
+                              <circle cx="12" cy="12" r="2.8" />
+                            </svg>
+                            Ver fotos
+                          </button>
+                          <a href={v.hrefEditor} style={{ flex: '1', minWidth: '0', height: '44px', padding: '0 14px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', border: '1px solid #E6EAF2', borderRadius: '12px', background: '#FFFFFF', color: '#0B1220', fontSize: '13.5px', fontWeight: '600', whiteSpace: 'nowrap' }} className="dc24">
+                            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
+                              <path d="M5 19h3l9.5-9.5a2.1 2.1 0 0 0-3-3L5 16z" />
+                            </svg>
+                            Editar
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
+            {v.groups.map((g: any, i4: number) => (
+              <div key={i4} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '14px', flexWrap: 'wrap' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px', minWidth: '0' }}>
+                    <span style={css(g.dotStyle)}>
+                    </span>
+                    <div style={{ minWidth: '0' }}>
+                      <p style={{ margin: '0', fontSize: '16px', fontWeight: '800', letterSpacing: '-.3px' }}>
+                        {g.title}
+                      </p>
+                      <p style={{ margin: '2px 0 0', fontSize: '12.5px', color: '#9AA7BC' }}>
+                        {g.sub}
+                      </p>
+                    </div>
+                  </div>
+                  <button onClick={g.selectGroup} style={{ height: '40px', padding: '0 15px', display: 'flex', alignItems: 'center', gap: '8px', borderRadius: '11px', border: '1px solid #E6EAF2', background: '#FFFFFF', color: '#46536A', fontFamily: 'inherit', fontSize: '13px', fontWeight: '600', cursor: 'pointer' }} className="dc25">
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M5 12.5 10 17.5 19 7" />
+                    </svg>
+                    Selecionar estas
+                  </button>
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(178px, 1fr))', gap: '12px', alignItems: 'start' }}>
+                  {g.photos.map((p: any, i7: number) => (
+                    <div key={i7} style={css(p.cardStyle)} onClick={p.toggle}>
+                      <div style={css(p.thumbStyle)}>
+                        <div style={{ position: 'absolute', inset: '0', background: 'linear-gradient(180deg, rgba(11,18,32,0) 42%, rgba(11,18,32,.55) 100%)' }}>
+                        </div>
+                        <span style={css(p.checkStyle)}>
+                          <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M5 12.5 10 17.5 19 7" />
+                          </svg>
+                        </span>
+                        <span style={css(p.faceBadgeStyle)}>
+                          <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
+                            <circle cx="12" cy="12" r="8.5" />
+                            <circle cx="9.4" cy="10.6" r="1" />
+                            <circle cx="14.6" cy="10.6" r="1" />
+                            <path d="M9.4 14.8a3.4 3.4 0 0 0 5.2 0" />
+                          </svg>
+                          {p.faceCount}
+                        </span>
+                        <span style={{ position: 'absolute', left: '9px', bottom: '8px', right: '9px', color: '#FFFFFF', fontSize: '11.5px', fontWeight: '700', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                          {p.name}
+                        </span>
+                        <button onClick={p.open} title="Ver detalhes" style={{ position: 'absolute', right: '8px', bottom: '8px', width: '28px', height: '28px', borderRadius: '9px', border: '0', background: 'rgba(255,255,255,.9)', color: '#0B1220', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontFamily: 'inherit' }} className="dc26">
+                          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
+                            <circle cx="12" cy="12" r="8.5" />
+                            <path d="M12 11v5.2M12 7.9h.01" />
+                          </svg>
+                        </button>
+                      </div>
+                      <div style={{ padding: '9px 10px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px' }}>
+                        <span style={{ fontSize: '11.5px', color: '#9AA7BC', whiteSpace: 'nowrap' }}>
+                          {p.meta}
+                        </span>
+                        <span style={css(p.usedStyle)}>
+                          {p.usedLabel}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+            {Boolean(v.isEmpty) && (
+              <>
+                <div style={{ background: '#FFFFFF', border: '1px dashed #DCE3EF', borderRadius: '14px', padding: '46px 26px', textAlign: 'center' }}>
+                  <span style={{ width: '46px', height: '46px', margin: '0 auto 14px', borderRadius: '14px', background: '#F4F7FC', color: '#9AA7BC', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
+                      <rect x="3" y="5" width="18" height="14" rx="3.5" />
+                      <circle cx="9" cy="11" r="1.6" />
+                      <path d="m4 18 5-4.4 3.4 3 3-2.6L20 18" />
+                    </svg>
+                  </span>
+                  <p style={{ margin: '0 0 6px', fontSize: '16px', fontWeight: '700' }}>
+                    Nenhuma foto com esses filtros
+                  </p>
+                  <p style={{ margin: '0 0 18px', fontSize: '13.5px', color: '#6B7A90' }}>
+                    Tente remover o rosto selecionado ou voltar para todos os formatos.
+                  </p>
+                  <button onClick={v.clearFilters} style={{ height: '44px', padding: '0 20px', borderRadius: '12px', border: '0', background: 'linear-gradient(135deg,#2563EB,#06B6D4)', color: '#FFFFFF', fontFamily: 'inherit', fontSize: '14px', fontWeight: '700', cursor: 'pointer' }}>
+                    Limpar filtros
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        </main>
         <div onClick={v.closeNotif} style={css(v.scrimStyle)}>
         </div>
         <aside style={css(v.drawerStyle)}>
@@ -406,10 +596,10 @@ export default function GaleriaDesign({ v }: { v: any }) {
                 Notificações
               </p>
               <p style={{ margin: '3px 0 0', fontSize: '12.5px', color: '#9AA7BC' }}>
-                Avisos da Photoon sobre seus projetos
+                Avisos de {v.lojaNome} sobre seus projetos
               </p>
             </div>
-            <button onClick={v.closeNotif} style={{ width: '38px', height: '38px', borderRadius: '12px', border: '1px solid #E6EAF2', background: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#46536A', cursor: 'pointer', fontFamily: 'inherit' }} className="dc25">
+            <button onClick={v.closeNotif} style={{ width: '38px', height: '38px', borderRadius: '12px', border: '1px solid #E6EAF2', background: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#46536A', cursor: 'pointer', fontFamily: 'inherit' }} className="dc27">
               <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
                 <path d="M6 6l12 12M18 6 6 18" />
               </svg>
@@ -418,7 +608,7 @@ export default function GaleriaDesign({ v }: { v: any }) {
           {Boolean(v.hasDetail) && (
             <>
               <div style={{ flex: '1', minHeight: '0', overflowY: 'auto', padding: '22px' }}>
-                <button onClick={v.backToList} style={{ display: 'flex', alignItems: 'center', gap: '8px', height: '34px', padding: '0 12px', marginBottom: '18px', borderRadius: '10px', border: '1px solid #E6EAF2', background: '#FFFFFF', color: '#46536A', fontFamily: 'inherit', fontSize: '12.5px', fontWeight: '600', cursor: 'pointer' }} className="dc26">
+                <button onClick={v.backToList} style={{ display: 'flex', alignItems: 'center', gap: '8px', height: '34px', padding: '0 12px', marginBottom: '18px', borderRadius: '10px', border: '1px solid #E6EAF2', background: '#FFFFFF', color: '#46536A', fontFamily: 'inherit', fontSize: '12.5px', fontWeight: '600', cursor: 'pointer' }} className="dc28">
                   <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M19 12H6M12 5l-7 7 7 7" />
                   </svg>
@@ -463,6 +653,103 @@ export default function GaleriaDesign({ v }: { v: any }) {
                     </span>
                   </button>
                 ))}
+              </div>
+            </>
+          )}
+        </aside>
+        <div style={css(v.selBarStyle)}>
+          <span style={{ width: '34px', height: '34px', borderRadius: '11px', background: 'rgba(255,255,255,.14)', color: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center', flex: '0 0 auto' }}>
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M5 12.5 10 17.5 19 7" />
+            </svg>
+          </span>
+          <div style={{ minWidth: '0' }}>
+            <p style={{ margin: '0', fontSize: '14px', fontWeight: '700', color: '#FFFFFF', whiteSpace: 'nowrap' }}>
+              {v.selTitle}
+            </p>
+            <p style={{ margin: '2px 0 0', fontSize: '12px', color: 'rgba(255,255,255,.66)', whiteSpace: 'nowrap' }}>
+              {v.selSub}
+            </p>
+          </div>
+          <div style={{ flex: '1', minWidth: '8px' }}>
+          </div>
+          <button onClick={v.clearSel} style={{ height: '42px', padding: '0 16px', borderRadius: '12px', border: '1px solid rgba(255,255,255,.24)', background: 'transparent', color: '#FFFFFF', fontFamily: 'inherit', fontSize: '13.5px', fontWeight: '600', cursor: 'pointer', whiteSpace: 'nowrap' }} className="dc29">
+            Limpar seleção
+          </button>
+          <a href={v.hrefCriarAlbum} style={{ height: '42px', padding: '0 18px', display: 'flex', alignItems: 'center', gap: '8px', borderRadius: '12px', background: '#FFFFFF', color: '#0B1220', fontSize: '13.5px', fontWeight: '700', whiteSpace: 'nowrap' }} className="dc30">
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 5v14M5 12h14" />
+            </svg>
+            Criar álbum com a seleção
+          </a>
+        </div>
+        <div onClick={v.closePhoto} style={css(v.photoScrimStyle)}>
+        </div>
+        <aside style={css(v.photoDrawerStyle)}>
+          {Boolean(v.hasPhoto) && (
+            <>
+              <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '18px 20px', borderBottom: '1px solid #EEF1F7' }}>
+                  <div style={{ flex: '1', minWidth: '0' }}>
+                    <p style={{ margin: '0', fontSize: '15.5px', fontWeight: '800', letterSpacing: '-.3px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                      {v.photoDetail.name}
+                    </p>
+                    <p style={{ margin: '3px 0 0', fontSize: '12.5px', color: '#9AA7BC' }}>
+                      {v.photoDetail.meta}
+                    </p>
+                  </div>
+                  <button onClick={v.closePhoto} style={{ width: '38px', height: '38px', borderRadius: '12px', border: '1px solid #E6EAF2', background: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#46536A', cursor: 'pointer', fontFamily: 'inherit', flex: '0 0 auto' }} className="dc31">
+                    <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M6 6l12 12M18 6 6 18" />
+                    </svg>
+                  </button>
+                </div>
+                <div style={{ flex: '1', minHeight: '0', overflowY: 'auto', padding: '20px' }}>
+                  <div style={css(v.photoDetail.heroStyle)}>
+                  </div>
+                  <p style={{ margin: '18px 0 10px', fontSize: '12px', fontWeight: '700', color: '#9AA7BC', letterSpacing: '.3px', textTransform: 'uppercase' }}>
+                    Rostos nesta foto
+                  </p>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                    {v.photoDetail.faceList.map((fc: any, i8: number) => (
+                      <span key={i8} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '6px 12px 6px 6px', borderRadius: '999px', border: '1px solid #EEF1F7', background: '#F8FAFE', fontSize: '12.5px', fontWeight: '600', color: '#46536A' }}>
+                        <span style={css(fc.avatarStyle)}>
+                          {fc.initials}
+                        </span>
+                        {fc.name}
+                      </span>
+                    ))}
+                  </div>
+                  <p style={{ margin: '20px 0 10px', fontSize: '12px', fontWeight: '700', color: '#9AA7BC', letterSpacing: '.3px', textTransform: 'uppercase' }}>
+                    Informações
+                  </p>
+                  <div style={{ display: 'flex', flexDirection: 'column' }}>
+                    {v.photoDetail.rows.map((r: any, i8: number) => (
+                      <div key={i8} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px', padding: '11px 0', borderBottom: '1px solid #F0F3F9' }}>
+                        <span style={{ fontSize: '13px', color: '#9AA7BC' }}>
+                          {r.k}
+                        </span>
+                        <span style={{ fontSize: '13.5px', fontWeight: '600', color: '#0B1220', textAlign: 'right' }}>
+                          {r.v}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <div style={{ padding: '16px 20px', borderTop: '1px solid #EEF1F7', display: 'flex', gap: '10px' }}>
+                  <button onClick={v.photoDetail.toggle} style={css(v.photoDetail.selBtnStyle)}>
+                    <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M5 12.5 10 17.5 19 7" />
+                    </svg>
+                    {v.photoDetail.selBtnLabel}
+                  </button>
+                  <a href={v.hrefEditor} style={{ flex: '1', height: '46px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', borderRadius: '12px', border: '1px solid #E6EAF2', background: '#FFFFFF', color: '#0B1220', fontSize: '13.5px', fontWeight: '600' }} className="dc32">
+                    <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M5 19h3l9.5-9.5a2.1 2.1 0 0 0-3-3L5 16z" />
+                    </svg>
+                    Usar no editor
+                  </a>
+                </div>
               </div>
             </>
           )}

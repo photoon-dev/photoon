@@ -41,13 +41,13 @@
         </div>
       </div>
     <nav style="display: flex; align-items: center; gap: 4px; margin-left: 12px; flex-wrap: wrap;">
-        <a href="./Cliente Meus projetos.dc.html" style="padding: 9px 15px; border-radius: 999px; font-size: 14px; font-weight: 500; color: #46536A; background: transparent;" style-hover="background: #F4F7FC; color: #2563EB;">Meus projetos</a>
-        <a href="./Cliente Ajuda.dc.html" style="padding: 9px 15px; border-radius: 999px; font-size: 14px; font-weight: 500; color: #46536A; background: transparent;" style-hover="background: #F4F7FC; color: #2563EB;">Ajuda</a>
-        <a href="./Cliente Minha conta.dc.html" style="padding: 9px 15px; border-radius: 999px; font-size: 14px; font-weight: 500; color: #46536A; background: transparent;" style-hover="background: #F4F7FC; color: #2563EB;">Minha conta</a>
+        <a href="{{ hrefProjetos }}" style="padding: 9px 15px; border-radius: 999px; font-size: 14px; font-weight: 500; color: #46536A; background: transparent;" style-hover="background: #F4F7FC; color: #2563EB;">Meus projetos</a>
+        <a href="{{ hrefAjuda }}" style="padding: 9px 15px; border-radius: 999px; font-size: 14px; font-weight: 500; color: #46536A; background: transparent;" style-hover="background: #F4F7FC; color: #2563EB;">Ajuda</a>
+        <a href="{{ hrefConta }}" style="padding: 9px 15px; border-radius: 999px; font-size: 14px; font-weight: 500; color: #46536A; background: transparent;" style-hover="background: #F4F7FC; color: #2563EB;">Minha conta</a>
     </nav>
     <div style="flex: 1;"></div>
     <div style="display: flex; align-items: center; gap: 10px;">
-      <a href="./Cliente Ajuda.dc.html" style="width: 42px; height: 42px; border-radius: 14px; border: 1px solid #E6EAF2; background: #FFFFFF; display: flex; align-items: center; justify-content: center; color: #46536A; flex: 0 0 auto;" style-hover="background: #F1F5FD; color: #2563EB;"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"></circle><path d="M9.8 9.6a2.3 2.3 0 1 1 3 2.2v1.4M12 16.6h.01"></path></svg></a>
+      <a href="{{ hrefAjuda }}" style="width: 42px; height: 42px; border-radius: 14px; border: 1px solid #E6EAF2; background: #FFFFFF; display: flex; align-items: center; justify-content: center; color: #46536A; flex: 0 0 auto;" style-hover="background: #F1F5FD; color: #2563EB;"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"></circle><path d="M9.8 9.6a2.3 2.3 0 1 1 3 2.2v1.4M12 16.6h.01"></path></svg></a>
       <button onClick="{{ toggleNotif }}" title="Notificações" style="{{ bellStyle }}">
         <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M18 15.5V11a6 6 0 1 0-12 0v4.5L4.5 18h15z"></path><path d="M10 20.5a2.2 2.2 0 0 0 4 0"></path></svg>
         <span style="{{ bellDotStyle }}">{{ unreadCount }}</span>
@@ -67,13 +67,13 @@
             <p style="margin: 3px 0 0; font-size: 12.5px; color: #6B7A90;">julia.martins@email.com</p>
           </div>
           <div style="padding: 8px;">
-            <a href="./Cliente Minha conta.dc.html" style="display: flex; align-items: center; gap: 11px; padding: 10px 12px; border-radius: 12px; font-size: 13.5px; font-weight: 500; color: #46536A;" style-hover="background: #F4F7FC; color: #2563EB;"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.4"></circle><path d="M5 20c.8-3.6 3.6-5.6 7-5.6s6.2 2 7 5.6"></path></svg>Meus dados</a>
-            <a href="./Cliente Minha conta.dc.html" style="display: flex; align-items: center; gap: 11px; padding: 10px 12px; border-radius: 12px; font-size: 13.5px; font-weight: 500; color: #46536A;" style-hover="background: #F4F7FC; color: #2563EB;"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="10.5" width="14" height="9" rx="2.5"></rect><path d="M8.5 10.5V8a3.5 3.5 0 0 1 7 0v2.5"></path></svg>Alterar minha senha</a>
-            <a href="./Cliente Ajuda.dc.html" style="display: flex; align-items: center; gap: 11px; padding: 10px 12px; border-radius: 12px; font-size: 13.5px; font-weight: 500; color: #46536A;" style-hover="background: #F4F7FC; color: #2563EB;"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"></circle><path d="M9.8 9.6a2.3 2.3 0 1 1 3 2.2v1.4M12 16.6h.01"></path></svg>Ajuda e contato</a>
-            <a href="./Cliente Minha conta.dc.html" style="display: flex; align-items: center; gap: 11px; padding: 10px 12px; border-radius: 12px; font-size: 13.5px; font-weight: 500; color: #46536A;" style-hover="background: #F4F7FC; color: #2563EB;"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.1"></circle><path d="M12 3.5v2.2M12 18.3v2.2M4.6 7.8l1.9 1.1M17.5 15.1l1.9 1.1M4.6 16.2l1.9-1.1M17.5 8.9l1.9-1.1"></path></svg>Configurações</a>
+            <a href="{{ hrefConta }}" style="display: flex; align-items: center; gap: 11px; padding: 10px 12px; border-radius: 12px; font-size: 13.5px; font-weight: 500; color: #46536A;" style-hover="background: #F4F7FC; color: #2563EB;"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.4"></circle><path d="M5 20c.8-3.6 3.6-5.6 7-5.6s6.2 2 7 5.6"></path></svg>Meus dados</a>
+            <a href="{{ hrefConta }}" style="display: flex; align-items: center; gap: 11px; padding: 10px 12px; border-radius: 12px; font-size: 13.5px; font-weight: 500; color: #46536A;" style-hover="background: #F4F7FC; color: #2563EB;"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="10.5" width="14" height="9" rx="2.5"></rect><path d="M8.5 10.5V8a3.5 3.5 0 0 1 7 0v2.5"></path></svg>Alterar minha senha</a>
+            <a href="{{ hrefAjuda }}" style="display: flex; align-items: center; gap: 11px; padding: 10px 12px; border-radius: 12px; font-size: 13.5px; font-weight: 500; color: #46536A;" style-hover="background: #F4F7FC; color: #2563EB;"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"></circle><path d="M9.8 9.6a2.3 2.3 0 1 1 3 2.2v1.4M12 16.6h.01"></path></svg>Ajuda e contato</a>
+            <a href="{{ hrefConta }}" style="display: flex; align-items: center; gap: 11px; padding: 10px 12px; border-radius: 12px; font-size: 13.5px; font-weight: 500; color: #46536A;" style-hover="background: #F4F7FC; color: #2563EB;"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.1"></circle><path d="M12 3.5v2.2M12 18.3v2.2M4.6 7.8l1.9 1.1M17.5 15.1l1.9 1.1M4.6 16.2l1.9-1.1M17.5 8.9l1.9-1.1"></path></svg>Configurações</a>
           </div>
           <div style="padding: 8px; border-top: 1px solid #F0F3F9;">
-            <a href="./Cliente Entrar.dc.html" style="display: flex; align-items: center; gap: 11px; padding: 10px 12px; border-radius: 12px; font-size: 13.5px; font-weight: 600; color: #E11D48;" style-hover="background: #FFF1F3; color: #E11D48;"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M15 17v2a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v2M10 12h11M18 9l3 3-3 3"></path></svg>Sair</a>
+            <a href="{{ hrefEntrar }}" style="display: flex; align-items: center; gap: 11px; padding: 10px 12px; border-radius: 12px; font-size: 13.5px; font-weight: 600; color: #E11D48;" style-hover="background: #FFF1F3; color: #E11D48;"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M15 17v2a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v2M10 12h11M18 9l3 3-3 3"></path></svg>Sair</a>
           </div>
         </div>
       </div>
@@ -81,116 +81,198 @@
   </header>
 
     <aside class="om-rail" style="{{ railStyle }}" onMouseEnter="{{ openRail }}" onMouseLeave="{{ closeRail }}">
-      <a href="./Cliente Meus projetos.dc.html" title="Meus projetos" style="display: flex; align-items: center; gap: 14px; height: 48px; padding: 0 11px; border-radius: 16px; flex-shrink: 0; width: 100%; box-sizing: border-box; align-self: stretch; background: transparent; color: #46536A;" style-hover="background: #F3F1FF; color: #4F46E5;">
+      <a href="{{ hrefProjetos }}" title="Meus projetos" style="display: flex; align-items: center; gap: 14px; height: 48px; padding: 0 11px; border-radius: 16px; flex-shrink: 0; width: 100%; box-sizing: border-box; align-self: stretch; background: transparent; color: #46536A;" style-hover="background: #F3F1FF; color: #4F46E5;">
         <svg viewBox="0 0 24 24" width="26" height="26" style="flex-shrink: 0;" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7.5" height="7.5" rx="2.4"></rect><rect x="13.5" y="3" width="7.5" height="7.5" rx="2.4"></rect><rect x="3" y="13.5" width="7.5" height="7.5" rx="2.4"></rect><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="2.4"></rect></svg>
         <span style="{{ railLabel }}">Meus projetos</span>
       </a>
-      <a href="./Cliente Galeria de fotos.dc.html" title="Galeria de fotos" style="display: flex; align-items: center; gap: 14px; height: 48px; padding: 0 11px; border-radius: 16px; flex-shrink: 0; width: 100%; box-sizing: border-box; align-self: stretch; background: linear-gradient(135deg,#7C5CFF,#4F46E5); color: #FFFFFF; box-shadow: 0 8px 18px rgba(90,66,214,.28);" style-hover="filter: brightness(1.06); color: #FFFFFF;">
+      <a href="{{ hrefGaleria }}" title="Galeria de fotos" style="display: flex; align-items: center; gap: 14px; height: 48px; padding: 0 11px; border-radius: 16px; flex-shrink: 0; width: 100%; box-sizing: border-box; align-self: stretch; background: linear-gradient(135deg,#7C5CFF,#4F46E5); color: #FFFFFF; box-shadow: 0 8px 18px rgba(90,66,214,.28);" style-hover="filter: brightness(1.06); color: #FFFFFF;">
         <svg viewBox="0 0 24 24" width="26" height="26" style="flex-shrink: 0;" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="3.5"></rect><path d="M7 5V3M17 5V3"></path><circle cx="9" cy="11" r="1.6"></circle><path d="m4 18 5-4.4 3.4 3 3-2.6L20 18"></path></svg>
         <span style="{{ railLabel }}">Galeria de fotos</span>
       </a>
-      <a href="./Cliente Editor.dc.html" title="Editor de álbum" style="display: flex; align-items: center; gap: 14px; height: 48px; padding: 0 11px; border-radius: 16px; flex-shrink: 0; width: 100%; box-sizing: border-box; align-self: stretch; background: transparent; color: #46536A;" style-hover="background: #F3F1FF; color: #4F46E5;">
+      <a href="{{ hrefEditor }}" title="Editor de álbum" style="display: flex; align-items: center; gap: 14px; height: 48px; padding: 0 11px; border-radius: 16px; flex-shrink: 0; width: 100%; box-sizing: border-box; align-self: stretch; background: transparent; color: #46536A;" style-hover="background: #F3F1FF; color: #4F46E5;">
         <svg viewBox="0 0 24 24" width="26" height="26" style="flex-shrink: 0;" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 19h3l9.5-9.5a2.1 2.1 0 0 0-3-3L5 16z"></path></svg>
         <span style="{{ railLabel }}">Editor de álbum</span>
       </a>
-      <a href="./Cliente Criar album.dc.html" title="Criar com IA" style="display: flex; align-items: center; gap: 14px; height: 48px; padding: 0 11px; border-radius: 16px; flex-shrink: 0; width: 100%; box-sizing: border-box; align-self: stretch; background: transparent; color: #46536A;" style-hover="background: #F3F1FF; color: #4F46E5;">
+      <a href="{{ hrefCriarAlbum }}" title="Criar com IA" style="display: flex; align-items: center; gap: 14px; height: 48px; padding: 0 11px; border-radius: 16px; flex-shrink: 0; width: 100%; box-sizing: border-box; align-self: stretch; background: transparent; color: #46536A;" style-hover="background: #F3F1FF; color: #4F46E5;">
         <svg viewBox="0 0 24 24" width="26" height="26" style="flex-shrink: 0;" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 19 19 5M15 5h4v4"></path><path d="M7 4v4M5 6h4M17 15v4M15 17h4"></path></svg>
         <span style="{{ railLabel }}">Criar com IA</span>
       </a>
-      <a href="./Cliente Revisao.dc.html" title="Revisão" style="display: flex; align-items: center; gap: 14px; height: 48px; padding: 0 11px; border-radius: 16px; flex-shrink: 0; width: 100%; box-sizing: border-box; align-self: stretch; background: transparent; color: #46536A;" style-hover="background: #F3F1FF; color: #4F46E5;">
+      <a href="{{ hrefRevisao }}" title="Revisão" style="display: flex; align-items: center; gap: 14px; height: 48px; padding: 0 11px; border-radius: 16px; flex-shrink: 0; width: 100%; box-sizing: border-box; align-self: stretch; background: transparent; color: #46536A;" style-hover="background: #F3F1FF; color: #4F46E5;">
         <svg viewBox="0 0 24 24" width="26" height="26" style="flex-shrink: 0;" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5 10 17.5 19 7"></path></svg>
         <span style="{{ railLabel }}">Revisão</span>
       </a>
-      <a href="./Cliente Compartilhar.dc.html" title="Compartilhar" style="display: flex; align-items: center; gap: 14px; height: 48px; padding: 0 11px; border-radius: 16px; flex-shrink: 0; width: 100%; box-sizing: border-box; align-self: stretch; background: transparent; color: #46536A;" style-hover="background: #F3F1FF; color: #4F46E5;">
+      <a href="{{ hrefCompartilhar }}" title="Compartilhar" style="display: flex; align-items: center; gap: 14px; height: 48px; padding: 0 11px; border-radius: 16px; flex-shrink: 0; width: 100%; box-sizing: border-box; align-self: stretch; background: transparent; color: #46536A;" style-hover="background: #F3F1FF; color: #4F46E5;">
         <svg viewBox="0 0 24 24" width="26" height="26" style="flex-shrink: 0;" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="17.5" cy="6" r="2.6"></circle><circle cx="6.5" cy="12" r="2.6"></circle><circle cx="17.5" cy="18" r="2.6"></circle><path d="m8.9 10.7 6.2-3.4M8.9 13.3l6.2 3.4"></path></svg>
         <span style="{{ railLabel }}">Compartilhar</span>
       </a>
-      <a href="./Cliente Ajuda.dc.html" title="Ajuda" style="display: flex; align-items: center; gap: 14px; height: 48px; padding: 0 11px; border-radius: 16px; flex-shrink: 0; width: 100%; box-sizing: border-box; align-self: stretch; background: transparent; color: #46536A;" style-hover="background: #F3F1FF; color: #4F46E5;">
+      <a href="{{ hrefAjuda }}" title="Ajuda" style="display: flex; align-items: center; gap: 14px; height: 48px; padding: 0 11px; border-radius: 16px; flex-shrink: 0; width: 100%; box-sizing: border-box; align-self: stretch; background: transparent; color: #46536A;" style-hover="background: #F3F1FF; color: #4F46E5;">
         <svg viewBox="0 0 24 24" width="26" height="26" style="flex-shrink: 0;" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"></circle><path d="M9.8 9.6a2.3 2.3 0 1 1 3 2.2v1.4M12 16.6h.01"></path></svg>
         <span style="{{ railLabel }}">Ajuda</span>
       </a>
-      <a href="./Cliente Minha conta.dc.html" title="Minha conta" style="display: flex; align-items: center; gap: 14px; height: 48px; padding: 0 11px; border-radius: 16px; flex-shrink: 0; width: 100%; box-sizing: border-box; align-self: stretch; background: transparent; color: #46536A;" style-hover="background: #F3F1FF; color: #4F46E5;">
+      <a href="{{ hrefConta }}" title="Minha conta" style="display: flex; align-items: center; gap: 14px; height: 48px; padding: 0 11px; border-radius: 16px; flex-shrink: 0; width: 100%; box-sizing: border-box; align-self: stretch; background: transparent; color: #46536A;" style-hover="background: #F3F1FF; color: #4F46E5;">
         <svg viewBox="0 0 24 24" width="26" height="26" style="flex-shrink: 0;" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.4"></circle><path d="M5 20c.8-3.6 3.6-5.6 7-5.6s6.2 2 7 5.6"></path></svg>
         <span style="{{ railLabel }}">Minha conta</span>
       </a>
       <span style="height: 1px; margin: 4px 8px; background: #EEF1F7; flex-shrink: 0;"></span>
-      <a href="./Cliente Entrar.dc.html" title="Sair" style="display: flex; align-items: center; gap: 14px; height: 48px; padding: 0 11px; border-radius: 16px; flex-shrink: 0; width: 100%; box-sizing: border-box; align-self: stretch; color: #E11D48;" style-hover="background: #FFF1F3; color: #E11D48;">
+      <a href="{{ hrefEntrar }}" title="Sair" style="display: flex; align-items: center; gap: 14px; height: 48px; padding: 0 11px; border-radius: 16px; flex-shrink: 0; width: 100%; box-sizing: border-box; align-self: stretch; color: #E11D48;" style-hover="background: #FFF1F3; color: #E11D48;">
         <svg viewBox="0 0 24 24" width="26" height="26" style="flex-shrink: 0;" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 17v2a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v2M10 12h11M18 9l3 3-3 3"></path></svg>
         <span style="{{ railLabel }}">Sair</span>
       </a>
     </aside>
 
   <main class="om-main" style="{{ mainStyle }}">
-    <div style="max-width: 1180px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; animation: riseIn .5s cubic-bezier(.2,.8,.2,1) both;">
+    <div style="max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; animation: riseIn .5s cubic-bezier(.2,.8,.2,1) both;">
 
       <div style="display: flex; align-items: center; gap: 9px; font-size: 13px; color: #9AA7BC; flex-wrap: wrap;">
-        <a href="./Cliente Meus projetos.dc.html" style="color: #6B7A90; font-weight: 600;" style-hover="color: #2563EB;">Meus projetos</a>
+        <a href="{{ hrefProjetos }}" style="color: #6B7A90; font-weight: 600;" style-hover="color: #2563EB;">Meus projetos</a>
         <span>/</span>
         <span style="color: #46536A; font-weight: 600;">Galeria de fotos</span>
       </div>
 
-      <div style="display: flex; align-items: flex-end; justify-content: space-between; gap: 20px; flex-wrap: wrap;">
+      <div style="background: #FFFFFF; border: 1px solid #E6EAF2; border-radius: 14px; padding: 24px 26px; display: flex; align-items: flex-end; justify-content: space-between; gap: 20px; flex-wrap: wrap;">
         <div style="min-width: 0;">
-          <h1 style="margin: 0 0 6px; font-size: 25px; font-weight: 800; letter-spacing: -.7px;">Galeria de fotos</h1>
+          <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px; flex-wrap: wrap;">
+            <h1 style="margin: 0; font-size: 26px; font-weight: 800; letter-spacing: -.8px;">Galeria de fotos</h1>
+            <span style="padding: 6px 11px; border-radius: 999px; background: #F1F5FD; color: #2563EB; font-size: 12px; font-weight: 700;">{{ chipGaleria }}</span>
+          </div>
           <p style="margin: 0; font-size: 14px; color: #6B7A90;">{{ resumo }}</p>
         </div>
-        <a href="./Cliente Meus projetos.dc.html" style="height: 46px; padding: 0 22px; display: flex; align-items: center; gap: 9px; border-radius: 12px; background: linear-gradient(135deg,#2563EB,#06B6D4); color: #FFFFFF; font-size: 14px; font-weight: 700; box-shadow: 0 8px 20px rgba(37,99,235,.28);" style-hover="filter: brightness(1.06); color: #FFFFFF;"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7.5" height="7.5" rx="2.4"></rect><rect x="13.5" y="3" width="7.5" height="7.5" rx="2.4"></rect><rect x="3" y="13.5" width="7.5" height="7.5" rx="2.4"></rect><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="2.4"></rect></svg>Montar um álbum</a>
+        <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+          <button onClick="{{ selectAll }}" style="white-space: nowrap; height: 46px; padding: 0 18px; display: flex; align-items: center; justify-content: center; gap: 9px; border: 1px solid #E6EAF2; border-radius: 12px; background: #FFFFFF; color: #0B1220; font-family: inherit; font-size: 14px; font-weight: 600; cursor: pointer;" style-hover="background: #F1F5FD; border-color: #D6E2FC; color: #2563EB;"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5 10 17.5 19 7"></path></svg>Selecionar tudo</button>
+          <a href="{{ hrefCriarAlbum }}" style="white-space: nowrap; height: 46px; padding: 0 20px; display: flex; align-items: center; justify-content: center; gap: 9px; border-radius: 12px; background: linear-gradient(135deg,#2563EB,#06B6D4); color: #FFFFFF; font-size: 14px; font-weight: 700; box-shadow: 0 10px 22px rgba(37,99,235,.26);" style-hover="filter: brightness(1.06); color: #FFFFFF;"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"></path></svg>Criar álbum</a>
+        </div>
       </div>
 
-      <div style="{{ pessoasCartao }}">
-        <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; flex-wrap: wrap; margin-bottom: 18px;">
-          <div>
-            <p style="margin: 0; font-size: 16.5px; font-weight: 800; letter-spacing: -.3px;">Pessoas nesta galeria</p>
-            <p style="margin: 4px 0 0; font-size: 13px; color: #9AA7BC;">{{ pessoasNota }}</p>
+      <div style="background: #FFFFFF; border: 1px solid #E6EAF2; border-radius: 14px; padding: 20px 22px;">
+        <div style="display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; margin-bottom: 16px;">
+          <p style="margin: 0; font-size: 12px; font-weight: 800; color: #9AA7BC; letter-spacing: .8px; text-transform: uppercase;">Pessoas nesta galeria</p>
+          <div style="display: flex; gap: 4px; padding: 4px; border-radius: 12px; background: #F4F7FC; border: 1px solid #EEF1F7;">
+            <button onClick="{{ faceScopeGeral }}" style="{{ faceScopeGeralStyle }}">Geral</button>
+            <button onClick="{{ faceScopeAlbum }}" style="{{ faceScopeAlbumStyle }}">Por álbum</button>
           </div>
-          <button onClick="{{ limparPessoa }}" style="{{ limparEstilo }}"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"></path></svg>Mostrar todas de novo</button>
         </div>
-        <div style="display: flex; gap: 16px; flex-wrap: wrap;">
-          <sc-for list="{{ pessoas }}" as="quem" hint-placeholder-count="8">
-            <button onClick="{{ quem.escolher }}" title="{{ quem.titulo }}" style="display: flex; flex-direction: column; align-items: center; gap: 9px; width: 78px; padding: 0; border: 0; background: transparent; cursor: pointer; font-family: inherit;">
-              <span style="{{ quem.foto }}"></span>
-              <span style="{{ quem.nomeEstilo }}">{{ quem.nome }}</span>
+        <div style="display: flex; gap: 24px; overflow-x: auto; padding-bottom: 6px;">
+          <sc-for list="{{ faces }}" as="fc" hint-placeholder-count="6">
+            <button onClick="{{ fc.pick }}" style="{{ fc.chipStyle }}">
+              <span style="{{ fc.avatarStyle }}">{{ fc.initials }}</span>
+              <span style="{{ fc.nameStyle }}">{{ fc.name }}</span>
+              <span style="font-size: 11px; color: #9AA7BC; white-space: nowrap;">{{ fc.countLabel }}</span>
             </button>
           </sc-for>
         </div>
       </div>
 
-      <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-        <sc-for list="{{ filtros }}" as="filtro" hint-placeholder-count="5">
-          <button onClick="{{ filtro.escolher }}" style="{{ filtro.estilo }}">{{ filtro.rotulo }}</button>
-        </sc-for>
+      <div style="background: #FFFFFF; border: 1px solid #E6EAF2; border-radius: 14px; padding: 14px 16px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+        <div style="display: flex; align-items: center; gap: 10px; height: 46px; padding: 0 14px; border: 1px solid #E6EAF2; border-radius: 12px; flex: 1; min-width: 200px;">
+          <span style="color: #9AA7BC; flex: 0 0 auto;"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="6.5"></circle><path d="m16 16 4.5 4.5"></path></svg></span>
+          <input value="{{ query }}" onChange="{{ onQuery }}" placeholder="Buscar foto, rosto ou momento" style="flex: 1; min-width: 0; border: 0; background: transparent; font-family: inherit; font-size: 14px; color: #0B1220;">
+        </div>
+        <select value="{{ album }}" onChange="{{ onAlbum }}" style="height: 46px; padding: 0 12px; border: 1px solid #E6EAF2; border-radius: 12px; background: #FFFFFF; font-family: inherit; font-size: 13.5px; font-weight: 600; color: #0B1220; cursor: pointer;">
+          <sc-for list="{{ albumOptions }}" as="o" hint-placeholder-count="5">
+            <option value="{{ o.value }}">{{ o.label }}</option>
+          </sc-for>
+        </select>
+        <select value="{{ orient }}" onChange="{{ onOrient }}" style="height: 46px; padding: 0 12px; border: 1px solid #E6EAF2; border-radius: 12px; background: #FFFFFF; font-family: inherit; font-size: 13.5px; font-weight: 600; color: #0B1220; cursor: pointer;">
+          <sc-for list="{{ orientOptions }}" as="o" hint-placeholder-count="3">
+            <option value="{{ o.value }}">{{ o.label }}</option>
+          </sc-for>
+        </select>
+        <select value="{{ tag }}" onChange="{{ onTag }}" style="height: 46px; padding: 0 12px; border: 1px solid #E6EAF2; border-radius: 12px; background: #FFFFFF; font-family: inherit; font-size: 13.5px; font-weight: 600; color: #0B1220; cursor: pointer;">
+          <sc-for list="{{ tagOptions }}" as="o" hint-placeholder-count="5">
+            <option value="{{ o.value }}">{{ o.label }}</option>
+          </sc-for>
+        </select>
+        <div style="display: flex; gap: 4px; padding: 4px; border-radius: 12px; background: #F4F7FC; border: 1px solid #EEF1F7;">
+          <button onClick="{{ viewAll }}" style="{{ viewAllStyle }}"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7.5" height="7.5" rx="2.2"></rect><rect x="13.5" y="3" width="7.5" height="7.5" rx="2.2"></rect><rect x="3" y="13.5" width="7.5" height="7.5" rx="2.2"></rect><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="2.2"></rect></svg>Fotos</button>
+          <button onClick="{{ viewAlbums }}" style="{{ viewAlbumsStyle }}"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h7v15H4zM13 5h7v15h-7z"></path></svg>Álbuns</button>
+        </div>
+        <button onClick="{{ clearFilters }}" style="{{ clearBtnStyle }}"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6 6 18"></path></svg>Limpar</button>
       </div>
 
-      <p style="{{ vazioEstilo }}">{{ vazioTexto }}</p>
+      <sc-if value="{{ isAlbumView }}" hint-placeholder-val="{{ false }}">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; align-items: start;">
+          <sc-for list="{{ albumCards }}" as="a" hint-placeholder-count="3">
+            <div style="background: #FFFFFF; border: 1px solid #E6EAF2; border-radius: 14px; overflow: hidden; display: flex; flex-direction: column;" style-hover="box-shadow: 0 16px 34px rgba(11,18,32,.1);">
+              <div style="{{ a.coverStyle }}">
+                <div style="position: absolute; inset: 0; display: grid; grid-template-columns: 2fr 1fr; grid-template-rows: 1fr 1fr; gap: 3px; padding: 3px;">
+                  <span style="grid-row: span 2; background: rgba(255,255,255,.26); border-radius: 4px;"></span>
+                  <span style="background: rgba(255,255,255,.2); border-radius: 4px;"></span>
+                  <span style="background: rgba(255,255,255,.14); border-radius: 4px;"></span>
+                </div>
+              </div>
+              <div style="padding: 18px; display: flex; flex-direction: column; gap: 14px; flex: 1;">
+                <div>
+                  <p style="margin: 0; font-size: 15.5px; font-weight: 700; letter-spacing: -.2px;">{{ a.name }}</p>
+                  <p style="margin: 4px 0 0; font-size: 12.5px; color: #9AA7BC;">{{ a.sub }}</p>
+                </div>
+                <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px;">
+                  <span style="{{ a.chipStyle }}">{{ a.chip }}</span>
+                  <span style="font-size: 12.5px; font-weight: 700; color: #46536A;">{{ a.pctLabel }}</span>
+                </div>
+                <div style="height: 6px; border-radius: 999px; background: #EEF1F7;"><div style="{{ a.barStyle }}"></div></div>
+                <div style="display: flex; flex-direction: column; gap: 8px;">
+                  <span style="display: flex; align-items: center; gap: 7px; font-size: 12.5px; color: #6B7A90;"><span style="color: #9AA7BC; display: flex;"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="3.5"></rect><circle cx="9" cy="11" r="1.6"></circle><path d="m4 18 5-4.4 3.4 3 3-2.6L20 18"></path></svg></span>{{ a.photosLabel }}</span>
+                  <span style="display: flex; align-items: center; gap: 7px; font-size: 12.5px; color: #6B7A90;"><span style="color: #9AA7BC; display: flex;"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"></circle><circle cx="9.4" cy="10.6" r="1"></circle><circle cx="14.6" cy="10.6" r="1"></circle><path d="M9.4 14.8a3.4 3.4 0 0 0 5.2 0"></path></svg></span>{{ a.facesLabel }}</span>
+                </div>
+                <div style="display: flex; gap: 10px; margin-top: auto; padding-top: 4px;">
+                  <button onClick="{{ a.openPhotos }}" style="flex: 1; min-width: 0; height: 44px; padding: 0 14px; display: flex; align-items: center; justify-content: center; gap: 8px; border: 0; border-radius: 12px; background: linear-gradient(135deg,#2563EB,#06B6D4); color: #FFFFFF; font-family: inherit; font-size: 13.5px; font-weight: 700; cursor: pointer; white-space: nowrap;" style-hover="filter: brightness(1.06);"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 12S6 6.5 12 6.5 21.5 12 21.5 12 18 17.5 12 17.5 2.5 12 2.5 12z"></path><circle cx="12" cy="12" r="2.8"></circle></svg>Ver fotos</button>
+                  <a href="{{ hrefEditor }}" style="flex: 1; min-width: 0; height: 44px; padding: 0 14px; display: flex; align-items: center; justify-content: center; gap: 8px; border: 1px solid #E6EAF2; border-radius: 12px; background: #FFFFFF; color: #0B1220; font-size: 13.5px; font-weight: 600; white-space: nowrap;" style-hover="background: #F1F5FD; border-color: #D6E2FC; color: #2563EB;"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M5 19h3l9.5-9.5a2.1 2.1 0 0 0-3-3L5 16z"></path></svg>Editar</a>
+                </div>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
 
-      <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(168px, 1fr)); gap: 14px;">
-        <sc-for list="{{ fotos }}" as="foto" hint-placeholder-count="12">
-          <button onClick="{{ foto.abrir }}" title="{{ foto.titulo }}" style="position: relative; aspect-ratio: 3 / 4; overflow: hidden; border-radius: 16px; border: 1px solid #E6EAF2; background: #F1F5FD; padding: 0; cursor: pointer;" style-hover="border-color: #D6E2FC;">
-            <img src="{{ foto.url }}" alt="" loading="lazy" style="width: 100%; height: 100%; object-fit: cover; display: block;">
-            <span style="{{ foto.selo }}"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="9" r="3.4"></circle><path d="M5 20c1-3.6 3.7-5.4 7-5.4s6 1.8 7 5.4"></path></svg>{{ foto.rostos }}</span>
-          </button>
-        </sc-for>
-      </div>
+      <sc-for list="{{ groups }}" as="g" hint-placeholder-count="2">
+        <div style="display: flex; flex-direction: column; gap: 14px;">
+          <div style="display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap;">
+            <div style="display: flex; align-items: center; gap: 12px; min-width: 0;">
+              <span style="{{ g.dotStyle }}"></span>
+              <div style="min-width: 0;">
+                <p style="margin: 0; font-size: 16px; font-weight: 800; letter-spacing: -.3px;">{{ g.title }}</p>
+                <p style="margin: 2px 0 0; font-size: 12.5px; color: #9AA7BC;">{{ g.sub }}</p>
+              </div>
+            </div>
+            <button onClick="{{ g.selectGroup }}" style="height: 40px; padding: 0 15px; display: flex; align-items: center; gap: 8px; border-radius: 11px; border: 1px solid #E6EAF2; background: #FFFFFF; color: #46536A; font-family: inherit; font-size: 13px; font-weight: 600; cursor: pointer;" style-hover="background: #F1F5FD; border-color: #D6E2FC; color: #2563EB;"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5 10 17.5 19 7"></path></svg>Selecionar estas</button>
+          </div>
+          <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(178px, 1fr)); gap: 12px; align-items: start;">
+            <sc-for list="{{ g.photos }}" as="p" hint-placeholder-count="8">
+              <div style="{{ p.cardStyle }}" onClick="{{ p.toggle }}">
+                <div style="{{ p.thumbStyle }}">
+                  <div style="position: absolute; inset: 0; background: linear-gradient(180deg, rgba(11,18,32,0) 42%, rgba(11,18,32,.55) 100%);"></div>
+                  <span style="{{ p.checkStyle }}"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5 10 17.5 19 7"></path></svg></span>
+                  <span style="{{ p.faceBadgeStyle }}"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"></circle><circle cx="9.4" cy="10.6" r="1"></circle><circle cx="14.6" cy="10.6" r="1"></circle><path d="M9.4 14.8a3.4 3.4 0 0 0 5.2 0"></path></svg>{{ p.faceCount }}</span>
+                  <span style="position: absolute; left: 9px; bottom: 8px; right: 9px; color: #FFFFFF; font-size: 11.5px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ p.name }}</span>
+                  <button onClick="{{ p.open }}" title="Ver detalhes" style="position: absolute; right: 8px; bottom: 8px; width: 28px; height: 28px; border-radius: 9px; border: 0; background: rgba(255,255,255,.9); color: #0B1220; display: flex; align-items: center; justify-content: center; cursor: pointer; font-family: inherit;" style-hover="background: #FFFFFF;"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"></circle><path d="M12 11v5.2M12 7.9h.01"></path></svg></button>
+                </div>
+                <div style="padding: 9px 10px; display: flex; align-items: center; justify-content: space-between; gap: 8px;">
+                  <span style="font-size: 11.5px; color: #9AA7BC; white-space: nowrap;">{{ p.meta }}</span>
+                  <span style="{{ p.usedStyle }}">{{ p.usedLabel }}</span>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </sc-for>
 
+      <sc-if value="{{ isEmpty }}" hint-placeholder-val="{{ false }}">
+        <div style="background: #FFFFFF; border: 1px dashed #DCE3EF; border-radius: 14px; padding: 46px 26px; text-align: center;">
+          <span style="width: 46px; height: 46px; margin: 0 auto 14px; border-radius: 14px; background: #F4F7FC; color: #9AA7BC; display: flex; align-items: center; justify-content: center;"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="3.5"></rect><circle cx="9" cy="11" r="1.6"></circle><path d="m4 18 5-4.4 3.4 3 3-2.6L20 18"></path></svg></span>
+          <p style="margin: 0 0 6px; font-size: 16px; font-weight: 700;">Nenhuma foto com esses filtros</p>
+          <p style="margin: 0 0 18px; font-size: 13.5px; color: #6B7A90;">Tente remover o rosto selecionado ou voltar para todos os formatos.</p>
+          <button onClick="{{ clearFilters }}" style="height: 44px; padding: 0 20px; border-radius: 12px; border: 0; background: linear-gradient(135deg,#2563EB,#06B6D4); color: #FFFFFF; font-family: inherit; font-size: 14px; font-weight: 700; cursor: pointer;">Limpar filtros</button>
+        </div>
+      </sc-if>
     </div>
   </main>
-
-  <sc-if value="{{ visorAberto }}" hint-placeholder-val="{{ false }}">
-    <div onClick="{{ fecharVisor }}" style="position: fixed; inset: 0; z-index: 80; display: flex; align-items: center; justify-content: center; padding: 30px; background: rgba(11,18,32,.86); backdrop-filter: blur(4px);">
-      <img src="{{ visorUrl }}" alt="" onClick="{{ segurar }}" style="max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 12px; box-shadow: 0 30px 80px rgba(0,0,0,.5);">
-      <button onClick="{{ anterior }}" title="Anterior" style="position: absolute; left: 22px; top: 50%; transform: translateY(-50%); width: 50px; height: 50px; border-radius: 999px; border: 0; background: rgba(255,255,255,.92); color: #0B1220; display: flex; align-items: center; justify-content: center; cursor: pointer; font-family: inherit;" style-hover="background: #FFFFFF;"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 6l-6 6 6 6"></path></svg></button>
-      <button onClick="{{ proxima }}" title="Próxima" style="position: absolute; right: 22px; top: 50%; transform: translateY(-50%); width: 50px; height: 50px; border-radius: 999px; border: 0; background: rgba(255,255,255,.92); color: #0B1220; display: flex; align-items: center; justify-content: center; cursor: pointer; font-family: inherit;" style-hover="background: #FFFFFF;"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 6l6 6-6 6"></path></svg></button>
-      <button onClick="{{ fecharVisor }}" title="Fechar" style="position: absolute; right: 22px; top: 22px; width: 44px; height: 44px; border-radius: 14px; border: 1px solid rgba(255,255,255,.28); background: rgba(255,255,255,.12); color: #FFFFFF; display: flex; align-items: center; justify-content: center; cursor: pointer; font-family: inherit;" style-hover="background: rgba(255,255,255,.24);"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"></path></svg></button>
-      <span style="position: absolute; bottom: 26px; left: 50%; transform: translateX(-50%); padding: 9px 16px; border-radius: 999px; background: rgba(11,18,32,.72); color: #FFFFFF; font-size: 12.5px; font-weight: 600;">{{ visorContagem }}</span>
-    </div>
-  </sc-if>
 
   <div onClick="{{ closeNotif }}" style="{{ scrimStyle }}"></div>
   <aside style="{{ drawerStyle }}">
     <div style="display: flex; align-items: center; gap: 12px; padding: 20px 22px; border-bottom: 1px solid #EEF1F7;">
       <div style="flex: 1; min-width: 0;">
         <p style="margin: 0; font-size: 16px; font-weight: 800; letter-spacing: -.3px;">Notificações</p>
-        <p style="margin: 3px 0 0; font-size: 12.5px; color: #9AA7BC;">Avisos da Photoon sobre seus projetos</p>
+        <p style="margin: 3px 0 0; font-size: 12.5px; color: #9AA7BC;">Avisos de {{ lojaNome }} sobre seus projetos</p>
       </div>
       <button onClick="{{ closeNotif }}" style="width: 38px; height: 38px; border-radius: 12px; border: 1px solid #E6EAF2; background: #FFFFFF; display: flex; align-items: center; justify-content: center; color: #46536A; cursor: pointer; font-family: inherit;" style-hover="background: #F1F5FD; color: #2563EB;"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"></path></svg></button>
     </div>
@@ -225,6 +307,56 @@
     </sc-if>
   </aside>
 
+  <div style="{{ selBarStyle }}">
+    <span style="width: 34px; height: 34px; border-radius: 11px; background: rgba(255,255,255,.14); color: #FFFFFF; display: flex; align-items: center; justify-content: center; flex: 0 0 auto;"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5 10 17.5 19 7"></path></svg></span>
+    <div style="min-width: 0;">
+      <p style="margin: 0; font-size: 14px; font-weight: 700; color: #FFFFFF; white-space: nowrap;">{{ selTitle }}</p>
+      <p style="margin: 2px 0 0; font-size: 12px; color: rgba(255,255,255,.66); white-space: nowrap;">{{ selSub }}</p>
+    </div>
+    <div style="flex: 1; min-width: 8px;"></div>
+    <button onClick="{{ clearSel }}" style="height: 42px; padding: 0 16px; border-radius: 12px; border: 1px solid rgba(255,255,255,.24); background: transparent; color: #FFFFFF; font-family: inherit; font-size: 13.5px; font-weight: 600; cursor: pointer; white-space: nowrap;" style-hover="background: rgba(255,255,255,.12); color: #FFFFFF;">Limpar seleção</button>
+    <a href="{{ hrefCriarAlbum }}" style="height: 42px; padding: 0 18px; display: flex; align-items: center; gap: 8px; border-radius: 12px; background: #FFFFFF; color: #0B1220; font-size: 13.5px; font-weight: 700; white-space: nowrap;" style-hover="background: #E4F8FC; color: #0B1220;"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"></path></svg>Criar álbum com a seleção</a>
+  </div>
+
+  <div onClick="{{ closePhoto }}" style="{{ photoScrimStyle }}"></div>
+  <aside style="{{ photoDrawerStyle }}">
+    <sc-if value="{{ hasPhoto }}" hint-placeholder-val="{{ false }}">
+      <div style="display: flex; flex-direction: column; height: 100%;">
+        <div style="display: flex; align-items: center; gap: 12px; padding: 18px 20px; border-bottom: 1px solid #EEF1F7;">
+          <div style="flex: 1; min-width: 0;">
+            <p style="margin: 0; font-size: 15.5px; font-weight: 800; letter-spacing: -.3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ photoDetail.name }}</p>
+            <p style="margin: 3px 0 0; font-size: 12.5px; color: #9AA7BC;">{{ photoDetail.meta }}</p>
+          </div>
+          <button onClick="{{ closePhoto }}" style="width: 38px; height: 38px; border-radius: 12px; border: 1px solid #E6EAF2; background: #FFFFFF; display: flex; align-items: center; justify-content: center; color: #46536A; cursor: pointer; font-family: inherit; flex: 0 0 auto;" style-hover="background: #F1F5FD; color: #2563EB;"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6 6 18"></path></svg></button>
+        </div>
+        <div style="flex: 1; min-height: 0; overflow-y: auto; padding: 20px;">
+          <div style="{{ photoDetail.heroStyle }}"></div>
+          <p style="margin: 18px 0 10px; font-size: 12px; font-weight: 700; color: #9AA7BC; letter-spacing: .3px; text-transform: uppercase;">Rostos nesta foto</p>
+          <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+            <sc-for list="{{ photoDetail.faceList }}" as="fc" hint-placeholder-count="2">
+              <span style="display: flex; align-items: center; gap: 8px; padding: 6px 12px 6px 6px; border-radius: 999px; border: 1px solid #EEF1F7; background: #F8FAFE; font-size: 12.5px; font-weight: 600; color: #46536A;">
+                <span style="{{ fc.avatarStyle }}">{{ fc.initials }}</span>{{ fc.name }}
+              </span>
+            </sc-for>
+          </div>
+          <p style="margin: 20px 0 10px; font-size: 12px; font-weight: 700; color: #9AA7BC; letter-spacing: .3px; text-transform: uppercase;">Informações</p>
+          <div style="display: flex; flex-direction: column;">
+            <sc-for list="{{ photoDetail.rows }}" as="r" hint-placeholder-count="4">
+              <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 11px 0; border-bottom: 1px solid #F0F3F9;">
+                <span style="font-size: 13px; color: #9AA7BC;">{{ r.k }}</span>
+                <span style="font-size: 13.5px; font-weight: 600; color: #0B1220; text-align: right;">{{ r.v }}</span>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+        <div style="padding: 16px 20px; border-top: 1px solid #EEF1F7; display: flex; gap: 10px;">
+          <button onClick="{{ photoDetail.toggle }}" style="{{ photoDetail.selBtnStyle }}"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5 10 17.5 19 7"></path></svg>{{ photoDetail.selBtnLabel }}</button>
+          <a href="{{ hrefEditor }}" style="flex: 1; height: 46px; display: flex; align-items: center; justify-content: center; gap: 8px; border-radius: 12px; border: 1px solid #E6EAF2; background: #FFFFFF; color: #0B1220; font-size: 13.5px; font-weight: 600;" style-hover="background: #F1F5FD; border-color: #D6E2FC; color: #2563EB;"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M5 19h3l9.5-9.5a2.1 2.1 0 0 0-3-3L5 16z"></path></svg>Usar no editor</a>
+        </div>
+      </div>
+    </sc-if>
+  </aside>
+
   <footer style="margin-top: auto; padding: 26px 28px 34px; border-top: 1px solid #E6EAF2; background: #FFFFFF;">
     <div style="max-width: 1200px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap;">
       <div style="display: flex; align-items: center; gap: 18px; flex-wrap: wrap;">
@@ -240,107 +372,318 @@
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props="{}">
 class Component extends DCLogic {
-  state = { menu: false, rail: false, notif: false, sel: null, read: [], filtro: 'todas', pessoa: null, visor: null };
-  filtroDefs = [['todas', 'Todas'], ['com-pessoas', 'Com pessoas'], ['sem-pessoas', 'Sem pessoas'], ['verticais', 'Verticais'], ['horizontais', 'Horizontais']];
-  gente = ['Julia', 'Marcos', 'Vovó Alice', 'Turma 3B', 'Sem nome'];
-  // ------------------------------------------------------------------ casca
-  // Mesmos nomes e mesmas strings de estilo de `Cliente Minha conta.dc.html`.
+  state = { menu: false, rail: false, filters: true, notif: false, sel: null, read: [],
+            view: 'all', album: 'all', orient: 'all', tag: 'all', face: null, faceByAlbum: false,
+            query: '', picked: [], photo: null };
+
   notifs = [
     { id: 'n1', tag: 'Galeria', tone: '#2563EB', bg: '#F1F5FD', title: '120 fotos foram liberadas para você', time: 'há 2 dias · Photoon',
-      body: ['A galeria Formatura 2026 · sessão Julia foi liberada com 120 fotos tratadas.'] },
+      body: ['A Photoon liberou a galeria Formatura 2026 · sessão Julia com 120 fotos tratadas. Todas já estão disponíveis dentro do editor, na aba Fotos.',
+             'As imagens ficam guardadas pela empresa e não podem ser excluídas por aqui. Você pode usar a mesma foto em mais de um projeto, quantas vezes quiser.',
+             'Se faltar alguma imagem do ensaio, fale com o estúdio antes de finalizar os projetos.'] },
     { id: 'n2', tag: 'Pendência', tone: '#B45309', bg: '#FEF3E2', title: '4 lâminas do fotolivro estão sem foto', time: 'ontem, 18:20 · Revisão automática',
-      body: ['A revisão encontrou 4 lâminas com quadros vazios.'] },
+      body: ['A revisão do Fotolivro da formatura encontrou 4 lâminas com quadros vazios e 1 rosto muito próximo da margem de corte.',
+             'Abra o projeto, use Preencher com a assistência para completar os quadros e ajuste o enquadramento da foto marcada.',
+             'Projetos com pendências não podem ser enviados para produção.'] },
     { id: 'n3', tag: 'Pronto', tone: '#059669', bg: '#E6F8F1', title: 'Álbum dos pais está pronto para finalizar', time: 'ontem, 21:15 · Photoon',
-      body: ['O Álbum dos pais passou pela revisão sem erros.'] }
+      body: ['O Álbum dos pais passou pela revisão sem erros: 40 fotos usadas, 20 páginas completas e nenhum aviso de qualidade.',
+             'Como este pedido tem finalização conjunta, ele será enviado para produção junto com os outros dois projetos.',
+             'Depois do envio não é possível alterar o álbum.'] }
   ];
-  casca() {
-    const open = this.state.rail;
-    const read = this.state.read;
+
+  albums = [
+    { id: 'fotolivro', name: 'Fotolivro da formatura', tone: '#7C3AED', grad: 'linear-gradient(140deg,#7C3AED,#2563EB)' },
+    { id: 'pais', name: 'Álbum dos pais', tone: '#2563EB', grad: 'linear-gradient(140deg,#2563EB,#06B6D4)' },
+    { id: 'revista', name: 'Revista da turma', tone: '#0EA5E9', grad: 'linear-gradient(140deg,#0EA5E9,#22D3EE)' },
+    { id: 'livre', name: 'Sem álbum ainda', tone: '#6B7A90', grad: 'linear-gradient(140deg,#64748B,#94A3B8)' }
+  ];
+  faceDefs = [
+    { id: 'julia', name: 'Julia', initials: 'JU', grad: 'linear-gradient(140deg,#7C3AED,#2563EB)' },
+    { id: 'helena', name: 'Helena', initials: 'HE', grad: 'linear-gradient(140deg,#2563EB,#06B6D4)' },
+    { id: 'carlos', name: 'Carlos', initials: 'CA', grad: 'linear-gradient(140deg,#0891B2,#22D3EE)' },
+    { id: 'bia', name: 'Bia', initials: 'BI', grad: 'linear-gradient(140deg,#6366F1,#8B5CF6)' },
+    { id: 'turma', name: 'Turma', initials: 'TU', grad: 'linear-gradient(140deg,#8B5CF6,#EC4899)' },
+    { id: 'alzira', name: 'Vó Alzira', initials: 'AL', grad: 'linear-gradient(140deg,#0EA5E9,#38BDF8)' }
+  ];
+  moments = ['Colação', 'Baile', 'Retratos', 'Família', 'Bastidores'];
+
+  constructor(props) {
+    super(props);
+    let seed = 20260829;
+    const rnd = () => { seed = (seed * 1103515245 + 12345) % 2147483648; return seed / 2147483648; };
+    const photos = [];
+    for (let i = 0; i < 42; i++) {
+      const alb = this.albums[Math.floor(rnd() * 4)];
+      const orient = rnd() > 0.42 ? 'v' : 'h';
+      const nf = rnd();
+      const fc = [];
+      if (nf > 0.16) {
+        const pool = this.faceDefs.slice();
+        const n = nf > 0.72 ? 3 : nf > 0.42 ? 2 : 1;
+        for (let k = 0; k < n; k++) fc.push(pool.splice(Math.floor(rnd() * pool.length), 1)[0].id);
+      }
+      photos.push({
+        id: 'p' + i,
+        name: 'IMG_' + (2140 + i * 3),
+        album: alb.id,
+        orient: orient,
+        faces: fc,
+        used: rnd() > 0.55,
+        moment: this.moments[Math.floor(rnd() * this.moments.length)],
+        date: '14 mar 2026',
+        grad: alb.grad,
+        tilt: Math.floor(rnd() * 40)
+      });
+    }
+    this.photos = photos;
+  }
+
+  chip(active, label, count, pick) {
+    return {
+      label: label, count: String(count), pick: pick,
+      style: `display:flex;align-items:center;gap:7px;height:38px;padding:0 14px;border-radius:999px;border:1px solid ${active ? '#D6E2FC' : '#E6EAF2'};background:${active ? '#F1F5FD' : '#FFFFFF'};color:${active ? '#2563EB' : '#46536A'};font-family:inherit;font-size:13px;font-weight:${active ? 700 : 600};cursor:pointer;transition:background .15s,border-color .15s,color .15s`,
+      badgeStyle: `padding:1px 7px;border-radius:999px;background:${active ? '#2563EB' : '#F1F5FD'};color:${active ? '#FFFFFF' : '#6B7A90'};font-size:11px;font-weight:700`
+    };
+  }
+
+  matches(p, skip) {
+    const st = this.state;
+    if (skip !== 'album' && st.album !== 'all' && p.album !== st.album) return false;
+    if (skip !== 'orient' && st.orient !== 'all' && p.orient !== st.orient) return false;
+    if (skip !== 'tag') {
+      if (st.tag === 'faces' && p.faces.length === 0) return false;
+      if (st.tag === 'nofaces' && p.faces.length > 0) return false;
+      if (st.tag === 'used' && !p.used) return false;
+      if (st.tag === 'unused' && p.used) return false;
+    }
+    if (skip !== 'face' && st.face && p.faces.indexOf(st.face) < 0) return false;
+    const q = st.query.trim().toLowerCase();
+    if (q) {
+      const names = p.faces.map(id => (this.faceDefs.filter(x => x.id === id)[0] || {}).name || '').join(' ');
+      if ((p.name + ' ' + p.moment + ' ' + names).toLowerCase().indexOf(q) < 0) return false;
+    }
+    return true;
+  }
+
+  renderVals() {
+    const st = this.state;
+    const open = st.rail;
+    const fo = st.filters;
+    const set = (k, v) => () => this.setState(x => { const o = {}; o[k] = x[k] === v && k !== 'view' ? (k === 'face' ? null : 'all') : v; return o; });
+
+    const shown = this.photos.filter(p => this.matches(p));
+    const picked = st.picked;
+    const albumById = id => this.albums.filter(a => a.id === id)[0] || this.albums[3];
+    const faceById = id => this.faceDefs.filter(x => x.id === id)[0] || this.faceDefs[0];
+    const avatar = grad => `width:26px;height:26px;border-radius:9px;background:${grad};color:#FFFFFF;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;flex:0 0 auto`;
+
+    const decorate = p => {
+      const isPicked = picked.indexOf(p.id) >= 0;
+      const alb = albumById(p.album);
+      return {
+        name: p.name,
+        faceCount: String(p.faces.length),
+        meta: p.orient === 'v' ? 'Vertical · ' + p.moment : 'Horizontal · ' + p.moment,
+        usedLabel: p.used ? 'em uso' : 'livre',
+        usedStyle: `padding:2px 8px;border-radius:999px;background:${p.used ? '#E6F8F1' : '#F1F5FD'};color:${p.used ? '#059669' : '#6B7A90'};font-size:10.5px;font-weight:700;white-space:nowrap`,
+        cardStyle: `background:#FFFFFF;border:1px solid ${isPicked ? '#2563EB' : '#E6EAF2'};border-radius:14px;overflow:hidden;cursor:pointer;box-shadow:${isPicked ? '0 0 0 3px rgba(37,99,235,.14)' : 'none'};transition:border-color .15s,box-shadow .15s,transform .15s`,
+        thumbStyle: `position:relative;aspect-ratio:${p.orient === 'v' ? '3 / 4' : '4 / 3'};background-image:linear-gradient(${120 + p.tilt}deg, rgba(255,255,255,.18), rgba(11,18,32,.22)),${p.grad}`,
+        checkStyle: `position:absolute;top:8px;left:8px;width:24px;height:24px;border-radius:8px;border:1.5px solid ${isPicked ? '#2563EB' : 'rgba(255,255,255,.7)'};background:${isPicked ? '#2563EB' : 'rgba(11,18,32,.28)'};color:${isPicked ? '#FFFFFF' : 'transparent'};display:flex;align-items:center;justify-content:center;opacity:${isPicked ? 1 : .9}`,
+        faceBadgeStyle: `position:absolute;top:8px;right:8px;display:${p.faces.length ? 'flex' : 'none'};align-items:center;gap:4px;padding:3px 8px;border-radius:999px;background:rgba(11,18,32,.5);backdrop-filter:blur(6px);color:#FFFFFF;font-size:10.5px;font-weight:700`,
+        toggle: () => this.setState(x => ({ picked: x.picked.indexOf(p.id) >= 0 ? x.picked.filter(v => v !== p.id) : x.picked.concat(p.id) })),
+        open: ev => { if (ev && ev.stopPropagation) ev.stopPropagation(); this.setState({ photo: p.id }); },
+        _alb: alb
+      };
+    };
+
+    let groups;
+    if (st.view === 'albums') {
+      groups = this.albums.map(a => {
+        const list = shown.filter(p => p.album === a.id);
+        return {
+          title: a.name,
+          sub: list.length + (list.length === 1 ? ' foto' : ' fotos') + ' nesta seleção',
+          dotStyle: `width:12px;height:34px;border-radius:999px;background:${a.grad};flex:0 0 auto`,
+          photos: list.map(decorate),
+          selectGroup: () => this.setState(x => ({ picked: x.picked.concat(list.map(p => p.id).filter(id => x.picked.indexOf(id) < 0)) }))
+        };
+      }).filter(g => g.photos.length > 0);
+    } else {
+      groups = shown.length ? [{
+        title: 'Todas as fotos',
+        sub: shown.length + ' de ' + this.photos.length + ' fotos · ordenadas pela data do ensaio',
+        dotStyle: 'width:12px;height:34px;border-radius:999px;background:linear-gradient(140deg,#2563EB,#06B6D4);flex:0 0 auto',
+        photos: shown.map(decorate),
+        selectGroup: () => this.setState({ picked: shown.map(p => p.id) })
+      }] : [];
+    }
+
+    const faceScope = st.faceByAlbum && st.album !== 'all' ? this.photos.filter(p => p.album === st.album) : this.photos;
+    const faces = this.faceDefs.map(fc => {
+      const n = faceScope.filter(p => p.faces.indexOf(fc.id) >= 0).length;
+      const active = st.face === fc.id;
+      return {
+        name: fc.name, initials: fc.initials,
+        countLabel: n + (n === 1 ? ' foto' : ' fotos'),
+        chipStyle: `display:flex;flex-direction:column;align-items:center;gap:8px;padding:2px;border:0;background:transparent;cursor:pointer;font-family:inherit;flex:0 0 auto;width:78px`,
+        avatarStyle: `width:66px;height:66px;border-radius:999px;background:${fc.grad};color:#FFFFFF;display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:800;flex:0 0 auto;box-shadow:${active ? '0 0 0 3px #FFFFFF, 0 0 0 6px #2563EB' : '0 4px 12px rgba(11,18,32,.12)'};transition:box-shadow .16s`,
+        nameStyle: `font-size:12.5px;font-weight:${active ? 800 : 600};color:${active ? '#2563EB' : '#46536A'};white-space:nowrap;max-width:78px;overflow:hidden;text-overflow:ellipsis`,
+        pick: set('face', fc.id)
+      };
+    });
+
+    const countIf = (key, val) => this.photos.filter(p => {
+      if (!this.matches(p, key)) return false;
+      if (key === 'album') return val === 'all' || p.album === val;
+      if (key === 'orient') return val === 'all' || p.orient === val;
+      if (key === 'tag') {
+        if (val === 'all') return true;
+        if (val === 'faces') return p.faces.length > 0;
+        if (val === 'nofaces') return p.faces.length === 0;
+        if (val === 'used') return p.used;
+        return !p.used;
+      }
+      return true;
+    }).length;
+
+    const albumChips = [this.chip(st.album === 'all', 'Todos os álbuns', countIf('album', 'all'), set('album', 'all'))]
+      .concat(this.albums.map(a => this.chip(st.album === a.id, a.name, countIf('album', a.id), set('album', a.id))));
+    const orientChips = [
+      this.chip(st.orient === 'all', 'Todos', countIf('orient', 'all'), set('orient', 'all')),
+      this.chip(st.orient === 'v', 'Verticais', countIf('orient', 'v'), set('orient', 'v')),
+      this.chip(st.orient === 'h', 'Horizontais', countIf('orient', 'h'), set('orient', 'h'))
+    ];
+    const tagChips = [
+      this.chip(st.tag === 'all', 'Tudo', countIf('tag', 'all'), set('tag', 'all')),
+      this.chip(st.tag === 'faces', 'Com rostos', countIf('tag', 'faces'), set('tag', 'faces')),
+      this.chip(st.tag === 'nofaces', 'Sem rostos', countIf('tag', 'nofaces'), set('tag', 'nofaces')),
+      this.chip(st.tag === 'used', 'Já usadas', countIf('tag', 'used'), set('tag', 'used')),
+      this.chip(st.tag === 'unused', 'Ainda livres', countIf('tag', 'unused'), set('tag', 'unused'))
+    ];
+    const activeN = (st.album !== 'all' ? 1 : 0) + (st.orient !== 'all' ? 1 : 0) + (st.tag !== 'all' ? 1 : 0) + (st.face ? 1 : 0) + (st.query.trim() ? 1 : 0);
+
+    const seg = active => `display:flex;align-items:center;gap:8px;height:38px;padding:0 15px;border:0;border-radius:10px;background:${active ? '#FFFFFF' : 'transparent'};color:${active ? '#2563EB' : '#6B7A90'};box-shadow:${active ? '0 2px 8px rgba(11,18,32,.08)' : 'none'};font-family:inherit;font-size:13px;font-weight:${active ? 700 : 600};cursor:pointer;white-space:nowrap;transition:background .15s,color .15s`;
+
+    const pd = st.photo === null ? null : this.photos.filter(p => p.id === st.photo)[0];
+    const detail = !pd ? null : Object.assign(decorate(pd), {
+      heroStyle: `width:100%;aspect-ratio:${pd.orient === 'v' ? '3 / 4' : '4 / 3'};border-radius:14px;background-image:linear-gradient(${120 + pd.tilt}deg, rgba(255,255,255,.2), rgba(11,18,32,.24)),${pd.grad}`,
+      faceList: pd.faces.length ? pd.faces.map(id => { const fc = faceById(id); return { name: fc.name, initials: fc.initials, avatarStyle: avatar(fc.grad) }; })
+                              : [{ name: 'Nenhum rosto reconhecido', initials: '–', avatarStyle: avatar('#DCE3EF') }],
+      rows: [
+        { k: 'Formato', v: pd.orient === 'v' ? 'Vertical · 3:4' : 'Horizontal · 4:3' },
+        { k: 'Momento', v: pd.moment },
+        { k: 'Data do ensaio', v: pd.date },
+        { k: 'Álbum', v: albumById(pd.album).name },
+        { k: 'Resolução', v: pd.orient === 'v' ? '4480 × 5973 px' : '5973 × 4480 px' },
+        { k: 'Qualidade para impressão', v: 'Ótima' }
+      ],
+      selBtnLabel: picked.indexOf(pd.id) >= 0 ? 'Remover da seleção' : 'Selecionar foto',
+      selBtnStyle: `flex:1;height:46px;display:flex;align-items:center;justify-content:center;gap:8px;border-radius:12px;border:0;background:${picked.indexOf(pd.id) >= 0 ? '#0B1220' : 'linear-gradient(135deg,#2563EB,#06B6D4)'};color:#FFFFFF;font-family:inherit;font-size:13.5px;font-weight:700;cursor:pointer`
+    });
+
+    const read = st.read;
     const list = this.notifs.map((n, i) => {
       const isRead = read.indexOf(n.id) >= 0;
       return Object.assign({}, n, {
-        rowStyle: `display:flex;gap:12px;padding:14px 16px;border-radius:14px;border:1px solid ${this.state.sel === i ? '#D6E2FC' : '#EEF1F7'};background:${this.state.sel === i ? '#F7FAFF' : '#FFFFFF'};cursor:pointer;text-align:left;font-family:inherit;width:100%`,
+        rowStyle: `display:flex;gap:12px;padding:14px 16px;border-radius:14px;border:1px solid ${st.sel === i ? '#D6E2FC' : '#EEF1F7'};background:${st.sel === i ? '#F7FAFF' : '#FFFFFF'};cursor:pointer;text-align:left;font-family:inherit;width:100%`,
         tagStyle: `display:inline-block;padding:3px 9px;border-radius:999px;background:${n.bg};color:${n.tone};font-size:11px;font-weight:700`,
         titleStyle: `margin:8px 0 0;font-size:13.5px;font-weight:${isRead ? 600 : 800};color:#0B1220;line-height:1.4`,
         dotStyle: `width:8px;height:8px;border-radius:999px;background:${isRead ? 'transparent' : n.tone};flex:0 0 auto;margin-top:6px`,
-        pick: () => this.setState(s => ({ sel: i, read: s.read.indexOf(n.id) >= 0 ? s.read : s.read.concat(n.id) }))
+        pick: () => this.setState(x => ({ sel: i, read: x.read.indexOf(n.id) >= 0 ? x.read : x.read.concat(n.id) }))
       });
     });
-    const detail = this.state.sel === null ? null : list[this.state.sel];
+    const nDetail = st.sel === null ? null : list[st.sel];
     const unread = this.notifs.length - read.length;
+
     return {
-      notifOpen: this.state.notif && !detail,
-      toggleNotif: () => this.setState(s => ({ notif: !s.notif, sel: null })),
+      groups: st.view === 'albums' ? [] : groups,
+      isEmpty: st.view !== 'albums' && shown.length === 0,
+      isAlbumView: st.view === 'albums',
+      albumCards: this.albums.map(a => {
+        const list = this.photos.filter(p => p.album === a.id);
+        const sel = list.filter(p => p.used).length;
+        const pct = list.length ? Math.round((sel / list.length) * 100) : 0;
+        const facesN = this.faceDefs.filter(fc => list.some(p => p.faces.indexOf(fc.id) >= 0)).length;
+        const pend = a.id === 'livre' ? 'Sem álbum' : pct === 100 ? 'Pronto para finalizar' : pct === 0 ? 'Não iniciado' : 'Com pendências';
+        const tone = pend === 'Pronto para finalizar' ? ['#E6F8F1', '#059669'] : pend === 'Com pendências' ? ['#FEF3E2', '#B45309'] : ['#F1F5FD', '#46536A'];
+        return {
+          name: a.name,
+          sub: a.id === 'livre' ? 'fotos ainda não usadas em nenhum projeto' : 'álbum criado a partir desta galeria',
+          chip: pend,
+          chipStyle: `white-space:nowrap;padding:5px 11px;border-radius:999px;background:${tone[0]};color:${tone[1]};font-size:12px;font-weight:700`,
+          pctLabel: pct + '%',
+          barStyle: `width:${pct}%;height:100%;border-radius:999px;background:linear-gradient(90deg,#2563EB,#06B6D4)`,
+          coverStyle: `position:relative;height:150px;background-image:linear-gradient(140deg, rgba(255,255,255,.16), rgba(11,18,32,.2)),${a.grad};overflow:hidden`,
+          photosLabel: sel + ' de ' + list.length + ' fotos usadas',
+          facesLabel: facesN + (facesN === 1 ? ' pessoa reconhecida' : ' pessoas reconhecidas'),
+          openPhotos: () => this.setState({ view: 'all', album: a.id })
+        };
+      }),
+      album: st.album,
+      orient: st.orient,
+      tag: st.tag,
+      onAlbum: ev => this.setState({ album: ev.target.value }),
+      onOrient: ev => this.setState({ orient: ev.target.value }),
+      onTag: ev => this.setState({ tag: ev.target.value }),
+      albumOptions: [{ value: 'all', label: 'Todos os álbuns' }].concat(this.albums.map(a => ({ value: a.id, label: a.name }))),
+      orientOptions: [{ value: 'all', label: 'Todos os formatos' }, { value: 'v', label: 'Só verticais' }, { value: 'h', label: 'Só horizontais' }],
+      tagOptions: [{ value: 'all', label: 'Rostos e uso: tudo' }, { value: 'faces', label: 'Com rostos' }, { value: 'nofaces', label: 'Sem rostos' }, { value: 'used', label: 'Já usadas' }, { value: 'unused', label: 'Ainda livres' }],
+      clearBtnStyle: `height:46px;padding:0 16px;display:flex;align-items:center;gap:8px;border-radius:12px;border:1px solid ${activeN ? '#FBD5DD' : '#E6EAF2'};background:#FFFFFF;color:${activeN ? '#E11D48' : '#9AA7BC'};font-family:inherit;font-size:13.5px;font-weight:600;cursor:pointer;white-space:nowrap`,
+      faces: faces,
+      albumChips: albumChips,
+      orientChips: orientChips,
+      tagChips: tagChips,
+      activeCount: activeN ? String(activeN) : '',
+      filtersCountStyle: `padding:1px 7px;border-radius:999px;background:#2563EB;color:#FFFFFF;font-size:11px;font-weight:700;display:${activeN ? 'inline-block' : 'none'}`,
+      resultLabel: shown.length + ' de ' + this.photos.length + ' fotos atendem aos filtros',
+      albumName: st.album === 'all' ? 'todos os álbuns' : albumById(st.album).name,
+      faceByAlbum: st.faceByAlbum,
+      faceScopeGeral: () => this.setState({ faceByAlbum: false }),
+      faceScopeAlbum: () => this.setState({ faceByAlbum: true }),
+      faceScopeGeralStyle: seg(!st.faceByAlbum),
+      faceScopeAlbumStyle: seg(st.faceByAlbum),
+      viewAll: () => this.setState({ view: 'all' }),
+      viewAlbums: () => this.setState({ view: 'albums' }),
+      viewAllStyle: seg(st.view === 'all'),
+      viewAlbumsStyle: seg(st.view === 'albums'),
+      query: st.query,
+      onQuery: ev => this.setState({ query: ev.target.value }),
+      clearFilters: () => this.setState({ album: 'all', orient: 'all', tag: 'all', face: null, query: '' }),
+      selectAll: () => this.setState({ picked: this.photos.map(p => p.id) }),
+      clearSel: () => this.setState({ picked: [] }),
+      selTitle: picked.length + (picked.length === 1 ? ' foto selecionada' : ' fotos selecionadas'),
+      selSub: 'dá para usar a mesma foto em mais de um álbum',
+      selBarStyle: `position:fixed;left:50%;bottom:26px;z-index:60;display:flex;align-items:center;gap:14px;padding:12px 16px;border-radius:18px;background:#0B1220;box-shadow:0 22px 48px rgba(11,18,32,.32);width:min(720px,calc(100vw - 60px));transform:translate(-50%,${picked.length ? '0' : '160%'});opacity:${picked.length ? 1 : 0};transition:transform .26s cubic-bezier(.2,.8,.2,1),opacity .2s ease`,
+      photoDetail: detail,
+      hasPhoto: !!detail,
+      closePhoto: () => this.setState({ photo: null }),
+      photoDrawerStyle: `position:fixed;top:0;right:0;bottom:0;width:400px;max-width:92vw;z-index:75;background:#FFFFFF;border-left:1px solid #E6EAF2;box-shadow:-24px 0 60px rgba(11,18,32,.18);transform:translateX(${detail ? '0' : '104%'});transition:transform .26s cubic-bezier(.2,.8,.2,1)`,
+      photoScrimStyle: `position:fixed;inset:0;z-index:70;background:rgba(11,18,32,.34);opacity:${detail ? 1 : 0};pointer-events:${detail ? 'auto' : 'none'};transition:opacity .22s ease`,
+      notifOpen: st.notif && !nDetail,
+      toggleNotif: () => this.setState(x => ({ notif: !x.notif, sel: null })),
       closeNotif: () => this.setState({ notif: false, sel: null }),
       backToList: () => this.setState({ sel: null }),
       notifList: list,
-      notifDetail: detail,
-      hasDetail: !!detail,
+      notifDetail: nDetail,
+      hasDetail: !!nDetail,
       unreadCount: unread > 0 ? String(unread) : '',
-      bellStyle: `position:relative;width:42px;height:42px;border-radius:14px;border:1px solid ${this.state.notif ? '#D6E2FC' : '#E6EAF2'};background:${this.state.notif ? '#F1F5FD' : '#FFFFFF'};display:flex;align-items:center;justify-content:center;color:${this.state.notif ? '#2563EB' : '#46536A'};flex:0 0 auto;cursor:pointer;font-family:inherit;transition:background .15s,border-color .15s,color .15s`,
+      bellStyle: `position:relative;width:42px;height:42px;border-radius:14px;border:1px solid ${st.notif ? '#D6E2FC' : '#E6EAF2'};background:${st.notif ? '#F1F5FD' : '#FFFFFF'};display:flex;align-items:center;justify-content:center;color:${st.notif ? '#2563EB' : '#46536A'};flex:0 0 auto;cursor:pointer;font-family:inherit;transition:background .15s,border-color .15s,color .15s`,
       bellDotStyle: `position:absolute;top:6px;right:6px;min-width:17px;height:17px;padding:0 4px;border-radius:999px;background:#E11D48;color:#FFFFFF;font-size:9.5px;font-weight:800;display:${unread > 0 ? 'flex' : 'none'};align-items:center;justify-content:center;border:2px solid #FFFFFF`,
-      drawerStyle: `position:fixed;top:0;right:0;bottom:0;width:420px;max-width:92vw;z-index:70;background:#FFFFFF;border-left:1px solid #E6EAF2;box-shadow:-24px 0 60px rgba(11,18,32,.18);display:flex;flex-direction:column;transform:translateX(${this.state.notif ? '0' : '104%'});transition:transform .26s cubic-bezier(.2,.8,.2,1)`,
-      scrimStyle: `position:fixed;inset:0;z-index:65;background:rgba(11,18,32,.34);opacity:${this.state.notif ? 1 : 0};pointer-events:${this.state.notif ? 'auto' : 'none'};transition:opacity .22s ease`,
-      toggleMenu: () => this.setState(s => ({ menu: !s.menu })),
+      drawerStyle: `position:fixed;top:0;right:0;bottom:0;width:420px;max-width:92vw;z-index:70;background:#FFFFFF;border-left:1px solid #E6EAF2;box-shadow:-24px 0 60px rgba(11,18,32,.18);display:flex;flex-direction:column;transform:translateX(${st.notif ? '0' : '104%'});transition:transform .26s cubic-bezier(.2,.8,.2,1)`,
+      scrimStyle: `position:fixed;inset:0;z-index:65;background:rgba(11,18,32,.34);opacity:${st.notif ? 1 : 0};pointer-events:${st.notif ? 'auto' : 'none'};transition:opacity .22s ease`,
+      filtersOpen: fo,
+      toggleFilters: () => this.setState(x => ({ filters: !x.filters })),
+      filtersBtnStyle: `white-space:nowrap;height:44px;padding:0 18px;display:flex;align-items:center;justify-content:center;gap:9px;border:1px solid ${fo ? '#D6E2FC' : '#E6EAF2'};border-radius:12px;background:${fo ? '#F1F5FD' : '#FFFFFF'};color:${fo ? '#2563EB' : '#0B1220'};font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;transition:background .15s,border-color .15s,color .15s`,
+      filtersCaretStyle: `display:flex;transition:transform .2s ease;transform:rotate(${fo ? 180 : 0}deg)`,
+      toggleMenu: () => this.setState(x => ({ menu: !x.menu })),
       openRail: () => this.setState({ rail: true }),
       closeRail: () => this.setState({ rail: false }),
-      railStyle: `position:fixed;top:50%;left:18px;transform:translateY(-50%);z-index:45;display:flex;flex-direction:column;gap:6px;padding:12px 10px;width:${open ? 244 : 68}px;border-radius:26px;background:rgba(255,255,255,.94);backdrop-filter:blur(14px);border:1px solid #E6EAF2;box-shadow:0 20px 44px rgba(11,18,32,${open ? ".2" : ".14"});overflow:hidden;transition:width .22s cubic-bezier(.2,.8,.2,1),box-shadow .22s`,
-      mainStyle: `flex:1;padding:30px 28px 56px ${open ? 272 : 96}px;transition:padding-left .22s cubic-bezier(.2,.8,.2,1)`,
+      railStyle: `position:fixed;top:50%;left:18px;transform:translateY(-50%);z-index:45;display:flex;flex-direction:column;gap:6px;padding:12px 10px;width:${open ? 244 : 68}px;border-radius:26px;background:rgba(255,255,255,.94);backdrop-filter:blur(14px);border:1px solid #E6EAF2;box-shadow:0 20px 44px rgba(11,18,32,${open ? '.2' : '.14'});overflow:hidden;transition:width .22s cubic-bezier(.2,.8,.2,1),box-shadow .22s`,
+      mainStyle: `flex:1;padding:30px 28px 96px ${open ? 272 : 96}px;transition:padding-left .22s cubic-bezier(.2,.8,.2,1)`,
       railLabel: `font-size:14px;font-weight:600;white-space:nowrap;opacity:${open ? 1 : 0};transform:translateX(${open ? 0 : -6}px);transition:opacity .18s ease,transform .22s cubic-bezier(.2,.8,.2,1);pointer-events:none`,
-      avatarBtn: `display:flex;align-items:center;gap:11px;padding:5px 12px 5px 5px;border:1px solid ${this.state.menu ? "#D6E2FC" : "#E6EAF2"};border-radius:14px;background:#FFFFFF;cursor:pointer;transition:border-color .15s`,
-      menuStyle: `position:absolute;top:56px;right:0;width:250px;background:#FFFFFF;border:1px solid #E6EAF2;border-radius:20px;box-shadow:0 24px 50px rgba(11,18,32,.16);overflow:hidden;z-index:50;animation:menuIn .16s ease both;${this.state.menu ? "" : "display:none"}`,
-      lojaNome: 'Studio Fotográfico Lume',
-      lojaEmail: 'contato@studiolume.com.br',
-      lojaTelefone: '(11) 98844-2210'
+      avatarBtn: `display:flex;align-items:center;gap:11px;padding:5px 12px 5px 5px;border:1px solid ${st.menu ? '#D6E2FC' : '#E6EAF2'};border-radius:14px;background:#FFFFFF;cursor:pointer;transition:border-color .15s`,
+      menuStyle: `position:absolute;top:56px;right:0;width:250px;background:#FFFFFF;border:1px solid #E6EAF2;border-radius:20px;box-shadow:0 24px 50px rgba(11,18,32,.16);overflow:hidden;z-index:50;animation:menuIn .16s ease both;${st.menu ? '' : 'display:none'}`
     };
-  }
-  renderVals() {
-    const n = 12;
-    const fotos = Array.from({ length: n }, (_, i) => i);
-    return Object.assign(this.casca(), {
-      resumo: `Formatura 2026 · sessão Julia · ${n} fotos`,
-      pessoasCartao: 'background:#FFFFFF;border:1px solid #E6EAF2;border-radius:14px;padding:24px 26px',
-      pessoasNota: 'Toque numa pessoa para ver só as fotos em que ela aparece.',
-      limparPessoa: () => this.setState({ pessoa: null }),
-      limparEstilo: this.state.pessoa === null
-        ? 'display:none'
-        : 'height:40px;padding:0 14px;display:flex;align-items:center;gap:8px;border:1px solid #E6EAF2;border-radius:11px;background:#FFFFFF;color:#46536A;font-family:inherit;font-size:12.5px;font-weight:600;cursor:pointer',
-      pessoas: this.gente.map((nome, i) => {
-        const on = this.state.pessoa === i;
-        return {
-          nome,
-          titulo: `${nome} · 8 fotos`,
-          foto: `width:62px;height:62px;border-radius:999px;background:#EAF0FF;background-size:cover;background-position:center;box-shadow:0 0 0 ${on ? '3px #2563EB' : '1px #E6EAF2'},0 0 0 ${on ? '6px #FFFFFF' : '0 #FFFFFF'}`,
-          nomeEstilo: `width:100%;font-size:11.5px;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;${on ? 'color:#2563EB;font-weight:700' : 'color:#6B7A90;font-weight:500'}`,
-          escolher: () => this.setState(s => ({ pessoa: s.pessoa === i ? null : i }))
-        };
-      }),
-      filtros: this.filtroDefs.map(f => {
-        const on = this.state.filtro === f[0];
-        return {
-          rotulo: f[1],
-          estilo: `height:38px;padding:0 16px;border-radius:999px;font-family:inherit;font-size:12.5px;cursor:pointer;white-space:nowrap;transition:background .15s,color .15s;` +
-            (on ? 'border:0;background:#0B1220;color:#FFFFFF;font-weight:700' : 'border:1px solid #E6EAF2;background:#FFFFFF;color:#46536A;font-weight:500'),
-          escolher: () => this.setState({ filtro: f[0] })
-        };
-      }),
-      vazioEstilo: 'display:none',
-      vazioTexto: 'A loja ainda não liberou fotos para você.',
-      fotos: fotos.map(i => ({
-        url: '',
-        titulo: `Foto ${i + 1}`,
-        rostos: String((i % 3) + 1),
-        selo: 'position:absolute;top:9px;right:9px;height:24px;padding:0 9px;display:flex;align-items:center;gap:5px;border-radius:999px;background:rgba(11,18,32,.62);color:#FFFFFF;font-size:11px;font-weight:700;backdrop-filter:blur(2px)',
-        abrir: () => this.setState({ visor: i })
-      })),
-      visorAberto: this.state.visor !== null,
-      visorUrl: '',
-      visorContagem: `${(this.state.visor ?? 0) + 1} de ${n}`,
-      fecharVisor: () => this.setState({ visor: null }),
-      segurar: e => e.stopPropagation(),
-      anterior: e => { e.stopPropagation(); this.setState(s => ({ visor: Math.max(0, (s.visor ?? 0) - 1) })); },
-      proxima: e => { e.stopPropagation(); this.setState(s => ({ visor: Math.min(n - 1, (s.visor ?? 0) + 1) })); }
-    });
   }
 }
 </script>

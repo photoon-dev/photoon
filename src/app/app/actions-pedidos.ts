@@ -6,6 +6,7 @@ import { lojaAtual } from '@/lib/lojista';
 import {
   ESTADOS_EXPEDICAO,
   ESTADOS_PEDIDO,
+  ESTADO_ANTERIOR,
   ETAPAS_PRODUCAO,
   type EstadoExpedicao,
   type EstadoPedido,
@@ -100,6 +101,32 @@ export async function avancarEstadoPedido(fd: FormData) {
   if (!ESTADOS_PEDIDO.some((e) => e.id === destino)) throw new Error('Estado inválido.');
   if (pedido.estado === 'cancelado') throw new Error('Pedido cancelado não avança de estado.');
 
+  // "Enviado" sem código é o que faz o cliente ligar perguntando onde está a
+  // caixa. O código pode vir no formulário ou já estar gravado no envio; sem
+  // nenhum dos dois o pedido não passa.
+  if (destino === 'enviado') {
+    const informado = texto(fd, 'rastreio');
+    const { data: envio } = await supabase
+      .from('expedicao')
+      .select('id, rastreio')
+      .eq('pedido_id', pedido.id)
+      .maybeSingle();
+    const codigo = informado || envio?.rastreio || '';
+    if (!codigo) throw new Error('Informe o código de rastreio antes de marcar o pedido como enviado.');
+    if (informado && envio) {
+      await supabase
+        .from('expedicao')
+        .update({
+          rastreio: informado,
+          transportadora: texto(fd, 'transportadora') || undefined,
+          estado: 'postado',
+          postado_em: new Date().toISOString(),
+          atualizado_em: new Date().toISOString(),
+        })
+        .eq('id', envio.id);
+    }
+  }
+
   const agora = new Date().toISOString();
   const { error } = await supabase
     .from('pedidos')
@@ -109,6 +136,36 @@ export async function avancarEstadoPedido(fd: FormData) {
 
   if (destino === 'em_producao') await garantirProducao(pedido.id);
   if (destino === 'pronto' || destino === 'enviado') await garantirExpedicao(pedido.id);
+
+  revalidarTudo(pedido.id);
+}
+
+/**
+ * Volta o pedido um passo no fluxo.
+ *
+ * Nada é desfeito além do estado: a ficha de produção e a de expedição ficam
+ * onde estão, porque a caixa não desmonta sozinha. Quem voltou o pedido por
+ * engano de digitação quer só o rótulo certo; quem voltou de verdade vai
+ * mexer nas duas fichas na mão, e é melhor que isso seja explícito.
+ */
+export async function voltarEstadoPedido(fd: FormData) {
+  const { supabase, pedido } = await pedidoDaLoja(texto(fd, 'pedido_id'));
+  const destino = (texto(fd, 'estado') || ESTADO_ANTERIOR[pedido.estado as EstadoPedido]) as EstadoPedido;
+
+  if (!destino) throw new Error('Este pedido já está no começo do fluxo.');
+  if (!ESTADOS_PEDIDO.some((e) => e.id === destino)) throw new Error('Estado inválido.');
+  if (pedido.estado === 'cancelado') throw new Error('Pedido cancelado não volta de estado.');
+
+  const ordem = ESTADOS_PEDIDO.map((e) => e.id);
+  if (ordem.indexOf(destino) >= ordem.indexOf(pedido.estado as EstadoPedido)) {
+    throw new Error('Para adiantar o pedido use "avançar".');
+  }
+
+  const { error } = await supabase
+    .from('pedidos')
+    .update({ estado: destino, atualizado_em: new Date().toISOString() })
+    .eq('id', pedido.id);
+  if (error) throw new Error(error.message);
 
   revalidarTudo(pedido.id);
 }
@@ -220,13 +277,13 @@ async function fichaDeExpedicao(expedicaoId: string) {
   const supabase = await createClient();
   const { data } = await supabase
     .from('expedicao')
-    .select('id, estado, pedido_id, pedidos!inner(lojista_id, estado)')
+    .select('id, estado, rastreio, pedido_id, pedidos!inner(lojista_id, estado)')
     .eq('id', expedicaoId)
     .eq('pedidos.lojista_id', loja.id)
     .maybeSingle();
 
   const ficha = data as unknown as
-    | { id: string; estado: EstadoExpedicao; pedido_id: string; pedidos: { estado: EstadoPedido } }
+    | { id: string; estado: EstadoExpedicao; rastreio: string | null; pedido_id: string; pedidos: { estado: EstadoPedido } }
     | null;
   if (!ficha) throw new Error('Envio não encontrado nesta loja.');
   return { supabase, ficha };
@@ -260,6 +317,13 @@ export async function definirEstadoExpedicao(fd: FormData) {
 
   const agora = new Date().toISOString();
   const mudanca: Record<string, unknown> = { estado: destino, atualizado_em: agora };
+
+  // Mesma regra do pedido: postar é o momento em que o código passa a existir
+  // para o cliente. Sem ele, a tela dele não teria o que mostrar.
+  if (destino === 'postado' || destino === 'em_transito') {
+    const codigo = fd.has('rastreio') ? texto(fd, 'rastreio') : ficha.rastreio;
+    if (!codigo) throw new Error('Informe o código de rastreio antes de postar o envio.');
+  }
   if (destino === 'postado') mudanca.postado_em = agora;
   if (destino === 'entregue') mudanca.entregue_em = agora;
   if (destino === 'devolvido') mudanca.entregue_em = null;
