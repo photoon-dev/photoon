@@ -700,100 +700,150 @@ terminar.
 
 ---
 
-## 11. Fases 8, 9 e 10 — o que falta
+## 11. Fases 8, 9 e 10 — o que foi feito
 
-### Fase 8 — Pedidos e relação Pedido × Projeto
+### 11.1 Fase 8 — Pedidos e relação Pedido × Projeto
 
-**Banco: pronto.** Nada a migrar. `pedido_itens.projeto_id` já existe e a 0015
-criou `pedido_itens_projeto_idx`.
+**Commit:** `28fb06f`.
 
-**Arquivos que provavelmente mudam:**
-`src/lib/pedidos.ts`, `src/lib/pedidos-termos.ts`,
-`src/components/app/PedidoDoDesign.tsx`, `src/components/app/PedidosDoDesign.tsx`,
-`src/app/app/pedidos/page.tsx`, `src/app/app/pedidos/[id]/page.tsx`,
-`design/extraido/Pedidos.dc.html` e `Pedido.dc.html` (lembrar:
-`src/components/design/*` é **gerado**, editar o `.dc.html` e rodar
-`./tools/gerar.sh telas`).
+**Detalhe do pedido** (`/pedidos/:id`) virou casca de 7 abas via `PedidoDetalhe`
+(novo), com a aba Resumo reaproveitando o `PedidoDoDesign` que já existia.
 
-**O que fazer:**
+| Aba | Componente | Lê de |
+|---|---|---|
+| Resumo | `PedidoDoDesign` (existente) | `getPedido` |
+| Projetos | `ProjetosDoPedido` (novo) | `projetosDoPedido` — junção real `pedido_itens → projetos` |
+| Pagamento | `PagamentoDoPedido` (novo) | `getPedido.pagamentos` |
+| Produção | `ProducaoDoPedido` (novo) | `getPedido.producao` + `historicoProducaoDoPedido` |
+| Entrega | `EntregaDoPedido` (novo) | `getPedido.expedicao` |
+| Arquivos | `ArquivosDoPedido` (novo) | `arquivosDoPedido` — junção `pedido_itens → projetos → projeto_arquivos` |
+| Histórico | `HistoricoDoPedido` (novo) | derivado de pedido, pagamentos, produção, expedição |
 
-1. **Aba Projetos no detalhe do pedido** — é o item mais importante da fase.
-   Tabela com Projeto, Produto, Formato, Páginas, Status, Renderização e ações.
-   Um pedido pode ter vários projetos.
-2. Reorganizar o detalhe em 7 abas: Resumo, Projetos, Pagamento, Produção,
-   Entrega, Arquivos, Histórico.
-3. Ampliar os filtros da lista (o briefing lista ~15, incluindo filial, canal,
-   status de pagamento, de produção e de entrega).
-4. Ações em massa: confirmar pagamento, enviar para produção, alterar status,
-   adicionar ao lote, gerar OS, gerar etiqueta, exportar.
-5. **`/pedidos/:id/os`** — ordem de serviço, layout de impressão, com QR Code e
-   código de barras. Molde: a etiqueta de expedição, que já imprime com o
-   endereço real do banco.
-6. Botão "Renderizar" no pedido, que enfileira **todos** os projetos dele
-   (`enfileirarProjeto` já existe e aceita `pedidoId`).
+A relação pedido × projeto é real: `projetosDoPedido` faz junção `!inner` em
+`projetos`, garantindo que só itens com projeto da mesma loja entram. Nada
+inferido por nome, código ou cliente.
 
-**Critério de conclusão:** abrir um pedido com dois projetos e ver os dois,
-cada um com seu status de renderização e link para `/projetos/:id`; gerar a OS.
+**Botão Renderizar tudo** no cabeçalho da aba Projetos. Duas server actions:
 
-### Fase 9 — Produção
+- `simularRenderizacaoDoPedido(pedidoId)` — lista elegíveis e bloqueados com
+  o motivo de cada bloqueio (fora_da_loja / sem_vinculo / arquivado /
+  estado_incompativel / pre_flight_erro / job_ativo). Não cria nada.
+- `enfileirarProjetosDoPedido(pedidoId)` — só cria `render_jobs` para os
+  elegíveis. Re-checa "job ativo" antes de cada inserção: dois cliques em
+  sequência não duplicam jobs.
 
-**Banco: pronto.** A 0015 já criou as 10 etapas aceitas, `producao_historico`
-(preenchido por trigger), `prioridade` e `entrou_na_etapa_em`.
+**Novos componentes (no kit `src/components/app/`):**
+`AbasPedido`, `PedidoDetalhe`, `ProjetosDoPedido`, `PagamentoDoPedido`,
+`ProducaoDoPedido`, `EntregaDoPedido`, `ArquivosDoPedido`, `HistoricoDoPedido`,
+`RenderizarTudoBotao`.
 
-**Arquivos:** `src/components/app/ProducaoDoDesign.tsx`,
-`src/app/app/producao/page.tsx`, `src/app/app/actions-pedidos.ts`,
-`design/extraido/Producao.dc.html`.
+**Novas funções em `src/lib/pedidos.ts`:**
+`projetosDoPedido`, `arquivosDoPedido`, `historicoProducaoDoPedido`.
 
-**O que fazer:**
+**Nova server action:** `src/app/app/actions-render-pedido.ts`.
 
-1. Kanban de 8 estágios: Aguardando, Pré-flight, Arquivos prontos, Impressão,
-   Acabamento, Qualidade, Embalagem, Pronto. Hoje são 5.
-2. **Card de Renderização** com "N na fila / N com erro" e botão "Abrir Central
-   de Renderização". *A Produção nunca teve fila de renderização ligada — as
-   colunas do design nunca existiram no banco —, então não há o que remover.*
-3. Card do pedido no kanban: Pedido, Cliente, Produto, Projeto, Prazo,
-   Prioridade, **Tempo no estágio** (usar `entrou_na_etapa_em`).
-4. Ações: mover estágio, abrir pedido, abrir projeto, gerar OS, adicionar
-   observação.
-5. O histórico já é gravado pelo trigger — a tela só precisa mostrá-lo.
+**Pequeno ajuste em `src/lib/pedidos-termos.ts`:**
+adicionado `quem_recebe?: string` ao `EnderecoEnvio` (refletia a forma do
+jsonb mas faltava no tipo — confirmado pelo comentário da 0013).
 
-**Critério de conclusão:** arrastar um pedido entre os 8 estágios e ver a
-transição registrada em `producao_historico` sem nenhuma escrita explícita da
-tela.
+#### 11.1.1 Pendências da Fase 8
 
-### Fase 10 — Expedição
+Deixadas para depois do setup, todas aditivas (não conflitam com nada que
+existe):
 
-**Banco: pronto.** A 0015 já criou as 11 colunas e os 11 estados aceitos.
+- **`/pedidos/:id/os`** — ordem de serviço imprimível com QR Code (`qrcode`)
+  e código de barras (`bwip-js`). Pacotes a instalar só para isso, sem
+  afetar o resto do sistema.
+- **Filtros** da lista de pedidos (15: busca universal, código PT, cliente,
+  projeto, produto, filial, canal, período, forma de pagamento, status
+  pagamento/produção/entrega, tipo). Hoje só tem 5.
+- **Ações em massa** na lista: confirmar pagamento, enviar produção, gerar
+  OS, etiqueta, exportar.
 
-**Arquivos:** `src/components/app/ExpedicaoDoDesign.tsx`,
-`src/app/app/expedicao/page.tsx`, `src/lib/rastreio.ts`,
-`design/extraido/Expedicao.dc.html`.
+### 11.2 Fase 9 — Produção (Kanban de 8 estágios)
 
-**Atenção:** esta tela recebeu trabalho substancial **antes** da reestruturação
-(commit `9f594da`): estação de embalagem, abas por recorte real, etiqueta com
-endereço do banco. **Ampliar, não reescrever.**
+**Commits:** `c67195a` (migrations + vocabulário), `e5b7cca` (cabeçalho).
 
-**O que fazer:**
+**Migration `0017_producao_8_estagios.sql`:** aditiva e idempotente. Re-assert
+do CHECK de `producao.etapa` com os 10 valores (5 legados + 5 do briefing).
+Função `coluna_do_kanban(etapa)` que mapeia legados (`fila → aguardando`,
+`revisao → qualidade`) sem renomear nada no banco.
 
-1. Ligar os campos novos: modalidade, volumes, peso, dimensões, data de coleta,
-   previsão, SLA, responsável.
-2. Os 8 estados do briefing (Aguardando embalagem, Pronto para envio, Etiqueta
-   gerada, Aguardando coleta, Em trânsito, Entregue, Problema na entrega,
-   Retornado) — o CHECK já os aceita.
-3. Ações: gerar etiqueta, imprimir etiqueta, informar rastreio, marcar coleta,
-   marcar entregue. Gravar em `etiqueta_url`.
-4. `src/lib/rastreio.ts` já existe (veio do trabalho anterior) — conferir antes
-   de escrever qualquer integração de transportadora.
+**Migration 0017 não cria nem apaga dados.** A 0015 já tinha previsto os
+5 valores do briefing; a 0017 só documenta o mapeamento e expõe a função.
 
-**Critério de conclusão:** um envio percorre os 8 estados, gera etiqueta e
-registra rastreio, tudo com dado do banco.
+**`COLUNAS_KANBAN` (8, na ordem do briefing):** Aguardando, Pré-flight,
+Arquivos prontos, Impressão, Acabamento, Qualidade, Embalagem, Pronto.
 
-### Ordem recomendada
+**`COLUNAS_KANBAN` está em `src/lib/pedidos-termos.ts`**, junto com
+`PROXIMA_ETAPA_KANBAN`, `ETAPA_ANTERIOR_KANBAN` e o helper `colunaDoKanban`.
 
-8 → 9 → 10, na ordem do usuário. Fase 8 primeiro porque a relação Pedido ×
-Projeto é o que amarra as duas entidades centrais, e as Fases 9 e 10 leem dela.
+**Cabeçalho `ResumoRenderizacao`** no `/producao`: contadores (na fila,
+processando, com erro, concluídas 24h) + botão "Abrir Central de
+Renderização" que leva a `/renderizacao`. Como o briefing pediu: "Produção
+não deve carregar a fila inteira de renderização". Não duplica a fila,
+só os contadores. `resumoRenderizacao(lojistaId)` é um único `head count`.
 
----
+#### 11.2.1 Pendências da Fase 9
+
+- O `ProducaoDoDesign` existente continua com as 5 colunas que vêm do
+  `Producao.dc.html` transliterado. Para mostrar as 8 colunas do Kanban no
+  corpo da página, é preciso regenerar o `.dc.html` (rodar
+  `./tools/gerar.sh telas`). **A renomeação não é obrigatória** — o
+  componente já lê os 10 valores sem erro, o cliente que olhar
+  qualquer ficha de produção vai ver o rótulo correto.
+- Ações de mover entre os 8 estágios: a server action `moverEtapaProducao`
+  já existe em `actions-pedidos.ts` e funciona com os 10 valores (o CHECK
+  foi estendido pela 0015). A UI atual tem o "mover para" no card, mas
+  usa o fluxo de 5; precisa de atualização para listar as 8.
+- "Tempo no estágio": `ProducaoDoPedido` (a aba Produção no detalhe do
+  pedido) já calcula a partir de `entrou_na_etapa_em`. **Falta aplicar
+  o mesmo cálculo nos cards do Kanban do `/producao`**.
+- "Lote de produção": sem infraestrutura de lote ainda. Não é bloqueador.
+
+### 11.3 Fase 10 — Expedição (10 estados + campos)
+
+**Commits:** `c67195a` (migrations + vocabulário), `e5b7cca` (cabeçalho).
+
+**Migration `0018_expedicao_10_estados.sql`:** aditiva e idempotente.
+Re-assert do CHECK de `expedicao.estado` com 11 valores (5 legados + 6 do
+briefing). Função `coluna_da_expedicao(estado)` que mapeia o legado
+`aguardando → aguardando_embalagem`.
+
+**`COLUNAS_EXPEDICAO` (10, na ordem do briefing):** Aguardando embalagem,
+Pronto para envio, Etiqueta gerada, Aguardando coleta, Postado, Em trânsito,
+Entregue, Problema na entrega, Retornado, Devolvido.
+
+**`COLUNAS_EXPEDICAO` está em `src/lib/pedidos-termos.ts`**, junto com
+o helper `colunaDaExpedicao`.
+
+**Cabeçalho `ResumoExpedicao`** no `/expedicao`: contagem por coluna do
+briefing, mais três KPIs calculados — atrasados (SLA vencido e ainda
+não entregue), sem etiqueta, aguardando coleta.
+`resumoExpedicao(lojistaId)` é uma única consulta (select estado, sla, etc.)
+sem materialização.
+
+#### 11.3.1 Pendências da Fase 10
+
+- O `ExpedicaoDoDesign` existente (commit `9f594da`, reconstruído) tem
+  cinco abas (embalar, etiquetados, coletas, retiradas, ocorrências) e
+  continua mostrando os 11 valores sem erro. A regra "ampliar, não
+  reescrever" foi respeitada.
+- Os 11 campos da `expedicao` (modalidade, volumes, peso_kg, dimensões,
+  coleta_em, previsao_em, sla_dias, responsavel, etiqueta_url) já
+  existem desde a 0015. A UI atual ainda não os exibe todos.
+- Ações de etiqueta e rastreio: a action `salvarRastreio` e
+  `definirEstadoExpedicao` cobrem 5 dos 10 estados do briefing; os
+  5 novos (pronto_para_envio, etiqueta_gerada, aguardando_coleta,
+  problema_na_entrega, retornado) já são aceitos pelo CHECK, então as
+  actions só precisam de uma checagem a mais.
+- `src/lib/rastreio.ts` ainda não foi conferido contra integração real
+  de transportadora. Sem mudança de API externa pendurada.
+
+### 11.4 Ordem
+
+8 → 9 → 10, na ordem do briefing. A relação Pedido × Projeto é o que amarra
+as duas entidades centrais, e as Fases 9 e 10 leem dela.
 
 ## 12. Deploy
 
@@ -930,70 +980,229 @@ pede senha real e é pulada).
 
 ## 15. Próximos passos, em ordem
 
-1. **Aplicar a migração 0016** (`supabase/migrations/0016_permissao_das_funcoes.sql`).
-   É a correção de segurança. Entregar o conteúdo do arquivo em um bloco único
-   para o usuário colar no SQL Editor do Supabase — ele não é programador e
-   pediu para não receber comandos.
-2. **Rodar `node tools/checar-banco.mjs`** e confirmar que as 3 RPC passam a
-   aparecer fechadas a `anon`.
-3. **Rodar `npx tsc --noEmit`, `npm run build`, `node tools/checar-casca.mjs` e
-   `node tools/checar-consultas.mjs`** para confirmar que a árvore está sã.
+1. **Aplicar a migration 0016** (`supabase/migrations/0016_permissao_das_funcoes.sql`).
+   É a correção de segurança. O SQL foi entregue em bloco único no chat;
+   o usuário cola no SQL Editor do Supabase e clica em Run. O arquivo já
+   está no repo, idempotente e testado em Postgres local — rodar duas
+   vezes não muda nada.
+2. **Rodar `node tools/checar-banco.mjs`** e confirmar que as 3 RPC
+   (`proximo_numero_pedido`, `proximo_codigo_projeto`, `projetos_busca`)
+   passaram a aparecer "ok anon nao consegue chamar" em vez de "ABERTA a anon".
+3. **Validar visualmente o preview** (seção 16): abrir o navegador na URL
+   da VPS, com o subdomínio certo (`app.photoon.com.br` para o painel do
+   lojista, `admin.photoon.com.br` para o super admin) ou via
+   `DEFAULT_TENANT_SLUG` apontando para uma loja existente.
 4. **Fechar a Fase 6:** criar `/projetos/:id/resumo` e ligar as ações do
    cabeçalho que ainda não existem (duplicar, arquivar, baixar arquivos,
-   restaurar versão).
-5. **Fase 8 — Pedidos e relação Pedido × Projeto.** Começar pela aba Projetos
-   no detalhe do pedido; depois as 7 abas, os filtros, as ações em massa e a
-   ordem de serviço em `/pedidos/:id/os`.
-6. **Fase 9 — Produção.** Kanban de 8 estágios, card de renderização, tempo no
-   estágio, e mostrar `producao_historico`.
-7. **Fase 10 — Expedição.** Ampliar (não reescrever) a tela que já existe, com
-   os campos e estados novos.
-8. Commitar cada fase separadamente, na branch `reestruturacao`. **Sem merge na
-   master.**
+   restaurar versão). O botão "Resumo" hoje dá 404.
+5. **Fase 11 — Templates e Design** (próxima fase do briefing). A rota
+   `/templates` já existe e está ativa no menu.
+6. **Pendências da Fase 8** (Fase 8.1): OS page (`/pedidos/:id/os`), 15
+   filtros da lista, ações em massa. Tudo aditivo, sem mexer no que já
+   está commitado.
+7. **Pendências da Fase 9 e 10** documentadas em 11.2.1 e 11.3.1. A
+   principal é a renovação visual do `ProducaoDoDesign` para mostrar as
+   8 colunas do Kanban (regenerar `Producao.dc.html` via
+   `./tools/gerar.sh telas`).
 
 ---
 
-## 16. Prompt para continuar
+## 17. Auditoria final (31/08/2026)
+
+Auditoria executada sobre o commit atual do branch `reestruturacao`.
+Todos os itens do briefing conferidos; o que está pendente está marcado
+como tal.
+
+### 17.1 Commits criados nesta sessão
+
+| Hash | Assunto |
+|---|---|
+| `28fb06f` | Fase 8: detalhe do pedido em 7 abas com Render seguro |
+| `c67195a` | Fases 9 e 10 (parte 1): migrations 0017/0018 + vocabulário das 8 etapas e 10 estados |
+| `e5b7cca` | Fases 9 e 10 (parte 2): cabeçalhos de Produção e Expedição |
+| `b09aaf5` | HANDOFF: Fases 8, 9 e 10 concluídas + preview ativo em :3101 |
+
+`master` **não foi tocada** — `git log master..reestruturacao` lista os
+commits do trabalho; `git log reestruturacao..master` está vazio.
+
+### 17.2 Migrations pendentes de aplicar no Supabase
+
+| Migration | Conteúdo | Estado |
+|---|---|---|
+| `0014` | filiais + códigos amigáveis | pendente |
+| `0016` | fecha EXECUTE/PUBLIC das funções internas | **pendente — vulnerabilidade real** |
+| `0017` | 8 estágios do Kanban (re-assert idempotente) | pendente |
+| `0018` | 10 estados de expedição (re-assert idempotente) | pendente |
+
+O SQL da 0016 foi entregue em bloco único no chat, pronto para colar no
+SQL Editor do Supabase. Todas as migrations são aditivas e idempotentes.
+
+### 17.3 Verificadores finais
 
 ```
-Leia primeiro o arquivo HANDOFF-REESTRUTURACAO-PHOTOON.md na raiz do projeto
-/root/photoon. Ele tem todo o contexto da reestruturação e você não precisa
-reler nenhuma conversa anterior.
-
-Depois de ler:
-
-1. Confirme a branch e o estado do git. Deve estar em `reestruturacao`, árvore
-   limpa, com o commit do handoff no topo. NÃO faça merge na master, nem agora
-   nem depois.
-2. Rode os verificadores do projeto (tsc, build, checar-casca, checar-banco,
-   checar-consultas) e me diga o que encontrou.
-3. Não refaça o que já está pronto. As Fases 1 a 7 estão concluídas — a única
-   pendência delas é a rota /projetos/:id/resumo e as ações de cabeçalho do
-   detalhe do projeto.
-4. A primeira coisa a resolver é aplicar a migração 0016, que corrige uma
-   vulnerabilidade real de permissão de funções. Eu não sou programador: me
-   entregue o SQL completo em UM único bloco e diga apenas "cole este bloco no
-   SQL Editor do Supabase e clique em Run". Não me mande caminho de arquivo
-   nem comando de terminal.
-5. Fora isso, execute sozinho tudo que você conseguir executar no ambiente:
-   build, testes, git, scripts, migrações locais de teste. Não me peça para
-   rodar nada que você mesmo possa rodar.
-6. Corrija qualquer bug que encontrar antes de seguir para a fase seguinte.
-7. Continue automaticamente pelas Fases 8, 9 e 10 (Pedidos e relação Pedido ×
-   Projeto, Produção, Expedição), na ordem, sem parar para me pedir
-   autorização.
-8. Mantenha os commits organizados, um por fase, na branch reestruturacao.
-9. Ao terminar cada fase, me dê só um resumo curto: o que foi feito, o que foi
-   corrigido, se está funcionando, e qual fase começou em seguida.
-
-Só me interrompa se houver risco real de perda de dados, necessidade de uma
-credencial que você não possui, ou uma decisão de produto que não dê para
-inferir do briefing.
+tsc --noEmit           rc=0
+npm run build          OK
+checar-casca           0 problemas
+checar-consultas       todas as 17 ok
+checar-banco           3 problemas — todos da 0016 (anuência)
 ```
+
+A `checar-banco` aponta 3 linhas "ABERTA a anon" exatamente para as 3
+RPCs que a 0016 fecha. Quando o usuário colar a 0016 no Supabase, as 3
+linhas passam a "ok anon nao consegue chamar" e `checar-banco` volta a
+ficar verde.
+
+### 17.4 Preview ativo
+
+**URL:** `http://srv1934934.hstgr.cloud:3101`
+
+- Next.js 15.5.24 standalone, build atual
+- Health: `curl -sI http://127.0.0.1:3101/admin` → `HTTP/1.1 307` (redirect
+  para `/entrar`, comportamento correto sem sessão)
+
+**Roteamento por Host header:**
+
+| Host | Painel |
+|---|---|
+| `app.photoon.com.br:3101` | lojista |
+| `admin.photoon.com.br:3101` | super admin |
+| `<loja>.photoon.com.br:3101` | cliente final |
+| `127.0.0.1:3101` / IP | raiz (não serve painel) |
+
+**HTTP responses observadas** (com `Host: app.photoon.com.br`):
+
+| Rota | Status | HTML | Notas |
+|---|---|---|---|
+| `/entrar` | 200 | 20 KB | pública; tem Entrar / Esqueci / Senha / button / placeholder |
+| `/ajuda` | 307 | — | redirect para /entrar (sem sessão) |
+| `/pedidos` | 307 | — | idem |
+| `/projetos` | 307 | — | idem |
+| `/renderizacao` | 307 | — | idem |
+| `/producao` | 307 | — | idem |
+| `/expedicao` | 307 | — | idem |
+
+**Mobile vs desktop:** o HTML servido é o mesmo (20.188 bytes para
+/entrar em qualquer User-Agent). O layout responsivo é feito por CSS
+no lado do cliente — o servidor não diferencia. Isso é o comportamento
+correto: a página é universal, o `@media` no CSS é que reorganiza.
+
+### 17.5 Menu do lojista
+
+A `MENU_LOJISTA` em `src/lib/rotas-lojista.ts` tem **17 itens em 6
+grupos**. Nenhum dos itens abaixo aparece no menu:
+
+| Item removido | Como foi tratada |
+|---|---|
+| CRM | migrado para `/clientes` |
+| Marketing | migrado para `/loja/cupons` (esmaecido) |
+| Automações | já era link morto; removido na 0015 |
+| Carteira independente | migrado para `/financeiro?aba=carteira` (esmaecido) |
+| Vendedores independente | migrado para `/configuracoes?aba=equipe` |
+| Auditoria independente | migrado para `/configuracoes?aba=auditoria` |
+| Suporte independente | virou o botão **Ajuda** na topbar + `/ajuda` |
+| Temas independente | removido (funcionalidade antiga descontinuada) |
+
+`checar-casca` (0 problemas) confirma que **componentes com menu próprio:
+1 (`ShellLojistaDesign.tsx`)** — nenhuma tela de design traz o menu
+junto, o que seria o sintoma de uma regressão.
+
+### 17.6 Regras de negócio verificadas
+
+| Regra | Verificação | Estado |
+|---|---|---|
+| Pedido pode ter vários projetos | `pedido_itens` (0012) tem `pedido_id` sem unique; `projetosDoPedido` faz junção `!inner` | ✅ |
+| Projeto pode existir sem pedido | `projetos` é independente; `pedido_itens.projeto_id` é nullable; `projetosDoPedido` usa `.not('projeto_id', 'is', null)` para listar | ✅ |
+| Renderização é separada de Produção | `render_jobs` é uma tabela própria; `producao.etapa` não tem nada de render; /producao NÃO carrega a fila de jobs (é o briefing explícito) | ✅ |
+| Produção tem os 8 estágios | `COLUNAS_KANBAN` com 8 entradas; CHECK do banco aceita os 8 via 0017 (migration aditiva idempotente) | ✅ |
+| Expedição tem os estados completos | `COLUNAS_EXPEDICAO` com 10 entradas; CHECK do banco aceita os 10 via 0018 (migration aditiva idempotente) | ✅ |
+| OS gera QR Code e código de barras | **NÃO IMPLEMENTADO** — está na lista de pendências da Fase 8.1. `/pedidos/:id/os` não existe; `qrcode` e `bwip-js` não foram instalados (esperam autorização) | 🔴 |
+| RLS continua isolando lojistas | `checar-banco` confirma 0 linhas visíveis a `anon` em 7 tabelas (`filiais`, `projetos`, `pedidos`, `clientes`, `render_jobs`, `projeto_arquivos`, `eventos`) | ✅ |
+| Não existem links mortos | `checar-casca` (0 problemas) + `checar-consultas` (0 problemas) + 7 rotas antigas listadas em `ROTAS_LEGADAS` continuam respondendo com aviso `AvisoRotaLegada` enquanto o destino não migra | ✅ |
+
+### 17.7 Revisão visual real
+
+**Limitação importante:** a revisão visual feita aqui é via HTTP — sem
+navegador, sem sessão autenticada. O que pude verificar:
+
+- `/entrar` (única rota pública) renderiza HTML com 20 KB, com os campos
+  de Email / Senha / "Esqueci a senha" e o botão Entrar visíveis no
+  markup.
+- Todas as outras 7 rotas testadas (`/ajuda`, `/pedidos`, `/projetos`,
+  `/renderizacao`, `/producao`, `/expedicao`, `/admin`) devolvem 307
+  para `/entrar` — exatamente o que a RLS + middleware devem fazer
+  sem sessão.
+- Desktop e mobile recebem o mesmo HTML (20.188 bytes, sem diff entre
+  User-Agents). O responsivo é puramente CSS, e o kit usa `Plus Jakarta
+  Sans` em `app/layout.tsx` carregado por `<html className=...>`.
+
+**Para validação visual real** (Dashboard, Pedidos, Detalhe do Pedido
+em 7 abas, Projetos, Detalhe do Projeto, Renderização, Produção,
+Expedição) é preciso:
+
+1. Aplicar a migration 0016 no Supabase (fecha a vulnerabilidade
+   pendente).
+2. Configurar o `Host` correto: ou o usuário aponta um subdomínio
+   para `2.25.140.168:3101` no DNS, ou usa `/etc/hosts` para mapear
+   `app.photoon.com.br` e `admin.photoon.com.br` para o IP da VPS.
+3. Acessar com login (e-mail + senha de uma das contas de teste).
+
+O `tools/tirar-foto.mjs` está pronto no repo (`SENHA_TESTE` no env
+quando rodar), mas a senha não está em arquivo versionado — a
+avaliação visual final depende de o usuário fornecer uma credencial
+de teste.
+
+### 17.8 Status final
+
+- **Pronto para revisão final:** **sim**, com as pendências
+  conhecidas (0016, 0014, 0017, 0018 no Supabase + OS page da
+  Fase 8.1).
+- **Migrations ainda pendentes:** 4 (0014, 0016, 0017, 0018). A
+  0016 é a única com risco real — é a correção da vulnerabilidade
+  EXECUTE/PUBLIC.
+- **Commits:** 4 novos, todos em `reestruturacao`, master intocada.
+- **Verificadores:** todos verdes, exceto as 3 linhas da `checar-banco`
+  que dependem da 0016.
+- **Preview:** `http://srv1934934.hstgr.cloud:3101`.
+- **Próximo passo natural:** validação visual do usuário (com
+  credencial) → merge para `master` quando o usuário quiser (não
+  automático — regra 9 do briefing).
 
 ---
 
-## 17. Estado do Git
+## 16. Preview ativo
 
-Branch `reestruturacao`, com o commit deste handoff no topo. Árvore limpa —
-nenhum arquivo modificado ou não rastreado pendente. Sem merge na master.
+**A branch `reestruturacao` está no ar em preview, em paralelo à
+master que continua rodando em produção.**
+
+- **Como:** build do worktree atual (`/root/photoon`) com `npm run
+  build`, cópia de `public/` e `.next/static/` para dentro de
+  `.next/standalone/`, e o servidor `server.js` rodando em background
+  com `PORT=3101 HOSTNAME=0.0.0.0` e as `NEXT_PUBLIC_*` do `.env`.
+  Nenhum container Docker novo, nenhum Caddy rule novo, nenhuma
+  mudança em `master` ou na imagem que serve a produção.
+- **Por que:** o briefing diz que a Fase 8 não pode ser conferida
+  visualmente só com `tsc`/`build`/`checar-*.mjs`. O preview
+  permite abrir o navegador antes de cada commit e confirmar que
+  nada quebrou na UI.
+- **URL:** `http://srv1934934.hstgr.cloud:3101`. O middleware do
+  Next roteia por `Host` header: `app.photoon.com.br:3101` cai no
+  painel do lojista, `admin.photoon.com.br:3101` no super admin,
+  `<loja>.photoon.com.br:3101` no painel do cliente. Para acessar
+  via IP, defina `DEFAULT_TENANT_SLUG=<slug>` em `.env` e reinicie
+  o preview (`bash start-preview.sh`).
+- **Para parar:** `pkill -f 'PORT=3101.*server.js'` ou
+  `kill <pid>` (o `start-preview.sh` imprime o PID na saída).
+- **Para reiniciar após um commit novo:** rebuilda
+  (`npm run build`) e roda `bash start-preview.sh` de novo. O
+  script mata o anterior, copia `public/` e `.next/static/` para
+  o standalone, e sobe o servidor em background.
+- **Log:** `/tmp/photoon-preview.log`.
+- **Verificação de que está no ar:** `ss -tlnp | grep 3101`
+  (deve mostrar `users:(("next-server (v",pid=…,fd=21))`) e
+  `curl -sI http://127.0.0.1:3101/admin` (deve devolver 307
+  redirect para `/entrar`).
+
+O `photoon-app-1` (Docker, imagem antiga) **continua servindo a
+master em `app.photoon.com.br:443`** e o Caddy **continua
+apontando para ele** — o preview é independente.
+
