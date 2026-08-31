@@ -67,6 +67,14 @@ export default async function Pagina({
       : bruto;
   }
 
+  // A `opcoesDeFiltro` retorna `{ valor, rotulo }`; a barra de filtros do
+  // painel trabalha com `{ id, rotulo }`. Mapeamos aqui para a nova forma.
+  const opcoesBarra = {
+    clientes: opcoes.clientes.map((o) => ({ id: o.valor, rotulo: o.rotulo })),
+    produtos: opcoes.produtos.map((o) => ({ id: o.valor, rotulo: o.rotulo })),
+    filiais: opcoes.filiais.map((o) => ({ id: o.valor, rotulo: o.rotulo })),
+  };
+
   return (
     <ShellLojista ativo={MODULO['Projetos']}>
       <ProjetosDaLoja
@@ -77,7 +85,7 @@ export default async function Pagina({
           comProblema: 0, semPedido: 0, bytes: 0,
         }}
         temAlgum={dados?.temAlgum ?? false}
-        opcoes={opcoes}
+        opcoes={opcoesBarra}
         pagina={filtros.pagina ?? 0}
         erro={erro}
       />

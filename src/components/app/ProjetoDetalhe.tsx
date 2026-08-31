@@ -204,52 +204,162 @@ function AbaResumo({ dados }: { dados: ProjetoCompleto }) {
   const { projeto: p, pedido } = dados;
   const naoUsadas = Math.max(0, (p.fotos_enviadas ?? 0) - (p.fotos_usadas ?? 0));
 
+  // Layout 2 colunas no desktop: identificacao+datas a esquerda, produto+conteudo a
+  // direita, capa+pedido embaixo em linha propria. Densidade alinhada a Pedidos.
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-      <Ficha titulo="Identificação">
-        <Campo rotulo="Código">{p.codigo}</Campo>
-        <Campo rotulo="Nome">{p.titulo}</Campo>
-        <Campo rotulo="Cliente">{p.clientes?.nome}</Campo>
-        <Campo rotulo="E-mail">{p.clientes?.email}</Campo>
-        <Campo rotulo="Filial">{p.filiais?.nome}</Campo>
-        <Campo rotulo="Galeria">{p.galerias?.nome}</Campo>
-      </Ficha>
+    <div
+      style={{
+        display: 'grid',
+        gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)',
+        gap: 14,
+        alignItems: 'start',
+      }}
+    >
+      {/* Coluna esquerda */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+        <Bloco titulo="Identificacao">
+          <Linha rotulo="Codigo" valor={p.codigo} mono />
+          <Linha rotulo="Nome" valor={p.titulo} />
+          <Linha rotulo="Cliente" valor={p.clientes?.nome} />
+          <Linha rotulo="E-mail" valor={p.clientes?.email} />
+          <Linha rotulo="Filial" valor={p.filiais?.nome} />
+          <Linha rotulo="Galeria" valor={p.galerias?.nome} />
+        </Bloco>
 
-      <Ficha titulo="Datas">
-        <Campo rotulo="Criado em">{dataHora(p.criado_em)}</Campo>
-        <Campo rotulo="Última alteração">{dataHora(p.atualizado_em)}</Campo>
-        <Campo rotulo="Finalizado em">{p.finalizado_em ? dataHora(p.finalizado_em) : null}</Campo>
-        <Campo rotulo="Fechado em">{p.fechado_em ? dataHora(p.fechado_em) : null}</Campo>
-      </Ficha>
+        <Bloco titulo="Datas">
+          <Linha rotulo="Criado em" valor={dataHora(p.criado_em)} />
+          <Linha rotulo="Ultima alteracao" valor={dataHora(p.atualizado_em)} />
+          <Linha rotulo="Finalizado em" valor={p.finalizado_em ? dataHora(p.finalizado_em) : '—'} />
+          <Linha rotulo="Fechado em" valor={p.fechado_em ? dataHora(p.fechado_em) : '—'} />
+        </Bloco>
+      </div>
 
-      <Ficha titulo="Produto e formato">
-        <Campo rotulo="Produto">{p.produto_nome}</Campo>
-        <Campo rotulo="Tamanho">{p.produto_tamanho}</Campo>
-        <Campo rotulo="Formato aberto">{p.formato_aberto}</Campo>
-        <Campo rotulo="Formato fechado">{p.formato_fechado}</Campo>
-        <Campo rotulo="Largura">{p.largura_mm ? `${p.largura_mm} mm` : null}</Campo>
-        <Campo rotulo="Altura">{p.altura_mm ? `${p.altura_mm} mm` : null}</Campo>
-      </Ficha>
+      {/* Coluna direita */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+        <Bloco titulo="Produto e formato">
+          <Linha rotulo="Produto" valor={p.produto_nome} />
+          <Linha rotulo="Tamanho" valor={p.produto_tamanho} />
+          <Linha rotulo="Formato aberto" valor={p.formato_aberto} />
+          <Linha rotulo="Formato fechado" valor={p.formato_fechado} />
+          <Linha
+            rotulo="Dimensao"
+            valor={p.largura_mm && p.altura_mm ? `${p.largura_mm} x ${p.altura_mm} mm` : null}
+          />
+          <Linha rotulo="Dorso" valor={p.dorso_mm ? `${p.dorso_mm} mm` : null} />
+        </Bloco>
 
-      <Ficha titulo="Conteúdo">
-        <Campo rotulo="Páginas">{p.total_paginas ?? 0}</Campo>
-        <Campo rotulo="Lâminas">{laminas(p.total_paginas)}</Campo>
-        <Campo rotulo="Fotos enviadas">{p.fotos_enviadas ?? 0}</Campo>
-        <Campo rotulo="Fotos utilizadas">{p.fotos_usadas ?? 0}</Campo>
-        <Campo rotulo="Fotos não utilizadas">{naoUsadas}</Campo>
-        <Campo rotulo="Tamanho total">{tamanho(p.bytes_total)}</Campo>
-      </Ficha>
+        <Bloco titulo="Conteudo">
+          <Linha rotulo="Paginas" valor={String(p.total_paginas ?? 0)} />
+          <Linha rotulo="Laminas" valor={laminas(p.total_paginas)} />
+          <Linha rotulo="Fotos enviadas" valor={String(p.fotos_enviadas ?? 0)} />
+          <Linha rotulo="Fotos utilizadas" valor={String(p.fotos_usadas ?? 0)} />
+          <Linha rotulo="Nao utilizadas" valor={String(naoUsadas)} />
+          <Linha rotulo="Tamanho total" valor={tamanho(p.bytes_total)} />
+        </Bloco>
+      </div>
 
-      <Ficha titulo="Capa e pedido">
-        <Campo rotulo="Possui capa">{p.capa_url ? 'sim' : 'não'}</Campo>
-        <Campo rotulo="Tipo de capa">{p.capa_tipo}</Campo>
-        <Campo rotulo="Dorso">{p.dorso_mm ? `${p.dorso_mm} mm` : null}</Campo>
-        <Campo rotulo="Pedido">
-          {pedido ? (
-            <a href={`/pedidos/${pedido.id}`}>{pedido.codigo ?? `#${pedido.numero}`}</a>
-          ) : null}
-        </Campo>
-      </Ficha>
+      {/* Linha inferior ocupando as duas colunas */}
+      <Bloco titulo="Capa e pedido" colSpan>
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(4, minmax(0, 1fr))',
+            gap: 0,
+          }}
+        >
+          <Linha rotulo="Possui capa" valor={p.capa_url ? 'sim' : 'nao'} />
+          <Linha rotulo="Tipo de capa" valor={p.capa_tipo} />
+          <Linha rotulo="Dorso" valor={p.dorso_mm ? `${p.dorso_mm} mm` : null} />
+          <Linha
+            rotulo="Pedido"
+            valor={
+              pedido ? (
+                <a href={`/pedidos/${pedido.id}`}>{pedido.codigo ?? `#${pedido.numero}`}</a>
+              ) : (
+                'sem pedido'
+              )
+            }
+          />
+        </div>
+      </Bloco>
+    </div>
+  );
+}
+
+/* Bloco denso: rotulo na esquerda, valor na direita, divisor 1px entre linhas.
+ * ColSpan = true faz o bloco ocupar as 2 colunas do grid do Resumo. */
+function Bloco({
+  titulo,
+  children,
+  colSpan,
+}: {
+  titulo: string;
+  children: React.ReactNode;
+  colSpan?: boolean;
+}) {
+  return (
+    <section
+      style={{
+        background: COR.papel,
+        border: `1px solid ${COR.linha}`,
+        borderRadius: 14,
+        boxShadow: '0 2px 8px rgba(11,18,32,.03)',
+        overflow: 'hidden',
+        gridColumn: colSpan ? '1 / -1' : undefined,
+      }}
+    >
+      <header
+        style={{
+          padding: '10px 16px',
+          borderBottom: `1px solid ${COR.linhaClara}`,
+          fontSize: 10.5,
+          fontWeight: 700,
+          letterSpacing: '1.2px',
+          textTransform: 'uppercase',
+          color: COR.fraco,
+        }}
+      >
+        {titulo}
+      </header>
+      <div>{children}</div>
+    </section>
+  );
+}
+
+function Linha({
+  rotulo,
+  valor,
+  mono,
+}: {
+  rotulo: string;
+  valor: React.ReactNode;
+  mono?: boolean;
+}) {
+  return (
+    <div
+      style={{
+        display: 'grid',
+        gridTemplateColumns: '1fr 1.4fr',
+        gap: 12,
+        padding: '9px 16px',
+        borderBottom: `1px solid ${COR.linhaClara}`,
+        fontSize: 13,
+      }}
+    >
+      <span style={{ color: COR.apagado, fontSize: 11.5, fontWeight: 600 }}>{rotulo}</span>
+      <span
+        style={{
+          color: COR.tinta,
+          fontFamily: mono ? 'monospace' : undefined,
+          fontVariantNumeric: mono ? 'tabular-nums' : undefined,
+          fontWeight: mono ? 700 : 500,
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          whiteSpace: 'nowrap',
+        }}
+      >
+        {valor ?? '—'}
+      </span>
     </div>
   );
 }
