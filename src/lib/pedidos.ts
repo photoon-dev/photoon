@@ -694,3 +694,137 @@ export async function resumoExpedicao(lojistaId: string): Promise<ResumoExpedica
     atrasados,
   };
 }
+// Adição ao final de src/lib/pedidos.ts — dados completos para a Ordem de
+// Servico. Junta pedido, cliente, filial, projetos (com os campos tecnicos),
+// producao e expedicao em uma unica consulta paralela.
+
+export type DadosDaOS = NonNullable<Awaited<ReturnType<typeof getPedido>>>['pedido'] & {
+  codigo: string | null;
+  filial: { id: string; nome: string } | null;
+  cliente: { id: string; nome: string | null; email: string | null; telefone: string | null } | null;
+  vendedor: { id: string; nome: string } | null;
+  /** Lista de projetos associados a este pedido, com campos tecnicos. */
+  projetos: Array<{
+    projeto_id: string;
+    codigo: string | null;
+    titulo: string;
+    descricao: string;
+    categoria: string | null;
+    capa_tipo: string | null;
+    dorso_mm: number | null;
+    formato_aberto: string | null;
+    formato_fechado: string | null;
+    largura_mm: number | null;
+    altura_mm: number | null;
+    paginas: number;
+    fotos: number;
+    quantidade: number;
+    preco_unit: number;
+    total: number;
+  }>;
+  producao: Array<{
+    id: string;
+    etapa: string;
+    responsavel: string | null;
+    iniciada_em: string | null;
+    observacao: string | null;
+  }>;
+  expedicao: {
+    id: string;
+    estado: string;
+    transportadora: string | null;
+    rastreio: string | null;
+  } | null;
+};
+
+export async function dadosDaOS(
+  lojistaId: string,
+  pedidoId: string,
+): Promise<DadosDaOS | null> {
+  const supabase = await createClient();
+
+  // Pedido + cliente + filial + vendedor + producao + expedicao em paralelo.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data: ped } = (await supabase
+    .from('pedidos')
+    .select(
+      'id, numero, estado, canal, subtotal, desconto, frete, total, observacao, ' +
+        'motivo_cancelamento, prazo_em, criado_em, atualizado_em, ' +
+        'clientes(id, nome, email, telefone), ' +
+        'vendedores(id, nome), ' +
+        'filiais:filial_id(id, nome)',
+    )
+    .eq('lojista_id', lojistaId)
+    .eq('id', pedidoId)
+    .maybeSingle()) as { data: any };
+
+  if (!ped) return null;
+
+  // Projetos (via pedido_itens) com os campos tecnicos necessarios para a OS.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data: linhas } = (await supabase
+    .from('pedido_itens')
+    .select(
+      'id, descricao, quantidade, preco_unit, total, paginas, fotos, projeto_id, ' +
+        'projetos!inner(' +
+        'id, codigo, titulo, categoria, capa_tipo, dorso_mm, formato_aberto, ' +
+        'formato_fechado, largura_mm, altura_mm, lojista_id' +
+        ')',
+    )
+    .eq('pedido_id', pedidoId)
+    .eq('projetos.lojista_id', lojistaId)) as { data: any };
+
+  // Producao e expedicao: o getPedido ja trata, mas aqui pegamos mais
+  // detalhado para a OS.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [{ data: prods }, { data: exps }] = (await Promise.all([
+    supabase
+      .from('producao')
+      .select('id, etapa, responsavel, iniciada_em, observacao')
+      .eq('pedido_id', pedidoId)
+      .order('atualizado_em', { ascending: false }),
+    supabase
+      .from('expedicao')
+      .select('id, estado, transportadora, rastreio')
+      .eq('pedido_id', pedidoId)
+      .order('atualizado_em', { ascending: false })
+      .limit(1),
+  ])) as [{ data: any[] | null }, { data: any[] | null }];
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const projetos = (linhas ?? []).map((linha: any) => {
+    const p = linha.projetos;
+    return {
+      projeto_id: p.id,
+      codigo: p.codigo,
+      titulo: p.titulo ?? linha.descricao,
+      descricao: linha.descricao,
+      categoria: p.categoria,
+      capa_tipo: p.capa_tipo,
+      dorso_mm: p.dorso_mm,
+      formato_aberto: p.formato_aberto,
+      formato_fechado: p.formato_fechado,
+      largura_mm: p.largura_mm,
+      altura_mm: p.altura_mm,
+      paginas: Number(linha.paginas ?? 0),
+      fotos: Number(linha.fotos ?? 0),
+      quantidade: Number(linha.quantidade ?? 1),
+      preco_unit: Number(linha.preco_unit ?? 0),
+      total: Number(linha.total ?? 0),
+    };
+  });
+
+  const exped = (exps ?? [])[0] ?? null;
+
+  return {
+    ...ped,
+    filial: (ped as any).filiais ?? null,
+    cliente: ped.clientes ?? null,
+    vendedor: ped.vendedores ?? null,
+    projetos,
+    producao: (prods ?? []) as DadosDaOS['producao'],
+    expedicao: exped
+      ? { id: exped.id, estado: exped.estado, transportadora: exped.transportadora, rastreio: exped.rastreio }
+      : null,
+  } as DadosDaOS;
+}

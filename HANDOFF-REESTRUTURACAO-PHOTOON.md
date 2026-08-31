@@ -1029,7 +1029,7 @@ commits do trabalho; `git log reestruturacao..master` está vazio.
 
 | Migration | Conteúdo | Estado |
 |---|---|---|
-| `0014` | filiais + códigos amigáveis | pendente |
+| 0014 | filiais + códigos amigáveis | APLICADA (validada via checar-banco) |
 | `0016` | fecha EXECUTE/PUBLIC das funções internas | **pendente — vulnerabilidade real** |
 | `0017` | 8 estágios do Kanban (re-assert idempotente) | pendente |
 | `0018` | 10 estados de expedição (re-assert idempotente) | pendente |
@@ -1156,7 +1156,7 @@ de teste.
 - **Pronto para revisão final:** **sim**, com as pendências
   conhecidas (0016, 0014, 0017, 0018 no Supabase + OS page da
   Fase 8.1).
-- **Migrations ainda pendentes:** 4 (0014, 0016, 0017, 0018). A
+- **Migrations ainda pendentes:** 3 (0016, 0017, 0018). A
   0016 é a única com risco real — é a correção da vulnerabilidade
   EXECUTE/PUBLIC.
 - **Commits:** 4 novos, todos em `reestruturacao`, master intocada.
