@@ -18,11 +18,11 @@ import fs from 'node:fs';
 const ts = fs.readFileSync('src/lib/rotas-lojista.ts', 'utf8');
 
 const itens = [...ts.matchAll(
-  /\{ indice: (\d+),\s+rotulo: '([^']+)',\s+rota: '([^']+)',\s+pronto: (true|false) \}/g,
+  /\{ indice: (\d+),\s+rotulo: '([^']+)',\s+rota: '([^']+)',\s+pronto: (true|false)\s*\}/g,
 )].map(([, i, rotulo, rota, pronto]) => ({ i: +i, rotulo, rota, pronto: pronto === 'true' }));
 
 const legadas = [...ts.matchAll(
-  /\{ de: '([^']+)',\s+para: '([^']+)',\s+destino: '[^']*',\s+migrado: (true|false) \}/g,
+  /\{ de: '([^']+)',\s+para: '([^']+)',\s+destino: '[^']*',\s+migrado: (true|false)\s*\}/g,
 )].map(([, de, para, migrado]) => ({ de, para, migrado: migrado === 'true' }));
 
 const shell = fs.readFileSync('src/components/design/ShellLojistaDesign.tsx', 'utf8');

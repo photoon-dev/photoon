@@ -403,6 +403,44 @@ create policy render_jobs_do_cliente on public.render_jobs for select
      where p.id = projeto_id and p.cliente_id in (select private.meus_clientes())));
 
 -- ---------------------------------------------------------------------------
+-- Busca universal de projeto
+--
+-- O briefing pede um campo só que ache por código, nome do projeto, cliente,
+-- e-mail, pedido ou produto. Isso é um OU entre colunas de tabelas diferentes,
+-- e o PostgREST não sabe montar `or` atravessando um recurso embutido: dois
+-- `.or()` viram um E, que devolve quase nada.
+--
+-- Uma função resolve em um lugar só, e devolve ids para a consulta principal
+-- continuar paginando normalmente.
+--
+-- `security definer` com filtro explícito por loja: quem chama já passou pela
+-- RLS para chegar aqui, e o `where lojista_id = loja` impede que um id de
+-- outra loja vaze mesmo que alguém invente o parâmetro.
+-- ---------------------------------------------------------------------------
+create or replace function public.projetos_busca(loja uuid, termo text)
+returns setof uuid language sql stable security definer set search_path = public as $$
+  select p.id
+    from public.projetos p
+    left join public.clientes c on c.id = p.cliente_id
+    left join public.pedido_itens pi on pi.projeto_id = p.id
+    left join public.pedidos pe on pe.id = pi.pedido_id
+   where p.lojista_id = loja
+     and (
+          p.codigo       ilike termo || '%'
+       or p.titulo       ilike '%' || termo || '%'
+       or p.produto_nome ilike '%' || termo || '%'
+       or c.nome         ilike '%' || termo || '%'
+       or c.email        ilike '%' || termo || '%'
+       or pe.codigo      ilike '%' || termo || '%'
+       or pe.numero::text = regexp_replace(termo, '\D', '', 'g')
+     )
+   group by p.id;
+$$;
+
+-- Só a equipe da loja pesquisa a loja inteira.
+revoke execute on function public.projetos_busca(uuid, text) from anon;
+
+-- ---------------------------------------------------------------------------
 -- Fecha as funções de sequência para quem chega de fora
 --
 -- O PostgREST expõe como RPC toda função de `public`, e `lojistas` tem leitura

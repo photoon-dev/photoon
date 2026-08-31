@@ -22,7 +22,7 @@ export type ItemDoMenu = {
 export const MENU_LOJISTA: ItemDoMenu[] = [
   { indice: 0,  rotulo: 'Dashboard',          rota: '/',                     pronto: true },
   { indice: 1,  rotulo: 'Pedidos',            rota: '/pedidos',              pronto: true },
-  { indice: 2,  rotulo: 'Projetos',           rota: '/projetos',             pronto: false },
+  { indice: 2,  rotulo: 'Projetos',           rota: '/projetos',             pronto: true  },
   { indice: 3,  rotulo: 'Produção',           rota: '/producao',             pronto: true },
   { indice: 4,  rotulo: 'Renderização',       rota: '/renderizacao',         pronto: false },
   { indice: 5,  rotulo: 'Expedição',          rota: '/expedicao',            pronto: true },
