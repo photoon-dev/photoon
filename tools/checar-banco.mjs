@@ -41,6 +41,7 @@ async function checar(tabela, coluna) {
 }
 
 const ALVOS = [
+  // 0014
   ['filiais', null],
   ['filiais', 'padrao'],
   ['pedidos', 'filial_id'],
@@ -50,6 +51,42 @@ const ALVOS = [
   ['clientes', 'filial_id'],
   ['vendedores', 'filial_id'],
   ['producao', 'filial_id'],
+  // 0015 — tabelas novas
+  ['projeto_arquivos', null],
+  ['projeto_versoes', null],
+  ['projeto_validacoes', null],
+  ['render_jobs', null],
+  ['render_logs', null],
+  ['render_workers', null],
+  ['producao_historico', null],
+  ['eventos', null],
+  // 0015 — colunas novas
+  ['projetos', 'arquivado_em'],
+  ['projetos', 'bytes_total'],
+  ['projetos', 'fotos_enviadas'],
+  ['projetos', 'criado_por'],
+  ['projetos', 'dorso_mm'],
+  ['render_jobs', 'progresso'],
+  ['render_jobs', 'tentativa'],
+  ['producao', 'entrou_na_etapa_em'],
+  ['expedicao', 'volumes'],
+  ['expedicao', 'peso_kg'],
+  ['expedicao', 'sla_dias'],
+  ['expedicao', 'etiqueta_url'],
+];
+
+/**
+ * Funções de sequência: ninguém de fora pode consumi-las.
+ *
+ * O 404/PGRST202 do PostgREST cobre os dois casos que interessam — função
+ * inexistente e função sem EXECUTE para este papel —, então o teste é "não
+ * consegui chamar". Um 409 (chegou na chave estrangeira) significa que a
+ * permissão passou: é exatamente a falha que a 0015 fecha.
+ */
+const FECHADAS = [
+  ['proximo_numero_pedido', { loja: '00000000-0000-0000-0000-000000000000' }],
+  ['proximo_codigo_projeto', { loja: '00000000-0000-0000-0000-000000000000', categoria: 'album' }],
+  ['projetos_busca', { loja: '00000000-0000-0000-0000-000000000000', termo: 'x' }],
 ];
 
 let faltando = 0;
@@ -59,6 +96,34 @@ for (const [tabela, coluna] of ALVOS) {
   console.log(`${ok ? 'ok  ' : 'NAO '} ${(coluna ? `${tabela}.${coluna}` : tabela).padEnd(24)} ${nota}`);
 }
 
-console.log(faltando ? `\n${faltando} objeto(s) faltando — a 0014 não foi aplicada (ou foi só em parte)`
-                     : '\n0014 aplicada: todos os objetos respondem');
+console.log('');
+for (const [fn, args] of FECHADAS) {
+  const r = await fetch(`${URL_BASE}/rest/v1/rpc/${fn}`, {
+    method: 'POST',
+    headers: { apikey: CHAVE, Authorization: `Bearer ${CHAVE}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify(args),
+  });
+  const corpo = await r.json().catch(() => ({}));
+  const fechada = r.status === 404 || r.status === 401 || r.status === 403;
+  if (!fechada) faltando++;
+  console.log(
+    `${fechada ? 'ok  ' : 'NAO '} rpc ${fn.padEnd(24)} ` +
+    (fechada ? 'anon nao consegue chamar' : `ABERTA a anon (HTTP ${r.status} ${corpo.code ?? ''})`),
+  );
+}
+
+// RLS: anon nao pode ver linha nenhuma das tabelas por loja.
+console.log('');
+for (const t of ['filiais', 'projetos', 'pedidos', 'clientes', 'render_jobs', 'projeto_arquivos', 'eventos']) {
+  const r = await fetch(`${URL_BASE}/rest/v1/${t}?select=id&limit=3`, {
+    headers: { apikey: CHAVE, Authorization: `Bearer ${CHAVE}` },
+  });
+  const b = await r.text();
+  const n = b.startsWith('[') ? JSON.parse(b).length : null;
+  const ok = n === 0;
+  if (!ok) faltando++;
+  console.log(`${ok ? 'ok  ' : 'NAO '} rls ${t.padEnd(24)} ${n === null ? 'resposta inesperada' : `anon ve ${n} linha(s)`}`);
+}
+
+console.log(faltando ? `\n${faltando} problema(s)` : '\n0014 e 0015 aplicadas: estrutura, permissao e RLS conferem');
 process.exit(faltando ? 1 : 0);
