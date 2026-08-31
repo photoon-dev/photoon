@@ -347,3 +347,213 @@ export async function listarPagamentos(
     recebido: porEstado.aprovado?.valor ?? 0,
   };
 }
+// Adição ao final de src/lib/pedidos.ts — relação real pedido → projeto via
+// pedido_itens.projeto_id. Sem inferência por nome ou código. Um pedido pode
+// ter vários projetos; um projeto sem pedido continua fora desta consulta.
+
+export type ProjetoDoPedido = {
+  /** id do pedido_itens. */
+  item_id: string;
+  projeto_id: string;
+  codigo: string | null;
+  titulo: string;
+  /** Status do projeto (texto com CHECK — ver migração 0015). */
+  status: string;
+  categoria: string | null;
+  /** Descrição congelada no item do pedido. */
+  descricao: string;
+  quantidade: number;
+  preco_unit: number;
+  total: number;
+  paginas: number;
+  fotos: number;
+  largura_mm: number | null;
+  altura_mm: number | null;
+  /** O job de renderização mais recente do projeto, se houver. */
+  render: { id: string; estado: string; progresso: number } | null;
+};
+
+/**
+ * Traz os projetos REAIS de um pedido, via `pedido_itens.projeto_id`.
+ *
+ * A junção `!inner` em `projetos` cumpre três coisas:
+ *   1. só itens COM projeto (a outra metade do `pedido_itens` é venda avulsa);
+ *   2. só projetos DA LOJA — defesa em profundidade, mesmo com RLS;
+ *   3. injeta os campos do projeto sem segunda consulta.
+ *
+ * `render_jobs` vem embutido mas pode devolver várias linhas; pegamos a mais
+ * recente (a tabela ordena por `atualizado_em desc` por convenção do painel).
+ */
+export async function projetosDoPedido(
+  lojistaId: string,
+  pedidoId: string,
+): Promise<ProjetoDoPedido[]> {
+  const supabase = await createClient();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data, error } = (await supabase
+    .from('pedido_itens')
+    .select(
+      'id, descricao, quantidade, preco_unit, total, paginas, fotos, projeto_id, ' +
+        'projetos!inner(' +
+        'id, codigo, titulo, status, categoria, largura_mm, altura_mm, lojista_id, ' +
+        'render_jobs(id, estado, progresso, atualizado_em)' +
+        ')',
+    )
+    .eq('pedido_id', pedidoId)
+    .eq('projetos.lojista_id', lojistaId)
+    .not('projeto_id', 'is', null)) as { data: any[] | null; error: any };
+
+  if (error || !data) return [];
+
+  return (data as any[]).map((linha) => {
+    const p = linha.projetos;
+    const rjs: any[] = Array.isArray(p?.render_jobs) ? p.render_jobs : [];
+    // Mais recente primeiro.
+    rjs.sort((a, b) => (b.atualizado_em ?? '').localeCompare(a.atualizado_em ?? ''));
+    const rj = rjs[0] ?? null;
+    return {
+      item_id: linha.id,
+      projeto_id: p.id,
+      codigo: p.codigo,
+      titulo: p.titulo,
+      status: p.status,
+      categoria: p.categoria,
+      descricao: linha.descricao,
+      quantidade: Number(linha.quantidade ?? 0),
+      preco_unit: Number(linha.preco_unit ?? 0),
+      total: Number(linha.total ?? 0),
+      paginas: Number(linha.paginas ?? 0),
+      fotos: Number(linha.fotos ?? 0),
+      largura_mm: p.largura_mm,
+      altura_mm: p.altura_mm,
+      render: rj
+        ? { id: rj.id, estado: String(rj.estado), progresso: Number(rj.progresso ?? 0) }
+        : null,
+    } satisfies ProjetoDoPedido;
+  });
+}
+// Adição ao final de src/lib/pedidos.ts — arquivos do pedido (via projetos) e
+// histórico de produção.
+
+export type ArquivoDoPedido = {
+  id: string;
+  projeto_id: string;
+  projeto_codigo: string | null;
+  projeto_titulo: string;
+  /** original | renderizado | preview | auxiliar */
+  tipo: string;
+  nome: string;
+  caminho: string;
+  bucket: string;
+  mime: string | null;
+  bytes: number;
+  versao: number;
+  estado: string;
+  criado_em: string;
+};
+
+/**
+ * Arquivos dos projetos de um pedido, agrupáveis por `tipo`.
+ *
+ * A junção `pedido_itens → projetos → projeto_arquivos` cobre as três tabelas
+ * de uma vez. O filtro em `lojista_id` é defesa em profundidade.
+ */
+export async function arquivosDoPedido(
+  lojistaId: string,
+  pedidoId: string,
+): Promise<ArquivoDoPedido[]> {
+  const supabase = await createClient();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data, error } = (await supabase
+    .from('pedido_itens')
+    .select(
+      'projeto_id, ' +
+        'projetos!inner(' +
+        'id, codigo, titulo, lojista_id, ' +
+        'projeto_arquivos(id, projeto_id, tipo, nome, caminho, bucket, mime, bytes, versao, estado, criado_em, removido_em)' +
+        ')',
+    )
+    .eq('pedido_id', pedidoId)
+    .eq('projetos.lojista_id', lojistaId)
+    .not('projeto_id', 'is', null)) as { data: any[] | null; error: any };
+
+  if (error || !data) return [];
+
+  const saida: ArquivoDoPedido[] = [];
+  for (const linha of data as any[]) {
+    const p = linha.projetos;
+    if (!p) continue;
+    const arquivos: any[] = Array.isArray(p.projeto_arquivos) ? p.projeto_arquivos : [];
+    for (const a of arquivos) {
+      if (a.removido_em) continue; // regra 14: nada some em silêncio
+      saida.push({
+        id: a.id,
+        projeto_id: p.id,
+        projeto_codigo: p.codigo,
+        projeto_titulo: p.titulo,
+        tipo: a.tipo,
+        nome: a.nome,
+        caminho: a.caminho,
+        bucket: a.bucket,
+        mime: a.mime,
+        bytes: Number(a.bytes ?? 0),
+        versao: Number(a.versao ?? 1),
+        estado: a.estado,
+        criado_em: a.criado_em,
+      });
+    }
+  }
+  // Mais recente primeiro.
+  saida.sort((a, b) => (b.criado_em ?? '').localeCompare(a.criado_em ?? ''));
+  return saida;
+}
+
+export type HistoricoProducao = {
+  id: string;
+  producao_id: string;
+  de_etapa: string | null;
+  para_etapa: string;
+  responsavel: string | null;
+  criado_em: string;
+  observacao: string | null;
+};
+
+/**
+ * Histórico de movimentações de produção de um pedido, via `producao_historico`.
+ * A trigger `producao_historico_*` grava cada troca de etapa automaticamente;
+ * a tela só lê.
+ */
+export async function historicoProducaoDoPedido(
+  lojistaId: string,
+  pedidoId: string,
+): Promise<HistoricoProducao[]> {
+  const supabase = await createClient();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data, error } = (await supabase
+    .from('producao')
+    .select(
+      'id, producao_historico(id, producao_id, de_etapa, para_etapa, responsavel, criado_em, observacao)',
+    )
+    .eq('pedido_id', pedidoId)
+    .eq('pedidos.lojista_id', lojistaId) as any) as { data: any[] | null; error: any };
+
+  if (error || !data) return [];
+
+  const saida: HistoricoProducao[] = [];
+  for (const p of data as any[]) {
+    const hist: any[] = Array.isArray(p.producao_historico) ? p.producao_historico : [];
+    for (const h of hist) {
+      saida.push({
+        id: h.id,
+        producao_id: h.producao_id,
+        de_etapa: h.de_etapa,
+        para_etapa: h.para_etapa,
+        responsavel: h.responsavel,
+        criado_em: h.criado_em,
+        observacao: h.observacao,
+      });
+    }
+  }
+  saida.sort((a, b) => (b.criado_em ?? '').localeCompare(a.criado_em ?? ''));
+  return saida;
+}

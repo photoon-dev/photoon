@@ -177,6 +177,7 @@ export type EnderecoEnvio = {
   cidade?: string;
   uf?: string;
   cep?: string;
+  quem_recebe?: string;
 };
 
 export type LinhaExpedicao = {
