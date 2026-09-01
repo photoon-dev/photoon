@@ -51,6 +51,33 @@ body {
     opacity: 1;
   }
 }
+/* ---------------------------------------------------------------------------
+   As duas do banner de saudação.
+
+   Nasceram em `meus-projetos/cliente.css`, para o banner da área do cliente.
+   O Dashboard do lojista usa o MESMO banner — mesmo gradiente, mesmo raio,
+   mesmas caixas de vidro — e sem estas duas ele ficaria parado enquanto o do
+   cliente se mexe: o mesmo componente com dois comportamentos.
+   --------------------------------------------------------------------------- */
+@keyframes gridDrift {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-40px, -40px, 0);
+  }
+}
+@keyframes blobFloat {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(18px, -14px, 0) scale(1.06);
+  }
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
 @keyframes drawLine {
   from {
     stroke-dashoffset: 1600;
