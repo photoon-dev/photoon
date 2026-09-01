@@ -1,0 +1,23 @@
+# Contexto do build. Sem este arquivo, o `COPY . .` do Dockerfile leva o
+# `.next` local para dentro da imagem. Quando esse `.next` e de um `next dev`,
+# artefatos de desenvolvimento (`static/development`, `react-refresh.js`,
+# `pages/_error.js` compilado em dev) sobrevivem ao `next build` e vao parar
+# no `standalone` — foi o que confundiu o diagnostico do falso 500 em /entrar.
+.next
+node_modules
+.git
+.gitignore
+
+# Segredos nunca entram na imagem: as NEXT_PUBLIC_* chegam por ARG e o resto
+# por `env_file` em tempo de execucao.
+.env
+.env.local
+.env*.local
+
+# Documentacao e rascunhos nao fazem parte do runtime.
+*.md
+scratch-*.mjs
+design
+tsconfig.tsbuildinfo
+npm-debug.log*
+.DS_Store
