@@ -102,9 +102,24 @@ export type ProjetoDaLista = {
   render: EstadoRender | null;
 };
 
-/** Lâmina é a folha física: duas páginas do documento. */
-export const laminas = (paginas: number | null | undefined) =>
-  Math.ceil((paginas ?? 0) / 2);
+/**
+ * Lâmina é a folha física: duas páginas do documento, esquerda e direita.
+ *
+ * Cuidado com o nome da coluna. `projetos.paginas` é `Lamina[]` — é o que o
+ * editor grava (`paginas: [novaLamina(), novaLamina()]`) e o que ele lê de
+ * volta. E `total_paginas` é `jsonb_array_length(paginas)`, ou seja conta
+ * LÂMINAS, não páginas, apesar do nome.
+ *
+ * A versão anterior lia `total_paginas` como página e dividia por dois, então
+ * um projeto novo (2 lâminas = 4 páginas) aparecia como "2 páginas, 1 lâmina" —
+ * errado nos dois números. Estes dois helpers existem para que a conversão
+ * fique num lugar só e ninguém precise lembrar da armadilha do nome.
+ */
+export const laminasDoProjeto = (totalPaginasDaColuna: number | null | undefined) =>
+  Math.max(0, totalPaginasDaColuna ?? 0);
+
+export const paginasDoProjeto = (totalPaginasDaColuna: number | null | undefined) =>
+  laminasDoProjeto(totalPaginasDaColuna) * 2;
 
 export const tamanho = (bytes: number | null | undefined) => {
   const b = bytes ?? 0;

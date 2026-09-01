@@ -2,6 +2,7 @@ import Link from 'next/link';
 import type { Projeto } from '@/lib/data';
 import { STATUS } from '@/lib/status';
 import { IconGaleria, IconAlerta, IconOlho, IconSeta } from '@/components/icons';
+import { paginasDoProjeto } from '@/lib/projetos-termos';
 
 /** Capa gerada quando o album ainda nao tem imagem escolhida. */
 const GRADIENTES = [
@@ -51,7 +52,7 @@ export default function CardProjeto({
           <p className="m-0 mt-1 text-[12.5px] text-muted-2">
             {[
               [projeto.produto_nome, projeto.produto_tamanho].filter(Boolean).join(' '),
-              `${projeto.total_paginas} páginas`,
+              `${paginasDoProjeto(projeto.total_paginas)} páginas`,
             ]
               .filter(Boolean)
               .join(' · ')}

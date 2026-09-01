@@ -4,6 +4,7 @@ import { useCallback, useMemo, useState } from 'react';
 import CardProjetoDesign from '@/components/design/CardProjetoDesign';
 import type { Notificacao, Projeto } from '@/lib/data';
 import { STATUS } from '@/lib/status';
+import { paginasDoProjeto } from '@/lib/projetos-termos';
 
 /**
  * Porte de `Component extends DCLogic` de Cliente Meus projetos.dc.html.
@@ -271,7 +272,7 @@ export function useMeusProjetosDesign({
               titulo: p.titulo,
               produto: [
                 [p.produto_nome, p.produto_tamanho].filter(Boolean).join(' '),
-                `${p.total_paginas} páginas`,
+                `${paginasDoProjeto(p.total_paginas)} páginas`,
               ]
                 .filter(Boolean)
                 .join(' · '),

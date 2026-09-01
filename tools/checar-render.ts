@@ -12,8 +12,8 @@
  *   node --experimental-strip-types --import ./tools/resolver-ts.mjs tools/checar-render.ts
  */
 import sharp from 'sharp';
-import { renderizarLamina, type Medidas } from '../src/lib/impressao.ts';
-import { migrarLaminas } from '../src/lib/album.ts';
+import { renderizarLamina, type Medidas } from '../src/lib/impressao';
+import { migrarLaminas } from '../src/lib/album';
 
 const MEDIDAS: Medidas = { larguraMm: 300, alturaMm: 300, sangriaMm: 3, areaSeguraMm: 8 };
 // 300mm + 3mm de sangria de cada lado = 306mm; 306 * 300/25.4 = 3614 px.

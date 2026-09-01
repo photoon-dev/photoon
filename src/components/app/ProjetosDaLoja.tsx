@@ -13,7 +13,8 @@ import BarraDeFiltrosProjetos, { type OpcoesFiltroProjeto } from '@/components/a
 import {
   PROJETOS_POR_PAGINA,
   dataCurta,
-  laminas,
+  laminasDoProjeto,
+  paginasDoProjeto,
   tamanho,
   termoProjeto,
   termoRender,
@@ -141,7 +142,7 @@ export default function ProjetosDaLoja({
       ordenavel: true,
       render: (p) => (
         <span style={{ color: COR.apagado, fontVariantNumeric: 'tabular-nums' }}>
-          {p.total_paginas ?? 0} · {laminas(p.total_paginas)} · {p.fotos_usadas ?? 0}
+          {paginasDoProjeto(p.total_paginas)} · {laminasDoProjeto(p.total_paginas)} · {p.fotos_usadas ?? 0}
         </span>
       ),
     },

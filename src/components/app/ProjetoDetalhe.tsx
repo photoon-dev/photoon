@@ -13,7 +13,8 @@ import { COR } from '@/components/ui/tokens';
 import { enfileirarProjeto } from '@/app/app/actions-render';
 import {
   dataHora,
-  laminas,
+  laminasDoProjeto,
+  paginasDoProjeto,
   tamanho,
   termoProjeto,
   termoRender,
@@ -249,8 +250,8 @@ function AbaResumo({ dados }: { dados: ProjetoCompleto }) {
         </Bloco>
 
         <Bloco titulo="Conteudo">
-          <Linha rotulo="Paginas" valor={String(p.total_paginas ?? 0)} />
-          <Linha rotulo="Laminas" valor={laminas(p.total_paginas)} />
+          <Linha rotulo="Paginas" valor={String(paginasDoProjeto(p.total_paginas))} />
+          <Linha rotulo="Laminas" valor={String(laminasDoProjeto(p.total_paginas))} />
           <Linha rotulo="Fotos enviadas" valor={String(p.fotos_enviadas ?? 0)} />
           <Linha rotulo="Fotos utilizadas" valor={String(p.fotos_usadas ?? 0)} />
           <Linha rotulo="Nao utilizadas" valor={String(naoUsadas)} />
