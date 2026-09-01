@@ -105,21 +105,25 @@ export type ProjetoDaLista = {
 /**
  * Lâmina é a folha física: duas páginas do documento, esquerda e direita.
  *
- * Cuidado com o nome da coluna. `projetos.paginas` é `Lamina[]` — é o que o
- * editor grava (`paginas: [novaLamina(), novaLamina()]`) e o que ele lê de
- * volta. E `total_paginas` é `jsonb_array_length(paginas)`, ou seja conta
- * LÂMINAS, não páginas, apesar do nome.
+ * `projetos.paginas` guarda `Lamina[]` — é o que o editor grava
+ * (`paginas: [novaLamina(), novaLamina()]`). Mas `total_paginas` NÃO é o
+ * comprimento desse array: a migration 0010 a redefiniu como
+ * `jsonb_array_length(paginas) * 2`, justamente porque antes ela contava
+ * lâminas e o preço saía pela metade — as páginas excedentes são cobradas do
+ * cliente, e todo álbum estava sendo subfaturado.
  *
- * A versão anterior lia `total_paginas` como página e dividia por dois, então
- * um projeto novo (2 lâminas = 4 páginas) aparecia como "2 páginas, 1 lâmina" —
- * errado nos dois números. Estes dois helpers existem para que a conversão
- * fique num lugar só e ninguém precise lembrar da armadilha do nome.
+ * Ou seja: a coluna conta PÁGINAS, o array conta LÂMINAS, e a razão entre elas
+ * é 2. Confirmado contra o banco real (array=5 → total_paginas=10).
+ *
+ * A armadilha é ler só a 0001, onde a coluna nasceu como
+ * `jsonb_array_length(paginas)`, e concluir que ela conta lâminas. Não conta
+ * mais desde a 0010. **Não inverta estes dois helpers.**
  */
-export const laminasDoProjeto = (totalPaginasDaColuna: number | null | undefined) =>
+export const paginasDoProjeto = (totalPaginasDaColuna: number | null | undefined) =>
   Math.max(0, totalPaginasDaColuna ?? 0);
 
-export const paginasDoProjeto = (totalPaginasDaColuna: number | null | undefined) =>
-  laminasDoProjeto(totalPaginasDaColuna) * 2;
+export const laminasDoProjeto = (totalPaginasDaColuna: number | null | undefined) =>
+  Math.ceil(paginasDoProjeto(totalPaginasDaColuna) / 2);
 
 export const tamanho = (bytes: number | null | undefined) => {
   const b = bytes ?? 0;

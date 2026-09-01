@@ -104,7 +104,19 @@ export default function FinanceiroDaLoja({
       </div>
 
       {/* KPIs do período */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, minmax(0, 1fr))', gap: 10 }}>
+      {/*
+        `repeat(4, …)` fixo cortava o valor: em 390px cada cartao ficava com ~85px
+        e "R$ 8.760,00" virava "R$ 8.76…". Com `auto-fit` + minimo de 190px a
+        linha quebra sozinha — quatro colunas no desktop, duas no tablet, uma no
+        celular — e o numero cabe inteiro, que e a unica razao de o cartao existir.
+      */}
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(190px, 1fr))',
+          gap: 10,
+        }}
+      >
         <CartaoKPI
           rotulo="Recebido"
           valor={moeda(carteira.recebido)}
@@ -171,7 +183,8 @@ export default function FinanceiroDaLoja({
           <div
             style={{
               display: 'grid',
-              gridTemplateColumns: 'minmax(0, 1.6fr) minmax(0, 1fr)',
+              // Duas colunas quando ha largura; uma so abaixo de ~640px.
+              gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 300px), 1fr))',
               gap: 14,
               alignItems: 'start',
             }}
@@ -193,8 +206,13 @@ export default function FinanceiroDaLoja({
                     <div
                       key={m.metodo}
                       style={{
-                        display: 'grid',
-                        gridTemplateColumns: 'minmax(0,1fr) auto',
+                        display: 'flex',
+                        // Era grid `minmax(0,1fr) auto`: com pouca largura o
+                        // rotulo nao encolhia e escorregava por baixo do valor
+                        // ("Bole… R$ 4.126,00" sobrepostos). Em flex, o rotulo
+                        // trunca com reticencias e o valor fica intacto — o
+                        // numero e o que nao pode ser adivinhado.
+                        justifyContent: 'space-between',
                         gap: 10,
                         alignItems: 'baseline',
                         padding: '9px 0',
@@ -202,7 +220,15 @@ export default function FinanceiroDaLoja({
                         fontSize: 13,
                       }}
                     >
-                      <span style={{ color: COR.texto }}>
+                      <span
+                        style={{
+                          color: COR.texto,
+                          minWidth: 0,
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          whiteSpace: 'nowrap',
+                        }}
+                      >
                         {METODO[m.metodo] ?? m.metodo}{' '}
                         <span style={{ color: COR.fraco }}>· {m.quantidade}</span>
                       </span>
@@ -211,6 +237,7 @@ export default function FinanceiroDaLoja({
                           fontWeight: 700,
                           color: COR.tinta,
                           fontVariantNumeric: 'tabular-nums',
+                          flex: '0 0 auto',
                         }}
                       >
                         {moeda(m.valor)}
@@ -451,14 +478,17 @@ function Barras({ dados }: { dados: { rotulo: string; valor: number }[] }) {
         style={{
           display: 'flex',
           justifyContent: 'space-between',
+          gap: 8,
+          flexWrap: 'wrap',
           marginTop: 8,
           fontSize: 11.5,
           color: COR.fraco,
         }}
       >
-        <span>{dados[0]?.rotulo}</span>
+        <span>
+          {dados[0]?.rotulo} — {dados[dados.length - 1]?.rotulo}
+        </span>
         <span>pico {moeda(teto)}</span>
-        <span>{dados[dados.length - 1]?.rotulo}</span>
       </div>
     </div>
   );
