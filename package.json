@@ -11,7 +11,8 @@
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
     "checar-render": "node --experimental-strip-types --import ./tools/resolver-ts.mjs tools/checar-render.ts",
-    "worker-render": "node --experimental-strip-types --import ./tools/resolver-ts.mjs tools/worker-render.ts"
+    "worker-render": "node --experimental-strip-types --import ./tools/resolver-ts.mjs tools/worker-render.ts",
+    "testar-render": "node --experimental-strip-types --import ./tools/resolver-ts.mjs tools/testar-render.ts"
   },
   "dependencies": {
     "@supabase/ssr": "^0.5.2",

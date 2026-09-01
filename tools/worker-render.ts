@@ -184,35 +184,55 @@ class Cancelado extends Error {
  * em várias lâminas (capa e miolo), e baixar de novo a cada quadro dominaria o
  * tempo do job — por isso o cache vive enquanto o job durar, e não além dele:
  * segurar o acervo inteiro na memória entre jobs estouraria o container.
+ *
+ * O caminho preferido é `projeto_fotos`, o índice de quais fotos o álbum usa.
+ * Mas o índice é derivado do documento, e o documento é a verdade: projeto
+ * salvo antes de o editor passar a manter esse índice não tem linha nenhuma
+ * ali, e uma sincronia que falhou deixa buracos. Cair fora do índice não pode
+ * significar renderizar em branco — o `fotoId` é um id de `galeria_fotos`, e a
+ * segunda consulta o resolve direto. Sem essa saída, a falha seria silenciosa
+ * e do pior tipo: job verde, arquivo gerado, álbum em branco no papel.
  */
 function acervoDoProjeto(projetoId: string) {
   const cache = new Map<string, Buffer | null>();
-  let caminhos: Map<string, string> | null = null;
+  const caminhos = new Map<string, string>();
+  let indiceLido = false;
+
+  /** O índice do álbum, lido uma vez por job. */
+  async function lerIndice() {
+    const { data } = await db
+      .from('projeto_fotos')
+      .select('galeria_foto_id, galeria_fotos(id, storage_path)')
+      .eq('projeto_id', projetoId);
+
+    for (const l of data ?? []) {
+      const f = l.galeria_fotos as unknown as { id: string; storage_path: string } | null;
+      if (f?.storage_path) caminhos.set(f.id, f.storage_path);
+    }
+    indiceLido = true;
+  }
+
+  /** A foto pelo id, para quando o índice não a tem. */
+  async function caminhoAvulso(fotoId: string): Promise<string | null> {
+    const { data } = await db
+      .from('galeria_fotos')
+      .select('storage_path')
+      .eq('id', fotoId)
+      .maybeSingle();
+    return data?.storage_path ?? null;
+  }
 
   return async function buscarFoto(fotoId: string): Promise<Buffer | null> {
     if (cache.has(fotoId)) return cache.get(fotoId) ?? null;
 
-    if (!caminhos) {
-      const { data } = await db
-        .from('projeto_fotos')
-        .select('galeria_foto_id, galeria_fotos(id, storage_path)')
-        .eq('projeto_id', projetoId);
+    if (!indiceLido) await lerIndice();
 
-      caminhos = new Map(
-        (data ?? [])
-          .map((l) => {
-            const f = l.galeria_fotos as unknown as { id: string; storage_path: string } | null;
-            return f ? ([f.id, f.storage_path] as const) : null;
-          })
-          .filter((x): x is readonly [string, string] => x !== null),
-      );
-    }
-
-    const caminho = caminhos.get(fotoId);
+    const caminho = caminhos.get(fotoId) ?? (await caminhoAvulso(fotoId));
     if (!caminho) {
       cache.set(fotoId, null);
       return null;
     }
+    caminhos.set(fotoId, caminho);
 
     const { data: arquivo } = await db.storage.from(BUCKET_FOTOS).download(caminho);
     const buffer = arquivo ? Buffer.from(await arquivo.arrayBuffer()) : null;
