@@ -13,3 +13,6 @@ npm-debug.log*
 # Modelos do face-api: copiados de node_modules por tools/copiar-modelos.mjs
 # na predev/prebuild. Sao ~7 MB de binario que acompanham a versao da lib.
 /public/modelos-rosto/
+
+# Segredo do worker: a service_role key. Nunca versionada.
+.env.worker

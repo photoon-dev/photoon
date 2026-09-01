@@ -10,9 +10,7 @@ node_modules
 
 # Segredos nunca entram na imagem: as NEXT_PUBLIC_* chegam por ARG e o resto
 # por `env_file` em tempo de execucao.
-.env
-.env.local
-.env*.local
+.env*
 
 # Documentacao e rascunhos nao fazem parte do runtime.
 *.md

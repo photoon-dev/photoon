@@ -20,8 +20,14 @@ services:
   # come CPU e memória, e dentro do processo do Next isso bloquearia as
   # requisições do painel. Aqui ele pode morrer e voltar sem derrubar o site.
   #
-  # Precisa de SUPABASE_SERVICE_ROLE_KEY no .env — é a única peça do sistema
-  # que atravessa lojas, e a RLS é por sessão de usuário.
+  # A SUPABASE_SERVICE_ROLE_KEY vive em `.env.worker`, NAO em `.env`.
+  #
+  # Os dois servicos leem `.env`. Se a chave de servico estivesse la, o
+  # container do site tambem a teria no ambiente — e ela atravessa lojas,
+  # ignorando a RLS. Qualquer codigo de servidor do Next passaria a poder ler
+  # o banco inteiro de todas as lojas. Um arquivo separado, lido so por este
+  # servico, mantem a chave onde ela deve estar: no worker, e em nenhum outro
+  # lugar.
   render:
     build:
       context: .
@@ -29,7 +35,9 @@ services:
       # nem `src/`, entao o worker nao teria o proprio codigo la dentro.
       target: worker
     restart: unless-stopped
-    env_file: .env
+    env_file:
+      - .env
+      - .env.worker
     networks: [web]
     depends_on: [app]
 
