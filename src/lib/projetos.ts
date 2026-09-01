@@ -514,3 +514,111 @@ export async function urlAssinada(
   const { data } = await supabase.storage.from(bucket).createSignedUrl(caminho, segundos);
   return data?.signedUrl ?? null;
 }
+
+/* --------------------------------- resumo --------------------------------- */
+
+/** Uma lâmina na folha de resumo: o que ela tem, e a miniatura se já existe. */
+export type LaminaDoResumo = {
+  /** 1-based, como o operador conta na bancada. */
+  numero: number;
+  /** As duas páginas da folha: 1-2, 3-4, … */
+  paginas: [number, number];
+  layoutEsquerda: string;
+  layoutDireita: string;
+  fotos: number;
+  textos: number;
+  /** URL assinada do JPEG renderizado, quando a renderização já rodou. */
+  miniatura: string | null;
+};
+
+export type ResumoDoProjeto = ProjetoCompleto & {
+  laminas: LaminaDoResumo[];
+  /** URL assinada da capa, quando ela mora no bucket privado. */
+  capa: string | null;
+  totalFotosNoDocumento: number;
+  totalTextos: number;
+};
+
+/**
+ * A folha de resumo do projeto — `/projetos/:id/resumo`.
+ *
+ * Monta sobre `getProjeto` em vez de repetir as consultas: o resumo mostra o
+ * mesmo projeto do detalhe, e duas leituras diferentes da mesma coisa é como
+ * a tela e o papel começam a divergir.
+ *
+ * O que ela acrescenta é o documento em si (`projetos.paginas`), que o detalhe
+ * não precisa: para contar fotos e textos por lâmina e casar cada folha com o
+ * JPEG que o worker gerou. As miniaturas saem de `projeto_arquivos`, por
+ * URL assinada — o bucket `renders` é privado e nunca ganha link permanente
+ * (regra 21). Sem renderização ainda, `miniatura` é null e a tela mostra o
+ * esquema da lâmina em vez de um quadrado quebrado.
+ */
+export async function dadosDoResumo(
+  lojistaId: string,
+  id: string,
+): Promise<ResumoDoProjeto | null> {
+  const base = await getProjeto(lojistaId, id);
+  if (!base) return null;
+
+  const supabase = await createClient();
+  const { data: doc } = await supabase
+    .from('projetos')
+    .select('paginas, capa_url')
+    .eq('lojista_id', lojistaId)
+    .eq('id', id)
+    .maybeSingle();
+
+  const laminasBrutas = Array.isArray(doc?.paginas) ? (doc.paginas as unknown[]) : [];
+
+  // Os renderizados vêm nomeados `<codigo>-lamina-001.jpg` pelo worker; a
+  // ordem do nome é a ordem do documento. Só as linhas vivas (não removidas)
+  // chegam aqui, então reprocessar troca a miniatura sem duplicar.
+  const renderizados = base.arquivos
+    .filter((a) => a.tipo === 'renderizado' && a.estado === 'pronto')
+    .sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR', { numeric: true }));
+
+  const assinadas = await Promise.all(
+    renderizados.map((a) =>
+      supabase.storage
+        .from(a.bucket)
+        .createSignedUrl(a.caminho, 3600)
+        .then((r) => r.data?.signedUrl ?? null),
+    ),
+  );
+
+  const contar = (pagina: unknown, tipo: string) => {
+    const quadros = (pagina as { quadros?: { tipo?: string }[] } | null)?.quadros;
+    return Array.isArray(quadros) ? quadros.filter((q) => q?.tipo === tipo).length : 0;
+  };
+  const layoutDe = (pagina: unknown) =>
+    (pagina as { layoutId?: string } | null)?.layoutId ?? '—';
+
+  const laminas: LaminaDoResumo[] = laminasBrutas.map((bruta, i) => {
+    const l = bruta as { esquerda?: unknown; direita?: unknown } | null;
+    return {
+      numero: i + 1,
+      paginas: [i * 2 + 1, i * 2 + 2],
+      layoutEsquerda: layoutDe(l?.esquerda),
+      layoutDireita: layoutDe(l?.direita),
+      fotos: contar(l?.esquerda, 'foto') + contar(l?.direita, 'foto'),
+      textos: contar(l?.esquerda, 'texto') + contar(l?.direita, 'texto'),
+      miniatura: assinadas[i] ?? null,
+    };
+  });
+
+  // A capa pode ser um caminho no bucket privado ou já uma URL pronta.
+  const capaBruta = doc?.capa_url ?? null;
+  const capa =
+    capaBruta && !capaBruta.startsWith('http')
+      ? ((await supabase.storage.from('renders').createSignedUrl(capaBruta, 3600)).data
+          ?.signedUrl ?? null)
+      : capaBruta;
+
+  return {
+    ...base,
+    laminas,
+    capa,
+    totalFotosNoDocumento: laminas.reduce((s, l) => s + l.fotos, 0),
+    totalTextos: laminas.reduce((s, l) => s + l.textos, 0),
+  };
+}
