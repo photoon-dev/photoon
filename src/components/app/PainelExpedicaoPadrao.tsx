@@ -1,4 +1,4 @@
-import { FileiraKpi, Lista, Selo, ICONES, type Tom } from '@/components/app/padroes';
+import { FileiraKpi, Lista, Selo, ICONES, serieDiaria, type Tom } from '@/components/app/padroes';
 import { reais } from '@/lib/preco';
 import type { EnvioDaLista } from '@/lib/pedidos';
 
@@ -68,12 +68,24 @@ export default function PainelExpedicaoPadrao({
 
       <FileiraKpi
         cartoes={[
-          ...ESTADOS.map(([id, rotulo, tom]) => ({
-            rotulo,
-            valor: porEstado[id] ?? 0,
-            tom,
-            icone: id === 'devolvido' ? ICONES.alerta : ICONES.entrega,
-          })),
+          ...ESTADOS.map(([id, rotulo, tom]) => {
+            const doEstado = envios.filter((e) => e.estado === id);
+            return {
+              rotulo,
+              valor: porEstado[id] ?? doEstado.length,
+              tom,
+              icone: id === 'devolvido' ? ICONES.alerta : ICONES.entrega,
+              serie: serieDiaria(doEstado.map((e) => e.atualizado_em)),
+              nota:
+                id === 'entregue'
+                  ? 'concluídos'
+                  : id === 'devolvido'
+                    ? (porEstado[id] ?? 0) > 0 ? 'exige atenção' : 'nenhum'
+                    : id === 'aguardando'
+                      ? 'sem postar'
+                      : 'a caminho',
+            };
+          }),
           {
             rotulo: 'Prontos sem envio',
             valor: semEnvio,

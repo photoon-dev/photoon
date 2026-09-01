@@ -68,7 +68,7 @@ export function Kpi({ rotulo, valor, nota, tom = 'azul', icone, serie }: CartaoK
   const t = TONS[tom];
   return (
     <div
-      className="flex flex-col gap-3 rounded-[22px] border border-line bg-surface px-[22px] py-5 transition-[box-shadow,transform] duration-[180ms] hover:-translate-y-0.5 hover:shadow-[0_14px_30px_rgba(11,18,32,.09)]"
+      className="flex min-h-[136px] flex-col gap-3 rounded-[22px] border border-line bg-surface px-[22px] py-5 transition-[box-shadow,transform] duration-[180ms] hover:-translate-y-0.5 hover:shadow-[0_14px_30px_rgba(11,18,32,.09)]"
     >
       <div className="flex items-center justify-between">
         <span className="text-[13px] font-medium text-muted">{rotulo}</span>
@@ -82,16 +82,21 @@ export function Kpi({ rotulo, valor, nota, tom = 'azul', icone, serie }: CartaoK
         )}
       </div>
 
-      <span className="text-[29px] font-extrabold tracking-[-1px]">
+      {/* Cor explícita: quando o cartão é um link (`href`), o valor herdava o
+          azul de link e a fileira ficava com números de cores diferentes. */}
+      <span className="text-[29px] font-extrabold tracking-[-1px] text-ink">
         {typeof valor === 'number' ? valor.toLocaleString('pt-BR') : valor}
       </span>
 
       {/* A linha existe sempre, mesmo vazia: sem ela, cartões com e sem nota
           teriam alturas diferentes e a fileira ficaria desalinhada. */}
-      <div className="flex min-h-[26px] items-center gap-2.5">
+      <div className="flex min-h-[26px] items-center gap-2.5 overflow-hidden">
         {nota && (
           <span
-            className="rounded-full px-[9px] py-1 text-[11.5px] font-bold"
+            title={nota}
+            /* `truncate` é obrigatório: nota longa quebrando em duas linhas
+               crescia o cartão e desalinhava a fileira inteira. */
+            className="max-w-full truncate whitespace-nowrap rounded-full px-[9px] py-1 text-[11.5px] font-bold"
             style={{ background: t.fundo, color: t.cor }}
           >
             {nota}
@@ -112,6 +117,30 @@ export function FileiraKpi({ cartoes }: { cartoes: CartaoKpi[] }) {
       ))}
     </div>
   );
+}
+
+/**
+ * Série diária a partir de registros com data.
+ *
+ * O gráfico do cartão só desenha com dado real — e para ter dado real alguém
+ * precisa calculá-lo. Esta função conta quantos registros caem em cada um dos
+ * últimos `dias`, que é o que a faísca mostra: a tendência recente.
+ *
+ * Devolve `undefined` quando não há variação nenhuma: uma linha reta não diz
+ * nada e só ocupa espaço.
+ */
+export function serieDiaria(
+  datas: (string | null | undefined)[],
+  dias = 14,
+): number[] | undefined {
+  const balde = new Array(dias).fill(0);
+  const hoje = Date.now();
+  for (const d of datas) {
+    if (!d) continue;
+    const i = dias - 1 - Math.floor((hoje - new Date(d).getTime()) / 86_400_000);
+    if (i >= 0 && i < dias) balde[i] += 1;
+  }
+  return new Set(balde).size > 1 ? balde : undefined;
 }
 
 /* --------------------------------------------------------------- selo */

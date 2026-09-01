@@ -1,4 +1,4 @@
-import { FileiraKpi, Lista, Selo, ICONES, type Tom } from '@/components/app/padroes';
+import { FileiraKpi, Lista, Selo, ICONES, serieDiaria, type Tom } from '@/components/app/padroes';
 import { reais } from '@/lib/preco';
 import type { DadosCRM, EstadoCliente } from '@/lib/comercial';
 
@@ -73,12 +73,15 @@ export default function PainelCRMPadrao({ dados }: { dados: DadosCRM }) {
 
       <FileiraKpi
         cartoes={[
-          { rotulo: 'Clientes', valor: cs.length, tom: 'azul', icone: ICONES.pessoas },
+          { rotulo: 'Clientes', valor: cs.length, tom: 'azul', icone: ICONES.pessoas,
+            nota: 'na loja', serie: serieDiaria(cs.map((c) => c.convidado_em)) },
           {
             rotulo: 'Ativos',
             valor: cs.filter((c) => estadoDe(c) === 'ativo').length,
             tom: 'verde',
             icone: ICONES.estrela,
+            nota: 'compraram',
+            serie: serieDiaria(cs.map((c) => c.ultimoPedidoEm)),
           },
           {
             rotulo: 'Sem pedido',
@@ -94,8 +97,10 @@ export default function PainelCRMPadrao({ dados }: { dados: DadosCRM }) {
             valor: cs.filter((c) => estadoDe(c) === 'sem_acesso').length,
             tom: 'neutro',
             icone: ICONES.relogio,
+            nota: 'convite pendente',
           },
-          { rotulo: 'Receita', valor: reais(receita), tom: 'verde', icone: ICONES.dinheiro },
+          { rotulo: 'Receita', valor: reais(receita), tom: 'verde', icone: ICONES.dinheiro,
+            nota: 'no total' },
           {
             rotulo: 'Ticket médio',
             valor: ticket.length
@@ -103,6 +108,7 @@ export default function PainelCRMPadrao({ dados }: { dados: DadosCRM }) {
               : '—',
             tom: 'roxo',
             icone: ICONES.grafico,
+            nota: 'por pedido pago',
           },
         ]}
       />

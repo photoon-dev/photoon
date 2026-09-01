@@ -1,4 +1,4 @@
-import { FileiraKpi, Lista, Selo, ICONES, type Tom } from '@/components/app/padroes';
+import { FileiraKpi, Lista, Selo, ICONES, serieDiaria, type Tom } from '@/components/app/padroes';
 import { reais } from '@/lib/preco';
 import type { ItemDaFila } from '@/lib/pedidos';
 import type { EtapaProducao } from '@/lib/pedidos-termos';
@@ -89,10 +89,14 @@ export default function PainelProducaoPadrao({
           valor: fila[etapa]?.length ?? 0,
           tom,
           icone: etapa === 'pronto' ? ICONES.caixa : ICONES.producao,
+          // A faísca mostra quando as peças entraram nesta etapa.
+          serie: serieDiaria((fila[etapa] ?? []).map((i) => i.atualizado_em)),
           nota:
-            etapa === 'fila' && (fila.fila?.length ?? 0) > 0
-              ? 'aguardando começar'
-              : undefined,
+            etapa === 'fila'
+              ? (fila.fila?.length ?? 0) > 0 ? 'aguardando começar' : 'fila vazia'
+              : etapa === 'pronto'
+                ? 'para expedir'
+                : `${fila[etapa]?.length ?? 0} em curso`,
         }))}
       />
 
