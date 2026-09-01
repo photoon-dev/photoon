@@ -26,7 +26,7 @@
 import { createHash } from 'node:crypto';
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import { renderizarLamina, MEDIDAS_PADRAO, type Medidas } from '../src/lib/impressao';
-import { migrarLaminas } from '../src/lib/album';
+import { migrarLaminas, fotosUsadas } from '../src/lib/album';
 
 const URL_SUPABASE = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const CHAVE = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -194,11 +194,16 @@ class Cancelado extends Error {
  * e do pior tipo: job verde, arquivo gerado, álbum em branco no papel.
  */
 function acervoDoProjeto(projetoId: string) {
-  const cache = new Map<string, Buffer | null>();
+  // O cache guarda a PROMESSA, não o Buffer. `renderizarLamina` compõe as duas
+  // páginas da lâmina em `Promise.all`, então dois pedidos da mesma foto saem
+  // ao mesmo tempo; guardando o Buffer, os dois errariam o cache (que só é
+  // preenchido quando o download termina) e a foto seria baixada duas vezes.
+  // Medido num álbum real: 12 downloads para 11 fotos distintas.
+  const cache = new Map<string, Promise<Buffer | null>>();
   const caminhos = new Map<string, string>();
-  let indiceLido = false;
+  let indice: Promise<void> | null = null;
 
-  /** O índice do álbum, lido uma vez por job. */
+  /** O índice do álbum, lido uma vez por job — pelo mesmo motivo. */
   async function lerIndice() {
     const { data } = await db
       .from('projeto_fotos')
@@ -209,7 +214,6 @@ function acervoDoProjeto(projetoId: string) {
       const f = l.galeria_fotos as unknown as { id: string; storage_path: string } | null;
       if (f?.storage_path) caminhos.set(f.id, f.storage_path);
     }
-    indiceLido = true;
   }
 
   /** A foto pelo id, para quando o índice não a tem. */
@@ -222,23 +226,46 @@ function acervoDoProjeto(projetoId: string) {
     return data?.storage_path ?? null;
   }
 
-  return async function buscarFoto(fotoId: string): Promise<Buffer | null> {
-    if (cache.has(fotoId)) return cache.get(fotoId) ?? null;
-
-    if (!indiceLido) await lerIndice();
+  async function baixar(fotoId: string): Promise<Buffer | null> {
+    await (indice ??= lerIndice());
 
     const caminho = caminhos.get(fotoId) ?? (await caminhoAvulso(fotoId));
-    if (!caminho) {
-      cache.set(fotoId, null);
-      return null;
-    }
+    if (!caminho) return null;
     caminhos.set(fotoId, caminho);
 
     const { data: arquivo } = await db.storage.from(BUCKET_FOTOS).download(caminho);
-    const buffer = arquivo ? Buffer.from(await arquivo.arrayBuffer()) : null;
-    cache.set(fotoId, buffer);
-    return buffer;
-  };
+    return arquivo ? Buffer.from(await arquivo.arrayBuffer()) : null;
+  }
+
+  // Quantas fotos o acervo conseguiu entregar. A etapa de validação usa isto
+  // para separar "álbum com quadro vazio", que é pendência do projeto e sai em
+  // branco de direito, de "o acervo inteiro falhou", que sai igual na tela e
+  // não é a mesma coisa nem de longe.
+  const entregues = new Set<string>();
+  const ausentes = new Set<string>();
+
+  function buscarFoto(fotoId: string): Promise<Buffer | null> {
+    let pendente = cache.get(fotoId);
+    if (!pendente) {
+      // Uma falha de rede não pode ficar cacheada para o álbum inteiro: se der
+      // errado, o próximo quadro tenta de novo.
+      pendente = baixar(fotoId)
+        .then((buf) => {
+          (buf ? entregues : ausentes).add(fotoId);
+          return buf;
+        })
+        .catch(() => {
+          cache.delete(fotoId);
+          ausentes.add(fotoId);
+          return null;
+        });
+      cache.set(fotoId, pendente);
+    }
+    return pendente;
+  }
+
+  buscarFoto.resumo = () => ({ entregues: entregues.size, ausentes: [...ausentes] });
+  return buscarFoto;
 }
 
 /** As medidas do produto; o padrão só entra quando o projeto não as tem. */
@@ -283,6 +310,9 @@ async function processar(job: {
     // página esquerda e direita. `migrarLaminas` aceita documento v1 e campo
     // faltando: álbum de cliente não pode falhar por um campo a menos.
     const laminas = migrarLaminas(projeto.paginas);
+    // As fotos que o documento diz usar — a régua contra a qual o acervo é
+    // conferido na etapa de validação.
+    const pedidas = fotosUsadas(laminas);
 
     // Rendido em memória e enviado depois: um JPEG de lâmina fica na casa das
     // centenas de KB, então o álbum inteiro cabe folgado, e separar as etapas
@@ -328,7 +358,33 @@ async function processar(job: {
       if (etapa.id === 'validacao') {
         const vazias = gerados.filter((g) => g.jpeg.length === 0).length;
         if (vazias) throw new Error(`${vazias} lâmina(s) saíram vazias.`);
-        await logar(job.id, etapa.id, `${gerados.length} arquivo(s) conferido(s).`);
+
+        // O documento pede fotos e o acervo não entregou UMA: o álbum inteiro
+        // sairia em branco, e sem esta checagem o job terminaria verde, com os
+        // arquivos no lugar e o tamanho certo. Foi exatamente assim que a
+        // `projeto_fotos` vazia passou despercebida. Falha de acervo é falha.
+        const { entregues, ausentes } = buscarFoto.resumo();
+        if (pedidas.size > 0 && entregues === 0) {
+          throw new Error(
+            `O documento usa ${pedidas.size} foto(s) e nenhuma foi encontrada no acervo. ` +
+              'O álbum sairia em branco.',
+          );
+        }
+        if (ausentes.length) {
+          await logar(
+            job.id,
+            etapa.id,
+            `${ausentes.length} de ${pedidas.size} foto(s) não foram encontradas: ` +
+              `${ausentes.slice(0, 5).join(', ')}${ausentes.length > 5 ? '…' : ''}`,
+            'aviso',
+          );
+        }
+
+        await logar(
+          job.id,
+          etapa.id,
+          `${gerados.length} arquivo(s) conferido(s); ${entregues} de ${pedidas.size} foto(s) do acervo.`,
+        );
       }
 
       if (etapa.id === 'upload') {
