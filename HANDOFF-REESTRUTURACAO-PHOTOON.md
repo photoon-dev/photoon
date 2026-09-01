@@ -1,5 +1,151 @@
 # HANDOFF — Reestruturação do Photoon (fonte única de continuidade)
 
+> ## SESSÃO DE 01/09/2026 (2ª RODADA) — LEIA ESTA SEÇÃO PRIMEIRO
+>
+> A seção 0 abaixo é da 1ª rodada e a 1–15 são de 31/08. Onde houver conflito,
+> vale ESTA seção.
+
+## 00. ESTADO (01/09/2026, fim da 2ª rodada)
+
+| Item | Valor |
+|---|---|
+| Branch | `reestruturacao` · HEAD `853d040` |
+| Master | `b6cc7eb` — **intocada**, sem merge/rebase/push |
+| Migration 0016 | ✅ **APLICADA E VALIDADA** no banco real |
+| `checar-banco` | ✅ **0 problemas** (era 3) |
+| Renderer | ⏸️ pronto e provado; falta só a chave no `.env.worker` |
+| Auditoria visual | ✅ 56 capturas em `/root/auditoria-visual-01-09/` |
+
+### 00.1 Migration 0016 — validada, função a função
+
+`node tools/checar-0016.mjs` (novo) confere os dois lados. Resultado:
+
+- as 8 funções **negadas para `anon`** — as sete internas somem do schema do
+  PostgREST (PGRST202) e `projetos_busca` dá `42501 permission denied`;
+- `projetos_busca` **executa para `authenticated`** (HTTP 200) — é a única das
+  oito que o painel chama, em `src/lib/projetos.ts:101`;
+- as internas continuam negadas **mesmo com sessão**;
+- RLS de pé: `anon` vê 0 linha em projetos, pedidos, clientes, render_jobs,
+  projeto_arquivos (`lojistas` tem leitura pública de propósito — a vitrine);
+- `authenticated` continua lendo projetos, pedidos e clientes.
+
+### 00.2 A service_role NÃO vai no `.env`
+
+O handoff antigo mandava pôr a chave no `.env`. Estava errado: `app` e `render`
+liam o **mesmo** `.env`, então o container do site também a teria — e ela
+atravessa lojas, ignorando a RLS.
+
+Agora `render` lê `.env` + `.env.worker`, e `app` só `.env`. Conferido no
+compose resolvido:
+
+```
+app:    DEFAULT_TENANT_SLUG, NEXT_PUBLIC_* (5 variáveis, sem a chave)
+render: as mesmas + SUPABASE_SERVICE_ROLE_KEY
+```
+
+`.env.worker` está no `.gitignore`, com `chmod 600`, e há um
+`.env.worker.example` versionado. O worker recusa a chave na partida se o campo
+`role` do JWT não for `service_role` — testado com a anon de propósito, porque
+com ela o worker sobe, conecta e não vê job nenhum (a RLS esconde a fila), e o
+sintoma seria "fila sempre vazia".
+
+**Para ligar o renderer, uma linha (num terminal, para a chave não ser ecoada):**
+
+```bash
+read -rsp 'service_role: ' K && printf 'SUPABASE_SERVICE_ROLE_KEY=%s\n' "$K" \
+  > /root/photoon/.env.worker && chmod 600 /root/photoon/.env.worker && unset K
+docker compose up -d render && docker logs -f photoon-render-1
+```
+
+Esperado: `worker-render: worker-<pid> pronto, ouvindo a fila a cada 3000ms.`
+
+### 00.3 Auditoria visual — 14 telas × 4 larguras
+
+`tools/auditar-visual.mjs` (novo) entra **uma vez** e varre a lista inteira,
+recolhendo erro de console, requisição falha, rolagem lateral e altura.
+(`tirar-foto.mjs` fazia uma tela por execução e marcava `isMobile: true` em
+qualquer largura, o que falseava justamente as larguras de desktop.)
+
+Capturas em `/root/auditoria-visual-01-09/` (56 PNG + `relatorio.json`).
+
+**Resultado final: 56/56 HTTP 200 · zero rolagem lateral · zero erro de console
+· zero requisição falha · 14/14 telas com `<h1>`.**
+
+#### Corrigido nesta rodada
+
+1. **Rolagem lateral** nas barras de filtro de Pedidos e Projetos — 394px em
+   1024, 216px (Projetos) e 52px em 1366, com os dois últimos filtros
+   inalcançáveis. `1fr` em Grid é `minmax(auto, 1fr)`, e o mínimo `auto` impede
+   a coluna de encolher; o placeholder longo e os `option` de cliente
+   (nome + e-mail) empurravam a barra para fora.
+2. **Hidratação na OS** (React #418): QR e código de barras eram gerados no
+   corpo do componente. Quando a reconciliação falhava, **a OS aparecia em
+   branco** — aconteceu na auditoria.
+3. **Fuso horário**: `toLocaleString('pt-BR')` sem `timeZone` usa o fuso de quem
+   formata. Container em UTC, navegador em UTC−3: **toda data saía 3 horas
+   errada** na primeira pintura. `FUSO_DA_LOJA = 'America/Sao_Paulo'` fixado.
+4. **502 em todo deploy**: `docker compose up -d app` deixa 1–2s sem ninguém em
+   `app:3000`. Um usuário real levou 502 em `/financeiro`. `lb_try_duration 10s`
+   no Caddy. Medido: 40 requisições atravessando a recriação, 40× 200, zero 502.
+5. **Produção e Expedição sem `<h1>`** — as duas únicas do menu. Novo
+   `CabecalhoPagina`.
+6. **Financeiro no celular**: KPIs de 4 colunas fixas cortavam o valor
+   ("R$ 8.76…") e em "Por método" rótulo e valor se sobrepunham.
+7. **Contagem de páginas/lâminas** — ver 00.4.
+
+#### NÃO corrigido, de propósito — é a padronização do próximo agente
+
+| # | Problema | Onde | Gravidade |
+|---|---|---|---|
+| 1 | **Três cabeçalhos empilhados**: 2× `<h1>` "Pedidos", 3× "OPERAÇÃO", 2× "Novo pedido", 2 sistemas de busca e 2 de filtro. `BarraDeFiltrosPedidos` + `PedidosDoDesign` (que traz cabeçalho próprio) + `PedidosDesign` (protótipo, com "Exportar CSV"/"Filtros") | `/pedidos` | **alta** — a tela de referência é a mais confusa |
+| 2 | Barra de filtros aparece **acima** do cabeçalho da página, solta no topo | `/pedidos`, `/projetos` | média |
+| 3 | `ListaPedidosSelecionaveis` (ações em massa, commit `27c93bf`) **não é usado em lugar nenhum** — código morto | — | média |
+| 4 | Menu lateral: conteúdo de 1043px em 650px visíveis. **6 dos 17 itens** (Clientes em diante) só aparecem rolando, sem indicação | todas | média |
+| 5 | Caixa azul **vazia** acima de "Recolher menu": `storageCard` sempre renderiza o contêiner, mesmo sem `cartaoPlano` (só `/templates` e `/configuracoes` passam) | 15 de 17 telas | baixa |
+| 6 | Topbar quebra em duas linhas em 1024 e empurra o conteúdo | ≤1024 | baixa |
+| 7 | Painéis religados usam Tailwind; o kit novo usa `COR` inline. Os dois **são** o Design System (mesma fonte), mas convivem | Loja, Catálogo, Preços, Relatórios, Integrações | baixa |
+
+**Falso positivo, não mexer:** `<input type="date">` mostrando `mm/dd/yyyy` é o
+Chromium headless em en-US. Num navegador pt-BR sai `dd/mm/yyyy`.
+
+### 00.4 Correção de um erro MEU da 1ª rodada
+
+O commit `6b232bc` estava errado e foi desfeito por `853d040`.
+
+Eu li a 0001, onde `total_paginas` nasceu como `jsonb_array_length(paginas)`, e
+concluí que a coluna contava lâminas. **Mas a migration 0010 já a redefiniu como
+`jsonb_array_length(paginas) * 2`** — e explica por quê: antes contava lâminas,
+o preço saía pela metade e todo álbum era subfaturado.
+
+A coluna conta **páginas**; o array conta **lâminas**; a razão é 2. O helper
+original (`ceil(total_paginas / 2)`) estava certo desde o começo.
+
+O engano não apareceu no build nem no tsc — apareceu na **auditoria visual**: a
+folha de resumo mostrava "Lâminas 10 / Páginas 20" e listava 5 lâminas logo
+abaixo. Conferido contra o banco nos três projetos (array 2/5/2, coluna 4/10/4).
+
+**Lição para quem vier:** ao interpretar uma coluna, leia TODAS as migrations que
+a tocam, não só a que a criou. E build verde não valida número na tela.
+
+### 00.5 Estado dos dados de teste (importa para o renderer)
+
+| Tabela | Linhas |
+|---|---|
+| projetos | 3 (L4500001, L4500002, L4500003) — todos `com_pendencias` |
+| pedidos | 24 · clientes 2 · galerias 1 · galeria_fotos 24 · produtos 6 |
+| **projeto_fotos** | **0** — nenhum projeto tem foto ligada |
+| render_jobs · render_workers · projeto_arquivos | 0 |
+
+`largura_mm`/`altura_mm` são NULL nos três, então o worker cai no padrão
+(300×300mm) — comportamento previsto.
+
+⚠️ **Com `projeto_fotos` vazia, um job real renderiza lâminas em branco.** Antes
+do teste ponta a ponta, ligar fotos da galeria a um projeto (há 24 disponíveis),
+senão o resultado será tecnicamente correto e visualmente vazio.
+
+---
+
+
 > ## SESSÃO DE 01/09/2026 — LEIA ESTA SEÇÃO PRIMEIRO
 >
 > As seções 1 a 15 abaixo são de 31/08 e **estão desatualizadas em vários
