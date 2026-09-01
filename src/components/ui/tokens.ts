@@ -29,11 +29,28 @@ export const COR = {
   ciano: '#06B6D4',
   gradiente: 'linear-gradient(135deg,#2563EB,#06B6D4)',
 
-  // semânticas
+  // Semânticas, na versão TEXTO — a escura, para ler sobre a superfície
+  // tingida correspondente em `SUPERFICIE`.
+  //
+  // O Design System tem duas famílias para a mesma função, e as duas estão
+  // certas. Aqui ficam as de texto (#059669 sobre #E6F8F1, #B45309 sobre
+  // #FEF3E2, #E11D48 sobre #FFF1F3); as de PREENCHIMENTO — barra, ponto,
+  // traço de gráfico — são mais claras e vivem em `tailwind.config.ts`
+  // (`green: #10B981`, `amber: #F59E0B`, `coral: #F43F5E`).
+  //
+  // Ou seja: `COR.verde` e o `green` do Tailwind são cores diferentes de
+  // propósito. Não iguale os dois — usar o claro como texto perde contraste, e
+  // usar o escuro como preenchimento apaga o gráfico.
   verde: '#059669',
   ambar: '#B45309',
   coral: '#E11D48',
   indigo: '#4F46E5',
+
+  // Versões de preenchimento, para quando o código do kit precisa delas sem
+  // passar pelo Tailwind (barra de progresso, ponto de estado, série de SVG).
+  verdeVivo: '#10B981',
+  ambarVivo: '#F59E0B',
+  coralVivo: '#F43F5E',
 } as const;
 
 /** Superfícies das cores semânticas — o fundo do selo, não o texto. */

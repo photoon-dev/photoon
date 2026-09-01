@@ -1,20 +1,29 @@
 import { redirect } from 'next/navigation';
 import { lojaAtual } from '@/lib/lojista';
+import { cifragemDisponivel, gatewaysDaLoja } from '@/lib/financeiro';
 import { MODULO } from '@/lib/rotas-lojista';
-import IntegracoesDesign, { CSS_PSEUDO } from '@/components/design/IntegracoesDesign';
 import ShellLojista from '@/components/app/ShellLojista';
-import ConteudoDoDesign from '@/components/app/ConteudoDoDesign';
+import PainelIntegracoes from '@/components/app/PainelIntegracoes';
 import '../app.css';
 
 export const dynamic = 'force-dynamic';
 
+/**
+ * Integrações — /integracoes
+ *
+ * Gateways de verdade, com a credencial mascarada no servidor. `cifragemOk`
+ * diz à tela se dá para guardar segredo: sem `CHAVE_CIFRAGEM` ela recusa o
+ * formulário em vez de gravar credencial em texto puro.
+ */
 export default async function Pagina() {
   const loja = await lojaAtual();
   if (!loja) redirect('/');
 
+  const gateways = await gatewaysDaLoja(loja.id);
+
   return (
     <ShellLojista ativo={MODULO['Integrações']}>
-      <ConteudoDoDesign Design={IntegracoesDesign} cssPseudo={CSS_PSEUDO} />
+      <PainelIntegracoes gateways={gateways} cifragemOk={cifragemDisponivel()} />
     </ShellLojista>
   );
 }

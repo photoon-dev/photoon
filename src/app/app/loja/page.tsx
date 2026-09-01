@@ -1,20 +1,31 @@
-import { redirect } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 import { lojaAtual } from '@/lib/lojista';
+import { dadosVitrine } from '@/lib/comercial';
+import { ROOT_DOMAIN } from '@/lib/tenant';
 import { MODULO } from '@/lib/rotas-lojista';
-import LojaDesign, { CSS_PSEUDO } from '@/components/design/LojaDesign';
 import ShellLojista from '@/components/app/ShellLojista';
-import ConteudoDoDesign from '@/components/app/ConteudoDoDesign';
+import PainelLoja from '@/components/app/PainelLoja';
 import '../app.css';
 
 export const dynamic = 'force-dynamic';
 
+/**
+ * Minha loja — /loja
+ *
+ * Mostrava o `LojaDesign` transliterado, com os números do protótipo. Agora lê
+ * a vitrine de verdade: identidade da loja, o que está publicado, o que está
+ * oculto e quantos clientes já entraram.
+ */
 export default async function Pagina() {
   const loja = await lojaAtual();
   if (!loja) redirect('/');
 
+  const dados = await dadosVitrine(loja.id);
+  if (!dados) notFound();
+
   return (
     <ShellLojista ativo={MODULO['Loja']}>
-      <ConteudoDoDesign Design={LojaDesign} cssPseudo={CSS_PSEUDO} />
+      <PainelLoja dados={dados} dominio={ROOT_DOMAIN} />
     </ShellLojista>
   );
 }
