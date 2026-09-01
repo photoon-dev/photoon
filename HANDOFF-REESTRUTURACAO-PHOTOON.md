@@ -1,5 +1,128 @@
 # HANDOFF — Reestruturação do Photoon (fonte única de continuidade)
 
+> ## SESSÃO DE 01/09/2026 (3ª RODADA) — LEIA ESTA SEÇÃO PRIMEIRO
+>
+> As seções 00 (2ª rodada), 0 (1ª rodada) e 1–15 (31/08) ficam abaixo.
+> Onde houver conflito, vale ESTA seção.
+
+## 000. ESTADO (01/09/2026, fim da 3ª rodada)
+
+| Item | Valor |
+|---|---|
+| Branch | `reestruturacao` · HEAD `bbcf06b` |
+| Master | `b6cc7eb` — **intocada**, sem merge/rebase/push |
+| Migration 0016 | ✅ aplicada · **revalidada hoje** pelo lado `anon` |
+| Verificadores | tsc · build · checar-casca · checar-consultas · checar-banco · checar-render — **todos verdes** |
+| Imagem app | `photoon-app:latest` publicada em produção · rollback `photoon-app:ok-b397427-15f02b9ef3b7` |
+| Imagem worker | `photoon-render:latest` reconstruída com a correção |
+| Container `render` | **fora do ar de propósito** — sem chave ele entra em laço de reinício |
+| Renderer | código **completo**; falta só a `service_role` para o teste com job real |
+
+### 000.1 Bug real achado e corrigido: `projeto_fotos` nunca era preenchida
+
+O worker monta o acervo lendo `projeto_fotos`. **Nada no repositório escrevia
+nessa tabela** — só havia leituras (`usoDasFotos`, `projeto_fotos(count)` em
+`CAMPOS_PROJETO`, e o próprio worker). A tabela estava vazia **por construção**,
+não por falta de dado de teste, como a seção 00.5 supôs.
+
+O efeito não aparece em lugar nenhum até o papel: o editor lê as fotos da
+galeria, não do índice, então o álbum fica certo na tela; tsc e build não têm o
+que reclamar; e o job terminaria **verde**, com as sete etapas, os JPEG no
+bucket e as linhas em `projeto_arquivos` — com **todas as lâminas em branco**.
+
+Pela mesma causa, `projetos.fotos_usadas` valia 0 sempre em `/projetos` e no
+detalhe do projeto.
+
+Três mudanças (`bbcf06b`):
+
+1. **`salvarLaminas` espelha o índice.** Grava `projeto_fotos` a partir de
+   `fotosUsadas(laminas)` e preenche `projetos.fotos_usadas`. Faz diff de
+   entrada/saída para o autosave não escrever à toa. **Falha ali não derruba o
+   autosave**: o índice é derivado, o documento é a verdade, e perder a
+   gravação custa o trabalho do cliente.
+2. **O worker cai em `galeria_fotos`** quando o índice não tem a foto. O
+   `fotoId` do documento já é o id de `galeria_fotos`; a resolução direta
+   sempre existiu, faltava usá-la. Cobre os projetos salvos antes desta
+   correção e qualquer sincronia que tenha falhado — sem essa saída, um índice
+   furado volta a produzir álbum em branco com job verde.
+3. **`npm run testar-render`** (`tools/testar-render.ts`, novo) prova o caminho
+   que o build não vê.
+
+**Lição, na linha da 00.4:** tabela que só aparece em `select` no repositório
+inteiro provavelmente não é alimentada por ninguém. `grep` por escrita, não só
+por leitura.
+
+### 000.2 `npm run testar-render` — o teste ponta a ponta, num comando
+
+Confere, contra o banco real e com a `service_role`: worker vivo → job na fila →
+as sete etapas → `projeto_arquivos` (uma linha por lâmina, com checksum e
+bytes) → caminho começando pelo `lojista_id` (o que a policy `renders_da_equipe`
+exige) → binário no bucket, do tamanho que a linha diz → URL assinada **buscada
+de verdade** → `projetos.status = 'renderizado'` → log das sete etapas.
+
+- `--preparar` preenche os quadros de foto vazios com fotos da galeria do
+  projeto antes de enfileirar. **Sem isso o teste passa sem provar nada**: os
+  três projetos são `com_pendencias` e o álbum sairia em branco.
+- **Limpa o próprio rastro por padrão** (job, logs, arquivos, evento, status e
+  documento do projeto). `--manter` desliga. Job de teste deixado na fila real é
+  lido como trabalho de verdade pela próxima pessoa.
+- `--projeto=<uuid>` e `--espera=<seg>` também existem.
+
+### 000.3 O que ainda falta, e é só isto
+
+**Uma credencial.** `.env.worker` existe, com `chmod 600` e fora do Git, mas o
+campo está **vazio** — é a cópia do `.example`. Sem a `service_role` não há como
+subir o worker, ler a fila (a RLS a esconde) nem conferir os buckets.
+
+Com a chave, é uma sequência só, e ela vai até o fim sozinha:
+
+```bash
+read -rsp 'service_role: ' K && printf 'SUPABASE_SERVICE_ROLE_KEY=%s\n' "$K" \
+  > /root/photoon/.env.worker && chmod 600 /root/photoon/.env.worker && unset K
+
+cd /root/photoon
+docker compose up -d render
+docker logs photoon-render-1        # espera: "pronto, ouvindo a fila a cada 3000ms"
+
+set -a && . ./.env && . ./.env.worker && set +a
+npm run testar-render -- --preparar
+```
+
+O worker **recusa a chave errada na partida** (confere o campo `role` do JWT):
+com a anon ele subiria, conectaria e nunca veria job, e o sintoma seria "fila
+sempre vazia".
+
+### 000.4 O que foi conferido nesta rodada
+
+- **0016, lado `anon`, revalidada hoje** por `tools/checar-0016.mjs`: as sete
+  funções internas somem do schema (PGRST202), `projetos_busca` dá `42501`, e a
+  RLS continua de pé nas seis tabelas. O lado `authenticated` **não** foi
+  reconferido — depende de `SENHA_TESTE`, e passou na 2ª rodada (seção 00.1).
+- **Isolamento da chave**, no compose resolvido: `app` fica com 5 variáveis e
+  **nenhuma** delas é a `service_role`; só `render` a recebe.
+- **Guarda do worker**, com o container de verdade: sem a chave ele recusa a
+  partida com a mensagem certa. Fica em laço por causa do `unless-stopped`, e
+  por isso o container foi **parado e removido** — subir de novo é o passo
+  seguinte à chave, não antes.
+- **`checar-render` dentro da imagem do worker**: 8 cenários a 7228×3614 px,
+  0 problema, sem o erro de fontconfig que aparece no host (as fontes estão no
+  container, não na VPS).
+- **Deploy**: `/entrar` 200 e as cinco rotas protegidas em 307, pelo Caddy.
+  Rollback em `photoon-app:ok-b397427-15f02b9ef3b7`.
+
+### 000.5 Pendências, na ordem
+
+| # | Pendência | Depende de |
+|---|---|---|
+| 1 | Worker no ar + `npm run testar-render -- --preparar` | **Você** — a `service_role` em `.env.worker` |
+| 2 | Reconferir o lado `authenticated` da 0016 | **Você** — `SENHA_TESTE` |
+| 3 | Reindexar `projeto_fotos` dos projetos antigos (o índice só se preenche no próximo autosave; a renderização já não depende disso) | a chave do item 1 |
+| 4 | A padronização visual da seção 00.3 (7 itens, `/pedidos` é a referência) | nada — trabalho de código |
+| 5 | Dashboard com KPIs reais · Templates/Configurações com as abas do briefing | nada — trabalho de código |
+
+---
+
+
 > ## SESSÃO DE 01/09/2026 (2ª RODADA) — LEIA ESTA SEÇÃO PRIMEIRO
 >
 > A seção 0 abaixo é da 1ª rodada e a 1–15 são de 31/08. Onde houver conflito,
