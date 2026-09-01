@@ -2,6 +2,7 @@ services:
   app:
     build:
       context: .
+      target: runner
       args:
         NEXT_PUBLIC_SUPABASE_URL: ${NEXT_PUBLIC_SUPABASE_URL}
         NEXT_PUBLIC_SUPABASE_ANON_KEY: ${NEXT_PUBLIC_SUPABASE_ANON_KEY}
@@ -24,9 +25,11 @@ services:
   render:
     build:
       context: .
+      # Estagio proprio: o `runner` do Next so tem o `standalone`, sem `tools/`
+      # nem `src/`, entao o worker nao teria o proprio codigo la dentro.
+      target: worker
     restart: unless-stopped
     env_file: .env
-    command: node --experimental-strip-types tools/worker-render.ts
     networks: [web]
     depends_on: [app]
 

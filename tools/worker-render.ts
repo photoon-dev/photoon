@@ -23,13 +23,17 @@
  * Precisa de SUPABASE_SERVICE_ROLE_KEY: o worker atravessa lojas e a RLS é
  * por sessão de usuário. É a única peça do sistema que usa essa chave.
  */
+import { createHash } from 'node:crypto';
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
+import { renderizarLamina, MEDIDAS_PADRAO, type Medidas } from '../src/lib/impressao';
+import { migrarLaminas } from '../src/lib/album';
 
 const URL_SUPABASE = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const CHAVE = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const NOME = process.env.RENDER_WORKER_NOME ?? `worker-${process.pid}`;
 const INTERVALO = Number(process.env.RENDER_INTERVALO_MS ?? 3000);
 const BUCKET = 'renders';
+const BUCKET_FOTOS = 'galerias';
 
 if (!URL_SUPABASE || !CHAVE) {
   console.error(
@@ -116,6 +120,83 @@ async function andar(jobId: string, etapa: string, estado: string, progresso: nu
   await db.from('render_jobs').update({ etapa, estado, progresso }).eq('id', jobId);
 }
 
+/** Só o progresso, para a barra andar dentro de uma etapa longa. */
+async function progredir(jobId: string, progresso: number) {
+  await db.from('render_jobs').update({ progresso }).eq('id', jobId);
+}
+
+/**
+ * O painel cancela escrevendo `estado='cancelado'` na linha do job. O worker
+ * não é interrompido de fora, então pergunta entre as etapas — e no meio da
+ * renderização, que é a parte demorada. Sem isto, cancelar um álbum de 80
+ * lâminas só teria efeito depois de renderizar as 80.
+ */
+async function foiCancelado(jobId: string): Promise<boolean> {
+  const { data } = await db.from('render_jobs').select('estado').eq('id', jobId).maybeSingle();
+  return data?.estado === 'cancelado';
+}
+
+/** Erro que não é falha: o job foi cancelado e a saída é terminal e limpa. */
+class Cancelado extends Error {
+  constructor() {
+    super('Cancelado pelo operador.');
+  }
+}
+
+/**
+ * Busca as fotos do acervo, com cache por job.
+ *
+ * `fotoId` no documento é o id de `galeria_fotos`; o binário está no bucket
+ * privado `galerias`, no `storage_path` da linha. A mesma foto costuma repetir
+ * em várias lâminas (capa e miolo), e baixar de novo a cada quadro dominaria o
+ * tempo do job — por isso o cache vive enquanto o job durar, e não além dele:
+ * segurar o acervo inteiro na memória entre jobs estouraria o container.
+ */
+function acervoDoProjeto(projetoId: string) {
+  const cache = new Map<string, Buffer | null>();
+  let caminhos: Map<string, string> | null = null;
+
+  return async function buscarFoto(fotoId: string): Promise<Buffer | null> {
+    if (cache.has(fotoId)) return cache.get(fotoId) ?? null;
+
+    if (!caminhos) {
+      const { data } = await db
+        .from('projeto_fotos')
+        .select('galeria_foto_id, galeria_fotos(id, storage_path)')
+        .eq('projeto_id', projetoId);
+
+      caminhos = new Map(
+        (data ?? [])
+          .map((l) => {
+            const f = l.galeria_fotos as unknown as { id: string; storage_path: string } | null;
+            return f ? ([f.id, f.storage_path] as const) : null;
+          })
+          .filter((x): x is readonly [string, string] => x !== null),
+      );
+    }
+
+    const caminho = caminhos.get(fotoId);
+    if (!caminho) {
+      cache.set(fotoId, null);
+      return null;
+    }
+
+    const { data: arquivo } = await db.storage.from(BUCKET_FOTOS).download(caminho);
+    const buffer = arquivo ? Buffer.from(await arquivo.arrayBuffer()) : null;
+    cache.set(fotoId, buffer);
+    return buffer;
+  };
+}
+
+/** As medidas do produto; o padrão só entra quando o projeto não as tem. */
+function medidasDoProjeto(p: { largura_mm: number | null; altura_mm: number | null }): Medidas {
+  return {
+    ...MEDIDAS_PADRAO,
+    larguraMm: p.largura_mm ?? MEDIDAS_PADRAO.larguraMm,
+    alturaMm: p.altura_mm ?? MEDIDAS_PADRAO.alturaMm,
+  };
+}
+
 /**
  * Roda um job do começo ao fim.
  *
@@ -137,26 +218,119 @@ async function processar(job: {
   try {
     const { data: projeto } = await db
       .from('projetos')
-      .select('id, codigo, titulo, paginas, total_paginas, lojista_id')
+      .select('id, codigo, titulo, paginas, total_paginas, largura_mm, altura_mm, lojista_id')
       .eq('id', job.projeto_id)
       .single();
 
     if (!projeto) throw new Error('Projeto não encontrado.');
 
+    const buscarFoto = acervoDoProjeto(projeto.id);
+    const medidas = medidasDoProjeto(projeto);
+    // `projetos.paginas` guarda `Lamina[]` — cada item já é a folha aberta, com
+    // página esquerda e direita. `migrarLaminas` aceita documento v1 e campo
+    // faltando: álbum de cliente não pode falhar por um campo a menos.
+    const laminas = migrarLaminas(projeto.paginas);
+
+    // Rendido em memória e enviado depois: um JPEG de lâmina fica na casa das
+    // centenas de KB, então o álbum inteiro cabe folgado, e separar as etapas
+    // mantém a barra de progresso do painel fiel ao que está acontecendo.
+    const gerados: { nome: string; jpeg: Buffer }[] = [];
+
     for (const etapa of ETAPAS) {
+      if (await foiCancelado(job.id)) throw new Cancelado();
+
       await andar(job.id, etapa.id, estadoDaEtapa(etapa.id), etapa.ate);
       await logar(job.id, etapa.id, `Etapa ${etapa.id} iniciada.`);
 
+      if (etapa.id === 'preflight' && laminas.length === 0) {
+        throw new Error('Projeto sem lâminas para renderizar.');
+      }
+
       if (etapa.id === 'renderizacao') {
-        // Aqui entra `renderizarLamina` de src/lib/impressao.ts, lâmina a
-        // lâmina, com o progresso subindo dentro da faixa desta etapa.
-        const laminas = Math.ceil((projeto.total_paginas ?? 0) / 2);
-        await logar(job.id, etapa.id, `${laminas} lâmina(s) a renderizar.`);
+        await logar(job.id, etapa.id, `${laminas.length} lâmina(s) a renderizar.`);
+
+        // A faixa desta etapa vai do fim da anterior até `etapa.ate`; o
+        // progresso anda dentro dela, lâmina a lâmina.
+        const de = ETAPAS[ETAPAS.indexOf(etapa) - 1]?.ate ?? 0;
+        const faixa = etapa.ate - de;
+
+        for (const [i, lamina] of laminas.entries()) {
+          if (await foiCancelado(job.id)) throw new Cancelado();
+
+          const t = Date.now();
+          const jpeg = await renderizarLamina(lamina, medidas, buscarFoto);
+          const nome = `${projeto.codigo ?? projeto.id}-lamina-${String(i + 1).padStart(3, '0')}.jpg`;
+          gerados.push({ nome, jpeg });
+
+          await progredir(job.id, Math.round(de + (faixa * (i + 1)) / laminas.length));
+          await logar(
+            job.id,
+            etapa.id,
+            `Lâmina ${i + 1}/${laminas.length}: ${nome}, ` +
+              `${Math.round(jpeg.length / 1024)} KB em ${Math.round((Date.now() - t) / 100) / 10}s.`,
+          );
+        }
+      }
+
+      if (etapa.id === 'validacao') {
+        const vazias = gerados.filter((g) => g.jpeg.length === 0).length;
+        if (vazias) throw new Error(`${vazias} lâmina(s) saíram vazias.`);
+        await logar(job.id, etapa.id, `${gerados.length} arquivo(s) conferido(s).`);
       }
 
       if (etapa.id === 'upload') {
-        // O caminho começa pelo id da loja: é o que a policy do bucket exige.
-        await logar(job.id, etapa.id, `Destino: ${BUCKET}/${job.lojista_id}/${projeto.id}/`);
+        // O caminho começa pelo id da loja: é o que a policy `renders_da_equipe`
+        // do bucket exige (regra 19).
+        const pasta = `${job.lojista_id}/${projeto.id}`;
+        await logar(job.id, etapa.id, `Destino: ${BUCKET}/${pasta}/`);
+
+        const de = ETAPAS[ETAPAS.indexOf(etapa) - 1]?.ate ?? 0;
+        const faixa = etapa.ate - de;
+
+        for (const [i, arquivo] of gerados.entries()) {
+          if (await foiCancelado(job.id)) throw new Cancelado();
+
+          const caminho = `${pasta}/${arquivo.nome}`;
+          const { error } = await db.storage
+            .from(BUCKET)
+            .upload(caminho, arquivo.jpeg, { contentType: 'image/jpeg', upsert: true });
+          if (error) throw new Error(`Upload de ${arquivo.nome} falhou: ${error.message}`);
+
+          const checksum = createHash('sha256').update(arquivo.jpeg).digest('hex');
+
+          // Reprocessar gera o arquivo de novo no mesmo caminho. A linha antiga
+          // é marcada como removida em vez de apagada: regra 32 — apagar a
+          // versão anterior apaga a informação de que ela existiu.
+          await db
+            .from('projeto_arquivos')
+            .update({ removido_em: new Date().toISOString() })
+            .eq('projeto_id', projeto.id)
+            .eq('caminho', caminho)
+            .is('removido_em', null);
+
+          await db.from('projeto_arquivos').insert({
+            projeto_id: projeto.id,
+            lojista_id: job.lojista_id,
+            tipo: 'renderizado',
+            nome: arquivo.nome,
+            caminho,
+            bucket: BUCKET,
+            mime: 'image/jpeg',
+            bytes: arquivo.jpeg.length,
+            checksum,
+            versao: job.tentativa,
+            estado: 'pronto',
+          });
+
+          await progredir(job.id, Math.round(de + (faixa * (i + 1)) / gerados.length));
+        }
+
+        const total = gerados.reduce((s, g) => s + g.jpeg.length, 0);
+        await logar(
+          job.id,
+          etapa.id,
+          `${gerados.length} arquivo(s), ${Math.round(total / 1024 / 1024 * 10) / 10} MB enviados.`,
+        );
       }
     }
 
@@ -173,6 +347,19 @@ async function processar(job: {
     });
     await logar(job.id, 'entrega', `Concluído em ${Math.round((Date.now() - t0) / 1000)}s.`);
   } catch (e) {
+    // Cancelamento é saída limpa, não falha: o job já está `cancelado` (foi o
+    // painel que escreveu) e o projeto não pode ficar marcado `com_erro` por
+    // causa de uma decisão do operador.
+    if (e instanceof Cancelado) {
+      await db
+        .from('render_jobs')
+        .update({ progresso: 0, concluido_em: new Date().toISOString() })
+        .eq('id', job.id);
+      await logar(job.id, 'entrega', 'Cancelado pelo operador; worker liberado.', 'aviso');
+      await baterPonto('ocioso');
+      return;
+    }
+
     const erro = e instanceof Error ? e : new Error(String(e));
     await db
       .from('render_jobs')
