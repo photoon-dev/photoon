@@ -1,22 +1,28 @@
 import { redirect } from 'next/navigation';
-import { lojaAtual } from '@/lib/lojista';
+import { molduraDaLoja } from '@/lib/painel-loja';
 import { MODULO } from '@/lib/rotas-lojista';
-import CRMDesign, { CSS_PSEUDO } from '@/components/design/CRMDesign';
+import { dadosCRM } from '@/lib/comercial';
+import { planoDaLoja, usoAtual } from '@/lib/lojista';
 import ShellLojista from '@/components/app/ShellLojista';
-import ConteudoDoDesign from '@/components/app/ConteudoDoDesign';
-import AvisoRotaLegada from '@/components/app/AvisoRotaLegada';
+import CardPlano from '@/components/app/CardPlano';
+import PainelCRMPadrao from '@/components/app/PainelCRMPadrao';
 import '../app.css';
 
 export const dynamic = 'force-dynamic';
 
 export default async function Pagina() {
-  const loja = await lojaAtual();
-  if (!loja) redirect('/');
+  const m = await molduraDaLoja();
+  if (!m) redirect('/');
+
+  const [dados, plano, uso] = await Promise.all([
+    dadosCRM(m.loja.id),
+    planoDaLoja(m.loja.id),
+    usoAtual(m.loja.id),
+  ]);
 
   return (
-    <ShellLojista ativo={MODULO['Clientes']}>
-      <AvisoRotaLegada rota="/crm" />
-      <ConteudoDoDesign Design={CRMDesign} cssPseudo={CSS_PSEUDO} />
+    <ShellLojista ativo={MODULO['Clientes']} cartaoPlano={<CardPlano plano={plano} uso={uso} compacto />}>
+      <PainelCRMPadrao dados={dados} />
     </ShellLojista>
   );
 }

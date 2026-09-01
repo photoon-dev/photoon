@@ -1,37 +1,28 @@
 import { redirect } from 'next/navigation';
-import { lojaAtual } from '@/lib/lojista';
-import { kanbanProducao } from '@/lib/pedidos';
-import ResumoRenderizacao from '@/components/app/ResumoRenderizacao';
-import KanbanProducao from '@/components/app/KanbanProducao';
-import ShellLojista from '@/components/app/ShellLojista';
-import CabecalhoPagina from '@/components/ui/CabecalhoPagina';
+import { molduraDaLoja } from '@/lib/painel-loja';
 import { MODULO } from '@/lib/rotas-lojista';
-import { resumoRenderizacao } from '@/lib/pedidos';
+import { filaDeProducao } from '@/lib/pedidos';
+import ShellLojista from '@/components/app/ShellLojista';
+import CardPlano from '@/components/app/CardPlano';
+import { planoDaLoja, usoAtual } from '@/lib/lojista';
+import PainelProducaoPadrao from '@/components/app/PainelProducaoPadrao';
 import '../app.css';
 
 export const dynamic = 'force-dynamic';
 
 export default async function Pagina() {
-  const loja = await lojaAtual();
-  if (!loja) redirect('/');
+  const m = await molduraDaLoja();
+  if (!m) redirect('/');
 
-  // Kanban com 8 colunas + resumo de renderizacao (contadores).
-  const [kanban, render] = await Promise.all([
-    kanbanProducao(loja.id),
-    resumoRenderizacao(loja.id),
+  const [fila, plano, uso] = await Promise.all([
+    filaDeProducao(m.loja.id),
+    planoDaLoja(m.loja.id),
+    usoAtual(m.loja.id),
   ]);
 
   return (
-    <ShellLojista ativo={MODULO['Produção']}>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
-        <CabecalhoPagina
-          grupo="Operação"
-          titulo="Produção"
-          descricao="Acompanhe cada pedido pelas oito etapas da fábrica, do pré-flight à embalagem."
-        />
-        <ResumoRenderizacao r={render} />
-        <KanbanProducao kanban={kanban} />
-      </div>
+    <ShellLojista ativo={MODULO['Produção']} cartaoPlano={<CardPlano plano={plano} uso={uso} compacto />}>
+      <PainelProducaoPadrao fila={fila} />
     </ShellLojista>
   );
 }

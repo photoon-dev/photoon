@@ -92,9 +92,7 @@ function Kpi({
             color: cor,
             fontSize: 11.5,
             fontWeight: 700,
-            whiteSpace: 'nowrap',
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
+            lineHeight: 1.35,
           }}
         >
           {nota}
@@ -165,16 +163,22 @@ export default function DashboardLojista({ painel }: { painel: PainelDaLoja }) {
   const [dias, setDias] = useState(30);
   const n = painel.numeros;
 
-  const hora = new Date().getHours();
   const primeiroNome = (painel.usuarioNome ?? '').split(' ')[0] || 'por aqui';
   const num = (x: number) => x.toLocaleString('pt-BR');
 
+  // Data e hora saem do MESMO fuso, o da loja. `getHours()` usa o fuso de quem
+  // abriu o navegador: com o servidor em UTC, a tela mostrava "Bom dia" ao lado
+  // de uma data que, em São Paulo, ainda era a noite do dia anterior.
+  const FUSO_DA_LOJA = 'America/Sao_Paulo';
   const agora = new Date().toLocaleDateString('pt-BR', {
     weekday: 'long',
     day: 'numeric',
     month: 'long',
-    timeZone: 'America/Sao_Paulo',
+    timeZone: FUSO_DA_LOJA,
   });
+  const hora = Number(
+    new Date().toLocaleString('pt-BR', { hour: '2-digit', hour12: false, timeZone: FUSO_DA_LOJA }),
+  );
 
   const grafico = useMemo(() => {
     const corta = (s: number[]) => s.slice(-dias);
@@ -231,7 +235,8 @@ export default function DashboardLojista({ painel }: { painel: PainelDaLoja }) {
     { rotulo: 'Em edição', valor: n.emEdicao, cor: COR.azul, proporcao: true },
     { rotulo: 'Com pendência', valor: n.comPendencia, cor: COR.ambarVivo, proporcao: true },
     { rotulo: 'Prontos', valor: n.prontos, cor: COR.verdeVivo, proporcao: true },
-    { rotulo: 'Lâminas no total', valor: n.laminas, cor: COR.ciano, proporcao: false },
+    // `numerosDaLoja` devolve `laminas: 0` fixo — a contagem nunca foi
+    // implementada. Um zero que não mede nada é a mesma fábula do "27 / 40".
   ];
 
   return (
@@ -300,10 +305,14 @@ export default function DashboardLojista({ painel }: { painel: PainelDaLoja }) {
           style={{
             position: 'relative',
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+            // O cliente usa duas colunas iguais; aqui a frase da saudação é mais
+            // longa que a dele e, repartida ao meio, quebrava em três linhas —
+            // altura pura, sem informação. Mesma grade, proporção outra.
+            gridTemplateColumns: 'minmax(0, 1.35fr) minmax(300px, 1fr)',
             gap: 28,
             alignItems: 'center',
           }}
+          className="ph-hero-grade"
         >
           <div style={{ minWidth: 0 }}>
             <span
@@ -450,11 +459,15 @@ export default function DashboardLojista({ painel }: { painel: PainelDaLoja }) {
           display: 'grid',
           gridTemplateColumns: 'minmax(0, 1.85fr) minmax(280px, 1fr)',
           gap: 16,
-          alignItems: 'start',
+          // `start` deixava o cartão do gráfico curto e abria um buraco de
+          // ~150px entre ele e a tabela, porque a coluna da direita é mais
+          // alta. Esticando, o gráfico ocupa a altura da linha e o vazio some
+          // — sem precisar alongar o gráfico por conta própria.
+          alignItems: 'stretch',
         }}
         className="ph-dash-grade"
       >
-        <div style={{ ...PAPEL, padding: '18px 20px' }}>
+        <div style={{ ...PAPEL, padding: '18px 20px', display: 'flex', flexDirection: 'column' }}>
           <Titulo
             acao={
               <div style={{ display: 'flex', gap: 4, background: COR.papelSuave, padding: 3, borderRadius: 999, border: `1px solid ${COR.linha}` }}>
@@ -470,6 +483,7 @@ export default function DashboardLojista({ painel }: { painel: PainelDaLoja }) {
                       padding: '5px 12px',
                       borderRadius: 999,
                       fontSize: 12.5,
+                      whiteSpace: 'nowrap',
                       fontWeight: dias === d ? 700 : 500,
                       background: dias === d ? COR.tinta : 'transparent',
                       color: dias === d ? '#FFFFFF' : COR.texto,
@@ -494,18 +508,22 @@ export default function DashboardLojista({ painel }: { painel: PainelDaLoja }) {
                 {rotulo}
               </span>
             ))}
-            <span style={{ marginLeft: 'auto', fontSize: 12, color: COR.fraco }}>pico de {grafico.teto} por dia</span>
+            <span style={{ marginLeft: 'auto', fontSize: 12, color: COR.fraco, whiteSpace: 'nowrap' }}>
+              pico de {grafico.teto}/dia
+            </span>
           </div>
 
           {grafico.vazio ? (
-            <div style={{ height: 150, display: 'grid', placeItems: 'center', fontSize: 13, color: COR.fraco }}>
+            <div style={{ flex: 1, minHeight: 150, display: 'grid', placeItems: 'center', fontSize: 13, color: COR.fraco }}>
               Ainda não há dias suficientes para desenhar a curva.
             </div>
           ) : (
             <>
-              {/* 150px de altura, contra 230 do protótipo: a curva real é rasa
-                  e a altura extra virava espaço branco no meio da tela. */}
-              <svg viewBox="0 0 700 150" width="100%" height="150" preserveAspectRatio="none" style={{ display: 'block' }}>
+              {/* Piso de 150px — contra os 230 fixos do protótipo — e daí para
+                  cima só o que a linha ao lado pedir. `preserveAspectRatio` em
+                  `none` deixa o viewBox esticar sem deformar a leitura. */}
+              <div style={{ flex: 1, minHeight: 150, display: 'flex' }}>
+              <svg viewBox="0 0 700 150" width="100%" height="100%" preserveAspectRatio="none" style={{ display: 'block' }}>
                 <defs>
                   <linearGradient id="dashA" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="0" stopColor={COR.azul} stopOpacity=".20" />
@@ -527,6 +545,7 @@ export default function DashboardLojista({ painel }: { painel: PainelDaLoja }) {
                 <path d={grafico.b.linha} fill="none" stroke={COR.ciano} strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
                 <path d={grafico.a.linha} fill="none" stroke={COR.azul} strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
+              </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 6, fontSize: 11.5, color: COR.fraco }}>
                 <span>há {grafico.pontos} dias</span>
                 <span>hoje</span>
@@ -743,7 +762,10 @@ export default function DashboardLojista({ painel }: { painel: PainelDaLoja }) {
       </section>
 
       {/* Abaixo de 1100 a grade de duas colunas aperta o gráfico; empilha. */}
-      <style>{`@media (max-width:1100px){.ph-dash-grade{grid-template-columns:minmax(0,1fr)!important}}`}</style>
+      <style>{`
+        @media (max-width:1100px){.ph-dash-grade{grid-template-columns:minmax(0,1fr)!important}}
+        @media (max-width:900px){.ph-hero-grade{grid-template-columns:minmax(0,1fr)!important}}
+      `}</style>
     </div>
   );
 }

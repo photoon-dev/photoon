@@ -1,35 +1,33 @@
 import { redirect } from 'next/navigation';
-import { lojaAtual } from '@/lib/lojista';
-import { expedicoesCompletas, resumoExpedicao } from '@/lib/pedidos';
-import ResumoExpedicao from '@/components/app/ResumoExpedicao';
-import ExpedicaoCompleta from '@/components/app/ExpedicaoCompleta';
-import ShellLojista from '@/components/app/ShellLojista';
-import CabecalhoPagina from '@/components/ui/CabecalhoPagina';
+import { molduraDaLoja } from '@/lib/painel-loja';
 import { MODULO } from '@/lib/rotas-lojista';
+import { listarEnvios, pedidosSemEnvio } from '@/lib/pedidos';
+import { planoDaLoja, usoAtual } from '@/lib/lojista';
+import ShellLojista from '@/components/app/ShellLojista';
+import CardPlano from '@/components/app/CardPlano';
+import PainelExpedicaoPadrao from '@/components/app/PainelExpedicaoPadrao';
 import '../app.css';
 
 export const dynamic = 'force-dynamic';
 
 export default async function Pagina() {
-  const loja = await lojaAtual();
-  if (!loja) redirect('/');
+  const m = await molduraDaLoja();
+  if (!m) redirect('/');
 
-  const [envios, resumo] = await Promise.all([
-    expedicoesCompletas(loja.id),
-    resumoExpedicao(loja.id),
+  const [envios, semEnvio, plano, uso] = await Promise.all([
+    listarEnvios(m.loja.id, ''),
+    pedidosSemEnvio(m.loja.id),
+    planoDaLoja(m.loja.id),
+    usoAtual(m.loja.id),
   ]);
 
   return (
-    <ShellLojista ativo={MODULO['Expedição']}>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
-        <CabecalhoPagina
-          grupo="Operação"
-          titulo="Expedição"
-          descricao="Envios da loja nos dez estados, do aguardando embalagem à entrega confirmada."
-        />
-        <ResumoExpedicao r={resumo} />
-        <ExpedicaoCompleta envios={envios} />
-      </div>
+    <ShellLojista ativo={MODULO['Expedição']} cartaoPlano={<CardPlano plano={plano} uso={uso} compacto />}>
+      <PainelExpedicaoPadrao
+        envios={envios.envios}
+        porEstado={envios.porEstado}
+        semEnvio={Array.isArray(semEnvio) ? semEnvio.length : Number(semEnvio ?? 0)}
+      />
     </ShellLojista>
   );
 }

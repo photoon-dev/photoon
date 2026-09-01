@@ -288,7 +288,9 @@ export async function identidadeLojista(): Promise<IdentidadeLojista> {
       (sessao.user?.user_metadata?.nome as string | undefined) ||
       (email ? email.split('@')[0] : 'Minha conta'),
     email,
-    lojaSub: [loja?.nome, plano?.nome && `Plano ${plano.nome}`].filter(Boolean).join(' · '),
+    // Só o plano: o nome da loja já aparece na linha de cima, e repetir os dois
+    // fazia a marca dizer "Estúdio Photoon / Estúdio Photoon".
+    lojaSub: plano?.nome ? `Plano ${plano.nome}` : 'Sem plano',
     planoResumo: plano ? `Plano ${plano.nome}` : 'Sem plano',
   };
 }
