@@ -65,7 +65,8 @@ export default function ResumoDoProjeto({
   const imprimir = () => window.print();
 
   return (
-    <div style={{ padding: '26px 30px 60px', display: 'flex', flexDirection: 'column', gap: 18 }}>
+    // O padding do container vem da casca (ShellLojista); aqui só o ritmo interno.
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
       <style>{`
         @media print {
           aside, header, nav, [data-no-print] { display: none !important; }
