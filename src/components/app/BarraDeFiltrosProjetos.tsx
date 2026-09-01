@@ -24,6 +24,9 @@ import { STATUS_PROJETO } from '@/lib/projetos-termos';
 export type OpcoesFiltroProjeto = { id: string; rotulo: string };
 
 const estiloInput: React.CSSProperties = {
+  // Sem `minWidth: 0` o input tem largura minima intrinseca e estoura a celula
+  // do grid mesmo com `minmax(0, …)` na coluna.
+  minWidth: 0,
   height: 36,
   padding: '0 12px',
   border: `1px solid ${COR.linha}`,
@@ -90,7 +93,14 @@ export default function BarraDeFiltrosProjetos({
       <div
         style={{
           display: 'grid',
-          gridTemplateColumns: '2fr 1fr 1.2fr 1.4fr auto auto',
+          // `1fr` em Grid e `minmax(auto, 1fr)`: o minimo `auto` impede a coluna
+          // de encolher abaixo do conteudo. Com o placeholder longo da busca e
+          // os `option` de cliente (nome + e-mail), as colunas recusavam
+          // encolher e a barra vazava para fora da tela — 394px em 1024 e 52px
+          // em 1366, com os dois ultimos filtros inalcancaveis. `minmax(0, …)`
+          // devolve o direito de encolher.
+          gridTemplateColumns:
+            'minmax(0, 2fr) minmax(0, 1fr) minmax(0, 1.2fr) minmax(0, 1.4fr) auto auto',
           gap: 8,
           alignItems: 'center',
         }}

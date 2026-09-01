@@ -45,6 +45,14 @@ export default function ResumoDoProjeto({
   // O navegador usa o `document.title` como nome sugerido do PDF. Trocar só
   // durante a impressão evita que a aba fique com o nome do arquivo depois.
   const [titulo] = useState(() => `${p.codigo ?? 'projeto'}-resumo`);
+
+  // A hora da emissao so no cliente: `new Date()` no render da valores
+  // diferentes no servidor e no navegador, e o texto divergente quebra a
+  // hidratacao. Mesmo defeito que a OS tinha.
+  const [emitidoEm, setEmitidoEm] = useState('');
+  useEffect(() => {
+    setEmitidoEm(dataHora(new Date().toISOString()));
+  }, []);
   useEffect(() => {
     const original = document.title;
     const antes = () => {
@@ -152,7 +160,7 @@ export default function ResumoDoProjeto({
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 8 }}>
             <Selo tom={status.tom}>{status.rotulo}</Selo>
             <span style={{ fontSize: 11.5, color: COR.fraco }}>
-              Emitido em {dataHora(new Date().toISOString())}
+              {emitidoEm && `Emitido em ${emitidoEm}`}
             </span>
           </div>
         </header>

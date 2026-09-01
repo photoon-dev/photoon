@@ -147,11 +147,29 @@ export function termo<T extends string>(lista: Termo<T>[], id: string | null | u
 export const moeda = (v: number | null | undefined) =>
   (v ?? 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
+/**
+ * Fuso fixo da loja.
+ *
+ * Sem isto, `toLocaleString` usa o fuso de quem formata: o container roda em
+ * UTC e o navegador do lojista em UTC-3. A mesma data saía com TRÊS HORAS de
+ * diferença entre o HTML do servidor e o do cliente — um pedido aberto às 23h
+ * aparecia como do dia seguinte na primeira pintura, e o React ainda acusava
+ * divergência de hidratação. Fixar o fuso faz os dois lados concordarem e
+ * mostra a hora que o operador tem no relógio da bancada.
+ */
+export const FUSO_DA_LOJA = 'America/Sao_Paulo';
+
 export const dataHora = (v: string | null | undefined) =>
-  v ? new Date(v).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' }) : '—';
+  v
+    ? new Date(v).toLocaleString('pt-BR', {
+        dateStyle: 'short',
+        timeStyle: 'short',
+        timeZone: FUSO_DA_LOJA,
+      })
+    : '—';
 
 export const dataCurta = (v: string | null | undefined) =>
-  v ? new Date(v).toLocaleDateString('pt-BR') : '—';
+  v ? new Date(v).toLocaleDateString('pt-BR', { timeZone: FUSO_DA_LOJA }) : '—';
 
 // ---------------------------------------------------------------------------
 // Formas

@@ -130,12 +130,20 @@ export const tamanho = (bytes: number | null | undefined) => {
   return `${v.toLocaleString('pt-BR', { maximumFractionDigits: v < 10 && i > 0 ? 1 : 0 })} ${u[i]}`;
 };
 
+/** O mesmo fuso de `pedidos-termos`; ver a nota lá. */
+export const FUSO_DA_LOJA = 'America/Sao_Paulo';
+
 export const dataCurta = (v: string | null | undefined) =>
-  v ? new Date(v).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' }) : '—';
+  v
+    ? new Date(v).toLocaleDateString('pt-BR', {
+        day: '2-digit', month: 'short', timeZone: FUSO_DA_LOJA,
+      })
+    : '—';
 
 export const dataHora = (v: string | null | undefined) =>
   v
     ? new Date(v).toLocaleString('pt-BR', {
-        day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit',
+        day: '2-digit', month: '2-digit', year: 'numeric',
+        hour: '2-digit', minute: '2-digit', timeZone: FUSO_DA_LOJA,
       })
     : '—';

@@ -4,6 +4,7 @@ import { expedicoesCompletas, resumoExpedicao } from '@/lib/pedidos';
 import ResumoExpedicao from '@/components/app/ResumoExpedicao';
 import ExpedicaoCompleta from '@/components/app/ExpedicaoCompleta';
 import ShellLojista from '@/components/app/ShellLojista';
+import CabecalhoPagina from '@/components/ui/CabecalhoPagina';
 import { MODULO } from '@/lib/rotas-lojista';
 import '../app.css';
 
@@ -21,6 +22,11 @@ export default async function Pagina() {
   return (
     <ShellLojista ativo={MODULO['Expedição']}>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+        <CabecalhoPagina
+          grupo="Operação"
+          titulo="Expedição"
+          descricao="Envios da loja nos dez estados, do aguardando embalagem à entrega confirmada."
+        />
         <ResumoExpedicao r={resumo} />
         <ExpedicaoCompleta envios={envios} />
       </div>

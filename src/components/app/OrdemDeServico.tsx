@@ -23,13 +23,13 @@
  * Photoon (referencia: `design/extraido/Expedicao.dc.html`).
  */
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import QRCode from 'qrcode';
 import bwipjs from 'bwip-js';
 import { COR } from '@/components/ui/tokens';
 import type { DadosDaOS } from '@/lib/pedidos';
-import { moeda } from '@/lib/pedidos-termos';
+import { moeda, dataHora, dataCurta } from '@/lib/pedidos-termos';
 
 const FONTE = 'Plus Jakarta Sans, system-ui, sans-serif';
 
@@ -43,31 +43,71 @@ export default function OrdemDeServico({
   const [mostrarValores, setMostrarValores] = useState(true);
   const [qrDataUrl, setQrDataUrl] = useState<string | null>(null);
   const [barcodeDataUrl, setBarcodeDataUrl] = useState<string | null>(null);
+  /*
+   * A hora da emissao so e calculada no cliente.
+   *
+   * `new Date()` no corpo do componente da um valor no servidor e outro no
+   * cliente — texto diferente nos dois HTMLs, que era a divergencia de
+   * hidratacao ("Minified React error #418") flagrada na auditoria em 1024.
+   * Comecando vazia e preenchendo no efeito, os dois lados concordam na
+   * primeira pintura.
+   */
+  const [emitidoEm, setEmitidoEm] = useState('');
+  useEffect(() => {
+    setEmitidoEm(dataHora(new Date().toISOString()));
+  }, []);
 
-  // Gera QR + barcode uma unica vez no client. O useState lazy inicializa
-  // com Promise.resolve pra nao rodar no SSR.
-  if (typeof window !== 'undefined' && !qrDataUrl) {
-    const url = `${window.location.origin}/pedidos/${dados.id}/os`;
-    QRCode.toDataURL(url, { errorCorrectionLevel: 'M', width: 140, margin: 1 }).then(setQrDataUrl);
-  }
-  if (typeof window !== 'undefined' && !barcodeDataUrl && dados.codigo) {
-    try {
-      const png = bwipjs.toCanvas({
-        bcid: 'code128',
-        text: dados.codigo,
-        scale: 2,
-        height: 14,
-        includetext: true,
-        textxalign: 'center',
-        textsize: 8,
+  /*
+   * QR e codigo de barras sao gerados DEPOIS da montagem, num efeito.
+   *
+   * Antes isto rodava no corpo do componente, guardado por
+   * `typeof window !== 'undefined'`. Duas consequencias: `setState` durante o
+   * render, e uma arvore que so existia no cliente — o servidor renderizava
+   * sem as imagens e o cliente com elas. O React reclamava de hidratacao
+   * ("Minified React error #418") e, quando a reconciliacao falhava, jogava
+   * fora a arvore inteira: a OS aparecia em branco. Aconteceu de verdade na
+   * auditoria, em 1024.
+   *
+   * `useEffect` so roda no cliente, entao a primeira pintura e igual a do
+   * servidor (sem as imagens) e elas entram na segunda. `cancelado` evita
+   * escrever estado depois que a pagina foi trocada.
+   */
+  useEffect(() => {
+    let cancelado = false;
+
+    QRCode.toDataURL(`${window.location.origin}/pedidos/${dados.id}/os`, {
+      errorCorrectionLevel: 'M',
+      width: 140,
+      margin: 1,
+    })
+      .then((url) => {
+        if (!cancelado) setQrDataUrl(url);
+      })
+      .catch(() => {
+        // QR e complemento do numero impresso ao lado; sem ele a OS serve.
       });
-      // `toCanvas` retorna o canvas; convertemos pra data URL.
-      const canvas = png as unknown as HTMLCanvasElement;
-      setBarcodeDataUrl(canvas.toDataURL('image/png'));
-    } catch {
-      // silencioso: barcode e opcional
+
+    if (dados.codigo) {
+      try {
+        const canvas = bwipjs.toCanvas({
+          bcid: 'code128',
+          text: dados.codigo,
+          scale: 2,
+          height: 14,
+          includetext: true,
+          textxalign: 'center',
+          textsize: 8,
+        }) as unknown as HTMLCanvasElement;
+        if (!cancelado) setBarcodeDataUrl(canvas.toDataURL('image/png'));
+      } catch {
+        // silencioso: barcode e opcional
+      }
     }
-  }
+
+    return () => {
+      cancelado = true;
+    };
+  }, [dados.id, dados.codigo]);
 
   return (
     <div
@@ -199,7 +239,7 @@ export default function OrdemDeServico({
             <span style={{ fontFamily: 'monospace', fontWeight: 700, color: COR.azul }}>
               {dados.codigo ?? '—'}
             </span>{' '}
-            · aberto em {new Date(dados.criado_em).toLocaleString('pt-BR')}
+            · aberto em {dataHora(dados.criado_em)}
           </p>
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8, alignItems: 'flex-end' }}>
@@ -237,7 +277,7 @@ export default function OrdemDeServico({
         <Campo rotulo="Loja" valor={lojaNome} />
         <Campo
           rotulo="Prazo"
-          valor={dados.prazo_em ? new Date(dados.prazo_em).toLocaleDateString('pt-BR') : 'Sem prazo'}
+          valor={dados.prazo_em ? dataCurta(dados.prazo_em) : 'Sem prazo'}
         />
         <Campo rotulo="Prioridade" valor="Normal" />
       </section>
@@ -264,7 +304,7 @@ export default function OrdemDeServico({
           itens={[
             ['Etapa', dados.producao[0]?.etapa ?? 'Fora da producao'],
             ['Responsavel', dados.producao[0]?.responsavel ?? '—'],
-            ['Iniciada em', dados.producao[0]?.iniciada_em ? new Date(dados.producao[0].iniciada_em).toLocaleString('pt-BR') : '—'],
+            ['Iniciada em', dataHora(dados.producao[0]?.iniciada_em)],
           ]}
         />
         <Bloco
@@ -320,7 +360,7 @@ export default function OrdemDeServico({
       >
         <span>OS gerada por Photoon · {lojaNome}</span>
         <span>
-          pedido {dados.id.slice(0, 8)} · {new Date().toLocaleString('pt-BR')}
+          pedido {dados.id.slice(0, 8)}{emitidoEm && ` · ${emitidoEm}`}
         </span>
       </footer>
     </div>

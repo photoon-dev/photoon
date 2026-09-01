@@ -13,6 +13,18 @@
 	reverse_proxy app:3000 {
 		header_up Host {host}
 		header_up X-Forwarded-Proto {scheme}
+
+		# Segura a requisicao enquanto o app volta, em vez de devolver 502.
+		#
+		# `docker compose up -d app` para e sobe o container: por um ou dois
+		# segundos nao ha ninguem escutando em app:3000, e o Caddy respondia
+		# "connection refused" -> 502 a quem estivesse usando o painel. Foi
+		# medido: um usuario real levou 502 em /financeiro durante um deploy, e
+		# a auditoria pegou um ChunkLoadError que deixou a tela da OS em branco.
+		#
+		# Com isto o pior caso vira uma espera de ate 10s no lugar de um erro.
+		lb_try_duration 10s
+		lb_try_interval 250ms
 	}
 }
 
