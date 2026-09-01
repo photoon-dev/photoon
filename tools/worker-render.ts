@@ -39,7 +39,40 @@ if (!URL_SUPABASE || !CHAVE) {
   console.error(
     'worker-render: faltam NEXT_PUBLIC_SUPABASE_URL e SUPABASE_SERVICE_ROLE_KEY.\n' +
       'O worker atravessa lojas, e a RLS é por sessão de usuário — sem a chave\n' +
-      'de serviço ele não consegue ler a fila nem gravar os arquivos.',
+      'de serviço ele não consegue ler a fila nem gravar os arquivos.\n' +
+      'A chave vai em `.env.worker` (NÃO em `.env`, que o site também lê).',
+  );
+  process.exit(1);
+}
+
+/**
+ * Confere que a chave é mesmo a de serviço, e não a anônima.
+ *
+ * As duas são JWT parecidos e ficam lado a lado no painel do Supabase. Com a
+ * anônima o worker sobe, conecta e roda — e não enxerga job nenhum, porque a
+ * RLS esconde tudo. O sintoma seria "fila sempre vazia", que não parece erro de
+ * credencial e custa horas para achar. Melhor recusar na partida.
+ *
+ * Só o campo `role` do payload é lido; a assinatura não é verificada aqui (quem
+ * verifica é o Supabase). Nada da chave é impresso.
+ */
+function papelDaChave(jwt: string): string | null {
+  try {
+    const payload = jwt.split('.')[1];
+    if (!payload) return null;
+    const json = Buffer.from(payload.replace(/-/g, '+').replace(/_/g, '/'), 'base64').toString();
+    return (JSON.parse(json) as { role?: string }).role ?? null;
+  } catch {
+    return null;
+  }
+}
+
+const papel = papelDaChave(CHAVE);
+if (papel && papel !== 'service_role') {
+  console.error(
+    `worker-render: a chave em SUPABASE_SERVICE_ROLE_KEY tem role "${papel}", não "service_role".\n` +
+      'Com ela o worker sobe mas a RLS esconde a fila inteira, e a tela mostra\n' +
+      '"nenhum job" para sempre. Pegue a service_role em Settings → API.',
   );
   process.exit(1);
 }
