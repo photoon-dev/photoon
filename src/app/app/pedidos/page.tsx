@@ -3,7 +3,6 @@ import { lojaAtual } from '@/lib/lojista';
 import { listarPedidos } from '@/lib/pedidos';
 import { createClient } from '@/lib/supabase/server';
 import PedidosDoDesign from '@/components/app/PedidosDoDesign';
-import CabecalhoPedidos from '@/components/app/CabecalhoPedidos';
 import BarraDeFiltrosPedidos, { type OpcoesFiltro } from '@/components/app/BarraDeFiltrosPedidos';
 import ShellLojista from '@/components/app/ShellLojista';
 import { MODULO } from '@/lib/rotas-lojista';
@@ -73,18 +72,7 @@ export default async function PedidosPage({
 
   return (
     <ShellLojista ativo={MODULO['Pedidos']}>
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 16,
-        }}
-      >
-        <CabecalhoPedidos
-          pedidos={dados.pedidos}
-          total={dados.total}
-          naoVistos={dados.naoVistos}
-        />
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
         <BarraDeFiltrosPedidos
           filiais={filiaisOpcoes}
           clientes={clientesOpcoes}
