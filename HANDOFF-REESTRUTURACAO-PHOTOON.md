@@ -1,5 +1,145 @@
 # HANDOFF — Reestruturação do Photoon (fonte única de continuidade)
 
+> ## SESSÃO DE 01/09/2026 (4ª RODADA) — LEIA ESTA SEÇÃO PRIMEIRO
+>
+> **A RENDERIZAÇÃO ESTÁ NO AR E VALIDADA COM JOB REAL.** As seções 000, 00, 0 e
+> 1–15 ficam abaixo. Onde houver conflito, vale ESTA seção.
+
+## 0000. ESTADO (01/09/2026, fim da 4ª rodada)
+
+| Item | Valor |
+|---|---|
+| Branch | `reestruturacao` · HEAD `9b08a0f` |
+| Master | `b6cc7eb` — **intocada**, sem merge/rebase/push |
+| Migration 0016 | ✅ aplicada e **validada dos dois lados** (`anon` e `authenticated`) — 0 problemas |
+| **Renderer** | ✅ **NO AR** · `photoon-render-1` Up · `worker-1` ouvindo a fila |
+| **Teste ponta a ponta** | ✅ **13/13 · 0 problemas**, com job real, três vezes |
+| Central de Renderização | ✅ **"Renderer online · Workers ativos: 1 de 1"** (era "offline") |
+| Verificadores | tsc · build · checar-casca · checar-consultas · checar-banco · checar-0016 · checar-render — **todos verdes** |
+| Banco | limpo: `render_jobs` 0 · `render_logs` 0 · `projeto_arquivos` 0 · bucket `renders` vazio |
+
+### 0000.1 A renderização funciona de ponta a ponta
+
+`npm run testar-render` passou nos 13 pontos, com job real, projeto real e as
+fotos reais da galeria:
+
+```
+ok  worker ouvindo a fila                worker-1 (ocioso)
+ok  documento referencia foto            11 foto(s) distinta(s)
+ok  job enfileirado                      na_fila → renderizando → enviando → pronto
+ok  job chegou a pronto                  em 23s
+ok  uma linha em projeto_arquivos por lâmina   5/5
+ok  checksum e bytes preenchidos
+ok  caminho começa pelo id da loja (policy renders_da_equipe)
+ok  arquivo existe no bucket
+ok  tamanho bate com projeto_arquivos.bytes
+ok  URL assinada emitida / entrega o JPEG      HTTP 200 image/jpeg
+ok  as sete etapas registraram log             18 linha(s)
+ok  projeto foi para "renderizado"
+```
+
+Conferido além do script, linha a linha: `render_jobs` sem erro e com
+`worker_id` batendo com a linha de `render_workers`; as 7 etapas em
+`render_logs`; os 5 arquivos com **checksum sha256 recalculado do binário
+baixado, batendo com o gravado**; magic byte de JPEG; e a lâmina baixada pela
+URL assinada **aberta e olhada**: 7228×3614 px (300 dpi), mosaico de 18 fotos,
+álbum de verdade.
+
+Tempo: 23s para 5 lâminas (≈5s por lâmina com foto, ~1s em branco), 15,6 MB.
+
+### 0000.2 `.env.worker` estava num formato que ninguém lê
+
+O arquivo tinha chegado como `<chave>=<chave>` — o nome da variável havia sido
+substituído pelo próprio valor, e não existia nenhuma linha
+`SUPABASE_SERVICE_ROLE_KEY=`. O worker não a acharia e recusaria a partida.
+
+Reescrito no formato certo (`NOME=valor`), `chmod 600`, fora do Git. A chave é
+`service_role`, do mesmo projeto do `.env` (`whsrcrqyoblulpqsjxmq`), válida até
+2036. **O isolamento continua de pé**, conferido no compose resolvido: `app`
+com 5 variáveis e nenhuma delas é a chave; só `render` a recebe.
+
+> ⚠️ Ao diagnosticar o formato, a chave apareceu no terminal desta sessão.
+> Vale **rotacionar a service_role** no painel do Supabase quando for
+> conveniente (Settings → API → service_role → Reset). O worker pega a nova com
+> um `docker compose up -d render`. Mesma recomendação já registrada para a
+> `SENHA_TESTE` (seção 4, item 11).
+
+### 0000.3 Três defeitos que só apareceram com o job rodando
+
+1. **`projeto_fotos` vazia** (achada na 3ª rodada, confirmada aqui em produção):
+   os três projetos usam 4, 11 e 6 fotos distintas e o índice tinha **0
+   entrada**. O primeiro job real renderizaria tudo em branco. A saída reserva
+   (`galeria_fotos` direto) salvou o teste — o log do próprio teste mostrou
+   `0 pelo índice, 11 pelo caminho reserva`.
+2. **Corrida no acervo**: o cache guardava o Buffer, e `renderizarLamina`
+   compõe as duas páginas em `Promise.all` — dois pedidos da mesma foto erravam
+   o cache e baixavam duas vezes. Medido: 12 downloads para 11 fotos, índice
+   lido 2×. Cacheando a **promessa**: 11 e 1×, saída idêntica.
+3. **A barra andava para trás**: `andar()` marcava `etapa.ate` ao **entrar** na
+   etapa, então o progresso saltava para 70% e voltava para 30% na primeira
+   lâmina. Agora entra no começo da faixa e fecha no fim.
+   Antes `70→30→50→60→88`; depois `20→30→40→50→60→88→93→100`.
+
+E uma rede de proteção nova: a validação separa **álbum com quadro vazio**
+(pendência do projeto, sai em branco de direito) de **acervo caído** (mesma
+imagem na tela, coisa completamente diferente). Documento que pede foto e não
+recebe nenhuma **reprova o job**; foto faltando avulsa vira aviso com os ids.
+Simulado o acervo caído: `pedidas=4 entregues=0 → falha`, em vez de passar
+verde.
+
+### 0000.4 Lâmina em branco nem sempre é defeito
+
+Os três projetos são `com_pendencias`, e as lâminas que saem em branco são
+**exatamente** as que têm 0 quadro preenchido (0/2, 0/3, 0/2). O render está
+certo; a pendência é do álbum. Foi para poder afirmar isso com segurança que a
+validação passou a contar o acervo — sem esse número, "em branco" é ambíguo.
+
+### 0000.5 `tools/reindexar-fotos.ts` — o passado do índice
+
+A sincronia do editor só vale da próxima gravação em diante. Projeto que
+ninguém abrir ficaria com o índice vazio e `fotos_usadas` zerada na tela.
+
+```bash
+set -a && . ./.env && . ./.env.worker && set +a
+node --experimental-strip-types --import ./tools/resolver-ts.mjs tools/reindexar-fotos.ts            # simula
+node --experimental-strip-types --import ./tools/resolver-ts.mjs tools/reindexar-fotos.ts --aplicar  # grava
+```
+
+Rodado nos três projetos (+4, +11, +6) e rodado de novo: **idempotente**. Ignora
+foto que saiu da galeria — FK quebrada derrubaria o insert inteiro. Depois dele
+o acervo resolve **pelo índice** (`11 pelo índice, 0 pelo reserva`), que é como
+deve ser: o caminho reserva volta a ser só uma saída de segurança.
+
+### 0000.6 Operação do worker
+
+```bash
+docker compose up -d render          # sobe
+docker logs -f photoon-render-1      # "worker-<pid> pronto, ouvindo a fila a cada 3000ms."
+docker compose stop render           # para (termina o job atual antes de sair)
+
+set -a && . ./.env && . ./.env.worker && set +a
+npm run testar-render                # teste ponta a ponta; limpa o proprio rastro
+npm run testar-render -- --manter    # deixa o job e os arquivos para inspecao
+```
+
+**Ao mexer no worker, reconstrua a imagem** (`docker compose build render`) —
+o código vai dentro dela; `up -d` sozinho reaproveita a imagem antiga.
+
+### 0000.7 O que sobrou
+
+| # | Pendência | Depende de |
+|---|---|---|
+| 1 | Rotacionar `service_role` e `SENHA_TESTE` (as duas circularam em texto puro) | você, quando for conveniente |
+| 2 | A padronização visual da seção 00.3 — 7 itens, `/pedidos` é a referência | nada |
+| 3 | Dashboard com KPIs reais · Templates/Configurações com as abas do briefing | nada |
+| 4 | `/projetos/:id/resumo` com PDF · OS com layout de impressão dedicado | nada |
+| 5 | Merge para `master` | **autorização explícita** — segue intocada |
+
+Nada mais depende de credencial.
+
+---
+
+
 > ## SESSÃO DE 01/09/2026 (3ª RODADA) — LEIA ESTA SEÇÃO PRIMEIRO
 >
 > As seções 00 (2ª rodada), 0 (1ª rodada) e 1–15 (31/08) ficam abaixo.
