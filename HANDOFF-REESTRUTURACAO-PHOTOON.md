@@ -1,5 +1,194 @@
 # HANDOFF — Reestruturação do Photoon (fonte única de continuidade)
 
+> ## SESSÃO DE 01/09/2026 — LEIA ESTA SEÇÃO PRIMEIRO
+>
+> As seções 1 a 15 abaixo são de 31/08 e **estão desatualizadas em vários
+> pontos**. O que mudou está aqui. Onde houver conflito, vale esta seção.
+
+## 0. ESTADO ATUAL (01/09/2026)
+
+| Item | Valor |
+|---|---|
+| Branch | `reestruturacao` |
+| HEAD | `abbe48d` |
+| Master (intocada) | `b6cc7eb` — sem merge, sem rebase, sem push |
+| Imagem app publicada | `photoon-app:latest` = `27995a57d114` |
+| Imagem worker | `photoon-render:latest` = `c7d6f02735f6` (nova) |
+| Rollback master | `photoon-app:backup-master-b6cc7eb` (`169c5a2ce90f`) |
+| Rollback da sessão anterior | `photoon-app:ok-47543e6-658d3f5a5206` (`658d3f5a5206`) |
+| Árvore git | limpa |
+| Verificadores | tsc OK · build OK · checar-casca OK · checar-consultas OK · **checar-render OK (novo)** · checar-banco **3 problemas (0016)** |
+
+### 0.1 O 500 EM `/entrar` NÃO EXISTIA — ERA ERRO DE MEDIÇÃO
+
+**Produção nunca esteve quebrada.** O 500 relatado na seção 1 foi diagnóstico
+contra a porta errada.
+
+O container `photoon-app-1` declara `expose: 3000`, **não** `ports:`. Ele nunca
+publicou a 3000 no host. Enquanto isso havia um `next dev -p 3000` rodando solto
+na VPS **há 3 dias** (PID 19899). Todo `curl localhost:3000` da sessão anterior
+batia nesse servidor de desenvolvimento, não em produção.
+
+A prova: a página de erro trazia `buildId: "PdqcCuDYiQzVFj-CvHude"` e pedia
+`/_next/static/development/…` e `react-refresh.js` — artefatos que só existem em
+`next dev`. O `.next` local tinha exatamente esse BUILD_ID; o container tinha
+outro (`CcBaCm-UTj7nFG_Vp10IH`).
+
+Medido pelo caminho real (Caddy e internet pública), antes de qualquer
+alteração: `/entrar` → **200**, `/` → 307, `/pedidos` `/projetos`
+`/renderizacao` → 307 para `/entrar?next=…`. Continua assim depois do deploy.
+
+**Como medir daqui em diante — pelo IP do container ou pelo Caddy, nunca por
+`localhost:3000`:**
+
+```bash
+curl -sk -o /dev/null -w '%{http_code}\n' \
+  --resolve app.photoon.com.br:443:127.0.0.1 https://app.photoon.com.br/entrar
+```
+
+Os quatro processos órfãos do host (portas 3000, 3001, 3100, 3101) foram
+encerrados. Nenhum `next-server` escuta mais no host; só o container.
+
+### 0.2 O que foi feito nesta sessão (8 commits)
+
+| Hash | O quê |
+|---|---|
+| `8c92a09` | `.dockerignore` — o `COPY . .` levava o `.next` local (902 MB) para a imagem. Contexto de build: 1,6 GB → ~50 MB |
+| `64bb8f6` | Bloco único da 0016 pronto para colar, **validado em palco no pg-teste** |
+| `7a9da50` | **Corrige o renderizador** (bug real) + resolvedor de TS fora do Next + `checar-render` |
+| `7f3e15d` | **Worker de render faz o trabalho de verdade** e passa a existir na imagem |
+| `6b232bc` | Corrige contagem de páginas/lâminas, invertida na origem |
+| `429dc21` | Cria `/projetos/:id/resumo` (o botão caía em 404) |
+| `60e396d` | Cria `/financeiro` com dados reais |
+| `abbe48d` | Liga Loja, Catálogo, Preços, Relatórios e Integrações aos dados reais |
+
+### 0.3 A renderização estava quebrada por TRÊS motivos — a chave era só um
+
+A seção 6 dizia que faltava apenas a `SUPABASE_SERVICE_ROLE_KEY`. Não era
+verdade: **o worker não teria rodado nem com a chave na mão.**
+
+1. **`src/lib/impressao.ts` quebrava em toda lâmina com foto.** `comporQuadro`
+   colava a imagem escalada num fundo do tamanho do quadro com `composite`. No
+   modo `preencher` (o padrão) `medidasPorcento` devolve `Math.max(1, razao)` —
+   a imagem é SEMPRE ≥ o quadro — e o sharp recusa: *"Image to composite must
+   have same dimensions or smaller"*. Corrigido: a interseção entre a imagem
+   posicionada e o quadro é extraída antes de colar.
+2. **A imagem não continha o worker.** O `docker-compose` mandava o serviço
+   `render` rodar `tools/worker-render.ts`, mas o estágio `runner` só copia
+   `.next/standalone`, `.next/static` e `public` — **sem `tools/` e sem `src/`**.
+   Agora existe um estágio `worker` no Dockerfile, com `target` explícito nos
+   dois serviços, e com `fontconfig` + Liberation + DejaVu (sem fonte, o texto
+   da lâmina sairia com outra letra no papel).
+3. **`node --experimental-strip-types` não resolvia os imports.** Ele apaga os
+   tipos mas não mexe na resolução de módulo, e `src/lib/**` importa sem
+   extensão (`./layouts`). `tools/resolver-ts.mjs` resolve extensão e o alias
+   `@/` via `module.registerHooks`, sem bundler e sem dependência nova.
+
+**O que o worker faz agora, de fato:** monta o acervo (`projeto_fotos` →
+`galeria_fotos.storage_path`) e baixa do bucket `galerias` com cache por job;
+renderiza lâmina a lâmina com `renderizarLamina` nas medidas do próprio projeto;
+valida que nenhuma saiu vazia; sobe cada JPEG para
+`renders/<lojista_id>/<projeto_id>/`; registra em `projeto_arquivos` com
+checksum sha256, bytes, mime e `tipo='renderizado'` (marcando a linha anterior
+do mesmo caminho como removida, regra 32); e pergunta pelo cancelamento entre
+etapas **e a cada lâmina** — cancelar um álbum de 80 lâminas não pode esperar as
+80. Cancelamento é saída limpa, não falha.
+
+**Verificado dentro do container do worker:** `checar-render` passa nos 8
+cenários a 7228×3614 px com as fontes reais, e o processo sobe, registra e entra
+no laço (`"pronto, ouvindo a fila"`), encerrando limpo no SIGTERM.
+
+```bash
+# o renderizador em si, sem Supabase e sem worker — roda em segundos
+npm run checar-render
+```
+
+**Falta só a chave para o teste ponta a ponta com job real.**
+
+### 0.4 Contagem de páginas e lâminas estava invertida
+
+`projetos.paginas` guarda `Lamina[]` (`paginas: [novaLamina(), novaLamina()]`), e
+`total_paginas` é `jsonb_array_length(paginas)` — ou seja **conta LÂMINAS**,
+apesar do nome. O helper `laminas()` lia a coluna como página e dividia por dois:
+um projeto novo (2 lâminas = 4 páginas) aparecia como *"2 páginas, 1 lâmina"*,
+errado nos dois números, inclusive no telefone do cliente.
+
+Trocado por `laminasDoProjeto` e `paginasDoProjeto`. **Não volte a dividir por
+dois.**
+
+### 0.5 Design System: as duas famílias de cor são de propósito
+
+Parecia divergência entre `tokens.ts` e `tailwind.config.ts`; não é. Cada cor
+semântica tem duas versões, e as duas estão certas:
+
+- **texto sobre superfície tingida** (`tokens.ts`): `#059669` · `#B45309` · `#E11D48`
+- **preenchimento** — barra, ponto, traço de gráfico (Tailwind): `#10B981` · `#F59E0B` · `#F43F5E`
+
+`COR.verde` e o `green` do Tailwind são cores diferentes. **Não iguale os dois**:
+o claro como texto perde contraste, o escuro como preenchimento apaga o gráfico.
+As de preenchimento agora têm nome no kit: `verdeVivo`, `ambarVivo`, `coralVivo`.
+
+### 0.6 Rotas: auditadas item a item, nenhum link morto
+
+Os 17 itens do menu foram conferidos contra a existência de `page.tsx`:
+
+- **15 prontos e com página.** `/financeiro` entrou nesta sessão.
+- **2 esmaecidos que não navegam:** `/loja/cupons` e `/clientes/importacoes`.
+  **Não há tabela de cupom nem de importação no banco.** Criá-las agora seria
+  exatamente o mock que a fase seguinte manda remover. Ficam `pronto: false` —
+  nenhum item leva a 404.
+
+`/carteira` passou a apontar para `/financeiro?aba=recebimentos` (a aba que
+existe de fato).
+
+### 0.7 O que continua pendente, e de quem depende
+
+| Pendência | Depende de |
+|---|---|
+| **Migration 0016** — `checar-banco` segue com 3 problemas | **Você.** Cole `supabase/0016-COLAR-NO-SQL-EDITOR.sql` no SQL Editor |
+| **Worker no ar + teste ponta a ponta** | **Você.** `SUPABASE_SERVICE_ROLE_KEY` no `.env` |
+| **Auditoria visual (Prioridade 7)** | **Você.** Só a senha (`SENHA_TESTE`) |
+| Dashboard com KPIs reais | Nada — trabalho de código |
+| Templates/Configurações com todas as abas do briefing | Nada — trabalho de código |
+| Padronização visual fina dos painéis religados | Depende da auditoria visual |
+
+**Não há service role nem senha de banco na VPS** — varri `/root` inteiro; só
+existe a anon key, que não faz DDL. O `.env` tem 5 chaves, todas `NEXT_PUBLIC_*`
+mais `DEFAULT_TENANT_SLUG`.
+
+### 0.8 Como subir o worker quando a chave chegar
+
+```bash
+echo 'SUPABASE_SERVICE_ROLE_KEY=...' >> /root/photoon/.env
+docker compose up -d render
+docker logs -f photoon-render-1     # espera: "pronto, ouvindo a fila a cada 3000ms"
+```
+
+Depois, no painel `/renderizacao`: "Workers ativos: 1". Enfileirar um projeto de
+teste e acompanhar as 7 etapas até `pronto`, conferir o arquivo em
+`projeto_arquivos` e a URL assinada.
+
+### 0.9 Auditoria visual — o que falta e como rodar
+
+`chromium-browser` e `puppeteer-core` já estão instalados na VPS, e o e-mail já
+está no script (`lojista@photoon.com.br`). Falta **só a senha**:
+
+```bash
+SENHA_TESTE='...' node tools/tirar-foto.mjs lojista /pedidos pedidos 1440
+```
+
+Larguras a conferir: 1440, 1366, 1024 e 390 (celular). Referência visual é
+`/pedidos`. Ainda **não** foram conferidas com sessão real: Projetos, Detalhe do
+Projeto, Clientes, Produção, Renderização, Expedição, e as seis telas religadas
+nesta sessão (Loja, Catálogo, Preços, Relatórios, Integrações, Financeiro) mais
+`/projetos/:id/resumo`.
+
+**Build e TypeScript não valem como validação visual** — os cinco painéis
+religados nesta sessão nunca foram vistos renderizados com dado real.
+
+---
+
+
 Documento único e final. Substitui todas as seções anteriores (incluindo a
 versão 17 e 18). Escrito em 31/08/2026, sobre o commit `84f290e` da branch
 `reestruturacao`, com a imagem `658d3f5a5206` publicada em produção.
