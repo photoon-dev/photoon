@@ -322,7 +322,15 @@ async function processar(job: {
     for (const etapa of ETAPAS) {
       if (await foiCancelado(job.id)) throw new Cancelado();
 
-      await andar(job.id, etapa.id, estadoDaEtapa(etapa.id), etapa.ate);
+      // A faixa desta etapa vai do fim da anterior até `etapa.ate`. A barra
+      // ENTRA no começo da faixa e só chega ao fim quando a etapa termina:
+      // marcar `etapa.ate` na entrada fazia o progresso saltar para 70% e
+      // voltar para 30% na primeira lâmina — o operador via a barra andar
+      // para trás e não tinha como saber quanto faltava.
+      const de = ETAPAS[ETAPAS.indexOf(etapa) - 1]?.ate ?? 0;
+      const faixa = etapa.ate - de;
+
+      await andar(job.id, etapa.id, estadoDaEtapa(etapa.id), de);
       await logar(job.id, etapa.id, `Etapa ${etapa.id} iniciada.`);
 
       if (etapa.id === 'preflight' && laminas.length === 0) {
@@ -331,11 +339,6 @@ async function processar(job: {
 
       if (etapa.id === 'renderizacao') {
         await logar(job.id, etapa.id, `${laminas.length} lâmina(s) a renderizar.`);
-
-        // A faixa desta etapa vai do fim da anterior até `etapa.ate`; o
-        // progresso anda dentro dela, lâmina a lâmina.
-        const de = ETAPAS[ETAPAS.indexOf(etapa) - 1]?.ate ?? 0;
-        const faixa = etapa.ate - de;
 
         for (const [i, lamina] of laminas.entries()) {
           if (await foiCancelado(job.id)) throw new Cancelado();
@@ -393,9 +396,6 @@ async function processar(job: {
         const pasta = `${job.lojista_id}/${projeto.id}`;
         await logar(job.id, etapa.id, `Destino: ${BUCKET}/${pasta}/`);
 
-        const de = ETAPAS[ETAPAS.indexOf(etapa) - 1]?.ate ?? 0;
-        const faixa = etapa.ate - de;
-
         for (const [i, arquivo] of gerados.entries()) {
           if (await foiCancelado(job.id)) throw new Cancelado();
 
@@ -441,6 +441,9 @@ async function processar(job: {
           `${gerados.length} arquivo(s), ${Math.round(total / 1024 / 1024 * 10) / 10} MB enviados.`,
         );
       }
+
+      // A etapa acabou: a barra fecha a faixa dela.
+      await progredir(job.id, etapa.ate);
     }
 
     await db
