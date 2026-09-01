@@ -142,12 +142,37 @@ async function comporQuadro(
   const esquerda = Math.round((caixa.width - iw) / 2) + desX;
   const topo = Math.round((caixa.height - ih) / 2) + desY;
 
-  // Recorta ao tamanho do quadro: `extract` não aceita coordenada negativa,
-  // então a imagem é colada num fundo do tamanho certo e o excesso some.
+  // Recorta ao tamanho do quadro.
+  //
+  // No modo `preencher` — o padrão — a imagem é SEMPRE maior que o quadro:
+  // `medidasPorcento` devolve `Math.max(1, razao)`, ou seja nunca menos de
+  // 100%. E o `composite` do sharp recusa entrada maior que a base ("Image to
+  // composite must have same dimensions or smaller"), enquanto o `extract` não
+  // aceita coordenada negativa. Colar direto quebrava toda lâmina com foto em
+  // `preencher`, que é o caso comum — era isto que impedia a renderização de
+  // rodar de verdade.
+  //
+  // A sobra é cortada aqui: a interseção entre a imagem já posicionada e o
+  // quadro vira a região a extrair, e ela é colada no canto certo do fundo.
+  const corteX = Math.max(0, -esquerda);
+  const corteY = Math.max(0, -topo);
+  const colaX = Math.max(0, esquerda);
+  const colaY = Math.max(0, topo);
+  const larguraVisivel = Math.min(iw - corteX, caixa.width - colaX);
+  const alturaVisivel = Math.min(ih - corteY, caixa.height - colaY);
+
+  // Deslocamento extremo pode jogar a foto inteira para fora do quadro.
+  if (larguraVisivel <= 0 || alturaVisivel <= 0) return null;
+
+  const visivel = await sharp(pronto)
+    .extract({ left: corteX, top: corteY, width: larguraVisivel, height: alturaVisivel })
+    .png()
+    .toBuffer();
+
   const recortado = await sharp({
     create: { width: caixa.width, height: caixa.height, channels: 4, background: { r: 0, g: 0, b: 0, alpha: 0 } },
   })
-    .composite([{ input: pronto, left: esquerda, top: topo }])
+    .composite([{ input: visivel, left: colaX, top: colaY }])
     .png()
     .toBuffer();
 
